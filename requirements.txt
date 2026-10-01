@@ -1,0 +1,21 @@
+# Core (tested with the versions in brackets)
+torch>=2.0            # [2.14 CPU]
+torchvision
+numpy>=1.24
+opencv-python-headless>=4.8
+scipy
+pandas
+matplotlib
+pyyaml
+scikit-image          # textures for the synthetic dataset
+tabulate              # markdown tables
+pytest
+# MiDaS DPT backbones (vendored code in third_party/midas_repo)
+timm==0.6.13
+# Notebooks
+nbformat
+nbconvert
+ipykernel
+# Optional
+# transformers         # Depth Anything V2 tangent-view wrapper
+# DAP: see third_party/DAP/requirements.txt (einops, safetensors, ...)

@@ -1,0 +1,99 @@
+09:02:19 plan: 49 methods; stages ['geometry', 'main', 'reports', 'control', 'resolution', 'timing', 'qualitative']
+09:02:22 geometry: worst point angle err 1.19e-12 deg, worst ERP->tan->ERP mean rel err 3.81e-06
+09:02:26 model: {'name': 'midas_dpt_hybrid_384', 'space': 'disparity', 'scale': 'affine', 'geometry_erp': 'range', 'geometry_perspective': 'planar', 'device': 'cpu'}
+09:02:26 dataset: synthetic n=24 at 512x1024
+09:05:25 [1/24] scene_0000: 49 methods in 179.5s (peak RSS 2297 MB)
+09:08:30 [2/24] scene_0001: 49 methods in 184.3s (peak RSS 2310 MB)
+09:11:39 [3/24] scene_0002: 49 methods in 189.4s (peak RSS 2317 MB)
+09:14:46 [4/24] scene_0003: 49 methods in 187.5s (peak RSS 2317 MB)
+09:17:50 [5/24] scene_0004: 49 methods in 183.3s (peak RSS 2317 MB)
+09:20:57 [6/24] scene_0005: 49 methods in 187.4s (peak RSS 2318 MB)
+09:24:03 [7/24] scene_0006: 49 methods in 185.6s (peak RSS 2318 MB)
+09:27:02 [8/24] scene_0007: 49 methods in 179.1s (peak RSS 2320 MB)
+09:30:04 [9/24] scene_0008: 49 methods in 181.7s (peak RSS 2321 MB)
+09:33:07 [10/24] scene_0009: 49 methods in 183.1s (peak RSS 2340 MB)
+09:36:08 [11/24] scene_0010: 49 methods in 180.8s (peak RSS 2340 MB)
+09:39:06 [12/24] scene_0011: 49 methods in 178.1s (peak RSS 2341 MB)
+09:41:58 [13/24] scene_0012: 49 methods in 171.8s (peak RSS 2342 MB)
+09:44:55 [14/24] scene_0013: 49 methods in 177.8s (peak RSS 2342 MB)
+09:47:59 [15/24] scene_0014: 49 methods in 183.5s (peak RSS 2342 MB)
+09:51:04 [16/24] scene_0015: 49 methods in 185.2s (peak RSS 2342 MB)
+09:54:09 [17/24] scene_0016: 49 methods in 185.1s (peak RSS 2344 MB)
+09:57:12 [18/24] scene_0017: 49 methods in 183.2s (peak RSS 2344 MB)
+10:00:14 [19/24] scene_0018: 49 methods in 181.1s (peak RSS 2346 MB)
+10:03:14 [20/24] scene_0019: 49 methods in 180.7s (peak RSS 2346 MB)
+10:06:17 [21/24] scene_0020: 49 methods in 182.8s (peak RSS 2349 MB)
+10:09:22 [22/24] scene_0021: 49 methods in 185.0s (peak RSS 2349 MB)
+10:12:23 [23/24] scene_0022: 49 methods in 180.7s (peak RSS 2354 MB)
+10:15:24 [24/24] scene_0023: 49 methods in 180.9s (peak RSS 2354 MB)
+10:15:41 reports written to results/midas_dpt_hybrid_synthetic/report_align-all
+10:15:51 reports written to results/midas_dpt_hybrid_synthetic/report_align-equatorial
+10:16:17 [latitude-control] scene_0000 done
+10:16:39 [latitude-control] scene_0001 done
+10:17:04 [latitude-control] scene_0002 done
+10:17:27 [latitude-control] scene_0003 done
+10:17:48 [latitude-control] scene_0004 done
+10:18:11 [latitude-control] scene_0005 done
+10:18:37 [latitude-control] scene_0006 done
+10:19:01 [latitude-control] scene_0007 done
+10:19:25 [latitude-control] scene_0008 done
+10:19:48 [latitude-control] scene_0009 done
+10:20:11 [latitude-control] scene_0010 done
+10:20:35 [latitude-control] scene_0011 done
+10:20:59 [latitude-control] scene_0012 done
+10:21:23 [latitude-control] scene_0013 done
+10:21:45 [latitude-control] scene_0014 done
+10:22:08 [latitude-control] scene_0015 done
+10:22:30 [latitude-control] scene_0016 done
+10:22:53 [latitude-control] scene_0017 done
+10:23:15 [latitude-control] scene_0018 done
+10:23:36 [latitude-control] scene_0019 done
+10:23:59 [latitude-control] scene_0020 done
+10:24:22 [latitude-control] scene_0021 done
+10:24:46 [latitude-control] scene_0022 done
+10:25:09 [latitude-control] scene_0023 done
+10:25:24 [1/12] scene_0000: 4 methods in 10.6s (peak RSS 2354 MB)
+10:25:34 [2/12] scene_0001: 4 methods in 9.7s (peak RSS 2354 MB)
+10:25:43 [3/12] scene_0002: 4 methods in 9.3s (peak RSS 2354 MB)
+10:25:53 [4/12] scene_0003: 4 methods in 9.9s (peak RSS 2354 MB)
+10:26:02 [5/12] scene_0004: 4 methods in 9.1s (peak RSS 2354 MB)
+10:26:12 [6/12] scene_0005: 4 methods in 9.6s (peak RSS 2354 MB)
+10:26:22 [7/12] scene_0006: 4 methods in 10.6s (peak RSS 2354 MB)
+10:26:32 [8/12] scene_0007: 4 methods in 9.8s (peak RSS 2354 MB)
+10:26:42 [9/12] scene_0008: 4 methods in 10.3s (peak RSS 2354 MB)
+10:26:53 [10/12] scene_0009: 4 methods in 10.4s (peak RSS 2354 MB)
+10:27:03 [11/12] scene_0010: 4 methods in 9.8s (peak RSS 2354 MB)
+10:27:12 [12/12] scene_0011: 4 methods in 9.3s (peak RSS 2354 MB)
+10:27:34 [1/12] scene_0000: 4 methods in 21.9s (peak RSS 2368 MB)
+10:27:56 [2/12] scene_0001: 4 methods in 22.2s (peak RSS 2368 MB)
+10:28:17 [3/12] scene_0002: 4 methods in 21.2s (peak RSS 2368 MB)
+10:28:40 [4/12] scene_0003: 4 methods in 22.9s (peak RSS 2368 MB)
+10:29:02 [5/12] scene_0004: 4 methods in 21.5s (peak RSS 2368 MB)
+10:29:24 [6/12] scene_0005: 4 methods in 22.2s (peak RSS 2368 MB)
+10:29:45 [7/12] scene_0006: 4 methods in 20.7s (peak RSS 2368 MB)
+10:30:06 [8/12] scene_0007: 4 methods in 20.6s (peak RSS 2368 MB)
+10:30:27 [9/12] scene_0008: 4 methods in 20.9s (peak RSS 2368 MB)
+10:30:48 [10/12] scene_0009: 4 methods in 21.1s (peak RSS 2368 MB)
+10:31:08 [11/12] scene_0010: 4 methods in 20.2s (peak RSS 2368 MB)
+10:31:29 [12/12] scene_0011: 4 methods in 21.0s (peak RSS 2368 MB)
+10:32:13 [1/12] scene_0000: 4 methods in 44.4s (peak RSS 2868 MB)
+10:32:57 [2/12] scene_0001: 4 methods in 44.0s (peak RSS 2868 MB)
+10:33:41 [3/12] scene_0002: 4 methods in 43.8s (peak RSS 2868 MB)
+10:34:25 [4/12] scene_0003: 4 methods in 43.8s (peak RSS 2868 MB)
+10:35:08 [5/12] scene_0004: 4 methods in 43.5s (peak RSS 2868 MB)
+10:35:52 [6/12] scene_0005: 4 methods in 43.6s (peak RSS 2868 MB)
+10:36:35 [7/12] scene_0006: 4 methods in 43.1s (peak RSS 2868 MB)
+10:37:18 [8/12] scene_0007: 4 methods in 43.1s (peak RSS 2868 MB)
+10:38:01 [9/12] scene_0008: 4 methods in 43.2s (peak RSS 2868 MB)
+10:38:44 [10/12] scene_0009: 4 methods in 42.8s (peak RSS 2884 MB)
+10:39:27 [11/12] scene_0010: 4 methods in 43.1s (peak RSS 2884 MB)
+10:40:11 [12/12] scene_0011: 4 methods in 43.1s (peak RSS 2884 MB)
+10:42:02 [timing] scene_0000
+10:43:51 [timing] scene_0001
+10:45:39 [timing] scene_0002
+10:46:29 qualitative figures in results/midas_dpt_hybrid_synthetic/qualitative
+10:46:29 done
+11:26:24 plan: 49 methods; stages ['reports']
+11:26:38 reports written to results/midas_dpt_hybrid_synthetic/report_align-all
+11:26:48 reports written to results/midas_dpt_hybrid_synthetic/report_align-equatorial
+11:26:48 done

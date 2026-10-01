@@ -1,0 +1,67 @@
+# DAP on PanoX test split (indoor + outdoor). Data: scripts/download_panox.py then scripts/make_panox_list.py
+# Requirements (not available in the development environment, see README "Running DAP"):
+#   git clone https://github.com/Insta360-Research-Team/DAP third_party/DAP   (+ pip install -r its requirements)
+#   weights:  https://huggingface.co/Insta360-Research/DAP-weights  -> weights/dap/model.pth
+#   dataset:  Stanford2D3D panoramas (signed access) -> data/stanford2d3d, list via scripts/make_stanford_list.py
+
+seed: 0
+output_dir: results/dap_panox
+
+model:
+  name: dap
+  repo: third_party/DAP
+  weights: weights/dap/model.pth
+  device: auto
+  height: 512
+  width: 1024
+  imagenet_normalize: true      # follows DAP test/eval.py (test/infer.py does not normalise)
+  perspective_geometry: range   # what DAP's number means on a pinhole input is unknown; the
+                                # scale alignment below absorbs a global factor only
+
+tangent_model: null             # alternative: see configs/dap_dav2_tangent.yaml
+
+dataset:
+  name: panox                  # UE5 distance maps (range); check unit, set depth_scale
+  root: data/panox
+  list: test.txt
+  height: 512
+  width: 1024
+  limit: null
+
+evaluation:
+  eval_align: none              # DAP is metric (range/100 m); also report 'median' via --set evaluation.eval_align=median
+  align_regions: [all]
+  bands: [0, 15, 30, 45, 60, 75, 90]
+  bad_threshold: 0.10
+  profile_bin: 2.5
+  max_depth: 100.0
+
+inference:
+  batch_size: 4
+  tangent_size: 512
+  polar_threshold: 45
+  views_per_pole: 1
+  rotation_angles: [[0, 90, 0], [0, -90, 0]]   # (yaw, pitch, roll) deg: north, then south pole to the centre
+  fusion_method: cosine
+  merge: prior
+  align: scale                  # per-view robust scale match to the baseline on trusted pixels (no GT)
+  band: 20
+  power: 2.0
+
+experiments:
+  thresholds: [30, 45, 60, 75]
+  views_per_pole: [1, 2, 3, 5]
+  fusions: [hard, linear, sigmoid, cosine, polynomial, confidence]
+  merge_modes: [prior, mean, median]
+  rotation_sets:
+    pitch90: [[0, 90, 0]]
+    pitch90_pm: [[0, 90, 0], [0, -90, 0]]
+    pitch90_x4: [[0, 90, 0], [0, -90, 0], [90, 90, 0], [90, -90, 0]]
+    pitch45_pm: [[0, 45, 0], [0, -45, 0]]
+    yaw_only_x3: [[90, 0, 0], [180, 0, 0], [270, 0, 0]]
+  latitude_control_pitches: [0, 30, 60, 90]
+  control_limit: 100
+  resolutions: [[256, 512], [512, 1024]]
+  resolution_limit: 100
+  timing_images: 10
+  qualitative: 6
