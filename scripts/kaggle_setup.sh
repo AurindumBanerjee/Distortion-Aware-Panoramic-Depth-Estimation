@@ -15,7 +15,9 @@ mkdir -p weights
 for f in v3/dpt_hybrid_384.pt v3_1/dpt_swin2_tiny_256.pt; do
   [ -f weights/$(basename $f) ] || wget -q -O weights/$(basename $f) https://github.com/isl-org/MiDaS/releases/download/$f
 done
-# PanoX test split (only RGB + distance; a few GB, fits /kaggle/working's 20 GB limit)
-python scripts/download_panox.py --split test --out data/panox
-python scripts/make_panox_list.py --root data/panox
-echo "Ready:  python run_experiment.py --config configs/dap_panox.yaml"
+# PanoX test split (optional; only RGB + distance, a few GB). Enable with:  PANOX=1 bash scripts/kaggle_setup.sh
+if [ "${PANOX:-0}" = "1" ]; then
+  python scripts/download_panox.py --split test --out data/panox
+  python scripts/make_panox_list.py --root data/panox
+fi
+echo "Ready:  python run_experiment.py --config configs/dap_structured3d.yaml --set dataset.root=/kaggle/input/<your-dataset>"
