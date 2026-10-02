@@ -7,8 +7,9 @@ one whose path contains rgb/image/color, the GT the one containing distance/dept
 detected value range of the first GT file so the unit (metres vs normalised) can be checked;
 set dataset.depth_scale in configs/dap_panox.yaml accordingly.
 """
-import argparse
 import os
+os.environ.setdefault("OPENCV_IO_ENABLE_OPENEXR", "1")  # must precede any cv2 import
+import argparse
 import re
 from collections import defaultdict
 

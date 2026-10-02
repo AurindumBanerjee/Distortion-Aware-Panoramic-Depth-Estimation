@@ -9,7 +9,7 @@ Supported depth formats:
                      Stanford2D3D: depth_scale=512, invalid = 65535 (-> > max_depth)
                      Matterport3D (Zioulis / UniFuse ERP release): depth_scale=4000
                      Structured3D: depth_scale=1000
-  .exr             float metres (needs OpenCV built with OpenEXR; set OPENCV_IO_ENABLE_OPENEXR=1)
+  .exr             float, multiplied by `exr_scale` (default 1 = metres; PanoX 0.01 = cm) (needs OpenCV built with OpenEXR; set OPENCV_IO_ENABLE_OPENEXR=1)
 
 All GT depth is treated as Euclidean range (distance along the ray), which is the
 convention of all ERP benchmarks above. RGB is resized with INTER_AREA/CUBIC, depth with
@@ -30,7 +30,9 @@ PRESETS = {
     "stanford2d3d": dict(depth_scale=512.0, max_depth=16.0, min_depth=0.1),
     "matterport3d": dict(depth_scale=4000.0, max_depth=10.0, min_depth=0.1),
     "structured3d": dict(depth_scale=1000.0, max_depth=10.0, min_depth=0.1),
-    "panox": dict(depth_scale=1.0, max_depth=100.0, min_depth=0.05),  # distance; verify unit with make_panox_list.py
+    # PanoX (UE5): float32 EXR range in CENTIMETRES (UE units; floor-plane check gives camera heights ~95-140 in
+    # the raw numbers). Sky/infinity = ~65504 (float16 max) -> becomes 655 m and is masked by max_depth.
+    "panox": dict(depth_scale=1.0, max_depth=100.0, min_depth=0.05, exr_scale=0.01),
 }
 
 
@@ -45,7 +47,7 @@ class Sample:
 class PanoramaDataset:
     def __init__(self, root: str, list_file: str, height: int = 512, width: int = 1024, name: str = "synthetic",
                  depth_scale: Optional[float] = None, max_depth: Optional[float] = None,
-                 min_depth: Optional[float] = None, limit: Optional[int] = None):
+                 min_depth: Optional[float] = None, limit: Optional[int] = None, exr_scale: Optional[float] = None):
         p = dict(PRESETS.get(name, PRESETS["synthetic"]))
         if depth_scale is not None:
             p["depth_scale"] = depth_scale
@@ -53,6 +55,9 @@ class PanoramaDataset:
             p["max_depth"] = max_depth
         if min_depth is not None:
             p["min_depth"] = min_depth
+        if exr_scale is not None:
+            p["exr_scale"] = exr_scale
+        self.exr_scale = p.get("exr_scale", 1.0)  # multiplier applied to .exr depth to get metres
         self.root, self.h, self.w, self.name = root, height, width, name
         self.depth_scale, self.max_depth, self.min_depth = p["depth_scale"], p["max_depth"], p["min_depth"]
         lf = list_file if os.path.isabs(list_file) else os.path.join(root, list_file)
@@ -80,6 +85,8 @@ class PanoramaDataset:
             d = d.astype(np.float32)
             if ext != ".exr":
                 d = d / self.depth_scale
+            else:
+                d = d * self.exr_scale
         return d
 
     def __getitem__(self, i: int) -> Sample:
@@ -97,6 +104,9 @@ class PanoramaDataset:
         valid = np.isfinite(d) & (d > self.min_depth) & (d <= self.max_depth)
         d = np.where(valid, d, np.nan).astype(np.float32)
         sid = os.path.splitext(os.path.basename(rgb_rel))[0]
+        parts = rgb_rel.replace("\\", "/").split("/")
+        if len(parts) > 2:  # nested layouts (PanoX: <scene>/<scene>/rgb/0002.png) -> ids must be unique across scenes
+            sid = f"{parts[0]}_{sid}"
         return Sample(sid, rgb, d, valid)
 
     def __iter__(self) -> Iterator[Sample]:

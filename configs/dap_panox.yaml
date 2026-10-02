@@ -21,12 +21,13 @@ model:
 tangent_model: null             # alternative: see configs/dap_dav2_tangent.yaml
 
 dataset:
-  name: panox                  # UE5 distance maps (range); check unit, set depth_scale
+  name: panox                  # UE5 EXR range maps in cm (preset exr_scale 0.01); sky ~65504 cm masked by max_depth
   root: data/panox
   list: test.txt
   height: 512
   width: 1024
   limit: null
+  # list: nested paths like ClothingStore/ClothingStore/rgb/0002.png come from make_panox_list.py
 
 evaluation:
   eval_align: none              # DAP is metric (range/100 m); also report 'median' via --set evaluation.eval_align=median

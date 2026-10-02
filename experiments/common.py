@@ -161,7 +161,7 @@ def make_dataset(cfg: dict, height=None, width=None, limit=None) -> PanoramaData
     return PanoramaDataset(d["root"], d["list"], height or d["height"], width or d["width"], name=d["name"],
                            limit=limit if limit is not None else d.get("limit"),
                            depth_scale=d.get("depth_scale"), max_depth=d.get("max_depth"),
-                           min_depth=d.get("min_depth"))
+                           min_depth=d.get("min_depth"), exr_scale=d.get("exr_scale"))
 
 
 # ----------------------------------------------------------------------------
