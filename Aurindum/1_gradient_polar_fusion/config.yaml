@@ -1,0 +1,30 @@
+# Method 1 Configuration: Gradient-Domain Polar Fusion & Shift-Decoupled Alignment
+method_name: "Gradient-Domain Polar Fusion"
+model:
+  name: "midas_dpt_hybrid"
+  device: "cpu"
+  space: "disparity"
+  scale: "affine"
+
+tangent:
+  fov_deg: 90.0
+  resolution: 384
+  phi_threshold: 45.0
+  num_tangent_views: 2  # North pole (phi=+90) and South pole (phi=-90)
+
+alignment:
+  anchor_max_lat: 35.0
+  mad_threshold: 2.5
+
+blending:
+  mode: "gradient_poisson"  # Options: 'gradient_poisson', 'cosine_ramp', 'hard_cut'
+  blend_margin: 10.0
+  poisson_solver: "sor"     # 'sor' or 'fft'
+
+evaluation:
+  num_scenes: 6
+  height: 256
+  width: 512
+  align_protocol: "align-equatorial"  # 'align-equatorial' (|phi| < 30) or 'align-all'
+  output_dir: "outputs"
+  log_dir: "logs"

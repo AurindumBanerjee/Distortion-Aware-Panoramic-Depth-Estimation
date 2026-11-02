@@ -1,0 +1,20 @@
+# Method 2 Configuration: Test-Time Möbius Augmentation & Equator-to-Pole Ensembling
+method_name: "Mobius TTA Ensembling"
+model:
+  name: "midas_dpt_hybrid"
+  device: "cpu"
+  space: "disparity"
+  scale: "affine"
+
+mobius_tta:
+  # Scales: 1.0 = baseline, 1.6 = dilates south pole towards equator, 0.625 = dilates north pole towards equator
+  scales: [1.0, 1.6, 0.625]
+  fusion_mode: "distortion_weighted"  # 'distortion_weighted', 'median', 'mean'
+
+evaluation:
+  num_scenes: 6
+  height: 256
+  width: 512
+  align_protocol: "align-equatorial"  # 'align-equatorial' (|phi| < 30) or 'align-all'
+  output_dir: "outputs"
+  log_dir: "logs"

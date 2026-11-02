@@ -35,20 +35,31 @@ from geometry.spherical import erp_lonlat_grid, lonlat_to_xyz
 # ----------------------------------------------------------------------------
 
 def _texture_bank(seed: int = 0) -> List[np.ndarray]:
-    """Float RGB textures in [0,1]. Photos from skimage (offline, bundled) + procedural patterns."""
+    """Float RGB textures in [0,1]. Photos from skimage if available + rich procedural patterns."""
     import warnings
-
-    import skimage.data as sd
 
     rng = np.random.default_rng(seed)
     bank = []
-    with warnings.catch_warnings():
-        warnings.simplefilter("ignore")
-        for name in ["brick", "grass", "gravel", "moon", "camera", "coins", "page", "text"]:
-            g = getattr(sd, name)().astype(np.float32) / 255.0
-            bank.append(np.repeat(g[..., None], 3, -1))
-        for name in ["coffee", "chelsea", "astronaut", "rocket", "immunohistochemistry", "hubble_deep_field"]:
-            bank.append(getattr(sd, name)()[..., :3].astype(np.float32) / 255.0)
+    try:
+        import skimage.data as sd
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore")
+            for name in ["brick", "grass", "gravel", "moon", "camera", "coins", "page", "text"]:
+                g = getattr(sd, name)().astype(np.float32) / 255.0
+                bank.append(np.repeat(g[..., None], 3, -1))
+            for name in ["coffee", "chelsea", "astronaut", "rocket", "immunohistochemistry", "hubble_deep_field"]:
+                bank.append(getattr(sd, name)()[..., :3].astype(np.float32) / 255.0)
+    except Exception:
+        # Fallback to procedural patterns if scikit-image is not installed
+        n = 256
+        yy, xx = np.mgrid[0:n, 0:n] / n
+        for freq in [4, 8, 16, 32]:
+            grid = ((np.floor(xx * freq) + np.floor(yy * freq)) % 2) * 0.4 + 0.3
+            bank.append(np.repeat(grid[..., None], 3, -1).astype(np.float32))
+        for col in [(0.8, 0.7, 0.6), (0.3, 0.5, 0.7), (0.7, 0.3, 0.3), (0.5, 0.5, 0.5)]:
+            grad = (xx * 0.5 + yy * 0.5)[..., None] * np.array(col, dtype=np.float32)
+            bank.append(grad.astype(np.float32))
+
     # procedural: wood, tiles, checker, smooth noise
     n = 256
     yy, xx = np.mgrid[0:n, 0:n] / n

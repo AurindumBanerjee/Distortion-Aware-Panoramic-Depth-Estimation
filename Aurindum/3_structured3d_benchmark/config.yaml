@@ -1,0 +1,19 @@
+# Benchmark Configuration on Real Structured3D Panoramas
+method_name: "Structured3D Real Foundation Benchmark"
+model:
+  name: "midas_dpt_hybrid"
+  device: "cpu"
+  space: "disparity"
+  scale: "affine"
+
+data:
+  zip_path: "d:/MyStuff/College/.7thSemester/CV/Project/Structured3D_panorama_15.zip"
+  curated_dir: "data/curated_scenes"
+  max_scenes: 5
+  height: 256
+  width: 512
+
+evaluation:
+  align_protocol: "align-equatorial"
+  output_dir: "outputs"
+  log_dir: "logs"
