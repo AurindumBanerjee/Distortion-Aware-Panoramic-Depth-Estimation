@@ -1,0 +1,44 @@
+# ==============================================================================
+# Git Ignore Rules for Panoramic Depth Estimation
+# ==============================================================================
+
+# Data and large datasets
+data/
+**/data/
+dataset/
+**/dataset/
+*.zip
+*.tar.gz
+*.exr
+*.npy
+*.npz
+
+# Model weights and checkpoints
+weights/
+**/weights/
+*.pth
+*.pt
+*.bin
+*.onnx
+
+# Results, heavy predictions, and logs
+**/outputs/
+**/logs/*.log
+results/**/predictions/
+results/**/heatmap__*.npy
+results/**/qualitative/
+
+# Python, environment & cache
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.vscode/
+.idea/
+.ipynb_checkpoints/
+*.egg-info/
+dist/
+build/
+
+# Third party clones
+third_party/DAP/
