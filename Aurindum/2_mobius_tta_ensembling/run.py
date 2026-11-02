@@ -22,6 +22,7 @@ if hasattr(sys.stdout, "reconfigure"):
 import cv2
 import matplotlib.pyplot as plt
 import numpy as np
+import torch
 import yaml
 
 # Add Aurindum root to sys.path
@@ -67,17 +68,36 @@ def setup_logger(log_dir: Path) -> logging.Logger:
 
 
 def load_model(cfg_model: Dict, logger: logging.Logger):
-    """Loads depth model wrapper."""
-    model_name = cfg_model.get("name", "dpt_hybrid_384")
+    """Loads depth model wrapper with automatic fallback and server path resolution."""
+    model_name = str(cfg_model.get("name", "dpt_hybrid_384")).lower()
     logger.info(f"Initializing model wrapper: {model_name}...")
+
+    # Check for DAP on GPU server
+    if "dap" in model_name:
+        try:
+            from models.depth_model import DAPWrapper
+            repo = cfg_model.get("repo", "third_party/DAP")
+            weights = cfg_model.get("weights", "weights/dap/model.pth")
+            repo_path = str(AURINDUM_DIR / repo) if not os.path.isabs(repo) else repo
+            weights_path = str(AURINDUM_DIR / weights) if not os.path.isabs(weights) else weights
+            device = cfg_model.get("device", "cuda" if torch.cuda.is_available() else "cpu")
+            wrapper = DAPWrapper(repo=repo_path, weights=weights_path, device=device)
+            logger.info(f"Loaded DAP foundation model from {weights_path} ({device}).")
+            return wrapper
+        except Exception as e:
+            logger.warning(f"Could not load DAP ({e}); trying MiDaS...")
+
     try:
         wrapper = MiDaSWrapper(
-            model_type=model_name,
-            device=cfg_model.get("device", "cpu")
+            model_type=cfg_model.get("name", "dpt_hybrid_384"),
+            weights=str(AURINDUM_DIR / cfg_model.get("weights", f"weights/{cfg_model.get('name', 'dpt_hybrid_384')}.pt")),
+            device=cfg_model.get("device", "cuda" if torch.cuda.is_available() else "cpu")
         )
-        logger.info(f"Loaded MiDaS {model_name} successfully.")
+        logger.info(f"Loaded MiDaS wrapper successfully.")
         return wrapper
     except Exception as e:
+        if not cfg_model.get("allow_oracle_fallback", False):
+            raise RuntimeError(f"Could not load model {model_name}: {e} (set model.allow_oracle_fallback to use the oracle)") from e
         logger.warning(f"Could not load MiDaS ({e}); falling back to EncodedDepthOracle.")
         return EncodedDepthOracle(strength=0.3, power=2.0)
 

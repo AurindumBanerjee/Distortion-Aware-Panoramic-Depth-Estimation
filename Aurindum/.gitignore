@@ -1,7 +1,39 @@
-weights/
+# ==============================================================================
+# Git Ignore Rules for Aurindum
+# ==============================================================================
+
+# Data and large datasets
 data/
+**/data/
+*.zip
+*.tar.gz
+*.exr
+*.npy
+*.npz
+
+# Model weights and checkpoints
+weights/
+**/weights/
+*.pth
+*.pt
+*.bin
+*.onnx
+
+# Results, heavy predictions, and logs
+outputs/
+**/outputs/
+logs/
+**/logs/
 results/**/predictions/
 results/**/heatmap__*.npy
+results/**/qualitative/
+
+# Python, environment & cache
 __pycache__/
+*.py[cod]
+*$py.class
 .pytest_cache/
+.vscode/
+
+# Third party clones
 third_party/DAP/

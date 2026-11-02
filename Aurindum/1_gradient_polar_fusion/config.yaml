@@ -1,8 +1,8 @@
 # Method 1 Configuration: Gradient-Domain Polar Fusion & Shift-Decoupled Alignment
 method_name: "Gradient-Domain Polar Fusion"
 model:
-  name: "midas_dpt_hybrid"
-  device: "cpu"
+  name: "dpt_hybrid_384"
+  device: "auto"
   space: "disparity"
   scale: "affine"
 

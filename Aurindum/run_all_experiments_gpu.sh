@@ -28,11 +28,26 @@ log() {
     echo "$msg" >> "$MASTER_LOG"
 }
 
+# Conda env (override with CONDA_ENV / CONDA_SH). Done here so a detached run needs no active shell env.
+CONDA_SH="${CONDA_SH:-/DATA/Aurindum/conda/etc/profile.d/conda.sh}"
+if [ -f "$CONDA_SH" ]; then
+    set +u; source "$CONDA_SH"; conda activate "${CONDA_ENV:-RL}"; set -u
+fi
+
 log "=========================================================================="
 log "🚀 Starting Master GPU Experiment Suite"
 log "Host: $(hostname) | CUDA Device: $CUDA_VISIBLE_DEVICES"
 log "Log File: $MASTER_LOG"
 log "=========================================================================="
+
+# --- Preflight: fail fast instead of producing meaningless results ---
+log "Python: $(command -v python) | env: ${CONDA_DEFAULT_ENV:-none}"
+PREFLIGHT_OK=1
+[ -f "$AURINDUM_DIR/weights/dpt_hybrid_384.pt" ] || { log "❌ Missing weights/dpt_hybrid_384.pt"; PREFLIGHT_OK=0; }
+[ -d "$AURINDUM_DIR/data/structured3d/rgb" ] || { log "❌ Missing data/structured3d/rgb"; PREFLIGHT_OK=0; }
+python -c "import torch,sys; sys.exit(0 if torch.cuda.is_available() else 1)" || { log "❌ CUDA not available to torch"; PREFLIGHT_OK=0; }
+if [ "$PREFLIGHT_OK" != 1 ]; then log "Preflight failed; aborting."; exit 1; fi
+log "Preflight OK."
 
 START_TOTAL=$(date +%s)
 

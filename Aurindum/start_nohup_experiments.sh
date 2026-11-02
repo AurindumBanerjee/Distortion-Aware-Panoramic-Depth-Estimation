@@ -16,7 +16,7 @@ echo "========================================================================"
 echo " Launching Master Experiment Suite in background via nohup..."
 echo "========================================================================"
 
-nohup bash "$SCRIPT_DIR/run_all_experiments_gpu.sh" > "$RUNNER_LOG" 2>&1 &
+setsid nohup bash "$SCRIPT_DIR/run_all_experiments_gpu.sh" > "$RUNNER_LOG" 2>&1 < /dev/null &
 PID=$!
 
 echo " Process started in background with PID: $PID"

@@ -1,10 +1,3 @@
-alignment:
-  anchor_max_lat: 35.0
-  mad_threshold: 2.5
-blending:
-  blend_margin: 10.0
-  mode: gradient_poisson
-  poisson_solver: sor
 evaluation:
   align_protocol: align-equatorial
   height: 256
@@ -12,14 +5,15 @@ evaluation:
   num_scenes: 2
   output_dir: outputs
   width: 512
-method_name: Gradient-Domain Polar Fusion
+method_name: Mobius TTA Ensembling
+mobius_tta:
+  fusion_mode: distortion_weighted
+  scales:
+  - 1.0
+  - 1.6
+  - 0.625
 model:
   device: cpu
   name: midas_dpt_hybrid
   scale: affine
   space: disparity
-tangent:
-  fov_deg: 90.0
-  num_tangent_views: 2
-  phi_threshold: 45.0
-  resolution: 384

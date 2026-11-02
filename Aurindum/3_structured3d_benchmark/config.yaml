@@ -1,15 +1,15 @@
 # Benchmark Configuration on Real Structured3D Panoramas
 method_name: "Structured3D Real Foundation Benchmark"
 model:
-  name: "midas_dpt_hybrid"
-  device: "cpu"
+  name: "dpt_hybrid_384"
+  device: "auto"
   space: "disparity"
   scale: "affine"
 
 data:
-  zip_path: "d:/MyStuff/College/.7thSemester/CV/Project/Structured3D_panorama_15.zip"
-  curated_dir: "data/curated_scenes"
-  max_scenes: 5
+  # Relative path inside Aurindum repo on the server
+  root: "data/structured3d"
+  max_scenes: 10
   height: 256
   width: 512
 

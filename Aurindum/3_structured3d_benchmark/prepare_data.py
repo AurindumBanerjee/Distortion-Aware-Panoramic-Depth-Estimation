@@ -19,6 +19,62 @@ import numpy as np
 logger = logging.getLogger("Structured3D_Loader")
 
 
+def find_structured3d_data(
+    base_dir: Path,
+    cfg_root: Optional[str] = "data/structured3d",
+    max_scenes: int = 20
+) -> List[Dict[str, str]]:
+    """Discovers Structured3D pairs on the server or extracts from archive.
+    
+    Checks in order:
+    1. Server standard directory: Aurindum/data/structured3d/{rgb, depth}
+    2. Local parent data directory: ../Data/structured3d/{rgb, depth}
+    3. Cached curated directory: Aurindum/3_structured3d_benchmark/data/curated_scenes
+    4. Unpack from Structured3D_panorama_*.zip if available
+    """
+    candidates = [
+        base_dir / (cfg_root or "data/structured3d"),
+        base_dir.parent / "Data" / "structured3d",
+        base_dir / "3_structured3d_benchmark" / "data" / "curated_scenes",
+        base_dir.parent / "dataset" / "current_data" / "structured3d"
+    ]
+
+    for cand in candidates:
+        rgb_dir = cand / "rgb"
+        depth_dir = cand / "depth"
+        if rgb_dir.is_dir() and depth_dir.is_dir():
+            rgb_files = sorted([f for f in rgb_dir.iterdir() if f.suffix.lower() == ".png"])
+            if rgb_files:
+                scenes = []
+                for rf in rgb_files[:max_scenes]:
+                    df = depth_dir / rf.name
+                    if df.exists():
+                        scenes.append({
+                            "id": rf.stem,
+                            "rgb_path": str(rf),
+                            "depth_path": str(df)
+                        })
+                if scenes:
+                    logger.info(f"Loaded {len(scenes)} Structured3D pairs from server path: {cand}")
+                    return scenes
+
+    # Fallback to extraction from zip
+    zip_candidates = [
+        base_dir.parent / "Structured3D_panorama_15.zip",
+        base_dir / "data" / "structured3d.zip",
+        base_dir.parent / "Data" / "structured3d.zip"
+    ]
+    curated_dir = base_dir / "3_structured3d_benchmark" / "data" / "curated_scenes"
+
+    for zc in zip_candidates:
+        if zc.is_file():
+            logger.info(f"Extracting sample from archive: {zc}")
+            return extract_curated_structured3d_scenes(zc, curated_dir, max_scenes=max_scenes)
+
+    logger.warning("No Structured3D dataset found across search paths.")
+    return []
+
+
 def extract_curated_structured3d_scenes(
     zip_path: Path,
     out_dir: Path,
