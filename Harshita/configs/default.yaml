@@ -1,0 +1,62 @@
+# Default experiment configuration (runs in a CPU-only environment).
+# Model: MiDaS DPT-Hybrid (a perspective relative-depth model; the panoramic foundation
+# model DAP is configured in configs/dap_stanford2d3d.yaml).
+# Dataset: procedural synthetic panoramas with exact GT (datasets/synthetic.py).
+
+seed: 0
+output_dir: results/midas_dpt_hybrid_synthetic
+
+model:
+  name: midas
+  model_type: dpt_hybrid_384
+  weights: weights/dpt_hybrid_384.pt
+  device: auto            # cuda > mps > cpu
+  erp_net_height: 384     # MiDaS runs the 2:1 ERP at 384 x 768
+
+tangent_model: null       # null -> use the same frozen model for tangent views
+
+dataset:
+  name: synthetic
+  root: data/synthetic
+  list: test.txt          # fixed split, read in order
+  height: 512
+  width: 1024
+  limit: null             # first N images of the split (deterministic)
+
+evaluation:
+  eval_align: auto        # auto: affine-in-disparity for affine models, none for metric, median for scale
+  align_regions: [all, equatorial]   # 'all' = standard protocol; 'equatorial' = fit on |lat|<30 only
+  bands: [0, 15, 30, 45, 60, 75, 90]
+  bad_threshold: 0.10     # pct_bad = % pixels with AbsRel > 0.10
+  profile_bin: 2.5        # degrees, for error-vs-latitude curves
+  max_depth: 100.0
+
+inference:                # defaults for the main (non-ablation) methods
+  batch_size: 4
+  tangent_size: 384
+  polar_threshold: 45
+  views_per_pole: 1
+  rotation_angles: [[0, 90, 0], [0, -90, 0]]   # (yaw, pitch, roll) deg: north, then south pole to the centre
+  fusion_method: cosine
+  merge: prior
+  align: auto             # inference-time alignment of views to the baseline (no GT)
+  band: 20                # width (deg) of soft blending ramps
+  power: 2.0
+  seam_width: 20          # deg: down-weight predictions near the left/right border of an ERP input
+
+experiments:
+  thresholds: [30, 45, 60, 75]
+  views_per_pole: [1, 2, 3, 5]
+  fusions: [hard, linear, sigmoid, cosine, polynomial, confidence]
+  merge_modes: [prior, mean, median]
+  rotation_sets:
+    pitch90: [[0, 90, 0]]
+    pitch90_pm: [[0, 90, 0], [0, -90, 0]]
+    pitch90_x4: [[0, 90, 0], [0, -90, 0], [90, 90, 0], [90, -90, 0]]
+    pitch45_pm: [[0, 45, 0], [0, -45, 0]]
+    yaw_only_x3: [[90, 0, 0], [180, 0, 0], [270, 0, 0]]     # control: ensembling without moving the poles
+  latitude_control_pitches: [0, 30, 60, 90]
+  resolutions: [[256, 512], [384, 768], [512, 1024]]
+  resolution_limit: 12
+  timing_images: 3        # cold (uncached) timing runs
+  qualitative: 4

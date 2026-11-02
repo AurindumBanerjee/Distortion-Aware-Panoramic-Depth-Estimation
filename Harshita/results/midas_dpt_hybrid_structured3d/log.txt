@@ -1,0 +1,147 @@
+14:52:11 plan: 4 methods; stages ['geometry', 'main', 'reports', 'control', 'resolution', 'timing', 'qualitative']
+14:52:13 geometry: worst point angle err 1.19e-12 deg, worst ERP->tan->ERP mean rel err 3.81e-06
+14:52:15 model: {'name': 'midas_dpt_hybrid_384', 'space': 'disparity', 'scale': 'affine', 'geometry_erp': 'range', 'geometry_perspective': 'planar', 'device': 'cpu'}
+14:52:15 dataset: structured3d n=50 at 512x1024
+14:52:29 [1/50] scene_03370_994351: 4 methods in 13.8s (peak RSS 1913 MB)
+14:52:43 [2/50] scene_03366_919746: 4 methods in 14.0s (peak RSS 1981 MB)
+14:52:58 [3/50] scene_03308_1034: 4 methods in 14.6s (peak RSS 2044 MB)
+14:53:19 [4/50] scene_03357_7459: 4 methods in 20.9s (peak RSS 2044 MB)
+14:53:39 [5/50] scene_03327_315046: 4 methods in 20.2s (peak RSS 2044 MB)
+14:53:57 [6/50] scene_03300_190740: 4 methods in 18.0s (peak RSS 2044 MB)
+14:54:16 [7/50] scene_03383_159: 4 methods in 18.9s (peak RSS 2044 MB)
+14:54:34 [8/50] scene_03304_95556: 4 methods in 18.3s (peak RSS 2044 MB)
+14:54:53 [9/50] scene_03350_569176: 4 methods in 18.2s (peak RSS 2044 MB)
+14:55:13 [10/50] scene_03290_203: 4 methods in 20.3s (peak RSS 2044 MB)
+14:55:32 [11/50] scene_03277_552: 4 methods in 19.3s (peak RSS 2044 MB)
+14:55:51 [12/50] scene_03309_10713: 4 methods in 18.9s (peak RSS 2046 MB)
+14:56:11 [13/50] scene_03396_289170: 4 methods in 19.4s (peak RSS 2046 MB)
+14:56:31 [14/50] scene_03277_739: 4 methods in 20.1s (peak RSS 2046 MB)
+14:56:52 [15/50] scene_03373_668201: 4 methods in 21.3s (peak RSS 2046 MB)
+14:57:11 [16/50] scene_03296_2190: 4 methods in 19.0s (peak RSS 2046 MB)
+14:57:32 [17/50] scene_03309_14524: 4 methods in 20.7s (peak RSS 2046 MB)
+14:57:49 [18/50] scene_03312_186: 4 methods in 17.3s (peak RSS 2046 MB)
+14:58:06 [19/50] scene_03355_724937: 4 methods in 16.7s (peak RSS 2046 MB)
+14:58:21 [20/50] scene_03302_878215: 4 methods in 14.6s (peak RSS 2046 MB)
+14:58:37 [21/50] scene_03260_200: 4 methods in 15.7s (peak RSS 2046 MB)
+14:58:56 [22/50] scene_03395_457: 4 methods in 19.3s (peak RSS 2046 MB)
+14:59:17 [23/50] scene_03370_926137: 4 methods in 21.0s (peak RSS 2046 MB)
+14:59:45 [24/50] scene_03295_517145: 4 methods in 27.8s (peak RSS 2048 MB)
+15:00:10 [25/50] scene_03265_550: 4 methods in 24.9s (peak RSS 2048 MB)
+15:00:29 [26/50] scene_03345_344299: 4 methods in 18.8s (peak RSS 2048 MB)
+15:00:48 [27/50] scene_03264_1322: 4 methods in 19.3s (peak RSS 2048 MB)
+15:01:08 [28/50] scene_03368_603520: 4 methods in 19.3s (peak RSS 2048 MB)
+15:01:28 [29/50] scene_03363_6194: 4 methods in 20.3s (peak RSS 2053 MB)
+15:01:48 [30/50] scene_03252_687592: 4 methods in 20.4s (peak RSS 2053 MB)
+15:02:07 [31/50] scene_03296_5767: 4 methods in 19.0s (peak RSS 2053 MB)
+15:02:24 [32/50] scene_03396_700854: 4 methods in 16.9s (peak RSS 2053 MB)
+15:02:39 [33/50] scene_03391_8088: 4 methods in 15.1s (peak RSS 2053 MB)
+15:02:54 [34/50] scene_03273_810314: 4 methods in 14.6s (peak RSS 2075 MB)
+15:03:09 [35/50] scene_03294_863844: 4 methods in 15.0s (peak RSS 2142 MB)
+15:03:24 [36/50] scene_03264_370: 4 methods in 14.7s (peak RSS 2142 MB)
+15:03:39 [37/50] scene_03337_962: 4 methods in 15.4s (peak RSS 2154 MB)
+15:03:56 [38/50] scene_03297_196161: 4 methods in 16.3s (peak RSS 2161 MB)
+15:04:12 [39/50] scene_03379_35921: 4 methods in 16.5s (peak RSS 2161 MB)
+15:04:29 [40/50] scene_03276_106599: 4 methods in 16.6s (peak RSS 2161 MB)
+15:04:45 [41/50] scene_03328_553720: 4 methods in 16.4s (peak RSS 2164 MB)
+15:05:03 [42/50] scene_03262_4295: 4 methods in 17.4s (peak RSS 2164 MB)
+15:05:20 [43/50] scene_03312_201: 4 methods in 17.3s (peak RSS 2174 MB)
+15:05:37 [44/50] scene_03295_517148: 4 methods in 16.9s (peak RSS 2174 MB)
+15:05:54 [45/50] scene_03396_701440: 4 methods in 17.4s (peak RSS 2174 MB)
+15:06:11 [46/50] scene_03305_584: 4 methods in 16.7s (peak RSS 2174 MB)
+15:06:28 [47/50] scene_03273_796714: 4 methods in 17.1s (peak RSS 2174 MB)
+15:06:45 [48/50] scene_03381_657701: 4 methods in 16.4s (peak RSS 2174 MB)
+15:07:01 [49/50] scene_03313_10363: 4 methods in 16.7s (peak RSS 2174 MB)
+15:07:18 [50/50] scene_03291_38623: 4 methods in 16.5s (peak RSS 2177 MB)
+15:07:25 reports written to results/midas_dpt_hybrid_structured3d\report_align-all
+15:07:29 reports written to results/midas_dpt_hybrid_structured3d\report_align-equatorial
+15:07:45 [latitude-control] scene_03370_994351 done
+15:08:01 [latitude-control] scene_03366_919746 done
+15:08:17 [latitude-control] scene_03308_1034 done
+15:08:35 [latitude-control] scene_03357_7459 done
+15:08:51 [latitude-control] scene_03327_315046 done
+15:09:07 [latitude-control] scene_03300_190740 done
+15:09:22 [latitude-control] scene_03383_159 done
+15:09:39 [latitude-control] scene_03304_95556 done
+15:09:54 [latitude-control] scene_03350_569176 done
+15:10:10 [latitude-control] scene_03290_203 done
+15:10:25 [latitude-control] scene_03277_552 done
+15:10:41 [latitude-control] scene_03309_10713 done
+15:10:56 [latitude-control] scene_03396_289170 done
+15:11:11 [latitude-control] scene_03277_739 done
+15:11:27 [latitude-control] scene_03373_668201 done
+15:11:42 [latitude-control] scene_03296_2190 done
+15:11:58 [latitude-control] scene_03309_14524 done
+15:12:13 [latitude-control] scene_03312_186 done
+15:12:28 [latitude-control] scene_03355_724937 done
+15:12:44 [latitude-control] scene_03302_878215 done
+15:13:00 [latitude-control] scene_03260_200 done
+15:13:16 [latitude-control] scene_03395_457 done
+15:13:32 [latitude-control] scene_03370_926137 done
+15:13:47 [latitude-control] scene_03295_517145 done
+15:14:03 [latitude-control] scene_03265_550 done
+15:14:18 [latitude-control] scene_03345_344299 done
+15:14:34 [latitude-control] scene_03264_1322 done
+15:14:49 [latitude-control] scene_03368_603520 done
+15:15:05 [latitude-control] scene_03363_6194 done
+15:15:20 [latitude-control] scene_03252_687592 done
+15:15:36 [latitude-control] scene_03296_5767 done
+15:15:52 [latitude-control] scene_03396_700854 done
+15:16:08 [latitude-control] scene_03391_8088 done
+15:16:24 [latitude-control] scene_03273_810314 done
+15:16:41 [latitude-control] scene_03294_863844 done
+15:16:57 [latitude-control] scene_03264_370 done
+15:17:14 [latitude-control] scene_03337_962 done
+15:17:32 [latitude-control] scene_03297_196161 done
+15:17:48 [latitude-control] scene_03379_35921 done
+15:18:12 [latitude-control] scene_03276_106599 done
+15:18:35 [latitude-control] scene_03328_553720 done
+15:18:59 [latitude-control] scene_03262_4295 done
+15:19:24 [latitude-control] scene_03312_201 done
+15:19:56 [latitude-control] scene_03295_517148 done
+15:20:20 [latitude-control] scene_03396_701440 done
+15:20:40 [latitude-control] scene_03305_584 done
+15:21:00 [latitude-control] scene_03273_796714 done
+15:21:20 [latitude-control] scene_03381_657701 done
+15:21:42 [latitude-control] scene_03313_10363 done
+15:22:05 [latitude-control] scene_03291_38623 done
+15:22:28 [1/12] scene_03370_994351: 4 methods in 9.3s (peak RSS 2207 MB)
+15:22:38 [2/12] scene_03366_919746: 4 methods in 10.1s (peak RSS 2207 MB)
+15:22:51 [3/12] scene_03308_1034: 4 methods in 12.6s (peak RSS 2207 MB)
+15:23:04 [4/12] scene_03357_7459: 4 methods in 13.1s (peak RSS 2207 MB)
+15:23:15 [5/12] scene_03327_315046: 4 methods in 10.6s (peak RSS 2207 MB)
+15:23:28 [6/12] scene_03300_190740: 4 methods in 12.9s (peak RSS 2207 MB)
+15:23:40 [7/12] scene_03383_159: 4 methods in 12.3s (peak RSS 2207 MB)
+15:23:52 [8/12] scene_03304_95556: 4 methods in 11.9s (peak RSS 2207 MB)
+15:24:05 [9/12] scene_03350_569176: 4 methods in 12.4s (peak RSS 2207 MB)
+15:24:18 [10/12] scene_03290_203: 4 methods in 12.9s (peak RSS 2207 MB)
+15:24:31 [11/12] scene_03277_552: 4 methods in 13.3s (peak RSS 2207 MB)
+15:24:46 [12/12] scene_03309_10713: 4 methods in 14.5s (peak RSS 2207 MB)
+15:25:13 [1/12] scene_03370_994351: 4 methods in 27.0s (peak RSS 2207 MB)
+15:25:40 [2/12] scene_03366_919746: 4 methods in 27.4s (peak RSS 2207 MB)
+15:26:02 [3/12] scene_03308_1034: 4 methods in 21.1s (peak RSS 2207 MB)
+15:26:23 [4/12] scene_03357_7459: 4 methods in 21.3s (peak RSS 2207 MB)
+15:26:44 [5/12] scene_03327_315046: 4 methods in 21.4s (peak RSS 2207 MB)
+15:27:06 [6/12] scene_03300_190740: 4 methods in 21.1s (peak RSS 2207 MB)
+15:27:28 [7/12] scene_03383_159: 4 methods in 22.5s (peak RSS 2207 MB)
+15:27:51 [8/12] scene_03304_95556: 4 methods in 22.7s (peak RSS 2207 MB)
+15:28:13 [9/12] scene_03350_569176: 4 methods in 21.8s (peak RSS 2207 MB)
+15:28:34 [10/12] scene_03290_203: 4 methods in 21.3s (peak RSS 2207 MB)
+15:28:55 [11/12] scene_03277_552: 4 methods in 21.0s (peak RSS 2207 MB)
+15:29:17 [12/12] scene_03309_10713: 4 methods in 21.6s (peak RSS 2207 MB)
+15:29:59 [1/12] scene_03370_994351: 4 methods in 41.8s (peak RSS 3132 MB)
+15:30:36 [2/12] scene_03366_919746: 4 methods in 36.9s (peak RSS 3139 MB)
+15:31:13 [3/12] scene_03308_1034: 4 methods in 36.7s (peak RSS 3182 MB)
+15:31:52 [4/12] scene_03357_7459: 4 methods in 38.5s (peak RSS 3182 MB)
+15:32:28 [5/12] scene_03327_315046: 4 methods in 36.7s (peak RSS 3182 MB)
+15:33:04 [6/12] scene_03300_190740: 4 methods in 35.8s (peak RSS 3182 MB)
+15:33:41 [7/12] scene_03383_159: 4 methods in 36.3s (peak RSS 3182 MB)
+15:34:19 [8/12] scene_03304_95556: 4 methods in 37.9s (peak RSS 3182 MB)
+15:34:57 [9/12] scene_03350_569176: 4 methods in 38.6s (peak RSS 3182 MB)
+15:35:35 [10/12] scene_03290_203: 4 methods in 37.9s (peak RSS 3182 MB)
+15:36:14 [11/12] scene_03277_552: 4 methods in 38.5s (peak RSS 3182 MB)
+15:36:54 [12/12] scene_03309_10713: 4 methods in 40.0s (peak RSS 3182 MB)
+15:37:44 [timing] scene_03370_994351
+15:38:29 [timing] scene_03366_919746
+15:39:11 [timing] scene_03308_1034
+15:40:26 qualitative figures in results/midas_dpt_hybrid_structured3d\qualitative
+15:40:26 done

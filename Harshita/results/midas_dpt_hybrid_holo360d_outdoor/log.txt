@@ -1,0 +1,213 @@
+19:56:37 plan: 4 methods; stages ['geometry', 'main', 'reports', 'control', 'resolution', 'timing', 'qualitative']
+19:56:40 geometry: worst point angle err 1.19e-12 deg, worst ERP->tan->ERP mean rel err 3.81e-06
+19:56:44 model: {'name': 'midas_dpt_hybrid_384', 'space': 'disparity', 'scale': 'affine', 'geometry_erp': 'range', 'geometry_perspective': 'planar', 'device': 'cpu'}
+19:56:44 dataset: holo360d n=83 at 512x1024
+19:57:00 [1/83] 1752576400.343889: 4 methods in 14.6s (peak RSS 1907 MB)
+19:57:15 [2/83] 1752576408.010126: 4 methods in 14.7s (peak RSS 1974 MB)
+19:57:30 [3/83] 1752576416.342994: 4 methods in 15.0s (peak RSS 2031 MB)
+19:57:45 [4/83] 1752576423.675920: 4 methods in 14.8s (peak RSS 2031 MB)
+19:58:00 [5/83] 1752576431.675474: 4 methods in 14.7s (peak RSS 2031 MB)
+19:58:15 [6/83] 1752576437.675138: 4 methods in 15.4s (peak RSS 2066 MB)
+19:58:31 [7/83] 1752576443.008174: 4 methods in 16.2s (peak RSS 2168 MB)
+19:58:48 [8/83] 1752576450.341101: 4 methods in 16.2s (peak RSS 2168 MB)
+19:59:06 [9/83] 1752576456.340764: 4 methods in 17.9s (peak RSS 2168 MB)
+19:59:25 [10/83] 1752576465.673578: 4 methods in 18.8s (peak RSS 2168 MB)
+19:59:41 [11/83] 1752576471.006612: 4 methods in 16.4s (peak RSS 2168 MB)
+19:59:57 [12/83] 1752576479.672795: 4 methods in 15.8s (peak RSS 2168 MB)
+20:00:15 [13/83] 1752576488.672292: 4 methods in 17.8s (peak RSS 2168 MB)
+20:00:34 [14/83] 1752576496.338531: 4 methods in 18.2s (peak RSS 2168 MB)
+20:00:52 [15/83] 1752576505.338030: 4 methods in 18.2s (peak RSS 2168 MB)
+20:01:11 [16/83] 1752576512.004326: 4 methods in 19.0s (peak RSS 2168 MB)
+20:01:29 [17/83] 1752576521.003821: 4 methods in 17.2s (peak RSS 2168 MB)
+20:01:47 [18/83] 1752576528.670061: 4 methods in 18.7s (peak RSS 2168 MB)
+20:02:09 [19/83] 1752576536.002984: 4 methods in 20.8s (peak RSS 2168 MB)
+20:02:32 [20/83] 1752576544.335854: 4 methods in 23.1s (peak RSS 2168 MB)
+20:03:05 [21/83] 1752576553.335351: 4 methods in 33.2s (peak RSS 2168 MB)
+20:03:45 [22/83] 1752576561.001590: 4 methods in 39.6s (peak RSS 2168 MB)
+20:04:23 [23/83] 1752576567.001256: 4 methods in 37.1s (peak RSS 2171 MB)
+20:04:45 [24/83] 1752576572.334291: 4 methods in 22.1s (peak RSS 2171 MB)
+20:05:06 [25/83] 1752576581.333788: 4 methods in 20.8s (peak RSS 2171 MB)
+20:05:26 [26/83] 1752576586.333509: 4 methods in 20.1s (peak RSS 2171 MB)
+20:05:56 [27/83] 1752576593.333119: 4 methods in 29.3s (peak RSS 2171 MB)
+20:06:35 [28/83] 1752576601.999303: 4 methods in 38.9s (peak RSS 2171 MB)
+20:07:02 [29/83] 1752576611.998749: 4 methods in 26.8s (peak RSS 2171 MB)
+20:07:30 [30/83] 1752576618.665039: 4 methods in 27.7s (peak RSS 2171 MB)
+20:07:53 [31/83] 1752576626.331278: 4 methods in 22.2s (peak RSS 2171 MB)
+20:08:17 [32/83] 1752576633.330887: 4 methods in 24.2s (peak RSS 2171 MB)
+20:08:41 [33/83] 1752576637.997294: 4 methods in 23.7s (peak RSS 2171 MB)
+20:09:05 [34/83] 1752576647.330106: 4 methods in 24.2s (peak RSS 2171 MB)
+20:09:28 [35/83] 1752576656.996234: 4 methods in 22.9s (peak RSS 2171 MB)
+20:09:52 [36/83] 1752576666.662360: 4 methods in 23.2s (peak RSS 2171 MB)
+20:10:23 [37/83] 1752576675.995173: 4 methods in 31.1s (peak RSS 2171 MB)
+20:10:55 [38/83] 1752576683.328098: 4 methods in 31.2s (peak RSS 2171 MB)
+20:11:27 [39/83] 1752576692.327596: 4 methods in 31.6s (peak RSS 2174 MB)
+20:12:02 [40/83] 1752576701.327096: 4 methods in 34.6s (peak RSS 2174 MB)
+20:12:40 [41/83] 1752576710.326591: 4 methods in 37.4s (peak RSS 2174 MB)
+20:13:16 [42/83] 1752576718.992776: 4 methods in 35.9s (peak RSS 2174 MB)
+20:13:43 [43/83] 1752576725.325754: 4 methods in 26.5s (peak RSS 2174 MB)
+20:14:00 [44/83] 1752576732.325364: 4 methods in 17.0s (peak RSS 2174 MB)
+20:14:18 [45/83] 1752576738.325028: 4 methods in 18.4s (peak RSS 2174 MB)
+20:14:36 [46/83] 1752576744.324694: 4 methods in 17.3s (peak RSS 2174 MB)
+20:14:54 [47/83] 1752576752.657562: 4 methods in 18.3s (peak RSS 2174 MB)
+20:15:13 [48/83] 1752576761.323747: 4 methods in 17.8s (peak RSS 2174 MB)
+20:15:30 [49/83] 1752576769.656614: 4 methods in 17.4s (peak RSS 2174 MB)
+20:15:49 [50/83] 1752576777.322852: 4 methods in 18.5s (peak RSS 2174 MB)
+20:16:07 [51/83] 1752576785.322408: 4 methods in 17.8s (peak RSS 2174 MB)
+20:16:25 [52/83] 1752576792.322017: 4 methods in 17.6s (peak RSS 2174 MB)
+20:16:42 [53/83] 1752576800.988199: 4 methods in 17.4s (peak RSS 2174 MB)
+20:17:01 [54/83] 1752576809.654382: 4 methods in 18.3s (peak RSS 2174 MB)
+20:17:22 [55/83] 1752576818.653880: 4 methods in 20.4s (peak RSS 2174 MB)
+20:17:37 [56/83] 1752576823.986916: 4 methods in 15.3s (peak RSS 2174 MB)
+20:17:57 [57/83] 1752576827.986693: 4 methods in 20.3s (peak RSS 2174 MB)
+20:18:25 [58/83] 1752576831.653156: 4 methods in 27.1s (peak RSS 2174 MB)
+20:18:51 [59/83] 1752576838.986079: 4 methods in 25.5s (peak RSS 2174 MB)
+20:19:16 [60/83] 1752576846.985634: 4 methods in 25.3s (peak RSS 2174 MB)
+20:19:39 [61/83] 1752576852.985298: 4 methods in 22.5s (peak RSS 2174 MB)
+20:20:04 [62/83] 1752576858.651649: 4 methods in 24.1s (peak RSS 2174 MB)
+20:20:30 [63/83] 1752576865.317943: 4 methods in 25.7s (peak RSS 2174 MB)
+20:20:54 [64/83] 1752576870.317666: 4 methods in 23.8s (peak RSS 2174 MB)
+20:21:22 [65/83] 1752576875.650699: 4 methods in 27.8s (peak RSS 2174 MB)
+20:21:46 [66/83] 1752576879.983792: 4 methods in 24.1s (peak RSS 2174 MB)
+20:22:07 [67/83] 1752576885.316826: 4 methods in 20.3s (peak RSS 2174 MB)
+20:22:31 [68/83] 1752576890.316548: 4 methods in 24.0s (peak RSS 2174 MB)
+20:22:54 [69/83] 1752576896.982843: 4 methods in 23.1s (peak RSS 2174 MB)
+20:23:15 [70/83] 1752576903.649138: 4 methods in 20.3s (peak RSS 2174 MB)
+20:23:36 [71/83] 1752576910.315434: 4 methods in 21.2s (peak RSS 2174 MB)
+20:23:59 [72/83] 1752576916.648412: 4 methods in 23.0s (peak RSS 2174 MB)
+20:24:22 [73/83] 1752576920.648190: 4 methods in 22.2s (peak RSS 2174 MB)
+20:24:40 [74/83] 1752576928.981057: 4 methods in 18.2s (peak RSS 2174 MB)
+20:24:58 [75/83] 1752576934.980723: 4 methods in 16.9s (peak RSS 2174 MB)
+20:25:14 [76/83] 1752576941.313702: 4 methods in 16.4s (peak RSS 2174 MB)
+20:25:33 [77/83] 1752576948.646628: 4 methods in 18.3s (peak RSS 2174 MB)
+20:25:52 [78/83] 1752576954.646292: 4 methods in 18.7s (peak RSS 2174 MB)
+20:26:10 [79/83] 1752576961.645901: 4 methods in 17.8s (peak RSS 2174 MB)
+20:26:28 [80/83] 1752576966.312313: 4 methods in 17.8s (peak RSS 2174 MB)
+20:26:50 [81/83] 1752576971.978660: 4 methods in 22.1s (peak RSS 2174 MB)
+20:27:11 [82/83] 1752576976.978380: 4 methods in 20.5s (peak RSS 2174 MB)
+20:27:31 [83/83] 1752576981.978101: 4 methods in 19.7s (peak RSS 2174 MB)
+20:27:57 reports written to results/midas_dpt_hybrid_holo360d_outdoor\report_align-all
+20:28:08 reports written to results/midas_dpt_hybrid_holo360d_outdoor\report_align-equatorial
+20:28:22 [latitude-control] 1752576400.343889 done
+20:28:37 [latitude-control] 1752576408.010126 done
+20:28:54 [latitude-control] 1752576416.342994 done
+20:29:11 [latitude-control] 1752576423.675920 done
+20:29:30 [latitude-control] 1752576431.675474 done
+20:29:49 [latitude-control] 1752576437.675138 done
+20:30:10 [latitude-control] 1752576443.008174 done
+20:30:33 [latitude-control] 1752576450.341101 done
+20:30:55 [latitude-control] 1752576456.340764 done
+20:31:17 [latitude-control] 1752576465.673578 done
+20:31:36 [latitude-control] 1752576471.006612 done
+20:31:54 [latitude-control] 1752576479.672795 done
+20:32:14 [latitude-control] 1752576488.672292 done
+20:32:35 [latitude-control] 1752576496.338531 done
+20:32:53 [latitude-control] 1752576505.338030 done
+20:33:12 [latitude-control] 1752576512.004326 done
+20:33:34 [latitude-control] 1752576521.003821 done
+20:33:57 [latitude-control] 1752576528.670061 done
+20:34:21 [latitude-control] 1752576536.002984 done
+20:34:41 [latitude-control] 1752576544.335854 done
+20:35:02 [latitude-control] 1752576553.335351 done
+20:35:22 [latitude-control] 1752576561.001590 done
+20:35:42 [latitude-control] 1752576567.001256 done
+20:35:58 [latitude-control] 1752576572.334291 done
+20:36:14 [latitude-control] 1752576581.333788 done
+20:36:28 [latitude-control] 1752576586.333509 done
+20:36:40 [latitude-control] 1752576593.333119 done
+20:36:54 [latitude-control] 1752576601.999303 done
+20:37:11 [latitude-control] 1752576611.998749 done
+20:37:29 [latitude-control] 1752576618.665039 done
+20:37:44 [latitude-control] 1752576626.331278 done
+20:37:59 [latitude-control] 1752576633.330887 done
+20:38:16 [latitude-control] 1752576637.997294 done
+20:38:34 [latitude-control] 1752576647.330106 done
+20:38:51 [latitude-control] 1752576656.996234 done
+20:39:10 [latitude-control] 1752576666.662360 done
+20:39:28 [latitude-control] 1752576675.995173 done
+20:39:48 [latitude-control] 1752576683.328098 done
+20:40:07 [latitude-control] 1752576692.327596 done
+20:40:26 [latitude-control] 1752576701.327096 done
+20:40:49 [latitude-control] 1752576710.326591 done
+20:41:09 [latitude-control] 1752576718.992776 done
+20:41:29 [latitude-control] 1752576725.325754 done
+20:41:53 [latitude-control] 1752576732.325364 done
+20:42:15 [latitude-control] 1752576738.325028 done
+20:42:34 [latitude-control] 1752576744.324694 done
+20:42:48 [latitude-control] 1752576752.657562 done
+20:43:03 [latitude-control] 1752576761.323747 done
+20:43:19 [latitude-control] 1752576769.656614 done
+20:43:35 [latitude-control] 1752576777.322852 done
+20:43:51 [latitude-control] 1752576785.322408 done
+20:44:06 [latitude-control] 1752576792.322017 done
+20:44:22 [latitude-control] 1752576800.988199 done
+20:44:38 [latitude-control] 1752576809.654382 done
+20:44:55 [latitude-control] 1752576818.653880 done
+20:45:12 [latitude-control] 1752576823.986916 done
+20:45:31 [latitude-control] 1752576827.986693 done
+20:45:52 [latitude-control] 1752576831.653156 done
+20:46:08 [latitude-control] 1752576838.986079 done
+20:46:27 [latitude-control] 1752576846.985634 done
+20:46:44 [latitude-control] 1752576852.985298 done
+20:47:06 [latitude-control] 1752576858.651649 done
+20:47:26 [latitude-control] 1752576865.317943 done
+20:47:47 [latitude-control] 1752576870.317666 done
+20:48:06 [latitude-control] 1752576875.650699 done
+20:48:28 [latitude-control] 1752576879.983792 done
+20:48:43 [latitude-control] 1752576885.316826 done
+20:48:58 [latitude-control] 1752576890.316548 done
+20:49:13 [latitude-control] 1752576896.982843 done
+20:49:28 [latitude-control] 1752576903.649138 done
+20:49:43 [latitude-control] 1752576910.315434 done
+20:50:00 [latitude-control] 1752576916.648412 done
+20:50:20 [latitude-control] 1752576920.648190 done
+20:50:41 [latitude-control] 1752576928.981057 done
+20:50:59 [latitude-control] 1752576934.980723 done
+20:51:20 [latitude-control] 1752576941.313702 done
+20:51:39 [latitude-control] 1752576948.646628 done
+20:51:55 [latitude-control] 1752576954.646292 done
+20:52:09 [latitude-control] 1752576961.645901 done
+20:52:23 [latitude-control] 1752576966.312313 done
+20:52:39 [latitude-control] 1752576971.978660 done
+20:52:55 [latitude-control] 1752576976.978380 done
+20:53:12 [latitude-control] 1752576981.978101 done
+20:53:31 [1/12] 1752576400.343889: 4 methods in 7.0s (peak RSS 2174 MB)
+20:53:40 [2/12] 1752576408.010126: 4 methods in 8.2s (peak RSS 2174 MB)
+20:53:48 [3/12] 1752576416.342994: 4 methods in 8.0s (peak RSS 2174 MB)
+20:53:56 [4/12] 1752576423.675920: 4 methods in 8.1s (peak RSS 2174 MB)
+20:54:05 [5/12] 1752576431.675474: 4 methods in 8.9s (peak RSS 2174 MB)
+20:54:15 [6/12] 1752576437.675138: 4 methods in 9.6s (peak RSS 2174 MB)
+20:54:25 [7/12] 1752576443.008174: 4 methods in 10.1s (peak RSS 2174 MB)
+20:54:33 [8/12] 1752576450.341101: 4 methods in 8.3s (peak RSS 2174 MB)
+20:54:40 [9/12] 1752576456.340764: 4 methods in 6.8s (peak RSS 2174 MB)
+20:54:49 [10/12] 1752576465.673578: 4 methods in 8.2s (peak RSS 2174 MB)
+20:54:58 [11/12] 1752576471.006612: 4 methods in 9.4s (peak RSS 2174 MB)
+20:55:07 [12/12] 1752576479.672795: 4 methods in 9.1s (peak RSS 2174 MB)
+20:55:26 [1/12] 1752576400.343889: 4 methods in 18.6s (peak RSS 2174 MB)
+20:55:42 [2/12] 1752576408.010126: 4 methods in 15.4s (peak RSS 2174 MB)
+20:55:58 [3/12] 1752576416.342994: 4 methods in 16.1s (peak RSS 2174 MB)
+20:56:17 [4/12] 1752576423.675920: 4 methods in 18.4s (peak RSS 2174 MB)
+20:56:35 [5/12] 1752576431.675474: 4 methods in 18.4s (peak RSS 2174 MB)
+20:56:50 [6/12] 1752576437.675138: 4 methods in 14.7s (peak RSS 2174 MB)
+20:57:04 [7/12] 1752576443.008174: 4 methods in 13.4s (peak RSS 2174 MB)
+20:57:19 [8/12] 1752576450.341101: 4 methods in 15.1s (peak RSS 2174 MB)
+20:57:36 [9/12] 1752576456.340764: 4 methods in 16.8s (peak RSS 2174 MB)
+20:57:52 [10/12] 1752576465.673578: 4 methods in 15.7s (peak RSS 2174 MB)
+20:58:06 [11/12] 1752576471.006612: 4 methods in 13.7s (peak RSS 2174 MB)
+20:58:19 [12/12] 1752576479.672795: 4 methods in 13.3s (peak RSS 2174 MB)
+20:58:43 [1/12] 1752576400.343889: 4 methods in 24.1s (peak RSS 3057 MB)
+20:59:08 [2/12] 1752576408.010126: 4 methods in 24.2s (peak RSS 3057 MB)
+20:59:37 [3/12] 1752576416.342994: 4 methods in 29.0s (peak RSS 3057 MB)
+21:00:11 [4/12] 1752576423.675920: 4 methods in 33.5s (peak RSS 3057 MB)
+21:00:37 [5/12] 1752576431.675474: 4 methods in 26.2s (peak RSS 3057 MB)
+21:01:03 [6/12] 1752576437.675138: 4 methods in 25.6s (peak RSS 3057 MB)
+21:01:27 [7/12] 1752576443.008174: 4 methods in 24.0s (peak RSS 3086 MB)
+21:01:51 [8/12] 1752576450.341101: 4 methods in 23.9s (peak RSS 3086 MB)
+21:02:15 [9/12] 1752576456.340764: 4 methods in 23.5s (peak RSS 3090 MB)
+21:02:40 [10/12] 1752576465.673578: 4 methods in 24.6s (peak RSS 3090 MB)
+21:03:09 [11/12] 1752576471.006612: 4 methods in 28.9s (peak RSS 3090 MB)
+21:03:34 [12/12] 1752576479.672795: 4 methods in 25.6s (peak RSS 3111 MB)
+21:04:12 [timing] 1752576400.343889
+21:04:54 [timing] 1752576408.010126
+21:05:54 [timing] 1752576416.342994
+21:06:51 qualitative figures in results/midas_dpt_hybrid_holo360d_outdoor\qualitative
+21:06:51 done

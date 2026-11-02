@@ -1,0 +1,61 @@
+# MiDaS DPT-Hybrid on Holo360D (real captures, 2880x1440 ERP resized to 512x1024; mesh depth in EXR metres).
+# Data: data/holo360d/<Scene>/<Scene>/{rgb,depth/mesh_depth,mask}; lists from scripts/make_holo360d_list.py.
+# Invalid: NaN depth (sky / no mesh) and dark mask pixels (camera operator, mount).
+
+seed: 0
+output_dir: results/midas_dpt_hybrid_holo360d
+
+model:
+  name: midas
+  model_type: dpt_hybrid_384
+  weights: weights/dpt_hybrid_384.pt
+  device: auto
+  erp_net_height: 384
+
+tangent_model: null
+
+dataset:
+  name: holo360d                # preset: EXR metres, min 0.1 m, max 100 m; 3rd list column = mask
+  root: data/holo360d
+  list: test.txt                # or test_indoor.txt (146) / test_outdoor.txt (83)
+  height: 512
+  width: 1024
+  limit: null
+
+evaluation:
+  eval_align: auto              # affine-in-disparity for MiDaS
+  align_regions: [all, equatorial]
+  bands: [0, 15, 30, 45, 60, 75, 90]
+  bad_threshold: 0.10
+  profile_bin: 2.5
+  max_depth: 100.0
+
+inference:
+  batch_size: 4
+  tangent_size: 384
+  polar_threshold: 45
+  views_per_pole: 1
+  rotation_angles: [[0, 90, 0], [0, -90, 0]]
+  fusion_method: cosine
+  merge: prior
+  align: auto
+  band: 20
+  power: 2.0
+  seam_width: 20
+
+experiments:
+  thresholds: [30, 45, 60, 75]
+  views_per_pole: [1, 2, 3, 5]
+  fusions: [hard, linear, sigmoid, cosine, polynomial, confidence]
+  merge_modes: [prior, mean, median]
+  rotation_sets:
+    pitch90: [[0, 90, 0]]
+    pitch90_pm: [[0, 90, 0], [0, -90, 0]]
+    pitch90_x4: [[0, 90, 0], [0, -90, 0], [90, 90, 0], [90, -90, 0]]
+    pitch45_pm: [[0, 45, 0], [0, -45, 0]]
+    yaw_only_x3: [[90, 0, 0], [180, 0, 0], [270, 0, 0]]
+  latitude_control_pitches: [0, 30, 60, 90]
+  resolutions: [[256, 512], [384, 768], [512, 1024]]
+  resolution_limit: 12
+  timing_images: 3
+  qualitative: 4

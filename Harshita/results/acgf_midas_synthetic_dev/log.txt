@@ -1,0 +1,15 @@
+19:05:51 plan: 11 methods; stages ['geometry', 'main', 'reports']
+19:05:54 geometry: worst point angle err 1.19e-12 deg, worst ERP->tan->ERP mean rel err 3.81e-06
+19:05:59 model: {'name': 'midas_dpt_hybrid_384', 'space': 'disparity', 'scale': 'affine', 'geometry_erp': 'range', 'geometry_perspective': 'planar', 'device': 'cpu'}
+19:05:59 dataset: synthetic n=8 at 512x1024
+19:07:37 [1/8] scene_0000: 11 methods in 98.3s (peak RSS 2573 MB)
+19:09:03 [2/8] scene_0001: 11 methods in 85.7s (peak RSS 2608 MB)
+19:11:13 [3/8] scene_0002: 11 methods in 130.7s (peak RSS 2759 MB)
+19:13:18 [4/8] scene_0003: 11 methods in 124.7s (peak RSS 2762 MB)
+19:15:35 [5/8] scene_0004: 11 methods in 136.9s (peak RSS 2767 MB)
+19:18:11 [6/8] scene_0005: 11 methods in 155.7s (peak RSS 2767 MB)
+19:20:28 [7/8] scene_0006: 11 methods in 137.4s (peak RSS 2767 MB)
+19:24:35 [8/8] scene_0007: 11 methods in 246.4s (peak RSS 2767 MB)
+19:24:51 reports written to results/acgf_midas_synthetic_dev\report_align-all (legacy E2-E9 reports skipped: methods not in the plan)
+19:25:04 reports written to results/acgf_midas_synthetic_dev\report_align-equatorial (legacy E2-E9 reports skipped: methods not in the plan)
+19:25:04 done

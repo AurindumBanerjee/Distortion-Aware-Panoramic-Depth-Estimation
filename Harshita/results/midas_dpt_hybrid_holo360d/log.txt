@@ -1,0 +1,27 @@
+00:40:37 plan: 4 methods; stages ['geometry', 'main', 'reports', 'control', 'resolution', 'timing', 'qualitative']
+00:40:39 geometry: worst point angle err 1.19e-12 deg, worst ERP->tan->ERP mean rel err 3.81e-06
+00:40:43 model: {'name': 'midas_dpt_hybrid_384', 'space': 'disparity', 'scale': 'affine', 'geometry_erp': 'range', 'geometry_perspective': 'planar', 'device': 'cpu'}
+00:40:43 dataset: holo360d n=229 at 512x1024
+00:40:58 [1/229] 1753495653.088750: 4 methods in 14.9s (peak RSS 1921 MB)
+00:41:14 [2/229] 1753495659.421683: 4 methods in 15.8s (peak RSS 1983 MB)
+00:41:34 [3/229] 1753495663.088117: 4 methods in 19.8s (peak RSS 2068 MB)
+00:41:52 [4/229] 1753495667.087865: 4 methods in 18.4s (peak RSS 2171 MB)
+00:42:16 [5/229] 1753495672.087547: 4 methods in 23.4s (peak RSS 2171 MB)
+00:42:44 [6/229] 1753495675.420671: 4 methods in 28.0s (peak RSS 2171 MB)
+00:43:12 [7/229] 1753495679.753732: 4 methods in 28.0s (peak RSS 2171 MB)
+00:43:41 [8/229] 1753495683.086852: 4 methods in 28.5s (peak RSS 2171 MB)
+00:43:58 [9/229] 1753495687.419912: 4 methods in 17.1s (peak RSS 2171 MB)
+00:44:16 [10/229] 1753495692.086285: 4 methods in 17.7s (peak RSS 2171 MB)
+00:44:34 [11/229] 1753495697.752593: 4 methods in 17.4s (peak RSS 2171 MB)
+00:44:51 [12/229] 1753495702.418964: 4 methods in 17.4s (peak RSS 2171 MB)
+00:45:09 [13/229] 1753495707.085335: 4 methods in 17.7s (peak RSS 2171 MB)
+00:45:25 [14/229] 1753495712.085019: 4 methods in 15.9s (peak RSS 2171 MB)
+00:45:41 [15/229] 1753495715.418142: 4 methods in 15.6s (peak RSS 2171 MB)
+00:45:57 [16/229] 1753495718.751263: 4 methods in 15.9s (peak RSS 2171 MB)
+00:46:13 [17/229] 1753495722.084387: 4 methods in 16.2s (peak RSS 2171 MB)
+00:46:29 [18/229] 1753495726.417446: 4 methods in 15.7s (peak RSS 2171 MB)
+00:46:45 [19/229] 1753495730.750506: 4 methods in 15.5s (peak RSS 2171 MB)
+00:47:00 [20/229] 1753495733.417004: 4 methods in 15.5s (peak RSS 2171 MB)
+00:47:16 [21/229] 1753495737.416751: 4 methods in 15.2s (peak RSS 2171 MB)
+00:47:32 [22/229] 1753495741.416500: 4 methods in 16.0s (peak RSS 2171 MB)
+00:47:47 [23/229] 1753495744.082996: 4 methods in 15.2s (peak RSS 2171 MB)
