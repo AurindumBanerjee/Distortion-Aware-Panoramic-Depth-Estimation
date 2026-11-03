@@ -31,25 +31,24 @@ export RUN_PANOX="${RUN_PANOX:-1}"
 
 say() { echo "[$(date +'%H:%M:%S')] $*"; }
 
-suite_pids() {  # every process of a running suite started from this folder
+suite_pids() {  # PIDs of a suite started from THIS folder (full path match; other folders/users untouched)
     { [ -f "$PID_FILE" ] && cat "$PID_FILE"; \
-      pgrep -f "$AURINDUM_DIR/run_all_experiments_gpu.sh"; \
-      pgrep -f "bash .*run_all_experiments_gpu.sh"; } 2>/dev/null | sort -u | while read -r p; do
-        [ -n "$p" ] && kill -0 "$p" 2>/dev/null && echo "$p"; done
+      pgrep -f "$AURINDUM_DIR/run_all_experiments_gpu.sh"; } 2>/dev/null | sort -u | while read -r p; do
+        [ -n "$p" ] && [ "$p" != "$$" ] && kill -0 "$p" 2>/dev/null && echo "$p"; done
 }
 
 do_stop() {
     local pids; pids="$(suite_pids)"
     if [ -z "$pids" ]; then say "No running suite found."; rm -f "$PID_FILE"; return 0; fi
     for p in $pids; do
-        local pg; pg="$(ps -o pgid= -p "$p" 2>/dev/null | tr -d ' ')"
+        local pg own; pg="$(ps -o pgid= -p "$p" 2>/dev/null | tr -d ' ')"; own="$(ps -o pgid= -p $$ | tr -d ' ')"
         say "Stopping suite PID $p (process group ${pg:-?}) ..."
-        if [ -n "$pg" ]; then kill -TERM -- "-$pg" 2>/dev/null; else kill -TERM "$p" 2>/dev/null; fi
+        if [ -n "$pg" ] && [ "$pg" != "$own" ]; then kill -TERM -- "-$pg" 2>/dev/null; else kill -TERM "$p" 2>/dev/null; fi
     done
     for _ in $(seq 1 20); do [ -z "$(suite_pids)" ] && break; sleep 1; done
     for p in $(suite_pids); do
         local pg; pg="$(ps -o pgid= -p "$p" 2>/dev/null | tr -d ' ')"
-        say "Force-killing $p"; [ -n "$pg" ] && kill -KILL -- "-$pg" 2>/dev/null || kill -KILL "$p" 2>/dev/null
+        say "Force-killing $p"; kill -KILL "$p" 2>/dev/null; [ -n "$pg" ] && [ "$pg" != "$(ps -o pgid= -p $$ | tr -d ' ')" ] && kill -KILL -- "-$pg" 2>/dev/null
     done
     # stray series processes: only `run.py` whose working directory is inside this Aurindum folder
     for p in $(pgrep -f "run.py --config" 2>/dev/null); do
@@ -97,7 +96,22 @@ do_preflight() {
     [ "$n_s3d" -gt 0 ] || { say "❌ data/structured3d/rgb is empty"; ok=0; }
     say "Structured3D: $n_s3d panoramas; split list: $([ -f data/structured3d/test.txt ] && wc -l < data/structured3d/test.txt || echo 'none (folder discovery)')"
     if [ "$RUN_PANOX" = 1 ]; then
-        [ -f data/panox/test.txt ] && say "PanoX: $(wc -l < data/panox/test.txt) frames" || say "⚠️  data/panox/test.txt missing: PanoX runs will fail (RUN_PANOX=0 to skip)"
+        if [ -f data/panox/test.txt ]; then
+            say "PanoX: $(wc -l < data/panox/test.txt) frames"
+            # actually read one EXR + RGB with the same loader the benchmark uses (cv2, then OpenEXR fallback)
+            python - <<'PYEOF' || say "⚠️  PanoX EXR cannot be read (pip install openexr, or RUN_PANOX=0): PanoX series will fail"
+import os, sys
+os.environ.setdefault("OPENCV_IO_ENABLE_OPENEXR", "1")
+import cv2, numpy as np
+sys.path.insert(0, ".")
+from datasets.panorama import PanoramaDataset
+s = PanoramaDataset("data/panox", "test.txt", height=64, width=128, name="panox")[0]
+assert np.isfinite(s.depth).any(), "no valid depth pixels in first PanoX frame"
+print("PanoX loader OK (first frame: %.1f-%.1f m)" % (np.nanmin(s.depth), np.nanmax(s.depth)))
+PYEOF
+        else
+            say "⚠️  data/panox/test.txt missing: PanoX runs will fail (RUN_PANOX=0 to skip)"
+        fi
     fi
     [ "$ok" = 1 ]
 }

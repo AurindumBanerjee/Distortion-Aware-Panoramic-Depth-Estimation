@@ -36,6 +36,17 @@ PRESETS = {
 }
 
 
+def _read_exr_fallback(path: str) -> Optional[np.ndarray]:
+    """Read a single-channel (or first-channel) EXR with the `OpenEXR` package (pip install openexr)."""
+    try:
+        import OpenEXR  # type: ignore
+        ch = OpenEXR.File(path).channels()
+        key = "Y" if "Y" in ch else ("R" if "R" in ch else next(iter(ch)))
+        return np.asarray(ch[key].pixels, dtype=np.float32)
+    except Exception:  # noqa: BLE001
+        return None
+
+
 @dataclass
 class Sample:
     id: str
@@ -78,6 +89,8 @@ class PanoramaDataset:
             d = z[z.files[0]].astype(np.float32)
         else:
             d = cv2.imread(path, cv2.IMREAD_ANYDEPTH | cv2.IMREAD_UNCHANGED)
+            if d is None and ext == ".exr":
+                d = _read_exr_fallback(path)  # OpenCV built without OpenEXR support
             if d is None:
                 raise IOError(path)
             if d.ndim == 3:

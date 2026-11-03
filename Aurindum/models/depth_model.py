@@ -60,8 +60,8 @@ def as_uint8_rgb(im: np.ndarray) -> np.ndarray:
         return im
     x = np.asarray(im, dtype=np.float32)
     finite = x[np.isfinite(x)]
-    if finite.size and finite.max() <= 1.0 + 1e-3:
-        x = x * 255.0
+    if finite.size and finite.max() <= 1.0 + 1e-3 and not np.array_equal(finite, np.rint(finite)):
+        x = x * 255.0  # non-integer values in [0, 1]: a normalised image (0/1-valued arrays are left alone)
     return np.clip(np.rint(np.nan_to_num(x)), 0, 255).astype(np.uint8)
 
 

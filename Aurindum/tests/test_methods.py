@@ -127,3 +127,27 @@ def test_logdepth_polar_fusion_removes_view_scale_error():
     view = np.where(phi > 40, to_fusion(D * 1.3, "logdepth"), np.nan)  # polar view with a 30% scale error
     out = fuse_polar(D, view, "logdepth", phi, mode="gradient_poisson")
     assert np.abs(out / D - 1).max() < 1e-6
+
+
+def test_as_uint8_rgb_integer_valued_floats_are_not_rescaled():
+    from models.depth_model import as_uint8_rgb
+    almost_black = np.zeros((4, 4, 3), np.float32)
+    almost_black[0, 0] = 1.0  # 0/1-valued 0..255 image (e.g. a dark rotated crop), NOT a [0,1] image
+    assert as_uint8_rgb(almost_black).max() == 1
+    assert as_uint8_rgb(np.full((4, 4, 3), 0.25, np.float32)).max() == 64
+
+
+def test_tracker_replaces_nan_record(tmp_path):
+    from best_model.tracker import BestModelTracker
+    t = BestModelTracker(str(tmp_path))
+    t.best_record = {"metrics": {"all": {"abs_rel": float("nan")}, "75-90": {"abs_rel": float("nan")}}}
+    assert t.is_better({"all": {"abs_rel": 0.3}, "75-90": {"abs_rel": 0.4}})
+    t.best_record = {"metrics": {"all": {"abs_rel": 0.3}, "75-90": {"abs_rel": 0.4}}}
+    assert not t.is_better({"all": {"abs_rel": 0.2}, "75-90": {"abs_rel": float("nan")}})
+
+
+def test_missing_config_is_fatal(tmp_path):
+    import subprocess
+    r = subprocess.run([sys.executable, str(ROOT / "3_structured3d_benchmark" / "run.py"), "--config", "nope.yaml"],
+                       capture_output=True, text=True, cwd=str(tmp_path))
+    assert r.returncode != 0 and "Config not found" in r.stderr

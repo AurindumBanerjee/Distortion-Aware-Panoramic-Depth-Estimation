@@ -111,7 +111,8 @@ def polar_predictions(model, rgb: np.ndarray, pred_erp: np.ndarray, phi_deg_map:
             al, info = _align(view_f, base_f, cos_ray, phi_deg_map, fs, anchor_max_lat, view_is_planar_disp=True)
         elif src == "rotated_erp":
             R = rotation_from_ypr(pitch_deg=90.0 * sign)
-            p_rot = model.predict(rotate_erp(rgb, R), kind="erp")
+            rgb_rot = np.clip(np.rint(np.asarray(rotate_erp(rgb, R))), 0, 255).astype(np.uint8)
+            p_rot = model.predict(rgb_rot, kind="erp")
             back = np.asarray(rotate_erp(np.asarray(p_rot, dtype=np.float64), R.T), dtype=np.float64)
             seen = np.abs(rotated_latitude(H, W, R))
             if lat_signed is None:

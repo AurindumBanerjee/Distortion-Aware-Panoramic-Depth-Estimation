@@ -75,6 +75,11 @@ class BestModelTracker:
         logger.info(f"Evaluation check: New Polar AbsRel={new_polar:.4f} (Best={curr_polar:.4f}), "
                     f"New Global AbsRel={new_global:.4f} (Best={curr_global:.4f})")
 
+        if not np.isfinite(curr_polar):  # stored record is NaN (e.g. empty polar band): replace it
+            return bool(np.isfinite(new_polar))
+        if not np.isfinite(new_polar):
+            return False
+
         # Significant improvement in polar region with non-degraded global
         if new_polar < curr_polar - 1e-4:
             return True

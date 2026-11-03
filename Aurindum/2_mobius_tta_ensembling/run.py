@@ -169,8 +169,8 @@ def main():
 
     # Load configuration
     cfg_path = SCRIPT_DIR / args.config
-    if not cfg_path.exists():
-        cfg_path = SCRIPT_DIR / "config.yaml"
+    if not cfg_path.exists():  # never fall back silently: a typo would run a different model/dataset
+        raise FileNotFoundError(f"Config not found: {cfg_path}")
 
     with open(cfg_path, "r") as f:
         cfg = yaml.safe_load(f)

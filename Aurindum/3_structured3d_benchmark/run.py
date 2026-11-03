@@ -19,6 +19,7 @@ from typing import Dict, List
 if hasattr(sys.stdout, "reconfigure"):
     sys.stdout.reconfigure(encoding="utf-8")
 
+os.environ.setdefault("OPENCV_IO_ENABLE_OPENEXR", "1")  # PanoX distance maps are EXR; must precede `import cv2`
 import cv2
 import matplotlib.pyplot as plt
 import numpy as np
@@ -114,8 +115,8 @@ def main():
     args = parser.parse_args()
 
     cfg_path = SCRIPT_DIR / args.config
-    if not cfg_path.exists():
-        cfg_path = SCRIPT_DIR / "config.yaml"
+    if not cfg_path.exists():  # never fall back silently: a typo would run a different model/dataset
+        raise FileNotFoundError(f"Config not found: {cfg_path}")
 
     with open(cfg_path, "r") as f:
         cfg = yaml.safe_load(f)
@@ -162,6 +163,10 @@ def main():
 
     # Fallback to procedural scenes if not found
     using_synthetic_fallback = len(scenes) == 0
+    if using_synthetic_fallback and not cfg["data"].get("allow_synthetic_fallback", False):
+        raise FileNotFoundError(
+            f"No {dataset_name} panoramas found (root '{data_root}', list '{list_name}'). Refusing to substitute "
+            f"procedural scenes silently; set data.allow_synthetic_fallback: true for a smoke test.")
     if using_synthetic_fallback:
         logger.warning(f"No {dataset_name} scenes found in {data_root}; falling back to procedural scenes.")
         scenes = [{"id": f"synthetic_{i}"} for i in range(max_scenes or 10)]
