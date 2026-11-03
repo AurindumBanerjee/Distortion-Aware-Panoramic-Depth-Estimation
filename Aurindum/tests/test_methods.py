@@ -224,3 +224,28 @@ def test_panorama_dataset_applies_mask_column_and_keeps_metres(tmp_path):
     assert s.id == "S_a"
     assert not s.valid[:4].any() and not s.valid[24:].any() and s.valid[8:20].all()
     assert np.allclose(s.depth[s.valid], 2.5)          # holo360d preset: EXR/npy already in metres (no cm scaling)
+
+
+class _ConstMetric:
+    space, scale = "depth", "metric"
+
+    def predict(self, rgb, kind="erp"):
+        return np.full(rgb.shape[:2], 3.0)
+
+
+def test_benchmark_evaluator_methods_filter_skips_unrequested_methods():
+    sys.path.insert(0, str(ROOT / "3_structured3d_benchmark"))
+    from benchmark_evaluator import run_single_benchmark_scene
+    from tta_ensemble import MobiusTTAEnsemble
+    H, W = 32, 64
+    model = _ConstMetric()
+    rgb = np.zeros((H, W, 3), np.uint8)
+    gt = np.full((H, W), 3.0)
+    valid = np.ones((H, W), bool)
+    ens = MobiusTTAEnsemble(model, passes=[{"pitch": 90, "scale": 1.0}], reanchor="none")
+    kw = dict(scene_info={"id": "x"}, rgb=rgb, gt_depth=gt, valid_gt=valid, model=model, m1_solver=None,
+              m2_ensemble=ens, phi_thresh=45.0, protocols=["none"], min_depth=0.1, max_depth=10.0)
+    out = run_single_benchmark_scene(methods=("Method2_MobiusTTA", "Control_YawEnsemble"), **kw)
+    assert set(out) == {"Baseline", "Method2_MobiusTTA", "Control_YawEnsemble", "predictions"}
+    assert set(out["predictions"]) == {"baseline", "method2_mobius", "control_yaw"}
+    assert out["Method2_MobiusTTA"]["none"]["all"]["abs_rel"] < 1e-6

@@ -165,6 +165,10 @@ def main():
     parser.add_argument("--config", type=str, default="config.yaml", help="Path to config.yaml")
     parser.add_argument("--num_scenes", type=int, default=None, help="Number of test scenes")
     parser.add_argument("--fusion_mode", type=str, default=None, choices=["distortion_weighted", "median", "mean"])
+    parser.add_argument("--set", dest="overrides", action="append", default=[],
+                        help="Override a config value, dotted key=YAML value (repeatable), e.g. --set mobius_tta.gate_lat=[30,55]")
+    parser.add_argument("--tag", type=str, default=None,
+                        help="Suffix appended to the output folder and tracker benchmark name (keeps earlier results)")
     args = parser.parse_args()
 
     # Load configuration
@@ -175,6 +179,17 @@ def main():
     with open(cfg_path, "r") as f:
         cfg = yaml.safe_load(f)
 
+    for ov in args.overrides:
+        key, _, val = ov.partition("=")
+        node = cfg
+        parts = key.split(".")
+        for k in parts[:-1]:
+            node = node.setdefault(k, {})
+        node[parts[-1]] = yaml.safe_load(val)
+    if args.tag:
+        cfg["evaluation"]["output_dir"] = cfg["evaluation"].get("output_dir", "outputs") + "_" + args.tag
+        cfg["evaluation"]["log_dir"] = cfg["evaluation"].get("log_dir", "logs") + "_" + args.tag
+        cfg["benchmark_suffix"] = cfg.get("benchmark_suffix", "") + "_" + args.tag
     if args.num_scenes:
         cfg["evaluation"]["num_scenes"] = args.num_scenes
     if args.fusion_mode:

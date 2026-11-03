@@ -135,6 +135,7 @@ def main():
         node[parts[-1]] = yaml.safe_load(val)
     if args.tag:
         cfg["evaluation"]["output_dir"] = cfg["evaluation"].get("output_dir", "outputs") + "_" + args.tag
+        cfg["evaluation"]["log_dir"] = cfg["evaluation"].get("log_dir", "logs") + "_" + args.tag
         cfg["benchmark_suffix"] = cfg.get("benchmark_suffix", "") + "_" + args.tag
     if args.max_scenes:
         cfg["data"]["max_scenes"] = args.max_scenes

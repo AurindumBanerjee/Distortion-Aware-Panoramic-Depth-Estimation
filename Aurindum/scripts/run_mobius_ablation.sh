@@ -5,7 +5,7 @@
 #   full       : the default passes                         each with gate_lat off / on (30-55)
 # Output folders: 3_structured3d_benchmark/outputs*_abl_<variant>; results/ABLATION_<ts>.md is built at the end.
 # Usage: scripts/run_mobius_ablation.sh [s3|panox|both] [MAX_SCENES]   (default both, 60 scenes)
-set -euo pipefail
+set -uo pipefail   # a failing variant is reported and the next one still runs
 cd "$(dirname "$0")/../3_structured3d_benchmark"
 WHICH="${1:-both}"; N="${2:-60}"
 declare -A PASSES=(
@@ -19,7 +19,8 @@ run() {  # config tag
   for p in rot dil full; do for g in off on; do
     python run.py --config "$cfg" --max_scenes "$N" --tag "abl_${name}_${p}_${g}" \
       --set "evaluation.methods=[Method2_MobiusTTA,Control_YawEnsemble]" \
-      --set "mobius_tta.passes=${PASSES[$p]}" --set "mobius_tta.gate_lat=${GATES[$g]}"
+      --set "mobius_tta.passes=${PASSES[$p]}" --set "mobius_tta.gate_lat=${GATES[$g]}" \
+      || echo "❌ variant ${name}_${p}_${g} FAILED"
   done; done
 }
 if [[ "$WHICH" == s3 || "$WHICH" == both ]]; then run config.yaml midas_s3; run config_dap.yaml dap_s3; fi
