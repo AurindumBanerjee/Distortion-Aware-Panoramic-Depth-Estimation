@@ -217,6 +217,7 @@ def gradient_domain_polar_fuse(
     rgb: Optional[np.ndarray] = None,
     texture_tau: float = 0.0,
     texture_gate_mode: str = "erp",
+    positive: bool = True,
 ) -> np.ndarray:
     """Fuses ERP base disparity and aligned polar tangent disparity in the gradient domain.
 
@@ -237,7 +238,7 @@ def gradient_domain_polar_fuse(
     phi_max = min(90.0, phi_threshold + blend_margin)
     alpha = np.clip((phi_deg_map - phi_min) / max(phi_max - phi_min, 1e-4), 0.0, 1.0)
     alpha = 0.5 * (1.0 - np.cos(np.pi * alpha))
-    valid_tangent = np.isfinite(d_tangent) & (d_tangent > 0)
+    valid_tangent = np.isfinite(d_tangent) & ((d_tangent > 0) if positive else True)
     alpha = alpha * valid_tangent * np.clip(np.nan_to_num(weight_map, nan=0.0), 0.0, 1.0)
 
     gx_e, gy_e = _edge_gradients(d_erp)
@@ -265,6 +266,8 @@ def gradient_domain_polar_fuse(
         logger.warning("solver_mode='fft' is deprecated (ignores the Dirichlet anchor); using 'sparse'.")
     fused = solve_screened_poisson_sparse(d_erp, gx, gy, fixed)
 
+    if not positive:  # e.g. log-depth fusion space: values may be negative
+        return fused
     pos = d_erp[np.isfinite(d_erp) & (d_erp > 0)]
     min_val = max(1e-6, 0.5 * np.percentile(pos, 0.5)) if pos.size else 1e-6
     return np.clip(fused, min_val, None)

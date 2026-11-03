@@ -12,6 +12,8 @@ tangent:
   phi_threshold: 45.0
   num_tangent_views: 2  # North pole (phi=+90) and South pole (phi=-90)
 
+polar_source: "auto"   # tangent (perspective crops) for MiDaS; 'rotated_erp' = pitch +/-90 ERP passes
+
 alignment:
   anchor_max_lat: 60.0   # anchor ring = tangent/ERP overlap with |phi| <= this (a 90 deg polar view reaches ~35-45 deg)
   mad_threshold: 2.5

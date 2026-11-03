@@ -17,6 +17,8 @@ tangent:
   phi_threshold: 45.0
   num_tangent_views: 2  # North pole (phi=+90) and South pole (phi=-90)
 
+polar_source: "auto"   # DAP is ERP-native -> polar views = ERP rotated by pitch +/-90 (not perspective crops)
+
 alignment:
   anchor_max_lat: 60.0   # anchor ring = tangent/ERP overlap with |phi| <= this (a 90 deg polar view reaches ~35-45 deg)
   mad_threshold: 2.5
@@ -34,7 +36,7 @@ evaluation:
   width: 1024
   # First protocol is the headline. 'align-all' = standard (fit on all valid pixels);
   # 'align-equatorial' = fit on |phi| < 30 only (tests polar consistency, stricter).
-  protocols: ["align-all", "align-equatorial"]
+  protocols: ["none", "align-all"]   # metric model: raw metres headline, global median scale second
   min_depth: 0.05   # aligned predictions are clamped to the GT range
   max_depth: 50.0
   output_dir: "outputs_dap"

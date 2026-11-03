@@ -12,13 +12,15 @@ model:
   scale: "metric"
 
 data:
-  # Relative path inside Aurindum repo on the server
-  root: "data/structured3d"
-  max_scenes: 10
+  dataset: "structured3d"   # 'structured3d' | 'panox' (see config*_panox.yaml)
+  root: "data/structured3d" # relative to Aurindum/; also searched: <Project>/Data/<dataset>
+  list: "test.txt"          # split list ("rgb/x.png depth/x.png" per line); legacy rgb/ + depth/ discovery if absent
+  max_scenes: null          # null = all panoramas in the list (300 extracted); override with --max_scenes N
   height: 512
   width: 1024
 
 method1:
+  polar_source: "auto"   # auto -> rotated_erp for DAP (ERP-native); tangent for perspective models
   phi_threshold: 45.0
   fov_deg: 90.0
   resolution: 384
@@ -38,7 +40,7 @@ mobius_tta:
   anchor_max_lat: 30.0
 
 evaluation:
-  protocols: ["align-all", "align-equatorial"]   # first = headline
+  protocols: ["none", "align-all"]   # metric model: raw metres is the headline, global median scale second
   min_depth: 0.1    # Structured3D GT valid range (mm PNG / 1000); predictions clamped to it
   max_depth: 10.0
   output_dir: "outputs_dap"

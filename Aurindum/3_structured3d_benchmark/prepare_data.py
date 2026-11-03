@@ -163,7 +163,7 @@ def load_structured3d_pair(
     - 16-bit uint PNG where value is millimeter: depth_meters = uint16 / 1000.0.
     """
     bgr = cv2.imread(rgb_path, cv2.IMREAD_COLOR)
-    rgb = cv2.cvtColor(bgr, cv2.COLOR_BGR2RGB).astype(np.float32) / 255.0
+    rgb = cv2.cvtColor(bgr, cv2.COLOR_BGR2RGB)  # uint8: the model wrappers divide by 255 themselves
 
     raw_depth_u16 = cv2.imread(depth_path, cv2.IMREAD_UNCHANGED)
     if raw_depth_u16 is None:

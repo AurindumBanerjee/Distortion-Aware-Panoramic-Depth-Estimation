@@ -35,7 +35,7 @@ from best_model.tracker import BestModelTracker
 from datasets.synthetic import _texture_bank, random_scene, render_erp
 from evaluation.latitude_analysis import per_band_metrics
 from evaluation.metrics import compute_metrics, to_metric_depth
-from evaluation.protocol import BANDS, align_to_gt, format_band_table, summarize_methods
+from evaluation.protocol import BANDS, align_to_gt, default_protocols, format_band_table, summarize_methods
 from geometry.spherical import latitude_map
 from models.depth_model import EncodedDepthOracle, MiDaSWrapper
 
@@ -140,7 +140,7 @@ def evaluate_scene(
 
     # --- 3. Metric Alignment & Evaluation (all protocols) ---
     ev = cfg.get("evaluation", {})
-    protocols = tuple(ev.get("protocols", ["align-all", "align-equatorial"]))
+    protocols = tuple(ev.get("protocols") or default_protocols(ensemble.model))
     min_d, max_d = float(ev.get("min_depth", 0.05)), float(ev.get("max_depth", 50.0))
     from tta_ensemble import yaw_shift_ensemble
     pred_yaw = yaw_shift_ensemble(ensemble.model, rgb, n_passes=len(ensemble.passes), identity_pred=pred_erp,
@@ -252,7 +252,7 @@ def main():
     metrics_record = {
         "method": "Mobius TTA Ensembling",
         "timestamp": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-        "benchmark": "synthetic",
+        "benchmark": "synthetic" + cfg.get("benchmark_suffix", ""),
         "config": cfg,
         "headline": {"protocol": headline, "stat": "median"},
         "baseline_metrics": avg_base,
@@ -265,7 +265,7 @@ def main():
         json.dump(metrics_record, f, indent=2)
     logger.info(f"Saved metrics summary to {out_dir / 'metrics_summary.json'}")
 
-    tracker = BestModelTracker(str(AURINDUM_DIR / "best_model"), benchmark="synthetic")
+    tracker = BestModelTracker(str(AURINDUM_DIR / "best_model"), benchmark="synthetic" + cfg.get("benchmark_suffix", ""))
     is_best = tracker.update_if_best(
         method_name="Mobius TTA Ensembling",
         config=cfg,

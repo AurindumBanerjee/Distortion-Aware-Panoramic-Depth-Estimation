@@ -52,8 +52,7 @@ def run_single_benchmark_scene(
     are first aligned to the ERP prediction with `align_tangent_disparity_to_erp` (v1 blended
     raw tangent disparity with arbitrary per-crop (s, t) into the ERP map -> AbsRel ~146).
     """
-    from shift_alignment import align_tangent_disparity_to_erp
-    from gradient_blending import gradient_domain_polar_fuse
+    from polar_views import fuse_polar, polar_predictions
 
     m1_cfg = m1_cfg or {}
     H, W = gt_depth.shape
@@ -64,38 +63,24 @@ def run_single_benchmark_scene(
     pred_erp = model.predict(rgb, kind="erp").astype(np.float64)
     res_base, m_base = ev(pred_erp)
 
-    # Polar tangent views, aligned to the ERP prediction (shared by 2 and 3)
-    fov = m1_cfg.get("fov_deg", 90.0)
-    size = m1_cfg.get("resolution", 384)
-    aligned = []
-    for tc, pc in [(0.0, 90.0), (0.0, -90.0)]:
-        plane = generate_tangent_plane(lon_deg=tc, lat_deg=pc, fov_deg=fov, size=size)
-        p_tan = model.predict(erp_to_tangent(rgb, plane), kind="perspective")
-        warp_res = tangent_to_erp(p_tan, plane, height=H, width=W)
-        vals = np.where(warp_res.valid, warp_res.values, np.nan) if getattr(warp_res, "valid", None) is not None \
-            else warp_res.values
-        al, info = align_tangent_disparity_to_erp(
-            tangent_disp_on_erp=vals, erp_disp_baseline=pred_erp, cos_ray=warp_res.cos_axis,
-            phi_deg_map=phi_deg_map, anchor_max_lat=m1_cfg.get("anchor_max_lat", 60.0))
-        logger.debug(f"tangent lat={pc:+.0f}: {info}")
-        aligned.append(al)
-    merged = np.full_like(pred_erp, np.nan)
-    for al in aligned:
-        v = np.isfinite(al)
-        merged[v] = al[v]
+    # Polar views (tangent for perspective models, rotated ERP for ERP-native metric models such as DAP),
+    # aligned to the ERP prediction in the fusion space (disparity or log depth). Shared by 2 and 3.
+    merged_f, fs, infos = polar_predictions(
+        model, rgb, pred_erp, phi_deg_map, source=m1_cfg.get("polar_source", "auto"),
+        fov_deg=m1_cfg.get("fov_deg", 90.0), resolution=m1_cfg.get("resolution", 384),
+        anchor_max_lat=m1_cfg.get("anchor_max_lat", 60.0))
+    for info in infos:
+        logger.debug(f"polar view: {info}")
+    common = dict(phi_threshold=phi_thresh, blend_margin=m1_cfg.get("blend_margin", 10.0))
 
-    # 2. Spatial cosine-ramp blend of the ALIGNED tangent views
-    alpha = np.clip((phi_deg_map - (phi_thresh - 10)) / 20.0, 0.0, 1.0)
-    alpha = 0.5 * (1.0 - np.cos(np.pi * alpha))
-    val_tan = np.isfinite(merged)
-    pred_spatial_tan = np.where(val_tan, (1.0 - alpha) * pred_erp + alpha * np.nan_to_num(merged), pred_erp)
+    # 2. Spatial cosine-ramp blend of the ALIGNED polar views
+    pred_spatial_tan = fuse_polar(pred_erp, merged_f, fs, phi_deg_map, mode="cosine_ramp", **common)
     res_tan, m_tan = ev(pred_spatial_tan)
 
-    # 3. Method 1: gradient-domain fusion (same aligned views)
-    pred_grad = gradient_domain_polar_fuse(
-        d_erp=pred_erp, d_tangent=merged, weight_map=np.ones_like(pred_erp), phi_deg_map=phi_deg_map,
-        phi_threshold=phi_thresh, blend_margin=m1_cfg.get("blend_margin", 10.0), rgb=rgb,
-        texture_tau=m1_cfg.get("texture_tau", 0.0), texture_gate_mode=m1_cfg.get("texture_gate_mode", "erp"))
+    # 3. Method 1: gradient-domain fusion of the same aligned views
+    pred_grad = fuse_polar(pred_erp, merged_f, fs, phi_deg_map, mode="gradient_poisson", rgb=rgb,
+                           texture_tau=m1_cfg.get("texture_tau", 0.0),
+                           texture_gate_mode=m1_cfg.get("texture_gate_mode", "erp"), **common)
     res_grad, m_grad = ev(pred_grad)
 
     # 4. Method 2: Möbius TTA (reuses the baseline forward pass as the identity pass)

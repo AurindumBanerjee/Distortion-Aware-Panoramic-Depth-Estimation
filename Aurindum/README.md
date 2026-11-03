@@ -75,6 +75,31 @@ with v2 and should not be reported.
 | Tracker | Synthetic and Structured3D results competed in one registry | per-benchmark registries `best_model/<benchmark>/` (top-level files = legacy v1) |
 | Models | DAP load failure silently fell back to MiDaS | fatal unless `model.allow_model_fallback: true` |
 
+### Running the corrected suite
+```bash
+cd Aurindum
+./run_corrected_suite.sh start     # stops any old run, preflight (tests/data/weights), archives old results, launches detached
+./run_corrected_suite.sh status    # running? ✅/❌ per series, tail of the master log
+./run_corrected_suite.sh stop
+./run_corrected_suite.sh collect   # results/SUMMARY_<ts>.md from all result JSONs (also done automatically at the end)
+```
+Default order: MiDaS (`config.yaml`) then DAP (`config_dap.yaml`); per config series 1 → 2 → 3 (Structured3D) → 3 (PanoX).
+Overrides: `CONFIGS="config.yaml"`, `RUN_PANOX=0`, `MAX_SCENES=50`, `SKIP_TESTS=1`, `NO_ARCHIVE=1`.
+
+### v2.1: data, DAP and loader fixes
+* **Structured3D RGB bug (all v1/v2 series-3 numbers invalid):** the legacy loader returned float RGB in [0, 1] while every
+  model wrapper divides by 255 again, so the model saw an almost black image. The loader now returns uint8 and
+  `DepthModelWrapper.predict_batch` rescales any [0, 1] float input (`as_uint8_rgb`).
+* **Series 3 datasets:** `data.dataset` (`structured3d` | `panox`), `data.list` (split list, default `test.txt`) and
+  `data.max_scenes: null` (= all; 300 extracted Structured3D panoramas). `config_panox.yaml` / `config_dap_panox.yaml`
+  are run automatically by the master script after the Structured3D run (`RUN_PANOX=0` to skip).
+  `run_gpu.sh` no longer forces 20 scenes (`MAX_SCENES=N` to limit).
+* **DAP / metric models:** protocol `none` (raw metres, headline for metric models), `align-all` = global median scale;
+  defaults chosen per model (`evaluation.protocols` may be omitted). Method 1 `polar_source`: `tangent` (perspective
+  models) or `rotated_erp` (pitch ±90° ERP passes; `auto` picks it for DAP, which is ERP-native). Metric models are
+  aligned and fused in **log depth** (scale-only offset on the anchor ring, metric scale preserved); NaN sky pixels
+  (DAP mask) are filled for the solve and restored.
+
 **Is a method better?** Every table reports, per latitude band and vs the baseline (one plain ERP pass of the
 same frozen model): median AbsRel, the scene **win rate**, the median relative gain with a **95 % bootstrap CI**, and a
 two-sided **paired Wilcoxon** p-value over the same scenes. Claim an improvement only when the polar (60–90°) gain's CI

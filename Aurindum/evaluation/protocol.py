@@ -28,7 +28,7 @@ import numpy as np
 from evaluation.metrics import to_metric_depth
 from geometry.spherical import latitude_map
 
-PROTOCOLS = ("align-all", "align-equatorial")
+PROTOCOLS = ("none", "align-all", "align-equatorial")
 
 
 def model_space(model) -> tuple:
@@ -36,6 +36,15 @@ def model_space(model) -> tuple:
     space = getattr(model, "space", getattr(spec, "space", "depth"))
     scale = getattr(model, "scale", getattr(spec, "scale", "metric"))
     return space, scale
+
+
+def default_protocols(model) -> tuple:
+    """Metric models (DAP): raw metres is the headline, a global median-scale fit second.
+    Relative models (MiDaS): align-all headline, align-equatorial second."""
+    space, scale = model_space(model)
+    if space == "depth" and scale == "metric":
+        return ("none", "align-all")
+    return ("align-all", "align-equatorial")
 
 
 def alignment_mask(valid: np.ndarray, protocol: str, eq_max_lat: float = 30.0) -> np.ndarray:
@@ -51,10 +60,18 @@ def align_to_gt(pred: np.ndarray, gt: np.ndarray, valid: np.ndarray, model, prot
                 min_depth: float = 0.1, max_depth: float = 10.0, eq_max_lat: float = 30.0) -> np.ndarray:
     """Model-space prediction -> metric depth, aligned with `protocol` and clamped to [min, max] depth."""
     space, scale = model_space(model)
+    if protocol == "none":
+        if not (space == "depth" and scale == "metric"):
+            raise ValueError("protocol 'none' (raw metric output) needs a metric depth model")
+        aligned = np.asarray(pred, dtype=np.float64)
+        aligned = np.where(np.isfinite(aligned), aligned, max_depth)
+        return np.clip(aligned, min_depth, max_depth)
     if space == "disparity":
         mode = "affine"
     else:
-        mode = "none" if scale == "metric" else "lsq"
+        # relative depth: least-squares scale; metric depth under align-*: median scale
+        # (removes a global scale error only, as in the DAP / PanDA evaluation code)
+        mode = "lsq" if scale != "metric" else "median"
     m = alignment_mask(valid, protocol, eq_max_lat)
     aligned, _ = to_metric_depth(pred, gt, m, space=space, mode=mode, max_depth=max_depth, min_depth=min_depth)
     aligned = np.where(np.isfinite(aligned), aligned, max_depth)

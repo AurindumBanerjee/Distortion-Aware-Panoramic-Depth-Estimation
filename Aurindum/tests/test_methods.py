@@ -91,3 +91,39 @@ def test_paired_test_detects_consistent_gain():
     better = [{"75-90": {"abs_rel": 0.4 + 0.01 * i}} for i in range(12)]
     r = paired_test(base, better, "75-90")
     assert r["p_wilcoxon"] < 0.01 and r["ci_low"] > 0 and r["n"] == 12
+
+
+def test_float_rgb_is_rescaled_for_models():
+    from models.depth_model import as_uint8_rgb
+    f = np.full((4, 4, 3), 0.5, np.float32)
+    assert as_uint8_rgb(f).max() == 128  # v1 Structured3D loader passed [0,1] floats -> near-black input
+    u = np.full((4, 4, 3), 200, np.uint8)
+    assert as_uint8_rgb(u) is u
+
+
+def test_protocol_none_only_for_metric_models():
+    import pytest
+    from evaluation.protocol import align_to_gt, default_protocols
+
+    class Metric:
+        space, scale = "depth", "metric"
+
+    class Rel:
+        space, scale = "disparity", "affine"
+    gt = np.full((8, 16), 2.0)
+    out = align_to_gt(np.full_like(gt, 2.2), gt, np.ones_like(gt, bool), Metric(), "none", 0.1, 10.0)
+    assert np.allclose(out, 2.2)
+    assert default_protocols(Metric())[0] == "none" and default_protocols(Rel())[0] == "align-all"
+    with pytest.raises(ValueError):
+        align_to_gt(gt, gt, np.ones_like(gt, bool), Rel(), "none")
+
+
+def test_logdepth_polar_fusion_removes_view_scale_error():
+    sys.path.insert(0, str(ROOT / "1_gradient_polar_fusion"))
+    from polar_views import fuse_polar, to_fusion
+    H, W = 32, 64
+    phi = np.abs(latitude_map(H, W))
+    D = 2.0 + np.linspace(0, 1, H)[:, None] * np.ones((1, W))
+    view = np.where(phi > 40, to_fusion(D * 1.3, "logdepth"), np.nan)  # polar view with a 30% scale error
+    out = fuse_polar(D, view, "logdepth", phi, mode="gradient_poisson")
+    assert np.abs(out / D - 1).max() < 1e-6

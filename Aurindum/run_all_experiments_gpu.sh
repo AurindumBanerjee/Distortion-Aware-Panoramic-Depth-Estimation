@@ -29,6 +29,7 @@ MASTER_LOG="$AURINDUM_DIR/logs/master_experiment_${TIMESTAMP}.log"
 CONFIGS="${CONFIGS:-config.yaml config_dap.yaml}"
 
 export PYTHONUNBUFFERED=1
+export OPENCV_IO_ENABLE_OPENEXR=1   # PanoX depth is EXR; must be set before cv2 is imported
 export CUDA_VISIBLE_DEVICES=${CUDA_VISIBLE_DEVICES:-0}
 export MPLCONFIGDIR="/tmp/matplotlib_${TIMESTAMP}"
 
@@ -98,6 +99,10 @@ for CFG in $CONFIGS; do
     run_series 1 1_gradient_polar_fusion "Gradient-Domain Polar Fusion" "$CFG"
     run_series 2 2_mobius_tta_ensembling "Test-Time Möbius Ensembling" "$CFG"
     run_series 3 3_structured3d_benchmark "Real Structured3D Benchmark" "$CFG"
+    PANOX_CFG="${CFG%.yaml}_panox.yaml"
+    if [ "${RUN_PANOX:-1}" = 1 ] && [ -f "$AURINDUM_DIR/3_structured3d_benchmark/$PANOX_CFG" ]; then
+        run_series 3 3_structured3d_benchmark "PanoX Benchmark" "$PANOX_CFG"
+    fi
 done
 
 END_TOTAL=$(date +%s)

@@ -39,7 +39,7 @@ from best_model.tracker import BestModelTracker
 from datasets.synthetic import _texture_bank, random_scene, render_erp
 from models.depth_model import EncodedDepthOracle, MiDaSWrapper
 from tta_ensemble import MobiusTTAEnsemble
-from evaluation.protocol import format_band_table, format_table, summarize_methods
+from evaluation.protocol import default_protocols, format_band_table, format_table, summarize_methods
 
 # Local modules
 from benchmark_evaluator import run_single_benchmark_scene
@@ -131,19 +131,40 @@ def main():
 
     logger = setup_logger(log_dir)
     logger.info("=" * 75)
-    logger.info("🚀 Starting Method 3: Comparative Benchmark on Structured3D Panoramas")
+    logger.info(f"🚀 Starting Method 3: Comparative Benchmark on {cfg['data'].get('dataset', 'structured3d')} panoramas")
     logger.info("=" * 75)
 
-    # 1. Discover / load Structured3D scenes from server data/structured3d
-    data_root = cfg["data"].get("root", "data/structured3d")
-    max_scenes = cfg["data"].get("max_scenes", 5)
-    scenes = find_structured3d_data(AURINDUM_DIR, cfg_root=data_root, max_scenes=max_scenes)
+    # 1. Discover the evaluation panoramas.
+    #    data.dataset: 'structured3d' (default) | 'panox' | any datasets/panorama.py preset.
+    #    If a split list (data.list, default test.txt) exists under the dataset root, the generic
+    #    PanoramaDataset loader is used (presets carry units, valid range and PanoX sky masking);
+    #    otherwise the legacy Structured3D discovery below. data.max_scenes: null = all.
+    dataset_name = cfg["data"].get("dataset", "structured3d")
+    data_root = cfg["data"].get("root", f"data/{dataset_name}")
+    list_name = cfg["data"].get("list", "test.txt")
+    max_scenes = cfg["data"].get("max_scenes")
+    pano_ds = None
+    for cand in [AURINDUM_DIR / data_root, AURINDUM_DIR.parent.parent / "Data" / dataset_name,
+                 AURINDUM_DIR.parent / "Data" / dataset_name]:
+        if (cand / list_name).is_file():
+            from datasets.panorama import PanoramaDataset
+            pano_ds = PanoramaDataset(str(cand), list_name, height=cfg["data"].get("height", 256),
+                                      width=cfg["data"].get("width", 512), name=dataset_name,
+                                      limit=max_scenes)
+            logger.info(f"Loaded {len(pano_ds)} {dataset_name} panoramas from {cand / list_name}")
+            break
+    if pano_ds is not None:
+        scenes = [{"id": f"{dataset_name}_{i}", "index": i} for i in range(len(pano_ds))]
+    elif dataset_name == "structured3d":
+        scenes = find_structured3d_data(AURINDUM_DIR, cfg_root=data_root, max_scenes=max_scenes or 10 ** 6)
+    else:
+        raise FileNotFoundError(f"No split list {list_name} found for dataset {dataset_name} (root {data_root})")
 
     # Fallback to procedural scenes if not found
     using_synthetic_fallback = len(scenes) == 0
     if using_synthetic_fallback:
-        logger.warning(f"No Structured3D scenes found in {data_root}; falling back to procedural scenes.")
-        scenes = [{"id": f"synthetic_{i}"} for i in range(max_scenes)]
+        logger.warning(f"No {dataset_name} scenes found in {data_root}; falling back to procedural scenes.")
+        scenes = [{"id": f"synthetic_{i}"} for i in range(max_scenes or 10)]
 
     # 2. Initialize models and ensemble
     model = load_model(cfg.get("model", {}), logger)
@@ -157,7 +178,7 @@ def main():
         anchor_max_lat=m2_cfg.get("anchor_max_lat", 30.0),
     )
     ev_cfg = cfg.get("evaluation", {})
-    protocols = tuple(ev_cfg.get("protocols", ["align-all", "align-equatorial"]))
+    protocols = tuple(ev_cfg.get("protocols") or default_protocols(model))
     min_depth = float(ev_cfg.get("min_depth", 0.1))
     max_depth = float(ev_cfg.get("max_depth", 10.0))
 
@@ -174,7 +195,12 @@ def main():
         scene_id = sc["id"]
         logger.info(f"--> Evaluating Panorama [{idx + 1}/{len(scenes)}]: {scene_id}...")
 
-        if not using_synthetic_fallback:
+        if pano_ds is not None:
+            smp = pano_ds[sc["index"]]
+            sc["id"] = smp.id
+            rgb, gt_depth, valid_gt = smp.rgb, np.nan_to_num(smp.depth, nan=0.0), smp.valid
+            valid_gt = valid_gt & (gt_depth >= min_depth) & (gt_depth <= max_depth)
+        elif not using_synthetic_fallback:
             rgb, gt_depth, valid_gt = load_structured3d_pair(
                 sc["rgb_path"], sc["depth_path"], target_hw=(H, W)
             )
@@ -216,7 +242,7 @@ def main():
     for proto in protocols:
         for stat in ("median", "mean"):
             logger.info("\n" + "=" * 95)
-            logger.info(f"🏆 STRUCTURED3D BENCHMARK  [{proto}, {stat} over {len(scenes)} scenes, depth clamp "
+            logger.info(f"🏆 {dataset_name.upper()} BENCHMARK  [{proto}, {stat} over {len(scenes)} scenes, depth clamp "
                         f"{min_depth}-{max_depth} m]")
             for line in format_table(summary[proto], stat):
                 logger.info(line)
@@ -228,7 +254,7 @@ def main():
 
     record = {
         "timestamp": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-        "benchmark": "structured3d" if not using_synthetic_fallback else "synthetic_fallback",
+        "benchmark": (dataset_name if not using_synthetic_fallback else "synthetic_fallback") + cfg.get("benchmark_suffix", ""),
         "num_scenes": len(scenes),
         "scene_ids": [sc["id"] for sc in scenes],
         "config": cfg,

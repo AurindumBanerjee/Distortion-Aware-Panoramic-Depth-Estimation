@@ -35,7 +35,7 @@ from best_model.tracker import BestModelTracker
 from datasets.synthetic import _texture_bank, random_scene, render_erp
 from evaluation.latitude_analysis import per_band_metrics
 from evaluation.metrics import compute_metrics, to_metric_depth
-from evaluation.protocol import BANDS, align_to_gt, format_band_table, summarize_methods
+from evaluation.protocol import BANDS, align_to_gt, default_protocols, format_band_table, summarize_methods
 from geometry.erp_projection import sample_erp
 from geometry.spherical import erp_lonlat_grid, latitude_map, lonlat_to_xyz
 from geometry.tangent_plane import (
@@ -48,6 +48,7 @@ from models.depth_model import EncodedDepthOracle, MiDaSWrapper
 # Local modules
 from gradient_blending import gradient_domain_polar_fuse
 from shift_alignment import align_tangent_disparity_to_erp
+from polar_views import fuse_polar, polar_predictions
 
 
 def setup_logger(log_dir: Path) -> logging.Logger:
@@ -168,62 +169,27 @@ def evaluate_scene(
     # --- 1. Baseline ERP Pass ---
     pred_erp = model.predict(rgb, kind="erp")
 
-    # --- 2. Tangent Passes for North and South Poles ---
+    # --- 2-3. Polar views (tangent or rotated ERP), aligned to the ERP prediction in fusion space ---
     tan_cfg = cfg.get("tangent", {})
-    fov = tan_cfg.get("fov_deg", 90.0)
-    res = tan_cfg.get("resolution", 384)
     phi_thresh = tan_cfg.get("phi_threshold", 45.0)
+    merged_f, fs, infos = polar_predictions(
+        model, rgb, pred_erp, phi_deg_map,
+        source=cfg.get("polar_source", "auto"),
+        fov_deg=tan_cfg.get("fov_deg", 90.0), resolution=tan_cfg.get("resolution", 384),
+        anchor_max_lat=cfg.get("alignment", {}).get("anchor_max_lat", 60.0))
+    for info in infos:
+        logger.debug(f"    polar view: {info}")
 
-    # Tangent centers: North Pole (0, 90) and South Pole (0, -90)
-    tangent_centers = [(0.0, 90.0), (0.0, -90.0)]
-    tan_results = run_tangent_pass(model, rgb, tangent_centers, fov, res)
-
-    # --- 3. Align Tangent Disparities to Baseline ---
-    aligned_ranges = []
-    for pred_tan_erp, cos_ray, valid_mask in tan_results:
-        aligned_r, fit_info = align_tangent_disparity_to_erp(
-            tangent_disp_on_erp=np.where(valid_mask, pred_tan_erp, np.nan),
-            erp_disp_baseline=pred_erp,
-            cos_ray=cos_ray,
-            phi_deg_map=phi_deg_map,
-            anchor_max_lat=cfg.get("alignment", {}).get("anchor_max_lat", 60.0)
-        )
-        logger.debug(f"    tangent alignment: {fit_info}")
-        aligned_ranges.append(aligned_r)  # ERP disparity (same space as pred_erp)
-
-    # Merge tangent views
-    merged_tangent = np.full_like(gt_range, np.nan)
-    for r_tan in aligned_ranges:
-        valid_t = np.isfinite(r_tan)
-        merged_tangent[valid_t] = r_tan[valid_t]
-
-    # --- 4. Gradient-Domain Fusion ---
+    # --- 4. Fusion ---
     blend_cfg = cfg.get("blending", {})
-    blend_mode = blend_cfg.get("mode", "gradient_poisson")
-
-    if blend_mode == "gradient_poisson":
-        fused_range = gradient_domain_polar_fuse(
-            d_erp=pred_erp,
-            d_tangent=merged_tangent,
-            weight_map=np.ones_like(pred_erp),
-            phi_deg_map=phi_deg_map,
-            phi_threshold=phi_thresh,
-            blend_margin=blend_cfg.get("blend_margin", 10.0),
-            solver_mode=blend_cfg.get("poisson_solver", "sparse"),
-            rgb=rgb,
-            texture_tau=blend_cfg.get("texture_tau", 0.0),
-            texture_gate_mode=blend_cfg.get("texture_gate_mode", "erp"),
-        )
-    else:
-        # Standard cosine blending fallback
-        alpha = np.clip((phi_deg_map - (phi_thresh - 10)) / 20.0, 0.0, 1.0)
-        alpha = 0.5 * (1.0 - np.cos(np.pi * alpha))
-        valid_t = np.isfinite(merged_tangent)
-        fused_range = np.where(valid_t, (1.0 - alpha) * pred_erp + alpha * np.nan_to_num(merged_tangent), pred_erp)
+    fused_range = fuse_polar(
+        pred_erp, merged_f, fs, phi_deg_map, mode=blend_cfg.get("mode", "gradient_poisson"),
+        phi_threshold=phi_thresh, blend_margin=blend_cfg.get("blend_margin", 10.0), rgb=rgb,
+        texture_tau=blend_cfg.get("texture_tau", 0.0), texture_gate_mode=blend_cfg.get("texture_gate_mode", "erp"))
 
     # --- 5. Metric Alignment & Evaluation (all protocols) ---
     ev = cfg.get("evaluation", {})
-    protocols = tuple(ev.get("protocols", ["align-all", "align-equatorial"]))
+    protocols = tuple(ev.get("protocols") or default_protocols(model))
     min_d, max_d = float(ev.get("min_depth", 0.05)), float(ev.get("max_depth", 50.0))
     metrics_base, metrics_fused = {}, {}
     base_metric = fused_metric = None
@@ -318,7 +284,7 @@ def main():
     metrics_record = {
         "method": "Gradient-Domain Polar Fusion",
         "timestamp": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-        "benchmark": "synthetic",
+        "benchmark": "synthetic" + cfg.get("benchmark_suffix", ""),
         "config": cfg,
         "headline": {"protocol": headline, "stat": "median"},
         "baseline_metrics": avg_base,
@@ -330,7 +296,7 @@ def main():
         json.dump(metrics_record, f, indent=2)
     logger.info(f"Saved metrics summary to {out_dir / 'metrics_summary.json'}")
 
-    tracker = BestModelTracker(str(AURINDUM_DIR / "best_model"), benchmark="synthetic")
+    tracker = BestModelTracker(str(AURINDUM_DIR / "best_model"), benchmark="synthetic" + cfg.get("benchmark_suffix", ""))
     is_best = tracker.update_if_best(
         method_name="Gradient-Domain Polar Fusion",
         config=cfg,

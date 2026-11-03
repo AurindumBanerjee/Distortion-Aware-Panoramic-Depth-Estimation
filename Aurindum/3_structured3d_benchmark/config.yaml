@@ -7,13 +7,15 @@ model:
   scale: "affine"
 
 data:
-  # Relative path inside Aurindum repo on the server
-  root: "data/structured3d"
-  max_scenes: 10
+  dataset: "structured3d"   # 'structured3d' | 'panox' (see config*_panox.yaml)
+  root: "data/structured3d" # relative to Aurindum/; also searched: <Project>/Data/<dataset>
+  list: "test.txt"          # split list ("rgb/x.png depth/x.png" per line); legacy rgb/ + depth/ discovery if absent
+  max_scenes: null          # null = all panoramas in the list (300 extracted); override with --max_scenes N
   height: 256
   width: 512
 
 method1:
+  polar_source: "auto"   # auto -> tangent for perspective models; rotated_erp for metric ERP models (DAP)
   phi_threshold: 45.0
   fov_deg: 90.0
   resolution: 384

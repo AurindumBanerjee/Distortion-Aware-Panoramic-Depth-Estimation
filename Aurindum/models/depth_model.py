@@ -50,6 +50,21 @@ class OutputSpec:
     geometry_perspective: str  # meaning when the input is a pinhole (tangent) image
 
 
+def as_uint8_rgb(im: np.ndarray) -> np.ndarray:
+    """All wrappers expect uint8 RGB in [0, 255] and divide by 255 themselves.
+
+    A float image in [0, 1] (e.g. the v1 Structured3D loader) would otherwise be divided by 255
+    a second time, i.e. the model would see an almost black image. Such inputs are rescaled here.
+    """
+    if im.dtype == np.uint8:
+        return im
+    x = np.asarray(im, dtype=np.float32)
+    finite = x[np.isfinite(x)]
+    if finite.size and finite.max() <= 1.0 + 1e-3:
+        x = x * 255.0
+    return np.clip(np.rint(np.nan_to_num(x)), 0, 255).astype(np.uint8)
+
+
 class DepthModelWrapper(ABC):
     """Frozen black-box depth estimator."""
 
@@ -72,6 +87,7 @@ class DepthModelWrapper(ABC):
     def predict_batch(self, images: Sequence[np.ndarray], kind: str = "erp", batch_size: int = 4) -> List[np.ndarray]:
         """kind: 'erp' (equirectangular panorama) or 'perspective' (tangent/pinhole view)."""
         out: List[np.ndarray] = []
+        images = [as_uint8_rgb(im) for im in images]
         for s in range(0, len(images), batch_size):
             chunk = list(images[s:s + batch_size])
             if self.device.type == "cuda":
