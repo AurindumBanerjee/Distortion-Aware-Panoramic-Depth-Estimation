@@ -21,6 +21,8 @@
 #        rotguard  rotation_only + fit_guard {tau 0.5, a_max 4}          (label-free pass validation)
 #        m1rot     Method 1 / Tangent_Spatial with method1.polar_source=rotated_erp (gradient-domain fusion of the
 #                  Möbius-rotated pass instead of a tangent crop)
+#        m1cos     Method 1 / Tangent_Spatial with the exact 3-term tangent alignment (method1.shift_model=cos); the
+#                  earlier Method 1 numbers used the 2-term fit (shift_model=none)
 #   F  scripts/diagnose_reanchor.py on the same four datasets (DIAG_N frames, default 40): intrinsic vs realised
 #      gain of the rotated pass, anchor loss, and which label-free signal predicts harm.
 #   Stage D should be re-run last to include E (STAGES="E F D").
@@ -80,7 +82,7 @@ do_run() {
             else say "skip stage C (needs both MiDaS and DAP weights)"; fi ;;
         E)  say "=============== Stage E: rotation-only / fit-guard / Method 1 on the rotated view (MiDaS) ==============="
             if [ "$have_midas" = 1 ]; then
-                local es=""; [ -n "${ESC:-}" ] && es="--max_scenes $ESC"
+                local es=""; [ -n "${ESC:-}" ] && es="--max_scenes $ESC --set data.subset=spread"
                 for CFG in config.yaml config_panox.yaml config_holo360d_indoor.yaml config_holo360d_outdoor.yaml; do
                     case "$CFG" in config_panox.yaml) [ -f data/panox/test.txt ] || continue;; config_holo*) [ -f data/holo360d/test.txt ] || continue;; esac
                     step "E1 rotation-only [$CFG]" 3_structured3d_benchmark --config "$CFG" --tag rotonly $es \
@@ -88,6 +90,8 @@ do_run() {
                     step "E2 rotation-only + fit_guard [$CFG]" 3_structured3d_benchmark --config "$CFG" --tag rotguard $es \
                         --set "mobius_tta.preset=rotation_only" --set "mobius_tta.fit_guard={tau: 0.5, a_max: 4.0}" \
                         --set "evaluation.methods=[Method2_MobiusTTA]"
+                    step "E4 Method 1 tangent, exact 3-term alignment [$CFG]" 3_structured3d_benchmark --config "$CFG" --tag m1cos $es \
+                        --set "method1.shift_model=cos" --set "evaluation.methods=[Tangent_Spatial,Method1_GradientFusion]"
                     step "E3 Method 1 on rotated view [$CFG]" 3_structured3d_benchmark --config "$CFG" --tag m1rot $es \
                         --set "method1.polar_source=rotated_erp" --set "evaluation.methods=[Tangent_Spatial,Method1_GradientFusion]"
                 done

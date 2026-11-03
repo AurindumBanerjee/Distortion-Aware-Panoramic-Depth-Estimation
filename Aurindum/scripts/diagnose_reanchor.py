@@ -34,6 +34,7 @@ ROOT = Path(__file__).resolve().parent.parent
 for sub in ("", "2_mobius_tta_ensembling", "1_gradient_polar_fusion"):
     sys.path.insert(0, str(ROOT / sub) if sub else str(ROOT))
 
+from evaluation.metrics import to_metric_depth  # noqa: E402
 from evaluation.protocol import align_to_gt, model_space  # noqa: E402
 from geometry.spherical import latitude_map  # noqa: E402
 from mobius_transform import unwarp_depth_mobius, warp_erp_mobius  # noqa: E402
@@ -99,17 +100,17 @@ def diagnose_frame(model, rgb: np.ndarray, gt: np.ndarray, valid: np.ndarray, pa
         cap_rot = align_to_gt(raw, gt, cap, model, protocol="align-all", min_depth=min_depth, max_depth=max_depth)
         e_id_or, e_rot_or = _absrel(cap_id, gt, cap), _absrel(cap_rot, gt, cap)
         # (2) realised: the identity's global GT fit is applied to the anchored pass (they now live in one frame)
-        space, _ = model_space(model)
+        # (2) realised: the identity's global GT fit (align-all) is applied unchanged to the anchored pass, so both
+        #     live in one frame and only the label-free re-anchor separates them
+        space, scale = model_space(model)
+        mode = "affine" if space == "disparity" else ("median" if scale == "metric" else "lsq")
+        _, fit = to_metric_depth(ref, gt, valid, space=space, mode=mode, max_depth=max_depth, min_depth=min_depth)
         if space == "disparity":
-            # recover the identity's global (s,t) by regressing aligned depth's inverse on the raw disparity
-            ok = valid & np.isfinite(ref) & (ident_global > 0)
-            A = np.stack([ref[ok], np.ones(ok.sum())], -1)
-            (s_, t_), *_ = np.linalg.lstsq(A, 1.0 / ident_global[ok], rcond=None)
-            real = np.clip(1.0 / np.clip(s_ * np.where(np.isfinite(anchored), anchored, 0) + t_, 1e-6, None), min_depth, max_depth)
+            disp = np.clip(fit["scale"] * anchored + fit["shift"], 1.0 / max_depth, 1.0 / min_depth)
+            real = 1.0 / np.where(np.isfinite(disp), disp, 1.0 / max_depth)
         else:
-            ok = valid & np.isfinite(ref) & (ref > 0)
-            f = float(np.median(ident_global[ok] / ref[ok]))
-            real = np.clip(f * np.where(np.isfinite(anchored) & (anchored > 0), anchored, max_depth), min_depth, max_depth)
+            real = np.where(np.isfinite(anchored), fit["scale"] * anchored, max_depth)
+        real = np.clip(real, min_depth, max_depth)
         e_id_gl, e_real = _absrel(ident_global, gt, cap), _absrel(real, gt, cap)
 
         gta = gt[anchor & valid]
@@ -166,6 +167,8 @@ def main():
     ap.add_argument("--tag", required=True)
     ap.add_argument("--set", dest="overrides", action="append", default=[])
     ap.add_argument("--pitches", default="90,-90", help="rotated passes to diagnose")
+    ap.add_argument("--subset", default="spread", choices=["spread", "first"],
+                    help="which frames when --max_scenes < list length (spread = every scene represented)")
     args = ap.parse_args()
     cfg_path = Path(args.config)
     cfg_path = cfg_path if cfg_path.is_absolute() or cfg_path.exists() else ROOT / args.config
@@ -194,7 +197,7 @@ def main():
     if root is None:
         raise FileNotFoundError(f"no {d.get('list', 'test.txt')} for dataset {name}")
     ds = PanoramaDataset(str(root), d.get("list", "test.txt"), height=d.get("height", 256), width=d.get("width", 512),
-                         name=name, limit=args.max_scenes)
+                         name=name, limit=args.max_scenes, subset=args.subset)
     ev = cfg.get("evaluation", {})
     min_d, max_d = float(ev.get("min_depth", 0.1)), float(ev.get("max_depth", 10.0))
     passes = [{"pitch": float(p), "scale": 1.0} for p in args.pitches.split(",")]
@@ -208,6 +211,8 @@ def main():
             r["frame"] = smp.id
             rows.append(r)
         print(f"[{i + 1}/{len(ds)}] {smp.id}", flush=True)
+    if not rows:
+        raise SystemExit("no rotated pass had >= 100 valid polar-cap pixels; nothing to report")
     out = ROOT / "results"
     out.mkdir(exist_ok=True)
     with open(out / f"diagnose_{args.tag}.csv", "w", newline="") as f:

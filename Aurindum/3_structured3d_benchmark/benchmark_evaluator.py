@@ -73,7 +73,7 @@ def run_single_benchmark_scene(
         merged_f, fs, infos = polar_predictions(
             model, rgb, pred_erp, phi_deg_map, source=m1_cfg.get("polar_source", "auto"),
             fov_deg=m1_cfg.get("fov_deg", 90.0), resolution=m1_cfg.get("resolution", 384),
-            anchor_max_lat=m1_cfg.get("anchor_max_lat", 60.0))
+            anchor_max_lat=m1_cfg.get("anchor_max_lat", 60.0), shift_model=m1_cfg.get("shift_model", "cos"))
         for info in infos:
             logger.debug(f"polar view: {info}")
         common = dict(phi_threshold=phi_thresh, blend_margin=m1_cfg.get("blend_margin", 10.0))

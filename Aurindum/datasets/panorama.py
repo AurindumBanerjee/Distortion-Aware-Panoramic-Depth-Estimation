@@ -62,7 +62,8 @@ class Sample:
 class PanoramaDataset:
     def __init__(self, root: str, list_file: str, height: int = 512, width: int = 1024, name: str = "synthetic",
                  depth_scale: Optional[float] = None, max_depth: Optional[float] = None,
-                 min_depth: Optional[float] = None, limit: Optional[int] = None, exr_scale: Optional[float] = None):
+                 min_depth: Optional[float] = None, limit: Optional[int] = None, exr_scale: Optional[float] = None,
+                 subset: str = "first"):
         p = dict(PRESETS.get(name, PRESETS["synthetic"]))
         if depth_scale is not None:
             p["depth_scale"] = depth_scale
@@ -78,8 +79,17 @@ class PanoramaDataset:
         lf = list_file if os.path.isabs(list_file) else os.path.join(root, list_file)
         with open(lf) as f:
             self.items: List[Tuple[str, ...]] = [tuple(l.split()[:3]) for l in f if l.strip()]
-        if limit:
-            self.items = self.items[:limit]  # fixed, deterministic subset (first N of the split)
+        if limit and limit < len(self.items):
+            # 'first' : the first N lines (reproduces earlier runs). Split lists are ordered by scene, so this covers
+            #           only the first few houses / environments (e.g. 60 PanoX frames = 3 of 8 environments).
+            # 'spread': N evenly spaced lines over the whole list -> every scene is represented. Deterministic.
+            if subset == "spread":
+                n = len(self.items)
+                self.items = [self.items[(i * n) // limit] for i in range(limit)]
+            elif subset == "first":
+                self.items = self.items[:limit]
+            else:
+                raise ValueError(f"unknown subset mode {subset!r} (first | spread)")
 
     def __len__(self):
         return len(self.items)

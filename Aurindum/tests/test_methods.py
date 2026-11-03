@@ -324,3 +324,43 @@ def test_diagnose_frame_and_summary_run_on_a_fake_model():
     assert "intrinsic gain" in txt and "AUC" in txt
     assert diag._auc(np.array([3., 4., 1., 2.]), np.array([True, True, False, False])) == 1.0
     assert abs(diag._auc(np.array([1., 1., 1., 1.]), np.array([True, True, False, False])) - 0.5) < 1e-9
+
+
+def test_dataset_subset_spread_covers_every_scene(tmp_path):
+    from datasets.panorama import PanoramaDataset
+    lines = [f"{s}/{s}/rgb/{i:04d}.png {s}/{s}/depth/{i:04d}.exr\n" for s in ("A", "B", "C", "D") for i in range(25)]
+    (tmp_path / "test.txt").write_text("".join(lines))
+    first = PanoramaDataset(str(tmp_path), "test.txt", name="panox", limit=40)
+    spread = PanoramaDataset(str(tmp_path), "test.txt", name="panox", limit=40, subset="spread")
+    assert {it[0].split("/")[0] for it in first.items} == {"A", "B"}
+    assert {it[0].split("/")[0] for it in spread.items} == {"A", "B", "C", "D"} and len(spread) == 40
+    assert len(set(spread.items)) == 40
+    with pytest.raises(ValueError):
+        PanoramaDataset(str(tmp_path), "test.txt", name="panox", limit=10, subset="random")
+
+
+def test_three_term_alignment_removes_tangent_shift_exactly():
+    from shift_alignment import align_tangent_disparity_to_erp
+    rng = np.random.default_rng(1)
+    H, W = 64, 128
+    phi = np.abs(latitude_map(H, W))
+    r = rng.uniform(1.0, 6.0, (H, W))
+    cos = np.clip(np.cos(np.deg2rad(90 - phi)) + 0.0, 0.7, 1.0)   # cos varies 0.7..1 across the view
+    d_t = 2.0 / (r * cos) + 0.4          # tangent: s/z + t with z = r cos, t = 0.4
+    d_e = 0.8 / r + 0.05                  # ERP: s_e/r + t_e
+    view = np.where(phi > 40, d_t, np.nan)
+    out3, info3 = align_tangent_disparity_to_erp(view, d_e, cos, phi, shift_model="cos")
+    out2, info2 = align_tangent_disparity_to_erp(view, d_e, cos, phi, shift_model="none")
+    m = np.isfinite(out3)
+    assert info3["shift_model_used"] == "cos"
+    assert np.abs(out3[m] - d_e[m]).max() < 1e-8
+    assert np.abs(out2[m] - d_e[m]).max() > 1e-3          # the legacy fit cannot represent t*cos
+    _, info1 = align_tangent_disparity_to_erp(view, d_e, np.ones((H, W)), phi, shift_model="cos")
+    assert info1["shift_model_used"] == "none"            # cos constant (rotated ERP view): not identifiable
+
+
+def test_robust_affine_fit_negative_scale_falls_back_to_identity():
+    from shift_alignment import robust_affine_fit
+    x = np.linspace(1, 2, 500)
+    a, b, _ = robust_affine_fit(x, 5.0 - x)                 # decreasing relation -> a < 0
+    assert (a, b) == (1.0, 0.0)

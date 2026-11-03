@@ -17,7 +17,9 @@ declare -A GATES=([off]='null' [on]='[30, 55]')
 run() {  # config tag
   local cfg="$1" name="$2"
   for p in rot dil full; do for g in off on; do
-    python run.py --config "$cfg" --max_scenes "$N" --tag "abl_${name}_${p}_${g}" \
+    # data.subset=spread: N evenly spaced frames, so every house / environment is represented (the first run used
+    # the first N lines; for PanoX that was 3 of 8 environments)
+    python run.py --config "$cfg" --max_scenes "$N" --tag "abl_${name}_${p}_${g}" --set data.subset=spread \
       --set "evaluation.methods=[Method2_MobiusTTA,Control_YawEnsemble]" \
       --set "mobius_tta.passes=${PASSES[$p]}" --set "mobius_tta.gate_lat=${GATES[$g]}" \
       || echo "❌ variant ${name}_${p}_${g} FAILED"

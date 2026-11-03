@@ -49,9 +49,10 @@ def robust_affine_fit(
         res, *_ = np.linalg.lstsq(A, yi, rcond=None)
         a, b = float(res[0]), float(res[1])
 
-        # Enforce positive scale
+        # A non-positive scale is a failed fit (inverts depth order): fall back to the identity map
+        # entirely (the old code reset only a and kept the fitted b, an inconsistent pair).
         if a <= 0:
-            a = 1.0
+            return 1.0, 0.0, valid
 
         # Residuals
         residuals = np.abs(y[valid] - (a * x[valid] + b))
@@ -65,6 +66,23 @@ def robust_affine_fit(
     return a, b, inliers
 
 
+def robust_linear_fit(X: np.ndarray, y: np.ndarray, max_iters: int = 5, mad_threshold: float = 2.5
+                      ) -> Tuple[np.ndarray, np.ndarray]:
+    """y ~ X @ coef by least squares with MAD outlier rejection (X: n x k). Returns (coef, inliers)."""
+    ok = np.all(np.isfinite(X), axis=1) & np.isfinite(y)
+    inl = ok.copy()
+    coef = np.full(X.shape[1], np.nan)
+    for _ in range(max_iters):
+        if inl.sum() < 10 * X.shape[1]:
+            break
+        coef, *_ = np.linalg.lstsq(X[inl], y[inl], rcond=None)
+        r = np.abs(y - X @ coef)
+        med = np.median(r[ok])
+        mad = np.median(np.abs(r[ok] - med)) + 1e-6
+        inl = ok & (r < mad_threshold * 1.4826 * mad)
+    return coef, inl
+
+
 def align_tangent_disparity_to_erp(
     tangent_disp_on_erp: np.ndarray,
     erp_disp_baseline: np.ndarray,
@@ -74,6 +92,7 @@ def align_tangent_disparity_to_erp(
     max_tangent_radius: float = 0.85,
     return_range: bool = False,
     min_anchor_pixels: int = 200,
+    shift_model: str = "cos",
 ) -> Tuple[np.ndarray, Dict[str, float]]:
     """Aligns a tangent disparity prediction to the ERP baseline disparity.
 
@@ -95,6 +114,13 @@ def align_tangent_disparity_to_erp(
         phi_deg_map: |latitude| in degrees [H, W]
         anchor_max_lat: Maximum |latitude| of anchor pixels
         return_range: if True, return 1 / aligned disparity (legacy behaviour)
+        shift_model: 'cos' (exact, default) | 'none' (legacy two-term fit, used for all results before 3 Nov 2026).
+            The tangent model's disparity is d_t = s/z + t and z = r*cos, so
+                d_erp = s_e/r + t_e = (s_e/s) * cos*d_t  -  (s_e*t/s) * cos  +  t_e
+            i.e. ERP disparity is affine in (cos*d_t, cos), not in cos*d_t alone. The two-term fit absorbed the
+            tangent shift t into a constant, which is wrong wherever cos varies across the crop (0.7-1 for a
+            90 deg view). With 'cos' the third coefficient models it; if the anchor ring has too little spread
+            in cos to identify it, or the 3-term fit is degenerate, the two-term fit is used and reported.
 
     Returns:
         aligned: Aligned ERP disparity (or range if return_range) [H, W], NaN outside the view
@@ -117,9 +143,19 @@ def align_tangent_disparity_to_erp(
     # Model:  d_erp ~ a * (cos_ray * d_t) + b
     x = cos_ray * tangent_disp_on_erp
     y = erp_disp_baseline
+    c, used = 0.0, "none"
     a, b, inliers = robust_affine_fit(x[anchor_mask], y[anchor_mask])
+    cr_anchor = cos_ray[anchor_mask]
+    if shift_model == "cos" and cr_anchor.size and np.ptp(cr_anchor[np.isfinite(cr_anchor)]) > 0.05:
+        X = np.stack([x[anchor_mask], cr_anchor, np.ones(int(anchor_mask.sum()))], -1)
+        coef, inl3 = robust_linear_fit(X, y[anchor_mask])
+        if np.all(np.isfinite(coef)) and coef[0] > 0:
+            a, c, b = (float(v) for v in coef)
+            inliers, used = inl3, "cos"
+    elif shift_model not in ("cos", "none"):
+        raise ValueError(f"unknown shift_model {shift_model!r} (cos | none)")
 
-    aligned_disp = a * x + b
+    aligned_disp = a * x + c * cos_ray + b
     floor = max(1e-6, 0.25 * float(np.nanpercentile(y[overlap], 1.0))) if overlap.any() else 1e-6
     aligned_disp = np.clip(aligned_disp, floor, None)
     aligned_disp = np.where(overlap | (np.isfinite(tangent_disp_on_erp) & (tangent_disp_on_erp > 0)),
@@ -129,6 +165,8 @@ def align_tangent_disparity_to_erp(
     fit_info = {
         "scale": a,
         "shift": b,
+        "cos_shift": c,
+        "shift_model_used": used,
         "anchor_pixels": int(anchor_mask.sum()),
         "inlier_ratio": float(inliers.sum() / max(anchor_mask.sum(), 1)),
         "anchor_fallback": fallback,

@@ -167,7 +167,7 @@ def main():
             from datasets.panorama import PanoramaDataset
             pano_ds = PanoramaDataset(str(cand), list_name, height=cfg["data"].get("height", 256),
                                       width=cfg["data"].get("width", 512), name=dataset_name,
-                                      limit=max_scenes)
+                                      limit=max_scenes, subset=cfg["data"].get("subset", "first"))
             logger.info(f"Loaded {len(pano_ds)} {dataset_name} panoramas from {cand / list_name}")
             break
     if pano_ds is not None:

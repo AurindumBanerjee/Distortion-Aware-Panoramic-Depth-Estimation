@@ -176,7 +176,8 @@ def evaluate_scene(
         model, rgb, pred_erp, phi_deg_map,
         source=cfg.get("polar_source", "auto"),
         fov_deg=tan_cfg.get("fov_deg", 90.0), resolution=tan_cfg.get("resolution", 384),
-        anchor_max_lat=cfg.get("alignment", {}).get("anchor_max_lat", 60.0))
+        anchor_max_lat=cfg.get("alignment", {}).get("anchor_max_lat", 60.0),
+        shift_model=cfg.get("alignment", {}).get("shift_model", "cos"))
     for info in infos:
         logger.debug(f"    polar view: {info}")
 

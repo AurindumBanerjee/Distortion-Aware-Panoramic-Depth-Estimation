@@ -66,11 +66,13 @@ def _offset_fit(x: np.ndarray, ref: np.ndarray, anchor: np.ndarray) -> Tuple[flo
 
 
 def _align(view_f: np.ndarray, base_f: np.ndarray, cos_ray: np.ndarray, phi: np.ndarray, fs: str,
-           anchor_max_lat: float, view_is_planar_disp: bool) -> Tuple[np.ndarray, Dict]:
+           anchor_max_lat: float, view_is_planar_disp: bool, shift_model: str = "cos") -> Tuple[np.ndarray, Dict]:
     """Align one polar view (already on the ERP grid, in fusion space) to the ERP prediction."""
     if fs == "disparity":
         cr = cos_ray if view_is_planar_disp else np.ones_like(view_f)
-        return align_tangent_disparity_to_erp(view_f, base_f, cr, phi, anchor_max_lat=anchor_max_lat)
+        # a rotated ERP view has cos = 1 everywhere: the cos term is not identifiable and is skipped automatically
+        return align_tangent_disparity_to_erp(view_f, base_f, cr, phi, anchor_max_lat=anchor_max_lat,
+                                              shift_model=shift_model)
     overlap = np.isfinite(view_f) & np.isfinite(base_f)
     anchor = overlap & (phi <= anchor_max_lat)
     if anchor.sum() < 200 and overlap.any():
@@ -81,7 +83,7 @@ def _align(view_f: np.ndarray, base_f: np.ndarray, cos_ray: np.ndarray, phi: np.
 
 def polar_predictions(model, rgb: np.ndarray, pred_erp: np.ndarray, phi_deg_map: np.ndarray,
                       source: str = "auto", fov_deg: float = 90.0, resolution: int = 384,
-                      anchor_max_lat: float = 60.0, rotated_max_seen_lat: float = 50.0
+                      anchor_max_lat: float = 60.0, rotated_max_seen_lat: float = 50.0, shift_model: str = "cos"
                       ) -> Tuple[np.ndarray, str, List[Dict]]:
     """Aligned polar-view prediction merged on the ERP grid, in fusion space (NaN where no view).
 
@@ -108,7 +110,8 @@ def polar_predictions(model, rgb: np.ndarray, pred_erp: np.ndarray, phi_deg_map:
                 view_f = to_fusion(vals, fs)
             else:
                 view_f = vals  # planar disparity, converted inside the alignment
-            al, info = _align(view_f, base_f, cos_ray, phi_deg_map, fs, anchor_max_lat, view_is_planar_disp=True)
+            al, info = _align(view_f, base_f, cos_ray, phi_deg_map, fs, anchor_max_lat, view_is_planar_disp=True,
+                               shift_model=shift_model)
         elif src == "rotated_erp":
             R = rotation_from_ypr(pitch_deg=90.0 * sign)
             rgb_rot = np.clip(np.rint(np.asarray(rotate_erp(rgb, R))), 0, 255).astype(np.uint8)
