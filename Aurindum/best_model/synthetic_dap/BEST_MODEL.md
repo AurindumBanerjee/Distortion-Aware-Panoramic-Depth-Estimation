@@ -1,8 +1,8 @@
 # 🏆 Best Model & Method Registry
 
-> **Last Updated:** `2026-11-03 01:04:32`  
+> **Last Updated:** `2026-11-03 14:44:02`  
 > **Winning Method:** **Gradient-Domain Polar Fusion**  
-> **Key Highlights:** Polar AbsRel = **0.3672**, Global AbsRel = **0.2639**
+> **Key Highlights:** Polar AbsRel = **0.1911**, Global AbsRel = **0.1712**
 
 ---
 
@@ -11,42 +11,52 @@
 ### Global Metrics (Full Sphere)
 | Metric | AbsRel ↓ | SqRel ↓ | RMSE ↓ | RMSElog ↓ | δ < 1.25 ↑ | δ < 1.25² ↑ | δ < 1.25³ ↑ |
 |:--- |:---:|:---:|:---:|:---:|:---:|:---:|:---:|
-| **Score** | **0.2639** | 0.2650 | 0.6682 | 0.3695 | 51.51% | 78.10% | 90.32% |
+| **Score** | **0.1712** | 0.0651 | 0.3738 | 0.2036 | 77.08% | 99.93% | 99.99% |
 
 ### Per-Latitude Band Breakdown (|φ|)
 | Band | Latitude Range | AbsRel ↓ | RMSE ↓ | δ < 1.25 ↑ | Status |
 |:--- |:---:|:---:|:---:|:---:|:---:|
-| Equatorial | 0-15° | 0.1741 | 0.6649 | 74.9% | Stable |
-| Low Latitude | 15-30° | 0.1584 | 0.5990 | 75.7% | Stable |
-| Mid Latitude | 30-45° | 0.2062 | 0.5857 | 61.8% | Stable |
-| High Latitude | 45-60° | 0.3101 | 0.6749 | 41.6% | 🎯 Target Corrected |
-| Severe Polar | 60-75° | **0.3675** | 0.6837 | 31.6% | 🎯 Target Corrected |
-| Extreme Polar | 75-90° | **0.3669** | 0.6252 | 23.3% | 🎯 Target Corrected |
+| Equatorial | 0-15° | 0.1435 | 0.4494 | 94.1% | Stable |
+| Low Latitude | 15-30° | 0.1475 | 0.4119 | 91.1% | Stable |
+| Mid Latitude | 30-45° | 0.1618 | 0.3689 | 84.1% | Stable |
+| High Latitude | 45-60° | 0.1758 | 0.3544 | 71.6% | 🎯 Target Corrected |
+| Severe Polar | 60-75° | **0.1975** | 0.3358 | 62.6% | 🎯 Target Corrected |
+| Extreme Polar | 75-90° | **0.1846** | 0.3067 | 63.6% | 🎯 Target Corrected |
 
 ---
 
 ## 2. Configuration
 ```yaml
 alignment:
-  anchor_max_lat: 35.0
+  anchor_max_lat: 60.0
   mad_threshold: 2.5
+benchmark_suffix: _dap
 blending:
   blend_margin: 10.0
   mode: gradient_poisson
-  poisson_solver: sor
+  poisson_solver: sparse
+  texture_gate_mode: erp
+  texture_tau: 0.0
 evaluation:
-  align_protocol: align-equatorial
-  height: 256
-  log_dir: logs
+  height: 512
+  log_dir: logs_dap
+  max_depth: 50.0
+  min_depth: 0.05
   num_scenes: 24
-  output_dir: outputs
-  width: 512
-method_name: Gradient-Domain Polar Fusion
+  output_dir: outputs_dap
+  protocols:
+  - none
+  - align-all
+  width: 1024
+method_name: Gradient-Domain Polar Fusion (DAP)
 model:
   device: auto
-  name: dpt_hybrid_384
-  scale: affine
-  space: disparity
+  name: dap
+  repo: third_party/DAP
+  scale: metric
+  space: depth
+  weights: weights/dap/model.pth
+polar_source: auto
 tangent:
   fov_deg: 90.0
   num_tangent_views: 2

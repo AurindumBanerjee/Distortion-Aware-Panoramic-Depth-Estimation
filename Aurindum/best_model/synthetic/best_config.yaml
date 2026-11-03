@@ -1,0 +1,30 @@
+evaluation:
+  height: 256
+  log_dir: logs
+  max_depth: 50.0
+  min_depth: 0.05
+  num_scenes: 24
+  output_dir: outputs
+  protocols:
+  - align-all
+  - align-equatorial
+  width: 512
+method_name: Mobius TTA Ensembling
+mobius_tta:
+  anchor_max_lat: 30.0
+  fusion_mode: distortion_weighted
+  passes:
+  - pitch: 90.0
+    scale: 1.0
+  - pitch: -90.0
+    scale: 1.0
+  - pitch: 0.0
+    scale: 1.6
+  - pitch: 0.0
+    scale: 0.625
+  reanchor: auto
+model:
+  device: auto
+  name: dpt_hybrid_384
+  scale: affine
+  space: disparity

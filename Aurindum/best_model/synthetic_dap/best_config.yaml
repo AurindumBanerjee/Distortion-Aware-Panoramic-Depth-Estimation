@@ -1,0 +1,35 @@
+alignment:
+  anchor_max_lat: 60.0
+  mad_threshold: 2.5
+benchmark_suffix: _dap
+blending:
+  blend_margin: 10.0
+  mode: gradient_poisson
+  poisson_solver: sparse
+  texture_gate_mode: erp
+  texture_tau: 0.0
+evaluation:
+  height: 512
+  log_dir: logs_dap
+  max_depth: 50.0
+  min_depth: 0.05
+  num_scenes: 24
+  output_dir: outputs_dap
+  protocols:
+  - none
+  - align-all
+  width: 1024
+method_name: Gradient-Domain Polar Fusion (DAP)
+model:
+  device: auto
+  name: dap
+  repo: third_party/DAP
+  scale: metric
+  space: depth
+  weights: weights/dap/model.pth
+polar_source: auto
+tangent:
+  fov_deg: 90.0
+  num_tangent_views: 2
+  phi_threshold: 45.0
+  resolution: 384
