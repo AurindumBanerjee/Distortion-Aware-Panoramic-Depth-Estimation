@@ -57,7 +57,7 @@ def run_single_benchmark_scene(
 
     m1_cfg = m1_cfg or {}
     want = set(methods) if methods else {"Tangent_Spatial", "Method1_GradientFusion", "Method2_MobiusTTA",
-                                         "Control_YawEnsemble"}  # Baseline is always evaluated
+                                         "Control_YawEnsemble"}  # Baseline is always evaluated; PlanarPrior opt-in
     H, W = gt_depth.shape
     phi_deg_map = np.abs(latitude_map(H, W))
     ev = lambda p: evaluate_all_protocols(p, gt_depth, valid_gt, model, protocols, min_depth, max_depth)
@@ -90,6 +90,24 @@ def run_single_benchmark_scene(
                                    texture_gate_mode=m1_cfg.get("texture_gate_mode", "erp"), **common)
             res_grad, m_grad = ev(pred_grad)
 
+    res_pp = m_pp = None
+    if "Method1_PlanarPrior" in want:
+        # 3b. Training-free floor / ceiling plane prior, fused in the gradient domain (no extra forward pass)
+        from planar_prior import fit_polar_planes
+        from polar_views import fuse_polar, fusion_space, to_fusion
+        pp = (m1_cfg or {}).get("planar_prior", {})
+        space = "disparity" if fusion_space(model) == "disparity" else "depth"
+        plane, pinfo = fit_polar_planes(pred_erp, space, ring=tuple(pp.get("ring", (40.0, 60.0))),
+                                        cap_from=pp.get("cap_from", 40.0), min_inlier=pp.get("min_inlier", 0.6),
+                                        inlier_tol=pp.get("inlier_tol", 0.05), max_tilt_deg=pp.get("max_tilt_deg", 20.0),
+                                        agree_tol=pp.get("agree_tol", 0.5))
+        for info in pinfo:
+            logger.debug(f"planar prior: {info}")
+        fs = fusion_space(model)
+        pred_pp = fuse_polar(pred_erp, to_fusion(plane, fs), fs, phi_deg_map, mode="gradient_poisson", rgb=rgb,
+                             phi_threshold=pp.get("phi_threshold", 60.0), blend_margin=pp.get("blend_margin", 10.0))
+        res_pp, m_pp = ev(pred_pp)
+
     res_mob = m_mob = res_yaw = m_yaw = None
     if "Method2_MobiusTTA" in want:
         # 4. Method 2: Möbius TTA (reuses the baseline forward pass as the identity pass)
@@ -105,6 +123,7 @@ def run_single_benchmark_scene(
     out = {"Baseline": res_base, "predictions": {"baseline": m_base}}
     for name, res, key, pred in (("Tangent_Spatial", res_tan, "tangent_spatial", m_tan),
                                  ("Method1_GradientFusion", res_grad, "method1_grad", m_grad),
+                                 ("Method1_PlanarPrior", res_pp, "method1_planar", m_pp),
                                  ("Method2_MobiusTTA", res_mob, "method2_mobius", m_mob),
                                  ("Control_YawEnsemble", res_yaw, "control_yaw", m_yaw)):
         if res is not None:

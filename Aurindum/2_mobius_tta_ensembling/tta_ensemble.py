@@ -105,6 +105,95 @@ def guard_weight(res: float, a: float, tau: float, a_max: float) -> float:
     return float(np.exp(-(res / max(tau, 1e-6)) ** 2))
 
 
+def joint_reanchor(raw: Sequence[np.ndarray], seen: Sequence[np.ndarray], mode: str, max_lat: float = 45.0,
+                   max_px_per_pair: int = 20000, iters: int = 2, k: float = 2.5) -> List[Tuple[float, float]]:
+    """Pass synchronisation: solve every pass's re-anchor jointly (pass 0 = identity, fixed to a=1, b=0).
+
+    affine / scale:  min sum_{i<j} sum_px w * (a_i P_i + b_i - a_j P_j - b_j)^2   (b = 0 for 'scale')
+    logscale:        min sum_{i<j} sum_px w * (x_i + log P_i - x_j - log P_j)^2,  a_i = exp(x_i)
+    over pixels seen below `max_lat` in BOTH views, w = cos^2(lat_i) cos^2(lat_j); MAD trimming between iterations.
+    A pass whose solution is not usable (a <= 0, no overlap) gets (1, 0).
+    """
+    n = len(raw)
+    has_b = mode == "affine"
+    npar = (n - 1) * (2 if has_b else 1)
+    rng = np.random.default_rng(0)
+    blocks = []  # (i, j, Pi, Pj, w)
+    for i in range(n):
+        for j in range(i + 1, n):
+            m = (seen[i] < max_lat) & (seen[j] < max_lat) & np.isfinite(raw[i]) & np.isfinite(raw[j])
+            if mode == "logscale":
+                m &= (raw[i] > 0) & (raw[j] > 0)
+            idx = np.flatnonzero(m)
+            if idx.size < 50:
+                continue
+            if idx.size > max_px_per_pair:
+                idx = rng.choice(idx, max_px_per_pair, replace=False)
+            w = (np.cos(np.deg2rad(seen[i].ravel()[idx])) * np.cos(np.deg2rad(seen[j].ravel()[idx]))) ** 2
+            blocks.append((i, j, raw[i].ravel()[idx], raw[j].ravel()[idx], w))
+    if not blocks:
+        return [(1.0, 0.0)] * n
+
+    def col(p, which):  # column of parameter (pass p, 0 = a/x, 1 = b) ; pass 0 is fixed
+        return None if p == 0 else (p - 1) * (2 if has_b else 1) + which
+
+    rows_A, rows_y, rows_w = [], [], []
+    for i, j, Pi, Pj, w in blocks:
+        L = len(w)
+        A = np.zeros((L, npar))
+        y = np.zeros(L)
+        for p, P, sgn in ((i, Pi, 1.0), (j, Pj, -1.0)):
+            v = np.log(P) if mode == "logscale" else P
+            if mode == "logscale":
+                c = col(p, 0)
+                if c is not None:
+                    A[:, c] += sgn
+                y -= sgn * v  # x_i - x_j = log P_j - log P_i
+            else:
+                c = col(p, 0)
+                if c is None:
+                    y -= sgn * v  # fixed a = 1 for the identity
+                else:
+                    A[:, c] += sgn * v
+                if has_b and col(p, 1) is not None:
+                    A[:, col(p, 1)] += sgn
+        rows_A.append(A)
+        rows_y.append(y)
+        rows_w.append(w)
+    A, y, w = np.concatenate(rows_A), np.concatenate(rows_y), np.concatenate(rows_w)
+    keep = np.ones(len(y), bool)
+    sol = np.zeros(npar)
+    for _ in range(iters):
+        sw = np.sqrt(w[keep])
+        sol, *_ = np.linalg.lstsq(A[keep] * sw[:, None], y[keep] * sw, rcond=None)
+        r = np.abs(A @ sol - y)
+        med = np.median(r)
+        mad = np.median(np.abs(r - med)) + 1e-12
+        keep = r < med + k * 1.4826 * mad
+    out = [(1.0, 0.0)]
+    for p in range(1, n):
+        if mode == "logscale":
+            a, b = float(np.exp(sol[col(p, 0)])), 0.0
+        else:
+            a = float(sol[col(p, 0)])
+            b = float(sol[col(p, 1)]) if has_b else 0.0
+        out.append((a, b) if np.isfinite(a) and a > 0 and np.isfinite(b) else (1.0, 0.0))
+    return out
+
+
+def consensus_weights(preds: Sequence[np.ndarray], weights: Sequence[np.ndarray], k: float = 2.5) -> List[np.ndarray]:
+    """Down-weight, per pixel, passes far from the per-pixel median of all aligned passes (robust sigma global)."""
+    P = np.stack(preds, 0)
+    med = np.nanmedian(P, axis=0)
+    dev = np.abs(P - med[None])
+    d = dev[np.isfinite(dev)]
+    if d.size == 0:
+        return list(weights)
+    sigma = 1.4826 * np.median(d) + 1e-12
+    f = np.exp(-(np.nan_to_num(dev, nan=np.inf) / (k * sigma)) ** 2)
+    return [w * f[i] for i, w in enumerate(weights)]
+
+
 class MobiusTTAEnsemble:
     def __init__(
         self,
@@ -119,6 +208,10 @@ class MobiusTTAEnsemble:
         gate_lat: Optional[Sequence[float]] = None,
         preset: Optional[str] = None,
         fit_guard: Optional[Dict[str, float]] = None,
+        reanchor_scope: str = "identity",
+        sync_max_lat: float = 45.0,
+        consensus: bool = False,
+        consensus_k: float = 2.5,
     ):
         """
         Args:
@@ -138,6 +231,13 @@ class MobiusTTAEnsemble:
                        well it reproduces the identity pass on the equatorial overlap (see fit_quality). A pass
                        whose fit is poor, or whose re-anchor scale is implausible (outside [1/a_max, a_max]),
                        is faded out, so that image falls back to the identity prediction. Needs no ground truth.
+            reanchor_scope: 'identity' (default: each pass fitted to the identity pass on the equatorial overlap) |
+                       'joint' (pass synchronisation: all passes' (a, b) solved together over EVERY pairwise overlap
+                       where both views see the pixel below sync_max_lat; the identity stays fixed). The two
+                       pole-recentring passes see BOTH poles near their equator, so they constrain each other at the
+                       poles, where the identity-only fit has no data.
+            consensus: per-pixel robust fusion: a pass that disagrees with the per-pixel median of the aligned
+                       passes by more than ~consensus_k robust sigmas is down-weighted (label-free outlier rejection).
             anchor_max_lat: anchor pixels must have |lat| below this in both frames
             weight_power: w = cos(lat_seen)^p
         """
@@ -164,6 +264,12 @@ class MobiusTTAEnsemble:
             reanchor = "affine" if space == "disparity" else ("logscale" if scale == "metric" else "scale")
         self.reanchor = reanchor
         self.gate_lat = None if gate_lat in (None, [], ()) else (float(gate_lat[0]), float(gate_lat[1]))
+        if reanchor_scope not in ("identity", "joint"):
+            raise ValueError(f"unknown reanchor_scope {reanchor_scope!r} (identity | joint)")
+        self.reanchor_scope = reanchor_scope
+        self.sync_max_lat = float(sync_max_lat)
+        self.consensus = bool(consensus)
+        self.consensus_k = float(consensus_k)
         self.fit_guard = None if not fit_guard else {"tau": float(fit_guard.get("tau", 0.5)),
                                                      "a_max": float(fit_guard.get("a_max", 4.0))}
 
@@ -172,32 +278,43 @@ class MobiusTTAEnsemble:
         """Run all passes and fuse. `identity_pred` may be passed to reuse a baseline forward pass."""
         H, W = rgb_erp.shape[:2]
         lat0 = np.abs(latitude_map(H, W))
-        preds, weights, diags = [], [], []
-        ref = None
 
+        # 1. forward passes, brought back to the original grid (raw, not yet re-anchored)
+        raw, seen, is_ids = [], [], []
         for pitch, scale in self.passes:
             is_id = abs(pitch) < 1e-6 and abs(scale - 1.0) < 1e-6
             if is_id:
-                unwarped = identity_pred if identity_pred is not None else self.model.predict(rgb_erp, kind="erp")
-                unwarped = unwarped.astype(np.float64)
-                lat_seen = lat0
-                ref = unwarped
-                a, b = 1.0, 0.0
+                u = identity_pred if identity_pred is not None else self.model.predict(rgb_erp, kind="erp")
+                u, ls = np.asarray(u, dtype=np.float64), lat0
             else:
-                warped_rgb, lat_seen = warp_erp_mobius(rgb_erp, scale_factor=scale, pitch_deg=pitch)
-                pred_w = self.model.predict(warped_rgb, kind="erp")
-                unwarped = unwarp_depth_mobius(pred_w, scale_factor=scale, pitch_deg=pitch)
-                a, b = 1.0, 0.0
-                res, n_anchor = float("nan"), 0
-                if self.reanchor != "none" and ref is not None:
-                    anchor = (lat0 < self.anchor_max_lat) & (lat_seen < self.anchor_max_lat)
-                    if anchor.sum() < 200:  # e.g. pitch 90: overlap of the two equators is small
-                        score = np.maximum(lat0, lat_seen)
-                        anchor = score <= np.percentile(score, 10.0)
+                warped_rgb, ls = warp_erp_mobius(rgb_erp, scale_factor=scale, pitch_deg=pitch)
+                u = unwarp_depth_mobius(self.model.predict(warped_rgb, kind="erp"), scale_factor=scale, pitch_deg=pitch)
+            raw.append(u)
+            seen.append(ls)
+            is_ids.append(is_id)
+        ref = raw[0]
+
+        # 2. re-anchoring: each pass to the identity on the equatorial overlap (default), or all passes jointly
+        fits = [(1.0, 0.0)] * len(raw)
+        if self.reanchor != "none" and self.reanchor_scope == "joint" and len(raw) > 1:
+            fits = joint_reanchor(raw, seen, self.reanchor, max_lat=self.sync_max_lat)
+
+        preds, weights, diags = [], [], []
+        for k, ((pitch, scale), unwarped, lat_seen, is_id) in enumerate(zip(self.passes, raw, seen, is_ids)):
+            a, b = 1.0, 0.0
+            res, n_anchor = float("nan"), 0
+            if not is_id and self.reanchor != "none":
+                anchor = (lat0 < self.anchor_max_lat) & (lat_seen < self.anchor_max_lat)
+                if anchor.sum() < 200:  # e.g. pitch 90: overlap of the two equators is small
+                    score = np.maximum(lat0, lat_seen)
+                    anchor = score <= np.percentile(score, 10.0)
+                if self.reanchor_scope == "joint":
+                    a, b = fits[k]
+                else:
                     a, b = _robust_fit(unwarped[anchor], ref[anchor], self.reanchor)
-                    res = fit_quality(unwarped[anchor], ref[anchor], a, b, self.reanchor)
-                    n_anchor = int(anchor.sum())
-                    unwarped = a * unwarped + b
+                res = fit_quality(unwarped[anchor], ref[anchor], a, b, self.reanchor)
+                n_anchor = int(anchor.sum())
+                unwarped = a * unwarped + b
 
             w = np.clip(np.cos(np.deg2rad(lat_seen)) ** self.weight_power, self.min_weight, 1.0)
             g = 1.0
@@ -217,6 +334,10 @@ class MobiusTTAEnsemble:
                           "guard_w": g, "unwarped_pred": unwarped, "weight": w})
             logger.debug(f"pass pitch={pitch:+.0f} scale={scale:.3f}: anchor a={a:.4f} b={b:.4f}")
 
+        if self.consensus and len(preds) > 2:
+            weights = consensus_weights(preds, weights, k=self.consensus_k)
+            for d, w in zip(diags, weights):
+                d["weight"] = w
         P = np.stack(preds, 0)
         Wt = np.stack(weights, 0)
         if self.fusion_mode == "median":

@@ -73,6 +73,13 @@ def load_model(cfg_model: Dict, logger: logging.Logger):
     model_name = str(cfg_model.get("name", "dpt_hybrid_384")).lower()
     logger.info(f"Initializing model wrapper: {model_name}...")
 
+    # Panoramic models for the polar audit (DA360, DA^2): never fall back silently
+    from models.depth_model import build_panoramic_model
+    pano = build_panoramic_model(cfg_model, str(AURINDUM_DIR))
+    if pano is not None:
+        logger.info(f"Loaded panoramic model {pano.name} ({pano.device}).")
+        return pano
+
     # Check for DAP on GPU server
     if "dap" in model_name:
         try:
@@ -218,6 +225,9 @@ def main():
         gate_lat=cfg["mobius_tta"].get("gate_lat"),
         preset=cfg["mobius_tta"].get("preset"),
         fit_guard=cfg["mobius_tta"].get("fit_guard"),
+        reanchor_scope=cfg["mobius_tta"].get("reanchor_scope", "identity"),
+        sync_max_lat=cfg["mobius_tta"].get("sync_max_lat", 45.0),
+        consensus=cfg["mobius_tta"].get("consensus", False),
     )
 
     # Run over test scenes

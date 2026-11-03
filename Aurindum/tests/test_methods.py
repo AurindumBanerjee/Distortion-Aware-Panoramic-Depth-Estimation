@@ -364,3 +364,90 @@ def test_robust_affine_fit_negative_scale_falls_back_to_identity():
     x = np.linspace(1, 2, 500)
     a, b, _ = robust_affine_fit(x, 5.0 - x)                 # decreasing relation -> a < 0
     assert (a, b) == (1.0, 0.0)
+
+
+# ---------- planar prior, pass synchronisation, panoramic audit wrappers ----------
+def _room_range(H=64, W=128, h_floor=1.5, h_ceil=1.2, radius=3.0):
+    from geometry.spherical import erp_to_sphere
+    d = erp_to_sphere(H, W).numpy()
+    with np.errstate(divide="ignore"):
+        r_floor = np.where(d[..., 1] > 1e-6, h_floor / d[..., 1], np.inf)
+        r_ceil = np.where(d[..., 1] < -1e-6, h_ceil / -d[..., 1], np.inf)
+        r_wall = radius / np.maximum(np.hypot(d[..., 0], d[..., 2]), 1e-9)
+    return np.minimum(np.minimum(r_floor, r_ceil), r_wall)
+
+
+def test_planar_prior_recovers_floor_and_ceiling_from_the_ring():
+    sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "1_gradient_polar_fusion"))
+    from planar_prior import fit_polar_planes
+    from polar_views import fuse_polar
+    H, W = 64, 128
+    r = _room_range(H, W)
+    lat = latitude_map(H, W)
+    disp_true = 2.0 / r + 0.3
+    rng = np.random.default_rng(0)
+    noisy = disp_true * np.where(np.abs(lat) > 62, np.exp(0.3 * rng.normal(size=(H, W))), 1.0)
+    plane, infos = fit_polar_planes(noisy, "disparity", agree_tol=1.0)
+    assert all(i["accepted"] for i in infos), infos
+    m = np.isfinite(plane) & (np.abs(lat) > 62)
+    assert np.median(np.abs(plane[m] - disp_true[m]) / disp_true[m]) < 1e-6
+    fused = fuse_polar(noisy, plane, "disparity", np.abs(lat), mode="gradient_poisson", phi_threshold=60, blend_margin=10)
+    cap = np.abs(lat) > 62
+    # noise starts at 62 deg, inside the 50-70 deg blend ramp, so some noisy gradient remains: expect >= 60% less
+    assert np.mean(np.abs(fused[cap] - disp_true[cap])) < 0.4 * np.mean(np.abs(noisy[cap] - disp_true[cap]))
+    # metric depth variant (DAP): range in, range out
+    plane_d, infos_d = fit_polar_planes(r * np.where(np.abs(lat) > 62, 1.3, 1.0), "depth")
+    md = np.isfinite(plane_d) & cap
+    assert all(i["accepted"] for i in infos_d) and np.median(np.abs(plane_d[md] - r[md]) / r[md]) < 1e-6
+
+
+def test_planar_prior_rejects_non_planar_rings_and_tilted_planes():
+    sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "1_gradient_polar_fusion"))
+    from planar_prior import fit_polar_planes
+    rng = np.random.default_rng(1)
+    clutter = rng.uniform(0.2, 2.0, (64, 128))
+    plane, infos = fit_polar_planes(clutter, "disparity")
+    assert not any(i["accepted"] for i in infos) and not np.isfinite(plane).any()
+    from geometry.spherical import erp_to_sphere
+    d = erp_to_sphere(64, 128).numpy()
+    n = np.array([0.7, 0.7, 0.0]) / np.hypot(0.7, 0.7)       # 45 deg tilted "floor"
+    inv = np.clip(d @ n, 1e-3, None) / 1.5
+    _, infos_t = fit_polar_planes(inv, "disparity")
+    assert not infos_t[0]["accepted"] and "tilt" in infos_t[0].get("reason", "")
+
+
+def test_joint_reanchor_recovers_known_affine_maps_and_consensus_downweights_outliers():
+    from tta_ensemble import consensus_weights, joint_reanchor
+    H, W = 32, 64
+    lat = np.abs(latitude_map(H, W))
+    truth = 1.0 + np.random.default_rng(2).uniform(0, 1, (H, W))
+    seen = [lat, 90 - lat, 90 - lat]                        # two "rotated" passes see the poles at the equator
+    raw = [truth, (truth - 0.2) / 2.0, (truth + 0.1) / 0.5]  # P_i such that a_i P_i + b_i = truth
+    fits = joint_reanchor(raw, seen, "affine", max_lat=60)
+    assert np.allclose(fits[1], (2.0, 0.2), atol=1e-6) and np.allclose(fits[2], (0.5, -0.1), atol=1e-6)
+    fl = joint_reanchor([truth, truth / 3.0, truth * 2.0], seen, "logscale", max_lat=60)
+    assert abs(fl[1][0] - 3.0) < 1e-6 and abs(fl[2][0] - 0.5) < 1e-6
+    preds = [truth, truth.copy(), truth + 5.0]
+    w = consensus_weights(preds, [np.ones((H, W))] * 3)
+    assert w[2].max() < 1e-3 and w[0].min() > 0.9
+
+
+def test_joint_scope_runs_end_to_end_and_identity_scope_is_unchanged():
+    from tta_ensemble import MobiusTTAEnsemble
+    rgb = _content_rgb()
+    a, _ = MobiusTTAEnsemble(_ContentModel(), preset="rotation_only").predict(rgb)
+    b, _ = MobiusTTAEnsemble(_ContentModel(), preset="rotation_only", reanchor_scope="identity").predict(rgb)
+    assert np.array_equal(a, b)
+    j, dj = MobiusTTAEnsemble(_ContentModel(), preset="rotation_only", reanchor_scope="joint", consensus=True).predict(rgb)
+    assert np.isfinite(j).all() and len(dj) == 3
+    with pytest.raises(ValueError):
+        MobiusTTAEnsemble(_ContentModel(), reanchor_scope="nope")
+
+
+def test_panoramic_model_builder_dispatch_and_missing_repo_errors(tmp_path):
+    from models.depth_model import build_panoramic_model
+    assert build_panoramic_model({"name": "dpt_hybrid_384"}, str(tmp_path)) is None
+    with pytest.raises(FileNotFoundError):
+        build_panoramic_model({"name": "da360"}, str(tmp_path))
+    with pytest.raises(FileNotFoundError):
+        build_panoramic_model({"name": "da2"}, str(tmp_path))

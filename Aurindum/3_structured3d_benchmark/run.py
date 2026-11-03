@@ -76,6 +76,13 @@ def load_model(cfg_model: Dict, logger: logging.Logger):
     model_name = str(cfg_model.get("name", "dpt_hybrid_384")).lower()
     logger.info(f"Initializing model wrapper: {model_name}...")
 
+    # Panoramic models for the polar audit (DA360, DA^2): never fall back silently
+    from models.depth_model import build_panoramic_model
+    pano = build_panoramic_model(cfg_model, str(AURINDUM_DIR))
+    if pano is not None:
+        logger.info(f"Loaded panoramic model {pano.name} ({pano.device}).")
+        return pano
+
     # Check for DAP on GPU server
     if "dap" in model_name:
         try:
@@ -200,6 +207,9 @@ def main():
         gate_lat=m2_cfg.get("gate_lat"),
         preset=m2_cfg.get("preset"),
         fit_guard=m2_cfg.get("fit_guard"),
+        reanchor_scope=m2_cfg.get("reanchor_scope", "identity"),
+        sync_max_lat=m2_cfg.get("sync_max_lat", 45.0),
+        consensus=m2_cfg.get("consensus", False),
     )
     ev_cfg = cfg.get("evaluation", {})
     protocols = tuple(ev_cfg.get("protocols") or default_protocols(model))
@@ -210,9 +220,11 @@ def main():
     H = cfg["data"].get("height", 256)
     W = cfg["data"].get("width", 512)
 
-    all_methods = ["Baseline", "Tangent_Spatial", "Method1_GradientFusion", "Method2_MobiusTTA", "Control_YawEnsemble"]
+    all_methods = ["Baseline", "Tangent_Spatial", "Method1_GradientFusion", "Method1_PlanarPrior", "Method2_MobiusTTA",
+                   "Control_YawEnsemble"]
+    opt_in = {"Method1_PlanarPrior"}  # only when listed in evaluation.methods (keeps earlier runs unchanged)
     sel = cfg["evaluation"].get("methods")
-    method_keys = [m for m in all_methods if m == "Baseline" or not sel or m in sel]
+    method_keys = [m for m in all_methods if m == "Baseline" or (sel and m in sel) or (not sel and m not in opt_in)]
     accumulators: Dict[str, List[Dict]] = {m: [] for m in method_keys}
     sample_vis = None
     tex_bank = _texture_bank(seed=42)
@@ -314,7 +326,8 @@ def main():
 
     tracker = BestModelTracker(str(AURINDUM_DIR / "best_model"), benchmark=record["benchmark"])
     win_pred_key = {"Baseline": "baseline", "Tangent_Spatial": "tangent_spatial",
-                    "Method1_GradientFusion": "method1_grad", "Method2_MobiusTTA": "method2_mobius",
+                    "Method1_GradientFusion": "method1_grad", "Method1_PlanarPrior": "method1_planar",
+                    "Method2_MobiusTTA": "method2_mobius",
                     "Control_YawEnsemble": "control_yaw"}[winner_name]
     tracker.update_if_best(
         method_name=f"Structured3D: {winner_name}",

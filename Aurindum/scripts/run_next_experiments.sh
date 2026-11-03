@@ -25,7 +25,16 @@
 #                  earlier Method 1 numbers used the 2-term fit (shift_model=none)
 #   F  scripts/diagnose_reanchor.py on the same four datasets (DIAG_N frames, default 40): intrinsic vs realised
 #      gain of the rotated pass, anchor loss, and which label-free signal predicts harm.
-#   Stage D should be re-run last to include E (STAGES="E F D").
+#   G  Planar prior (Method1_PlanarPrior: floor / ceiling plane from the model's own 40-60 deg ring, gradient fusion),
+#      MiDaS and DAP on Structured3D, PanoX, Holo360D indoor/outdoor (no extra forward pass). Tag 'planar'.
+#   H  Pass synchronisation for rotation-only Möbius-TTA, MiDaS, same four datasets:
+#        rotsync      reanchor_scope=joint
+#        rotsynccons  reanchor_scope=joint + consensus (per-pixel outlier down-weighting)
+#   I  Polar audit of 2026 panoramic models (DA360, DA^2) on the four datasets: Baseline per latitude band, plus
+#      rotation-only M2, yaw control and planar prior. Needs third_party/DA360 + weights/da360/DA360_large.pth and
+#      third_party/DA2 (pip install -e third_party/DA2/src; weights from huggingface haodongli/DA-2). DA360 was
+#      trained on Structured3D: its Structured3D numbers are in-domain.
+#   Stage D should be re-run last to include E-I (STAGES="E F G H I D").
 #
 # Other env: CONDA_ENV (RL), CONDA_SH, CUDA_VISIBLE_DEVICES, MAX_SCENES (stage A/B series 3 limit), ABL_N.
 # ==============================================================================
@@ -105,6 +114,40 @@ do_run() {
                     python scripts/diagnose_reanchor.py --config "$cfg" --max_scenes "$DIAG_N" --tag "$tag" && say "✅ F diagnose $tag" || say "❌ F diagnose $tag FAILED"
                 done
             else say "skip stage F (no MiDaS)"; fi ;;
+        G)  say "=============== Stage G: planar prior ==============="
+                local gs=""; [ -n "${ESC:-}" ] && gs="--max_scenes $ESC --set data.subset=spread"
+                for CFG in config.yaml config_panox.yaml config_holo360d_indoor.yaml config_holo360d_outdoor.yaml \
+                           config_dap.yaml config_dap_panox.yaml config_dap_holo360d_indoor.yaml config_dap_holo360d_outdoor.yaml; do
+                    case "$CFG" in *panox*) [ -f data/panox/test.txt ] || continue;; *holo*) [ -f data/holo360d/test.txt ] || continue;; esac
+                    ok_cfg "$CFG" && step "G planar prior [$CFG]" 3_structured3d_benchmark --config "$CFG" --tag planar $gs \
+                        --set "evaluation.methods=[Method1_PlanarPrior]"
+                done ;;
+        H)  say "=============== Stage H: pass synchronisation (rotation-only M2, MiDaS) ==============="
+            if [ "$have_midas" = 1 ]; then
+                local hs=""; [ -n "${ESC:-}" ] && hs="--max_scenes $ESC --set data.subset=spread"
+                for CFG in config.yaml config_panox.yaml config_holo360d_indoor.yaml config_holo360d_outdoor.yaml; do
+                    case "$CFG" in config_panox.yaml) [ -f data/panox/test.txt ] || continue;; config_holo*) [ -f data/holo360d/test.txt ] || continue;; esac
+                    step "H1 joint re-anchor [$CFG]" 3_structured3d_benchmark --config "$CFG" --tag rotsync $hs \
+                        --set "mobius_tta.preset=rotation_only" --set "mobius_tta.reanchor_scope=joint" --set "evaluation.methods=[Method2_MobiusTTA]"
+                    step "H2 joint re-anchor + consensus [$CFG]" 3_structured3d_benchmark --config "$CFG" --tag rotsynccons $hs \
+                        --set "mobius_tta.preset=rotation_only" --set "mobius_tta.reanchor_scope=joint" --set "mobius_tta.consensus=true" \
+                        --set "evaluation.methods=[Method2_MobiusTTA]"
+                done
+            else say "skip stage H (no MiDaS)"; fi ;;
+        I)  say "=============== Stage I: polar audit of DA360 / DA^2 ==============="
+            local is=""; [ -n "${ESC:-}" ] && is="--max_scenes $ESC --set data.subset=spread"
+            local models=""
+            { [ -f weights/da360/DA360_large.pth ] && [ -d third_party/DA360/networks ]; } && models="$models da360" || say "⚠️  DA360 repo/weights missing: skipped"
+            [ -f third_party/DA2/configs/infer.json ] && python -c "import sys; sys.path.insert(0,'third_party/DA2/src'); import da2.model.spherevit" 2>/dev/null \
+                && models="$models da2" || say "⚠️  DA^2 repo or its dependencies missing: skipped"
+            for MD in $models; do
+                for CFG in config.yaml config_panox.yaml config_holo360d_indoor.yaml config_holo360d_outdoor.yaml; do
+                    case "$CFG" in config_panox.yaml) [ -f data/panox/test.txt ] || continue;; config_holo*) [ -f data/holo360d/test.txt ] || continue;; esac
+                    step "I audit $MD [$CFG]" 3_structured3d_benchmark --config "$CFG" --tag "audit_$MD" $is \
+                        --set "model.name=$MD" --set "mobius_tta.preset=rotation_only" \
+                        --set "evaluation.methods=[Method1_PlanarPrior,Method2_MobiusTTA,Control_YawEnsemble]"
+                done
+            done ;;
         D)  say "=============== Stage D: cluster-robust summary ==============="
             python scripts/collect_results.py && say "✅ D summary written" || say "❌ D summary FAILED" ;;
         *)  say "unknown stage $ST" ;;

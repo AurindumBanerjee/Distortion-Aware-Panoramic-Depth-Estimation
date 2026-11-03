@@ -268,6 +268,120 @@ class DAPWrapper(DepthModelWrapper):
 
 
 # ----------------------------------------------------------------------------
+# DA360 (Jiang et al., arXiv 2512.22819) and DA^2 (Li et al., ICLR 2026): panoramic models for the polar audit
+# ----------------------------------------------------------------------------
+
+def _purge_modules(prefixes):
+    """DAP, DA360 and DA^2 all ship top-level packages with generic names (networks, ...); one model per process."""
+    for k in list(sys.modules):
+        if any(k == p or k.startswith(p + ".") for p in prefixes):
+            del sys.modules[k]
+
+
+class DA360Wrapper(DepthModelWrapper):
+    """DA360: Depth Anything V2 fine-tuned on ERP (Structured3D + TartanAir v2), circular padding, learned shift.
+
+    Facts from the official repo (test.py, checkpoint.py, datasets/real.py):
+      * checkpoint dict carries net / dinov2_encoder / height (518) / width (1036) next to the tensors;
+      * input: RGB resized (cubic) to 518 x 1036, /255, ImageNet mean/std;
+      * output: outputs['pred_disp'] = scale-invariant disparity (inverse range up to one global scale).
+    NOTE: DA360 was trained on Structured3D, so our Structured3D evaluation is IN-DOMAIN for it.
+    Setup: git clone https://github.com/Insta360-Research-Team/DA360 third_party/DA360
+           hf download hljiang/DA360 DA360_large.pth --local-dir weights/da360
+    """
+
+    def __init__(self, repo: str = "third_party/DA360", weights: str = "weights/da360/DA360_large.pth",
+                 device: str = "auto"):
+        super().__init__(device)
+        self.name = "da360"
+        # scale-invariant disparity: our protocol fits an affine map for every disparity model (as for MiDaS),
+        # which is at least as lenient as DA360's own median-scale protocol
+        self.spec = OutputSpec(space="disparity", scale="affine", geometry_erp="range", geometry_perspective="range")
+        repo = os.path.abspath(repo)
+        if not os.path.isdir(repo):
+            raise FileNotFoundError(f"DA360 repo not found at {repo}")
+        if not os.path.isfile(weights):
+            raise FileNotFoundError(f"DA360 weights not found at {weights}")
+        _purge_modules(["networks", "checkpoint", "depth_anything_v2"])
+        sys.path.insert(0, repo)
+        with _chdir(repo):
+            import networks as da360_networks  # type: ignore
+            from checkpoint import checkpoint_meta, state_dict_from_checkpoint  # type: ignore
+        ckpt = torch.load(os.path.abspath(weights), map_location="cpu")
+        meta = checkpoint_meta(ckpt)
+        self.h, self.w = int(meta["height"]), int(meta["width"])
+        net = getattr(da360_networks, meta["net"])(self.h, self.w, dinov2_encoder=meta["dinov2_encoder"])
+        net.load_state_dict(state_dict_from_checkpoint(ckpt, net.state_dict()), strict=False)
+        self.model = net.eval().to(self.device)
+        self.mean = torch.tensor([0.485, 0.456, 0.406], device=self.device).view(1, 3, 1, 1)
+        self.std = torch.tensor([0.229, 0.224, 0.225], device=self.device).view(1, 3, 1, 1)
+
+    def _forward(self, images, kind):
+        if kind != "erp":
+            raise ValueError("DA360 is an ERP model; use rotated-ERP polar views (polar_source: rotated_erp)")
+        h, w = images[0].shape[:2]
+        x = np.stack([cv2.resize(im, (self.w, self.h), interpolation=cv2.INTER_CUBIC) for im in images])
+        x = torch.from_numpy(x.astype(np.float32) / 255.0).permute(0, 3, 1, 2).to(self.device)
+        d = self.model((x - self.mean) / self.std)["pred_disp"].float()
+        if d.dim() == 3:
+            d = d[:, None]
+        d = F.interpolate(d, size=(h, w), mode="bilinear", align_corners=False)
+        return [p[0].cpu().numpy().clip(min=1e-6) for p in d]
+
+
+class DA2Wrapper(DepthModelWrapper):
+    """DA^2 (Depth Anything in Any Direction): SphereViT with spherical direction embeddings, ERP input.
+
+    Facts from the official repo (src/da2/model/spherevit.py, utils/model.py, utils/io.py, configs/infer.json):
+      * SphereViT.from_pretrained('haodongli/DA-2', config=<configs/infer.json>);
+      * input: RGB / 255 as (B, 3, H, W); the model resizes to ~0.6 MP and applies ImageNet normalisation itself;
+      * output: (B, H, W) distance (range) up to scale (their evaluation uses median alignment).
+    Setup: git clone https://github.com/EnVision-Research/DA-2 third_party/DA2 && pip install -e third_party/DA2/src
+           (needs huggingface.co, or `hf_id` pointing at a local snapshot of haodongli/DA-2)
+    """
+
+    def __init__(self, repo: str = "third_party/DA2", hf_id: str = "haodongli/DA-2", device: str = "auto"):
+        super().__init__(device)
+        import json
+        self.name = "da2"
+        self.spec = OutputSpec(space="depth", scale="scale", geometry_erp="range", geometry_perspective="range")
+        repo = os.path.abspath(repo)
+        cfg_path = os.path.join(repo, "configs", "infer.json")
+        if not os.path.isfile(cfg_path):
+            raise FileNotFoundError(f"DA^2 config not found at {cfg_path}")
+        src = os.path.join(repo, "src")
+        if src not in sys.path:
+            sys.path.insert(0, src)
+        from da2.model.spherevit import SphereViT  # type: ignore
+        config = json.load(open(cfg_path))
+        model = SphereViT.from_pretrained(hf_id, config=config).to(self.device)
+        self.dtype = next(model.parameters()).dtype
+        config["spherevit"]["dtype"] = self.dtype
+        self.model = model.eval()
+
+    def _forward(self, images, kind):
+        if kind != "erp":
+            raise ValueError("DA^2 is an ERP model; use rotated-ERP polar views (polar_source: rotated_erp)")
+        x = torch.from_numpy(np.stack(images).astype(np.float32) / 255.0).permute(0, 3, 1, 2)
+        d = self.model(x.to(self.device).to(self.dtype)).float()
+        return [p.cpu().numpy().clip(min=1e-6) for p in d]
+
+
+def build_panoramic_model(cfg_model: dict, root: str) -> Optional[DepthModelWrapper]:
+    """DA360 / DA^2 from a config block (paths relative to the repository root); None for other names."""
+    name = str(cfg_model.get("name", "")).lower()
+    rel = lambda p: p if os.path.isabs(p) else os.path.join(root, p)
+    dev = cfg_model.get("device", "auto")
+    if name.startswith("da360"):
+        return DA360Wrapper(repo=rel(cfg_model.get("repo", "third_party/DA360")),
+                            weights=rel(cfg_model.get("weights", "weights/da360/DA360_large.pth")), device=dev)
+    if name in ("da2", "da-2", "da_2"):
+        return DA2Wrapper(repo=rel(cfg_model.get("repo", "third_party/DA2")),
+                          hf_id=cfg_model.get("hf_id", "haodongli/DA-2"), device=dev)
+    return None
+
+
+# ----------------------------------------------------------------------------
 # Depth Anything V2 metric (perspective) via Hugging Face transformers -- optional tangent-view model
 # ----------------------------------------------------------------------------
 
