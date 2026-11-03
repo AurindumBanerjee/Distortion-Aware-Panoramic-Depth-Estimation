@@ -1,22 +1,69 @@
-[00:31:20][Method1_GradientPolarFusion][INFO] ======================================================================
-[00:31:20][Method1_GradientPolarFusion][INFO] 🚀 Starting Method 1: Gradient-Domain Polar Fusion & Shift Alignment
-[00:31:20][Method1_GradientPolarFusion][INFO] Config: Blend Mode=gradient_poisson, Phi Threshold=45.0°
-[00:31:20][Method1_GradientPolarFusion][INFO] ======================================================================
-[00:31:20][Method1_GradientPolarFusion][INFO] Initializing model wrapper: midas_dpt_hybrid...
-[00:31:20][Method1_GradientPolarFusion][WARNING] Could not load MiDaS ('midas_dpt_hybrid'); falling back to EncodedDepthOracle.
-[00:31:20][Method1_GradientPolarFusion][INFO] --> Rendering & evaluating Scene 1/1...
-[00:31:37][Method1_GradientPolarFusion][INFO]     Scene 1: Polar AbsRel (75-90°) Baseline=1.1133 -> Method 1=1.3932
-[00:31:37][Method1_GradientPolarFusion][INFO] 
+[01:02:31][Method1_GradientPolarFusion][INFO] ======================================================================
+[01:02:31][Method1_GradientPolarFusion][INFO] 🚀 Starting Method 1: Gradient-Domain Polar Fusion & Shift Alignment
+[01:02:31][Method1_GradientPolarFusion][INFO] Config: Blend Mode=gradient_poisson, Phi Threshold=45.0°
+[01:02:31][Method1_GradientPolarFusion][INFO] ======================================================================
+[01:02:31][Method1_GradientPolarFusion][INFO] Initializing model wrapper: dpt_hybrid_384...
+[01:02:35][Method1_GradientPolarFusion][INFO] Loaded MiDaS wrapper successfully.
+[01:02:35][Method1_GradientPolarFusion][INFO] --> Rendering & evaluating Scene 1/24...
+[01:02:42][Method1_GradientPolarFusion][INFO]     Scene 1: Polar AbsRel (75-90°) Baseline=0.2507 -> Method 1=0.1927
+[01:02:42][Method1_GradientPolarFusion][INFO] --> Rendering & evaluating Scene 2/24...
+[01:02:45][Method1_GradientPolarFusion][INFO]     Scene 2: Polar AbsRel (75-90°) Baseline=0.7159 -> Method 1=0.6845
+[01:02:45][Method1_GradientPolarFusion][INFO] --> Rendering & evaluating Scene 3/24...
+[01:02:51][Method1_GradientPolarFusion][INFO]     Scene 3: Polar AbsRel (75-90°) Baseline=0.3425 -> Method 1=0.3854
+[01:02:51][Method1_GradientPolarFusion][INFO] --> Rendering & evaluating Scene 4/24...
+[01:02:56][Method1_GradientPolarFusion][INFO]     Scene 4: Polar AbsRel (75-90°) Baseline=0.3777 -> Method 1=0.3764
+[01:02:56][Method1_GradientPolarFusion][INFO] --> Rendering & evaluating Scene 5/24...
+[01:03:00][Method1_GradientPolarFusion][INFO]     Scene 5: Polar AbsRel (75-90°) Baseline=0.2698 -> Method 1=0.2507
+[01:03:00][Method1_GradientPolarFusion][INFO] --> Rendering & evaluating Scene 6/24...
+[01:03:06][Method1_GradientPolarFusion][INFO]     Scene 6: Polar AbsRel (75-90°) Baseline=0.3466 -> Method 1=0.2972
+[01:03:06][Method1_GradientPolarFusion][INFO] --> Rendering & evaluating Scene 7/24...
+[01:03:10][Method1_GradientPolarFusion][INFO]     Scene 7: Polar AbsRel (75-90°) Baseline=0.5436 -> Method 1=0.5067
+[01:03:10][Method1_GradientPolarFusion][INFO] --> Rendering & evaluating Scene 8/24...
+[01:03:16][Method1_GradientPolarFusion][INFO]     Scene 8: Polar AbsRel (75-90°) Baseline=0.4177 -> Method 1=0.3619
+[01:03:16][Method1_GradientPolarFusion][INFO] --> Rendering & evaluating Scene 9/24...
+[01:03:22][Method1_GradientPolarFusion][INFO]     Scene 9: Polar AbsRel (75-90°) Baseline=0.5277 -> Method 1=0.4802
+[01:03:22][Method1_GradientPolarFusion][INFO] --> Rendering & evaluating Scene 10/24...
+[01:03:26][Method1_GradientPolarFusion][INFO]     Scene 10: Polar AbsRel (75-90°) Baseline=0.1144 -> Method 1=0.1676
+[01:03:26][Method1_GradientPolarFusion][INFO] --> Rendering & evaluating Scene 11/24...
+[01:03:33][Method1_GradientPolarFusion][INFO]     Scene 11: Polar AbsRel (75-90°) Baseline=0.2112 -> Method 1=0.1973
+[01:03:33][Method1_GradientPolarFusion][INFO] --> Rendering & evaluating Scene 12/24...
+[01:03:38][Method1_GradientPolarFusion][INFO]     Scene 12: Polar AbsRel (75-90°) Baseline=0.3810 -> Method 1=0.3347
+[01:03:38][Method1_GradientPolarFusion][INFO] --> Rendering & evaluating Scene 13/24...
+[01:03:42][Method1_GradientPolarFusion][INFO]     Scene 13: Polar AbsRel (75-90°) Baseline=0.4092 -> Method 1=0.4191
+[01:03:42][Method1_GradientPolarFusion][INFO] --> Rendering & evaluating Scene 14/24...
+[01:03:48][Method1_GradientPolarFusion][INFO]     Scene 14: Polar AbsRel (75-90°) Baseline=0.7794 -> Method 1=0.7497
+[01:03:48][Method1_GradientPolarFusion][INFO] --> Rendering & evaluating Scene 15/24...
+[01:03:53][Method1_GradientPolarFusion][INFO]     Scene 15: Polar AbsRel (75-90°) Baseline=0.4933 -> Method 1=0.1603
+[01:03:53][Method1_GradientPolarFusion][INFO] --> Rendering & evaluating Scene 16/24...
+[01:03:57][Method1_GradientPolarFusion][INFO]     Scene 16: Polar AbsRel (75-90°) Baseline=1.5504 -> Method 1=0.4513
+[01:03:57][Method1_GradientPolarFusion][INFO] --> Rendering & evaluating Scene 17/24...
+[01:04:02][Method1_GradientPolarFusion][INFO]     Scene 17: Polar AbsRel (75-90°) Baseline=0.2874 -> Method 1=0.2969
+[01:04:02][Method1_GradientPolarFusion][INFO] --> Rendering & evaluating Scene 18/24...
+[01:04:06][Method1_GradientPolarFusion][INFO]     Scene 18: Polar AbsRel (75-90°) Baseline=0.4209 -> Method 1=0.4173
+[01:04:06][Method1_GradientPolarFusion][INFO] --> Rendering & evaluating Scene 19/24...
+[01:04:11][Method1_GradientPolarFusion][INFO]     Scene 19: Polar AbsRel (75-90°) Baseline=0.4234 -> Method 1=0.4016
+[01:04:11][Method1_GradientPolarFusion][INFO] --> Rendering & evaluating Scene 20/24...
+[01:04:14][Method1_GradientPolarFusion][INFO]     Scene 20: Polar AbsRel (75-90°) Baseline=0.4243 -> Method 1=0.4279
+[01:04:14][Method1_GradientPolarFusion][INFO] --> Rendering & evaluating Scene 21/24...
+[01:04:18][Method1_GradientPolarFusion][INFO]     Scene 21: Polar AbsRel (75-90°) Baseline=0.3136 -> Method 1=0.1508
+[01:04:18][Method1_GradientPolarFusion][INFO] --> Rendering & evaluating Scene 22/24...
+[01:04:23][Method1_GradientPolarFusion][INFO]     Scene 22: Polar AbsRel (75-90°) Baseline=0.6632 -> Method 1=0.3852
+[01:04:23][Method1_GradientPolarFusion][INFO] --> Rendering & evaluating Scene 23/24...
+[01:04:27][Method1_GradientPolarFusion][INFO]     Scene 23: Polar AbsRel (75-90°) Baseline=0.5348 -> Method 1=0.4904
+[01:04:27][Method1_GradientPolarFusion][INFO] --> Rendering & evaluating Scene 24/24...
+[01:04:32][Method1_GradientPolarFusion][INFO]     Scene 24: Polar AbsRel (75-90°) Baseline=0.6527 -> Method 1=0.2194
+[01:04:32][Method1_GradientPolarFusion][INFO] 
 ======================================================================
-[00:31:37][Method1_GradientPolarFusion][INFO] 📊 SUMMARY RESULTS ACROSS ALL SCENES
-[00:31:37][Method1_GradientPolarFusion][INFO] Band            | Baseline AbsRel    | Method 1 AbsRel    | Improvement 
-[00:31:37][Method1_GradientPolarFusion][INFO] ----------------------------------------------------------------------
-[00:31:37][Method1_GradientPolarFusion][INFO] all             | 1.7073             | 1.7144             |     -0.42%
-[00:31:37][Method1_GradientPolarFusion][INFO] 0-15            | 1.0799             | 1.0799             |     +0.00%
-[00:31:37][Method1_GradientPolarFusion][INFO] 15-30           | 1.3435             | 1.3435             |     +0.00%
-[00:31:37][Method1_GradientPolarFusion][INFO] 30-45           | 3.0806             | 3.0214             |     +1.92%
-[00:31:37][Method1_GradientPolarFusion][INFO] 45-60           | 2.6681             | 2.0436             |    +23.41%
-[00:31:37][Method1_GradientPolarFusion][INFO] 60-75           | 1.0090             | 1.4358             |    -42.29%
-[00:31:37][Method1_GradientPolarFusion][INFO] 75-90           | 1.1133             | 1.3932             |    -25.14%
-[00:31:37][Method1_GradientPolarFusion][INFO] ======================================================================
-[00:31:37][Method1_GradientPolarFusion][INFO] Saved metrics summary to D:\MyStuff\College\.7thSemester\CV\Project\Distortion-Aware-Panoramic-Depth-Estimation\Aurindum\1_gradient_polar_fusion\outputs\metrics_summary.json
+[01:04:32][Method1_GradientPolarFusion][INFO] 📊 SUMMARY RESULTS ACROSS ALL SCENES
+[01:04:32][Method1_GradientPolarFusion][INFO] Band            | Baseline AbsRel    | Method 1 AbsRel    | Improvement 
+[01:04:32][Method1_GradientPolarFusion][INFO] ----------------------------------------------------------------------
+[01:04:32][Method1_GradientPolarFusion][INFO] all             | 0.2873             | 0.2639             |     +8.16%
+[01:04:32][Method1_GradientPolarFusion][INFO] 0-15            | 0.1742             | 0.1741             |     +0.04%
+[01:04:32][Method1_GradientPolarFusion][INFO] 15-30           | 0.1584             | 0.1584             |     +0.02%
+[01:04:32][Method1_GradientPolarFusion][INFO] 30-45           | 0.2082             | 0.2062             |     +0.96%
+[01:04:32][Method1_GradientPolarFusion][INFO] 45-60           | 0.3073             | 0.3101             |     -0.90%
+[01:04:32][Method1_GradientPolarFusion][INFO] 60-75           | 0.3992             | 0.3675             |     +7.94%
+[01:04:32][Method1_GradientPolarFusion][INFO] 75-90           | 0.4771             | 0.3669             |    +23.11%
+[01:04:32][Method1_GradientPolarFusion][INFO] ======================================================================
+[01:04:32][Method1_GradientPolarFusion][INFO] Saved metrics summary to /DATA/Aurindum/Distortion-Aware-Panoramic-Depth-Estimation/Aurindum/1_gradient_polar_fusion/outputs/metrics_summary.json
+[01:04:32][Method1_GradientPolarFusion][INFO] 🎉 NEW GLOBAL BEST ACHIEVED by Method 1!

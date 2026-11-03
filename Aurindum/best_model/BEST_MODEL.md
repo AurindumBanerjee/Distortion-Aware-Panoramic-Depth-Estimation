@@ -1,8 +1,8 @@
 # 🏆 Best Model & Method Registry
 
-> **Last Updated:** `2026-11-03 00:50:12`  
-> **Winning Method:** **Mobius TTA Ensembling**  
-> **Key Highlights:** Polar AbsRel = **0.6286**, Global AbsRel = **0.7088**
+> **Last Updated:** `2026-11-03 01:04:32`  
+> **Winning Method:** **Gradient-Domain Polar Fusion**  
+> **Key Highlights:** Polar AbsRel = **0.3672**, Global AbsRel = **0.2639**
 
 ---
 
@@ -11,41 +11,47 @@
 ### Global Metrics (Full Sphere)
 | Metric | AbsRel ↓ | SqRel ↓ | RMSE ↓ | RMSElog ↓ | δ < 1.25 ↑ | δ < 1.25² ↑ | δ < 1.25³ ↑ |
 |:--- |:---:|:---:|:---:|:---:|:---:|:---:|:---:|
-| **Score** | **0.7088** | 1.3661 | 2.0426 | 1.4596 | 3.04% | 5.31% | 8.29% |
+| **Score** | **0.2639** | 0.2650 | 0.6682 | 0.3695 | 51.51% | 78.10% | 90.32% |
 
 ### Per-Latitude Band Breakdown (|φ|)
 | Band | Latitude Range | AbsRel ↓ | RMSE ↓ | δ < 1.25 ↑ | Status |
 |:--- |:---:|:---:|:---:|:---:|:---:|
-| Equatorial | 0-15° | 0.7655 | 3.2144 | 1.1% | Stable |
-| Low Latitude | 15-30° | 0.7945 | 2.8165 | 0.4% | Stable |
-| Mid Latitude | 30-45° | 0.7502 | 1.7841 | 1.2% | Stable |
-| High Latitude | 45-60° | 0.6843 | 1.2705 | 5.1% | 🎯 Target Corrected |
-| Severe Polar | 60-75° | **0.6432** | 1.0222 | 6.4% | 🎯 Target Corrected |
-| Extreme Polar | 75-90° | **0.6139** | 0.9184 | 3.9% | 🎯 Target Corrected |
+| Equatorial | 0-15° | 0.1741 | 0.6649 | 74.9% | Stable |
+| Low Latitude | 15-30° | 0.1584 | 0.5990 | 75.7% | Stable |
+| Mid Latitude | 30-45° | 0.2062 | 0.5857 | 61.8% | Stable |
+| High Latitude | 45-60° | 0.3101 | 0.6749 | 41.6% | 🎯 Target Corrected |
+| Severe Polar | 60-75° | **0.3675** | 0.6837 | 31.6% | 🎯 Target Corrected |
+| Extreme Polar | 75-90° | **0.3669** | 0.6252 | 23.3% | 🎯 Target Corrected |
 
 ---
 
 ## 2. Configuration
 ```yaml
+alignment:
+  anchor_max_lat: 35.0
+  mad_threshold: 2.5
+blending:
+  blend_margin: 10.0
+  mode: gradient_poisson
+  poisson_solver: sor
 evaluation:
   align_protocol: align-equatorial
   height: 256
   log_dir: logs
-  num_scenes: 2
+  num_scenes: 24
   output_dir: outputs
   width: 512
-method_name: Mobius TTA Ensembling
-mobius_tta:
-  fusion_mode: distortion_weighted
-  scales:
-  - 1.0
-  - 1.6
-  - 0.625
+method_name: Gradient-Domain Polar Fusion
 model:
-  device: cpu
-  name: midas_dpt_hybrid
+  device: auto
+  name: dpt_hybrid_384
   scale: affine
   space: disparity
+tangent:
+  fov_deg: 90.0
+  num_tangent_views: 2
+  phi_threshold: 45.0
+  resolution: 384
 ```
 
 ## 3. Qualitative Predictions
