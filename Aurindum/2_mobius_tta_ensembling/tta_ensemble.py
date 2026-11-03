@@ -36,6 +36,11 @@ def _parse_pass(p: PassSpec) -> Tuple[float, float]:
 def _robust_fit(x: np.ndarray, y: np.ndarray, mode: str, iters: int = 3, k: float = 2.5) -> Tuple[float, float]:
     """y ~ a*x + b (mode 'affine') or y ~ a*x (mode 'scale') with MAD trimming."""
     m = np.isfinite(x) & np.isfinite(y)
+    if mode == "logscale":  # metric depth: pure multiplicative scale, robust median of the log ratio
+        m &= (x > 0) & (y > 0)
+        if m.sum() < 50:
+            return 1.0, 0.0
+        return float(np.exp(np.median(np.log(y[m]) - np.log(x[m])))), 0.0
     if m.sum() < 50:
         return 1.0, 0.0
     x, y = x[m], y[m]
@@ -71,6 +76,7 @@ class MobiusTTAEnsemble:
         anchor_max_lat: float = 30.0,
         weight_power: float = 2.0,
         min_weight: float = 0.02,
+        gate_lat: Optional[Sequence[float]] = None,
     ):
         """
         Args:
@@ -79,8 +85,12 @@ class MobiusTTAEnsemble:
             passes: list of {pitch: deg, scale: lambda} (or bare floats = pure dilations).
                     The identity pass is always added first if missing.
             fusion_mode: 'distortion_weighted' | 'median' | 'mean'
-            reanchor: 'affine' | 'scale' | 'none' | 'auto' (affine for affine-invariant
-                      disparity models, scale for relative depth, none for metric models)
+            reanchor: 'affine' | 'scale' | 'logscale' | 'none' | 'auto' (affine for affine-invariant
+                      disparity models, scale for relative depth, logscale for metric models)
+            gate_lat: [lo, hi] in degrees or None. Non-identity passes only contribute where the ORIGINAL
+                      pixel has |lat| > lo (smooth ramp to full weight at hi); below lo the output equals the
+                      identity pass exactly. Protects the equator from out-of-distribution (rotated / strongly
+                      dilated) passes, which the first full run showed to be catastrophic for DAP and outdoor scenes.
             anchor_max_lat: anchor pixels must have |lat| below this in both frames
             weight_power: w = cos(lat_seen)^p
         """
@@ -100,8 +110,9 @@ class MobiusTTAEnsemble:
             spec = getattr(model, "spec", None)
             space = getattr(model, "space", getattr(spec, "space", "depth"))
             scale = getattr(model, "scale", getattr(spec, "scale", "metric"))
-            reanchor = "affine" if space == "disparity" else ("none" if scale == "metric" else "scale")
+            reanchor = "affine" if space == "disparity" else ("logscale" if scale == "metric" else "scale")
         self.reanchor = reanchor
+        self.gate_lat = None if gate_lat in (None, [], ()) else (float(gate_lat[0]), float(gate_lat[1]))
 
     def predict(self, rgb_erp: np.ndarray, identity_pred: Optional[np.ndarray] = None
                 ) -> Tuple[np.ndarray, List[Dict[str, np.ndarray]]]:
@@ -133,6 +144,10 @@ class MobiusTTAEnsemble:
                     unwarped = a * unwarped + b
 
             w = np.clip(np.cos(np.deg2rad(lat_seen)) ** self.weight_power, self.min_weight, 1.0)
+            if self.gate_lat is not None and not is_id:
+                lo, hi = self.gate_lat
+                t = np.clip((lat0 - lo) / max(hi - lo, 1e-6), 0.0, 1.0)
+                w = w * (0.5 * (1.0 - np.cos(np.pi * t)))  # 0 below lo, 1 above hi (cosine ramp)
             valid = np.isfinite(unwarped) & (unwarped > 0)
             w = np.where(valid, w, 0.0)
             preds.append(np.where(valid, unwarped, np.nan))

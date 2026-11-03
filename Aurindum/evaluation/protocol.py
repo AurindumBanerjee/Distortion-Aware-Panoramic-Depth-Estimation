@@ -106,8 +106,23 @@ def depth_cap_from_cfg(cfg: Dict, default_min: float, default_max: float) -> tup
 BANDS = ["all", "0-15", "15-30", "30-45", "45-60", "60-75", "75-90"]
 
 
+def group_of(scene_id) -> str:
+    """Cluster id of a scene: scenes of the same house / environment are correlated, so they must be
+    resampled together. Structured3D 'scene_03202_room_x' -> 'scene_03202'; PanoX 'ClothingStore_0028' -> 'ClothingStore'; anything else: the id itself (no clustering)."""
+    import re
+    sid = str(scene_id)
+    m = re.match(r"(scene_\d+)", sid)
+    if m:
+        return m.group(1)
+    m = re.match(r"((?:Indoor|Outdoor)_\d+)_", sid)  # Holo360D 'Indoor_016_1753495960.845721' -> scene 'Indoor_016'
+    if m:
+        return m.group(1)
+    m = re.match(r"([A-Za-z]+)_\d+$", sid)  # PanoX: 'ClothingStore_0028' -> environment 'ClothingStore'
+    return m.group(1) if m else sid
+
+
 def paired_test(base: List[Dict], method: List[Dict], band: str, key: str = "abs_rel",
-                n_boot: int = 2000, seed: int = 0) -> Dict[str, float]:
+                n_boot: int = 2000, seed: int = 0, groups: Optional[List[str]] = None) -> Dict[str, float]:
     """Paired comparison of method vs baseline over the SAME scenes (lower `key` is better).
 
     Returns
@@ -115,12 +130,22 @@ def paired_test(base: List[Dict], method: List[Dict], band: str, key: str = "abs
       rel_gain_median: median over scenes of (base - method) / base   (> 0 = method better)
       ci_low / ci_high: 95% bootstrap CI (scenes resampled) of rel_gain_median
       n: number of paired scenes
+    If `groups` (one label per scene) is given, scene differences are first averaged within each group and
+    the bootstrap / Wilcoxon run over groups (cluster-robust); `n_groups` is then reported.
     """
     b = np.array([m[band][key] for m in base], dtype=float)
     x = np.array([m[band][key] for m in method], dtype=float)
     ok = np.isfinite(b) & np.isfinite(x) & (b > 0)
     b, x = b[ok], x[ok]
-    res = {"n": int(ok.sum()), "p_wilcoxon": float("nan"), "rel_gain_median": float("nan"),
+    n_scenes = int(ok.sum())
+    n_groups = None
+    if groups is not None:
+        g = np.array([str(v) for v in groups])[ok]
+        uniq = sorted(set(g))
+        b = np.array([b[g == u].mean() for u in uniq])
+        x = np.array([x[g == u].mean() for u in uniq])
+        n_groups = len(uniq)
+    res = {"n": n_scenes, "n_groups": n_groups, "p_wilcoxon": float("nan"), "rel_gain_median": float("nan"),
            "ci_low": float("nan"), "ci_high": float("nan")}
     if len(b) < 2:
         return res
@@ -139,7 +164,8 @@ def paired_test(base: List[Dict], method: List[Dict], band: str, key: str = "abs
     return res
 
 
-def summarize_methods(per_scene: Dict[str, List[Dict]], protocols, baseline_key: str = "Baseline") -> Dict:
+def summarize_methods(per_scene: Dict[str, List[Dict]], protocols, baseline_key: str = "Baseline",
+                      groups: Optional[List[str]] = None) -> Dict:
     """per_scene[method] = list over scenes of {protocol: per-band metrics}.
 
     Returns {protocol: {method: {"mean", "median", "win_rate_vs_baseline": {band},
@@ -155,7 +181,7 @@ def summarize_methods(per_scene: Dict[str, List[Dict]], protocols, baseline_key:
                 "mean": aggregate(lst, "mean"),
                 "median": aggregate(lst, "median"),
                 "win_rate_vs_baseline": {b: win_rate(base, lst, b) for b in BANDS} if name != baseline_key else {},
-                "paired_vs_baseline": {b: paired_test(base, lst, b) for b in BANDS} if name != baseline_key else {},
+                "paired_vs_baseline": {b: paired_test(base, lst, b, groups=groups) for b in BANDS} if name != baseline_key else {},
             }
     return out
 

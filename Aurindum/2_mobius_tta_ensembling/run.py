@@ -200,6 +200,7 @@ def main():
         fusion_mode=cfg["mobius_tta"].get("fusion_mode", "distortion_weighted"),
         reanchor=cfg["mobius_tta"].get("reanchor", "auto"),
         anchor_max_lat=cfg["mobius_tta"].get("anchor_max_lat", 30.0),
+        gate_lat=cfg["mobius_tta"].get("gate_lat"),
     )
 
     # Run over test scenes

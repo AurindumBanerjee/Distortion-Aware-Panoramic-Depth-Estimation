@@ -15,10 +15,11 @@ import sys
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, ROOT)
-from evaluation.protocol import format_band_table, format_table  # noqa: E402
+from evaluation.protocol import format_band_table, format_table, group_of, summarize_methods  # noqa: E402
 
 ap = argparse.ArgumentParser()
 ap.add_argument("--out", default=None)
+ap.add_argument("--no-cluster", action="store_true", help="keep the stored (per-scene) statistics")
 a = ap.parse_args()
 ts = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
 out = a.out or os.path.join(ROOT, "results", f"SUMMARY_{ts}.md")
@@ -40,11 +41,17 @@ for f in files:
     if not summ:
         lines += [f"## {rel}", "(old format without paired statistics: produced before the v2 fixes; ignore)", ""]
         continue
+    note = ""
+    ids, per = rec.get("scene_ids"), rec.get("per_scene")
+    if not a.no_cluster and ids and per and len(ids) == len(next(iter(per.values()))):
+        groups = [group_of(i) for i in ids]  # recompute with cluster-robust statistics (same house / environment)
+        summ = summarize_methods(per, list(summ.keys()), groups=groups)
+        note = f" · cluster-robust over {len(set(groups))} groups"
     cfg = rec.get("config", {})
     model = cfg.get("model", {}).get("name", "?")
     bench = rec.get("benchmark", "?")
     n = rec.get("num_scenes") or len(next(iter(rec.get("per_scene", {}).values()), []))
-    lines += [f"## {rel}", f"model `{model}` · benchmark `{bench}` · {n} scenes · {rec.get('timestamp', '')}", ""]
+    lines += [f"## {rel}", f"model `{model}` · benchmark `{bench}` · {n} scenes{note} · {rec.get('timestamp', '')}", ""]
     for proto, table in summ.items():
         lines += [f"**Protocol `{proto}`**", "", "```"] + format_table(table, "median") + ["```", ""]
         for name in table:

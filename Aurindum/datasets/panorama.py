@@ -1,7 +1,8 @@
 """Generic ERP RGB-D dataset loader driven by a split list file.
 
 List file format (one sample per line, paths relative to `root`):
-    rgb/scene_0000.png depth/scene_0000.npy
+    rgb/scene_0000.png depth/scene_0000.npy [mask/scene_0000.jpg]
+The optional 3rd column is a validity mask image (pixel > 127 = valid), ANDed with the depth validity.
 
 Supported depth formats:
   .npy / .npz      float metres
@@ -33,6 +34,9 @@ PRESETS = {
     # PanoX (UE5): float32 EXR range in CENTIMETRES (UE units; floor-plane check gives camera heights ~95-140 in
     # the raw numbers). Sky/infinity = ~65504 (float16 max) -> becomes 655 m and is masked by max_depth.
     "panox": dict(depth_scale=1.0, max_depth=100.0, min_depth=0.05, exr_scale=0.01),
+    # Holo360D (real LiDAR-mesh GT): float32 EXR range in METRES, NaN where the mesh has no data (sky). List file
+    # carries a 3rd column with the per-frame mask jpg (value > 127 = valid; excludes the operator / rig).
+    "holo360d": dict(depth_scale=1.0, max_depth=100.0, min_depth=0.1, exr_scale=1.0),
 }
 
 
@@ -73,7 +77,7 @@ class PanoramaDataset:
         self.depth_scale, self.max_depth, self.min_depth = p["depth_scale"], p["max_depth"], p["min_depth"]
         lf = list_file if os.path.isabs(list_file) else os.path.join(root, list_file)
         with open(lf) as f:
-            self.items: List[Tuple[str, str]] = [tuple(l.split()[:2]) for l in f if l.strip()]
+            self.items: List[Tuple[str, ...]] = [tuple(l.split()[:3]) for l in f if l.strip()]
         if limit:
             self.items = self.items[:limit]  # fixed, deterministic subset (first N of the split)
 
@@ -103,7 +107,8 @@ class PanoramaDataset:
         return d
 
     def __getitem__(self, i: int) -> Sample:
-        rgb_rel, d_rel = self.items[i]
+        rgb_rel, d_rel = self.items[i][:2]
+        mask_rel = self.items[i][2] if len(self.items[i]) > 2 else None
         bgr = cv2.imread(os.path.join(self.root, rgb_rel), cv2.IMREAD_COLOR)
         if bgr is None:
             raise IOError(rgb_rel)
@@ -115,6 +120,13 @@ class PanoramaDataset:
         if d.shape != (self.h, self.w):
             d = cv2.resize(d, (self.w, self.h), interpolation=cv2.INTER_NEAREST)
         valid = np.isfinite(d) & (d > self.min_depth) & (d <= self.max_depth)
+        if mask_rel is not None:
+            mk = cv2.imread(os.path.join(self.root, mask_rel), cv2.IMREAD_GRAYSCALE)
+            if mk is None:
+                raise IOError(mask_rel)
+            if mk.shape != (self.h, self.w):
+                mk = cv2.resize(mk, (self.w, self.h), interpolation=cv2.INTER_NEAREST)
+            valid &= mk > 127
         d = np.where(valid, d, np.nan).astype(np.float32)
         sid = os.path.splitext(os.path.basename(rgb_rel))[0]
         parts = rgb_rel.replace("\\", "/").split("/")

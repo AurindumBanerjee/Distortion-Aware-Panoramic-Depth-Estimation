@@ -103,6 +103,14 @@ for CFG in $CONFIGS; do
     if [ "${RUN_PANOX:-1}" = 1 ] && [ -f "$AURINDUM_DIR/3_structured3d_benchmark/$PANOX_CFG" ]; then
         run_series 3 3_structured3d_benchmark "PanoX Benchmark" "$PANOX_CFG"
     fi
+    if [ "${RUN_HOLO:-0}" = 1 ]; then
+        for KIND in indoor outdoor; do
+            HOLO_CFG="${CFG%.yaml}_holo360d_${KIND}.yaml"
+            if [ -f "$AURINDUM_DIR/3_structured3d_benchmark/$HOLO_CFG" ]; then
+                run_series 3 3_structured3d_benchmark "Holo360D $KIND Benchmark" "$HOLO_CFG"
+            fi
+        done
+    fi
 done
 
 END_TOTAL=$(date +%s)

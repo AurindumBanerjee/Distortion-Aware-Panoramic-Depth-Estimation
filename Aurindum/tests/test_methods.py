@@ -151,3 +151,76 @@ def test_missing_config_is_fatal(tmp_path):
     r = subprocess.run([sys.executable, str(ROOT / "3_structured3d_benchmark" / "run.py"), "--config", "nope.yaml"],
                        capture_output=True, text=True, cwd=str(tmp_path))
     assert r.returncode != 0 and "Config not found" in r.stderr
+
+
+class _ScaledModel:
+    """Metric ERP 'model': returns a function of the image; non-identity passes get a wrong scale."""
+    space, scale = "depth", "metric"
+
+    def __init__(self, factor_for_warped=1.0):
+        self.calls = 0
+        self.factor = factor_for_warped
+
+    def predict(self, rgb, kind="erp"):
+        self.calls += 1
+        base = 2.0 + 0.0 * rgb[..., 0].astype(np.float64)
+        return base * (1.0 if self.calls == 1 else self.factor)
+
+
+def test_robust_fit_logscale_recovers_multiplicative_factor():
+    from tta_ensemble import _robust_fit
+    x = np.random.default_rng(0).uniform(1, 5, 5000)
+    a, b = _robust_fit(x, 1.7 * x * np.exp(np.random.default_rng(1).normal(0, 0.02, 5000)), "logscale")
+    assert abs(a - 1.7) < 0.03 and b == 0.0
+
+
+def test_auto_reanchor_for_metric_model_is_logscale():
+    from tta_ensemble import MobiusTTAEnsemble
+    assert MobiusTTAEnsemble(_ScaledModel(), passes=[{"pitch": 90, "scale": 1.0}]).reanchor == "logscale"
+
+
+def test_gate_makes_output_identity_below_lo_and_uses_passes_above():
+    from tta_ensemble import MobiusTTAEnsemble
+    H, W = 64, 128
+    rgb = np.zeros((H, W, 3), np.uint8)
+    ens = MobiusTTAEnsemble(_ScaledModel(1.0), passes=[{"pitch": 90, "scale": 1.0}], reanchor="none",
+                            gate_lat=[30, 55])
+    ident = np.full((H, W), 2.0)
+    ens.model.calls = 1  # identity pass is supplied, so the next call is a warped pass
+    ens.model.factor = 3.0  # the warped pass is deliberately wrong (6.0 instead of 2.0)
+    fused, _ = ens.predict(rgb, identity_pred=ident)
+    lat = np.abs(latitude_map(H, W))
+    assert np.allclose(fused[lat < 30], 2.0)          # gate closed: identical to the baseline
+    assert fused[lat > 60].max() > 2.5                 # gate open: the wrong pass leaks in (so the gate is what protects)
+    ens_off = MobiusTTAEnsemble(_ScaledModel(), passes=[{"pitch": 90, "scale": 1.0}], reanchor="none", gate_lat=None)
+    assert ens_off.gate_lat is None
+
+
+def test_group_of_clusters_by_house_environment_and_holo_scene():
+    from evaluation.protocol import group_of
+    assert group_of("scene_03370_994351") == "scene_03370"
+    assert group_of("ClothingStore_0028") == "ClothingStore"
+    assert group_of("Indoor_016_1753495960.845721") == "Indoor_016"
+    assert group_of("Outdoor_001_1752225730.993451") == "Outdoor_001"
+    assert group_of("something") == "something"
+
+
+def test_panorama_dataset_applies_mask_column_and_keeps_metres(tmp_path):
+    import cv2
+    from datasets.panorama import PanoramaDataset
+    (tmp_path / "S" / "S" / "rgb").mkdir(parents=True)
+    (tmp_path / "S" / "S" / "mask").mkdir(parents=True)
+    (tmp_path / "S" / "S" / "depth").mkdir(parents=True)
+    rgb = np.full((32, 64, 3), 128, np.uint8)
+    mask = np.full((32, 64), 255, np.uint8)
+    mask[24:, :] = 0                                   # operator at the south pole
+    depth = np.full((32, 64), 2.5, np.float32)
+    depth[:4] = np.nan                                 # sky
+    cv2.imwrite(str(tmp_path / "S/S/rgb/a.jpg"), rgb)
+    cv2.imwrite(str(tmp_path / "S/S/mask/a.png"), mask)
+    np.save(tmp_path / "S/S/depth/a.npy", depth)
+    (tmp_path / "t.txt").write_text("S/S/rgb/a.jpg S/S/depth/a.npy S/S/mask/a.png\n")
+    s = PanoramaDataset(str(tmp_path), "t.txt", height=32, width=64, name="holo360d")[0]
+    assert s.id == "S_a"
+    assert not s.valid[:4].any() and not s.valid[24:].any() and s.valid[8:20].all()
+    assert np.allclose(s.depth[s.valid], 2.5)          # holo360d preset: EXR/npy already in metres (no cm scaling)

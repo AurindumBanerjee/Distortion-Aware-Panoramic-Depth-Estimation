@@ -40,7 +40,7 @@ from best_model.tracker import BestModelTracker
 from datasets.synthetic import _texture_bank, random_scene, render_erp
 from models.depth_model import EncodedDepthOracle, MiDaSWrapper
 from tta_ensemble import MobiusTTAEnsemble
-from evaluation.protocol import default_protocols, format_band_table, format_table, summarize_methods
+from evaluation.protocol import group_of, default_protocols, format_band_table, format_table, summarize_methods
 
 # Local modules
 from benchmark_evaluator import run_single_benchmark_scene
@@ -112,6 +112,11 @@ def main():
     parser = argparse.ArgumentParser(description="Method 3: Real Structured3D Panoramic Benchmark")
     parser.add_argument("--config", type=str, default="config.yaml", help="Path to config.yaml")
     parser.add_argument("--max_scenes", type=int, default=None, help="Number of real scenes to evaluate")
+    parser.add_argument("--set", dest="overrides", action="append", default=[],
+                        help="Override a config value, dotted key=YAML value (repeatable), "
+                             "e.g. --set mobius_tta.gate_lat=[30,55]")
+    parser.add_argument("--tag", type=str, default=None,
+                        help="Suffix appended to the output folder and tracker benchmark name (ablations)")
     args = parser.parse_args()
 
     cfg_path = SCRIPT_DIR / args.config
@@ -121,6 +126,16 @@ def main():
     with open(cfg_path, "r") as f:
         cfg = yaml.safe_load(f)
 
+    for ov in args.overrides:
+        key, _, val = ov.partition("=")
+        node = cfg
+        parts = key.split(".")
+        for k in parts[:-1]:
+            node = node.setdefault(k, {})
+        node[parts[-1]] = yaml.safe_load(val)
+    if args.tag:
+        cfg["evaluation"]["output_dir"] = cfg["evaluation"].get("output_dir", "outputs") + "_" + args.tag
+        cfg["benchmark_suffix"] = cfg.get("benchmark_suffix", "") + "_" + args.tag
     if args.max_scenes:
         cfg["data"]["max_scenes"] = args.max_scenes
 
@@ -181,6 +196,7 @@ def main():
         fusion_mode=m2_cfg.get("fusion_mode", "distortion_weighted"),
         reanchor=m2_cfg.get("reanchor", "auto"),
         anchor_max_lat=m2_cfg.get("anchor_max_lat", 30.0),
+        gate_lat=m2_cfg.get("gate_lat"),
     )
     ev_cfg = cfg.get("evaluation", {})
     protocols = tuple(ev_cfg.get("protocols") or default_protocols(model))
@@ -191,7 +207,9 @@ def main():
     H = cfg["data"].get("height", 256)
     W = cfg["data"].get("width", 512)
 
-    method_keys = ["Baseline", "Tangent_Spatial", "Method1_GradientFusion", "Method2_MobiusTTA", "Control_YawEnsemble"]
+    all_methods = ["Baseline", "Tangent_Spatial", "Method1_GradientFusion", "Method2_MobiusTTA", "Control_YawEnsemble"]
+    sel = cfg["evaluation"].get("methods")
+    method_keys = [m for m in all_methods if m == "Baseline" or not sel or m in sel]
     accumulators: Dict[str, List[Dict]] = {m: [] for m in method_keys}
     sample_vis = None
     tex_bank = _texture_bank(seed=42)
@@ -229,6 +247,7 @@ def main():
             min_depth=min_depth,
             max_depth=max_depth,
             m1_cfg=cfg.get("method1", {}),
+            methods=cfg["evaluation"].get("methods"),
         )
 
         for m_name in method_keys:
@@ -239,10 +258,12 @@ def main():
 
         hp = protocols[0]
         pol = {m: scene_results[m][hp]["75-90"]["abs_rel"] for m in method_keys}
-        logger.info(f"    Polar AbsRel (75-90°, {hp}): Base={pol['Baseline']:.4f} | Tan={pol['Tangent_Spatial']:.4f} | "
-                    f"M1(Grad)={pol['Method1_GradientFusion']:.4f} | M2(Möbius)={pol['Method2_MobiusTTA']:.4f}")
+        logger.info(f"    Polar AbsRel (75-90°, {hp}): " + " | ".join(f"{m.split('_')[0]}={v:.4f}" for m, v in pol.items()))
 
-    summary = summarize_methods(accumulators, protocols)
+    # Scenes from the same house / environment are correlated: bootstrap and Wilcoxon run over clusters.
+    groups = [group_of(sc["id"]) for sc in scenes]
+    logger.info(f"Statistics are cluster-robust: {len(scenes)} scenes in {len(set(groups))} groups")
+    summary = summarize_methods(accumulators, protocols, groups=groups)
     headline = protocols[0]
     for proto in protocols:
         for stat in ("median", "mean"):

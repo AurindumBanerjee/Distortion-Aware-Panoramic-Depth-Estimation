@@ -22,6 +22,7 @@ mobius_tta:
     - {pitch: 0.0, scale: 0.625}
   fusion_mode: "distortion_weighted"  # 'distortion_weighted', 'median', 'mean'
   reanchor: "auto"       # affine (disparity models) | scale | none (metric models, e.g. DAP) | auto
+  gate_lat: [30, 55]   # non-identity passes fade in between |lat| 30 and 55 deg; output == baseline below 30 (protects the equator)
   anchor_max_lat: 30.0   # re-anchor each pass to the identity pass on pixels low-latitude in both frames
 
 evaluation:

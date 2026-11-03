@@ -1,0 +1,44 @@
+# Holo360D outdoor (real LiDAR-mesh GT, 1440x2880 jpg + float32 EXR metres, mask excludes the operator/rig). Generated from config.yaml; only data/evaluation differ.
+# Benchmark Configuration on Real Structured3D Panoramas
+benchmark_suffix: "_outdoor"
+method_name: "Structured3D Real Foundation Benchmark"
+model:
+  name: "dpt_hybrid_384"
+  device: "auto"
+  space: "disparity"
+  scale: "affine"
+
+data:
+  dataset: "holo360d"
+  root: "data/holo360d"   # relative to Aurindum/; also searched: <Project>/Data/holo360d
+  list: "outdoor.txt"   # built by scripts/make_holo360d_list.py (indoor 95 frames, outdoor 61)
+  max_scenes: null          # null = all panoramas in the list (300 extracted); override with --max_scenes N
+  height: 256
+  width: 512
+
+method1:
+  polar_source: "auto"   # auto -> tangent for perspective models; rotated_erp for metric ERP models (DAP)
+  phi_threshold: 45.0
+  fov_deg: 90.0
+  resolution: 384
+  anchor_max_lat: 60.0
+  blend_margin: 10.0
+  texture_tau: 0.0
+  texture_gate_mode: "erp"
+
+mobius_tta:
+  passes:
+    - {pitch: 90.0, scale: 1.0}
+    - {pitch: -90.0, scale: 1.0}
+    - {pitch: 0.0, scale: 1.6}
+    - {pitch: 0.0, scale: 0.625}
+  fusion_mode: "distortion_weighted"
+  reanchor: "auto"
+  anchor_max_lat: 30.0
+
+evaluation:
+  protocols: ["align-all", "align-equatorial"]   # first = headline
+  min_depth: 0.1
+  max_depth: 100.0   # Holo360D outdoor: up to ~95 m; sky is NaN in the mesh depth
+  output_dir: "outputs_holo360d_outdoor"
+  log_dir: "logs_holo360d_outdoor"

@@ -14,9 +14,11 @@
 #     series 2  Möbius TTA + yaw control     synthetic, 24 scenes
 #     series 3  Structured3D benchmark       all panoramas in the split list (300)
 #     series 3  PanoX benchmark              200 frames (RUN_PANOX=0 to skip)
+#     series 3  Holo360D indoor + outdoor    real LiDAR-mesh GT, 95 + 61 frames (RUN_HOLO=1 to enable; needs
+#                                            data/holo360d + `python scripts/make_holo360d_list.py --root data/holo360d`)
 #   then scripts/collect_results.py -> results/SUMMARY_<ts>.md
 #
-# Overrides (environment): CONFIGS, RUN_PANOX, MAX_SCENES (series 3 limit), CONDA_ENV, CONDA_SH,
+# Overrides (environment): CONFIGS, RUN_PANOX, RUN_HOLO, MAX_SCENES (series 3 limit), CONDA_ENV, CONDA_SH,
 #                          CUDA_VISIBLE_DEVICES, SKIP_TESTS=1, NO_ARCHIVE=1
 # A config whose weights are missing (e.g. DAP) is skipped by the master script; the rest still run.
 # ==============================================================================
@@ -28,6 +30,7 @@ PID_FILE="$AURINDUM_DIR/logs/suite.pid"
 RUNNER_LOG="$AURINDUM_DIR/logs/nohup_runner.log"
 export CONFIGS="${CONFIGS:-config.yaml config_dap.yaml}"
 export RUN_PANOX="${RUN_PANOX:-1}"
+export RUN_HOLO="${RUN_HOLO:-0}"
 
 say() { echo "[$(date +'%H:%M:%S')] $*"; }
 
@@ -65,7 +68,7 @@ do_archive() {
     local moved=0
     mkdir -p "$dst"
     for d in [123]_*/outputs* [123]_*/logs* logs/master_experiment_*.log logs/nohup_runner.log \
-             best_model/synthetic* best_model/structured3d* best_model/panox* best_model/BEST_MODEL.md \
+             best_model/synthetic* best_model/structured3d* best_model/panox* best_model/holo360d* best_model/BEST_MODEL.md \
              best_model/best_metrics.json best_model/best_config.yaml best_model/sample_predictions; do
         [ -e "$d" ] || continue
         mkdir -p "$dst/$(dirname "$d")"; mv "$d" "$dst/$d" && moved=1
@@ -81,7 +84,7 @@ do_preflight() {
     [ -n "$(git -C "$AURINDUM_DIR" status --porcelain -- '*.py' '*.yaml' '*.sh' 2>/dev/null)" ] && \
         say "⚠️  Uncommitted code/config changes present (results will not match a commit)."
     if [ "${SKIP_TESTS:-0}" != 1 ]; then
-        if python -m pytest -q tests/test_methods.py >"logs/preflight_tests.log" 2>&1; then
+        if python -m pytest -q -p no:cacheprovider --basetemp "$AURINDUM_DIR/logs/pytest_tmp" tests/test_methods.py >"logs/preflight_tests.log" 2>&1; then
             say "✅ Regression tests passed ($(tail -1 logs/preflight_tests.log))"
         else
             say "❌ Regression tests failed, see logs/preflight_tests.log"; ok=0
@@ -111,6 +114,23 @@ print("PanoX loader OK (first frame: %.1f-%.1f m)" % (np.nanmin(s.depth), np.nan
 PYEOF
         else
             say "⚠️  data/panox/test.txt missing: PanoX runs will fail (RUN_PANOX=0 to skip)"
+        fi
+    fi
+    if [ "$RUN_HOLO" = 1 ]; then
+        if [ -f data/holo360d/indoor.txt ] && [ -f data/holo360d/outdoor.txt ]; then
+            say "Holo360D: $(wc -l < data/holo360d/indoor.txt) indoor + $(wc -l < data/holo360d/outdoor.txt) outdoor frames"
+            python - <<'PYEOF' || { say "❌ Holo360D loader failed (pip install openexr?)"; ok=0; }
+import os, sys
+os.environ.setdefault("OPENCV_IO_ENABLE_OPENEXR", "1")
+import numpy as np
+sys.path.insert(0, ".")
+from datasets.panorama import PanoramaDataset
+s = PanoramaDataset("data/holo360d", "indoor.txt", height=64, width=128, name="holo360d")[0]
+assert s.valid.any(), "no valid pixels in first Holo360D frame"
+print("Holo360D loader OK (first frame: %.2f-%.2f m, %.0f%% valid)" % (np.nanmin(s.depth), np.nanmax(s.depth), 100 * s.valid.mean()))
+PYEOF
+        else
+            say "❌ data/holo360d/{indoor,outdoor}.txt missing: run scripts/make_holo360d_list.py --root data/holo360d (or RUN_HOLO=0)"; ok=0
         fi
     fi
     [ "$ok" = 1 ]
