@@ -15,6 +15,15 @@
 #   C  Möbius ablation: rotation-only / dilation-only / full  x  gate off/on  x  MiDaS/DAP  x  S3/PanoX
 #      (ABL_N scenes each, default 60; Baseline + Method2 + yaw control only).
 #   D  results/SUMMARY_<ts>.md with cluster-robust statistics over every outputs*/ folder.
+#   E  Pared-down + self-validating Method 2 and the Method1-on-rotated-view hybrid, MiDaS only, on
+#      Structured3D, PanoX and Holo360D indoor/outdoor (ESC = scenes cap, default all):
+#        rotonly   mobius_tta.preset=rotation_only                      (no dilation passes)
+#        rotguard  rotation_only + fit_guard {tau 0.5, a_max 4}          (label-free pass validation)
+#        m1rot     Method 1 / Tangent_Spatial with method1.polar_source=rotated_erp (gradient-domain fusion of the
+#                  Möbius-rotated pass instead of a tangent crop)
+#   F  scripts/diagnose_reanchor.py on the same four datasets (DIAG_N frames, default 40): intrinsic vs realised
+#      gain of the rotated pass, anchor loss, and which label-free signal predicts harm.
+#   Stage D should be re-run last to include E (STAGES="E F D").
 #
 # Other env: CONDA_ENV (RL), CONDA_SH, CUDA_VISIBLE_DEVICES, MAX_SCENES (stage A/B series 3 limit), ABL_N.
 # ==============================================================================
@@ -23,8 +32,9 @@ AUR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$AUR"
 mkdir -p logs results
 PID_FILE="$AUR/logs/next_experiments.pid"
-STAGES="${STAGES:-A B C D}"
+STAGES="${STAGES:-A B C D}"   # E and F are opt-in: STAGES="E F D"
 ABL_N="${ABL_N:-60}"
+DIAG_N="${DIAG_N:-40}"
 
 say() { echo "[$(date +'%F %T')] $*"; }
 
@@ -68,6 +78,29 @@ do_run() {
                 # the ablation script ends with collect_results.py; failures inside it are logged by python
                 bash scripts/run_mobius_ablation.sh both "$ABL_N" && say "✅ C ablation" || say "❌ C ablation FAILED"
             else say "skip stage C (needs both MiDaS and DAP weights)"; fi ;;
+        E)  say "=============== Stage E: rotation-only / fit-guard / Method 1 on the rotated view (MiDaS) ==============="
+            if [ "$have_midas" = 1 ]; then
+                local es=""; [ -n "${ESC:-}" ] && es="--max_scenes $ESC"
+                for CFG in config.yaml config_panox.yaml config_holo360d_indoor.yaml config_holo360d_outdoor.yaml; do
+                    case "$CFG" in config_panox.yaml) [ -f data/panox/test.txt ] || continue;; config_holo*) [ -f data/holo360d/test.txt ] || continue;; esac
+                    step "E1 rotation-only [$CFG]" 3_structured3d_benchmark --config "$CFG" --tag rotonly $es \
+                        --set "mobius_tta.preset=rotation_only" --set "evaluation.methods=[Method2_MobiusTTA,Control_YawEnsemble]"
+                    step "E2 rotation-only + fit_guard [$CFG]" 3_structured3d_benchmark --config "$CFG" --tag rotguard $es \
+                        --set "mobius_tta.preset=rotation_only" --set "mobius_tta.fit_guard={tau: 0.5, a_max: 4.0}" \
+                        --set "evaluation.methods=[Method2_MobiusTTA]"
+                    step "E3 Method 1 on rotated view [$CFG]" 3_structured3d_benchmark --config "$CFG" --tag m1rot $es \
+                        --set "method1.polar_source=rotated_erp" --set "evaluation.methods=[Tangent_Spatial,Method1_GradientFusion]"
+                done
+            else say "skip stage E (no MiDaS)"; fi ;;
+        F)  say "=============== Stage F: re-anchor diagnostics ==============="
+            if [ "$have_midas" = 1 ]; then
+                for pair in "s3:3_structured3d_benchmark/config.yaml:data/structured3d" "panox:3_structured3d_benchmark/config_panox.yaml:data/panox" \
+                            "holo_indoor:3_structured3d_benchmark/config_holo360d_indoor.yaml:data/holo360d" "holo_outdoor:3_structured3d_benchmark/config_holo360d_outdoor.yaml:data/holo360d"; do
+                    IFS=: read -r tag cfg dd <<< "$pair"
+                    [ -d "$dd" ] || { say "skip diagnose $tag (no $dd)"; continue; }
+                    python scripts/diagnose_reanchor.py --config "$cfg" --max_scenes "$DIAG_N" --tag "$tag" && say "✅ F diagnose $tag" || say "❌ F diagnose $tag FAILED"
+                done
+            else say "skip stage F (no MiDaS)"; fi ;;
         D)  say "=============== Stage D: cluster-robust summary ==============="
             python scripts/collect_results.py && say "✅ D summary written" || say "❌ D summary FAILED" ;;
         *)  say "unknown stage $ST" ;;

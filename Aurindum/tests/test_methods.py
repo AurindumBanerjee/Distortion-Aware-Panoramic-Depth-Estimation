@@ -6,7 +6,10 @@ These pin down the bugs found in the first GPU run (Nov 2026):
   * tangent alignment returned range and was fused against disparity
   * equatorial-only alignment + unbounded clip exploded polar depth
 """
+import os
 import sys
+
+import pytest
 from pathlib import Path
 
 import numpy as np
@@ -249,3 +252,75 @@ def test_benchmark_evaluator_methods_filter_skips_unrequested_methods():
     assert set(out) == {"Baseline", "Method2_MobiusTTA", "Control_YawEnsemble", "predictions"}
     assert set(out["predictions"]) == {"baseline", "method2_mobius", "control_yaw"}
     assert out["Method2_MobiusTTA"]["none"]["all"]["abs_rel"] < 1e-6
+
+
+# ---------- rotation-only preset, fit guard, re-anchor diagnostic ----------
+class _ContentModel:
+    """Disparity-like model whose output depends on the image, so rotated passes carry real structure."""
+    space, scale = "disparity", "affine"
+
+    def predict(self, rgb, kind="erp"):
+        g = rgb[..., 0].astype(np.float64) / 255.0
+        return 0.5 + g
+
+
+def _content_rgb(H=64, W=128):
+    lat = np.abs(latitude_map(H, W))
+    lon = np.linspace(0, 2 * np.pi, W)[None, :]
+    return (255 * (0.5 + 0.4 * np.sin(3 * lon) * np.cos(np.deg2rad(lat)))).astype(np.uint8)[..., None].repeat(3, -1)
+
+
+def test_preset_overrides_passes_and_rejects_unknown():
+    from tta_ensemble import MobiusTTAEnsemble
+    ens = MobiusTTAEnsemble(_ContentModel(), passes=[{"pitch": 0, "scale": 1.6}], preset="rotation_only")
+    assert sorted(p for p, _ in ens.passes) == [-90.0, 0.0, 90.0] and all(abs(s - 1.0) < 1e-9 for _, s in ens.passes)
+    with pytest.raises(ValueError):
+        MobiusTTAEnsemble(_ContentModel(), preset="nope")
+
+
+def test_fit_quality_and_guard_weight():
+    from tta_ensemble import fit_quality, guard_weight
+    rng = np.random.default_rng(0)
+    x = rng.uniform(0.5, 2.0, 2000)
+    assert fit_quality(x, 2 * x + 1, 2.0, 1.0, "affine") < 1e-9               # perfect fit
+    assert fit_quality(x, rng.permutation(x), 1.0, 0.0, "affine") > 0.5        # unrelated -> large residual
+    assert guard_weight(0.0, 1.0, 0.5, 4.0) == 1.0
+    assert guard_weight(2.0, 1.0, 0.5, 4.0) < 1e-3
+    assert guard_weight(0.0, 10.0, 0.5, 4.0) == 0.0 and guard_weight(0.0, 0.1, 0.5, 4.0) == 0.0
+    assert guard_weight(float("nan"), 1.0, 0.5, 4.0) == 1.0
+
+
+def test_guard_off_is_bitwise_unchanged_and_bad_pass_falls_back_to_identity():
+    from tta_ensemble import MobiusTTAEnsemble
+    rgb = _content_rgb()
+    base = MobiusTTAEnsemble(_ContentModel(), preset="rotation_only")
+    off, d_off = base.predict(rgb)
+    assert np.isfinite(off).all() and all(d["guard_w"] == 1.0 for d in d_off)
+    # tau -> 0 kills every pass with a non-zero residual: output equals the identity prediction
+    strict = MobiusTTAEnsemble(_ContentModel(), preset="rotation_only", fit_guard={"tau": 1e-9, "a_max": 4.0})
+    out, d = strict.predict(rgb)
+    resid = [x["anchor_res"] for x in d[1:]]
+    if min(resid) > 1e-6:
+        assert np.allclose(out, _ContentModel().predict(rgb), atol=1e-6)
+    assert all(np.isfinite(x["anchor_n"]) for x in d)
+
+
+def test_diagnose_frame_and_summary_run_on_a_fake_model():
+    import importlib.util
+    spec = importlib.util.spec_from_file_location("diag", os.path.join(os.path.dirname(__file__), "..", "scripts", "diagnose_reanchor.py"))
+    diag = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(diag)
+    H, W = 64, 128
+    rgb = _content_rgb(H, W)
+    gt = 1.0 / (0.5 + rgb[..., 0].astype(np.float64) / 255.0) * 2.0
+    valid = np.ones((H, W), bool)
+    rows = diag.diagnose_frame(_ContentModel(), rgb, gt, valid, [{"pitch": 90.0, "scale": 1.0}, {"pitch": -90.0, "scale": 1.0}],
+                               min_depth=0.1, max_depth=10.0)
+    assert len(rows) == 2
+    for r in rows:
+        assert np.isfinite(r["intrinsic_gain"]) and np.isfinite(r["realised_gain"]) and r["n_anchor"] > 0
+        r["frame"] = "f0"
+    txt = diag.summarize(rows * 3, "unit")
+    assert "intrinsic gain" in txt and "AUC" in txt
+    assert diag._auc(np.array([3., 4., 1., 2.]), np.array([True, True, False, False])) == 1.0
+    assert abs(diag._auc(np.array([1., 1., 1., 1.]), np.array([True, True, False, False])) - 0.5) < 1e-9

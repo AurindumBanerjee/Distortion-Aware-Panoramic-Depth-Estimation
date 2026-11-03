@@ -216,6 +216,8 @@ def main():
         reanchor=cfg["mobius_tta"].get("reanchor", "auto"),
         anchor_max_lat=cfg["mobius_tta"].get("anchor_max_lat", 30.0),
         gate_lat=cfg["mobius_tta"].get("gate_lat"),
+        preset=cfg["mobius_tta"].get("preset"),
+        fit_guard=cfg["mobius_tta"].get("fit_guard"),
     )
 
     # Run over test scenes

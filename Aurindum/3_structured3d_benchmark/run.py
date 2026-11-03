@@ -198,6 +198,8 @@ def main():
         reanchor=m2_cfg.get("reanchor", "auto"),
         anchor_max_lat=m2_cfg.get("anchor_max_lat", 30.0),
         gate_lat=m2_cfg.get("gate_lat"),
+        preset=m2_cfg.get("preset"),
+        fit_guard=m2_cfg.get("fit_guard"),
     )
     ev_cfg = cfg.get("evaluation", {})
     protocols = tuple(ev_cfg.get("protocols") or default_protocols(model))

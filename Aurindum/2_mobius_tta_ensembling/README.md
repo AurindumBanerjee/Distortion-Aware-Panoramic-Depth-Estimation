@@ -48,3 +48,15 @@ Outputs:
 - **`logs/method2_mobius.log`**: Complete execution log and band-by-band error tracking.
 - **`outputs/metrics_summary.json`**: Performance metrics JSON.
 - **`../best_model/`**: Automatically updated if this run achieves a new best polar AbsRel!
+
+
+## Rotation-only preset and self-validating pass guard (added 3 Nov 2026)
+* `mobius_tta.preset: rotation_only` keeps only the pitch +/-90 passes (the ablation shows the S3/MiDaS gain comes entirely
+  from them; dilation adds nothing there and hurts PanoX under align-equatorial). A preset overrides `passes`.
+* `mobius_tta.fit_guard: {tau: 0.5, a_max: 4.0}` weights every rotated pass by `exp(-(res/tau)^2)` where `res` is the scale-free
+  residual of its equatorial re-anchor fit (`fit_quality`) and drops it if the fitted scale is outside [1/a_max, a_max].
+  The overlap seen at low distortion in both frames is a free, label-free validation set; a pass that cannot reproduce the
+  identity pass there is not trusted at the pole either (to be confirmed by `scripts/diagnose_reanchor.py`).
+  Default is off, so earlier results are reproduced bit for bit.
+* `scripts/diagnose_reanchor.py` reports, per rotated pass, the intrinsic gain (oracle polar fit), the realised gain
+  (label-free re-anchor) and the anchor loss, plus the AUC of each label-free signal for predicting harm.

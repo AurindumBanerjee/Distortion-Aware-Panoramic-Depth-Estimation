@@ -65,6 +65,46 @@ def _robust_fit(x: np.ndarray, y: np.ndarray, mode: str, iters: int = 3, k: floa
     return a, b
 
 
+PRESETS: Dict[str, List[Dict[str, float]]] = {
+    # The ablation (results/ABLATION_*) attributes the whole Structured3D/MiDaS gain to the two pole-recentring
+    # rotations; the dilations add nothing on S3 and hurt PanoX under align-equatorial.
+    "rotation_only": [{"pitch": 90.0, "scale": 1.0}, {"pitch": -90.0, "scale": 1.0}],
+    "dilation_only": [{"pitch": 0.0, "scale": 1.6}, {"pitch": 0.0, "scale": 0.625}],
+    "full": [{"pitch": 90.0, "scale": 1.0}, {"pitch": -90.0, "scale": 1.0},
+             {"pitch": 0.0, "scale": 1.6}, {"pitch": 0.0, "scale": 0.625}],
+}
+
+
+def fit_quality(x: np.ndarray, y: np.ndarray, a: float, b: float, mode: str) -> float:
+    """Scale-free residual of the anchor fit: median |fit - ref| / median |ref - median(ref)|.
+
+    ~0: the pass reproduces the identity pass on the overlap (after a global affine / scale);
+    ~1 or more: the fit explains little of the structure there, so the pass is not trustworthy.
+    The overlap is seen at low distortion in BOTH frames, which makes it a free validation set.
+    """
+    m = np.isfinite(x) & np.isfinite(y)
+    if mode == "logscale":
+        m &= (x > 0) & (y > 0)
+        if m.sum() < 50:
+            return float("nan")
+        fx, ty = np.log(a * x[m]), np.log(y[m])
+    else:
+        if m.sum() < 50:
+            return float("nan")
+        fx, ty = a * x[m] + b, y[m]
+    spread = np.median(np.abs(ty - np.median(ty)))
+    return float(np.median(np.abs(fx - ty)) / max(spread, 1e-6))
+
+
+def guard_weight(res: float, a: float, tau: float, a_max: float) -> float:
+    """Reliability in [0, 1] of one rotated pass: Gaussian in the fit residual, 0 for implausible scales."""
+    if not np.isfinite(res):
+        return 1.0
+    if a > a_max or a < 1.0 / a_max:
+        return 0.0
+    return float(np.exp(-(res / max(tau, 1e-6)) ** 2))
+
+
 class MobiusTTAEnsemble:
     def __init__(
         self,
@@ -77,6 +117,8 @@ class MobiusTTAEnsemble:
         weight_power: float = 2.0,
         min_weight: float = 0.02,
         gate_lat: Optional[Sequence[float]] = None,
+        preset: Optional[str] = None,
+        fit_guard: Optional[Dict[str, float]] = None,
     ):
         """
         Args:
@@ -91,10 +133,19 @@ class MobiusTTAEnsemble:
                       pixel has |lat| > lo (smooth ramp to full weight at hi); below lo the output equals the
                       identity pass exactly. Protects the equator from out-of-distribution (rotated / strongly
                       dilated) passes, which the first full run showed to be catastrophic for DAP and outdoor scenes.
+            preset: 'rotation_only' | 'dilation_only' | 'full' (overrides `passes` when given)
+            fit_guard: {tau, a_max} or None. Self-validating TTA: every non-identity pass is weighted by how
+                       well it reproduces the identity pass on the equatorial overlap (see fit_quality). A pass
+                       whose fit is poor, or whose re-anchor scale is implausible (outside [1/a_max, a_max]),
+                       is faded out, so that image falls back to the identity prediction. Needs no ground truth.
             anchor_max_lat: anchor pixels must have |lat| below this in both frames
             weight_power: w = cos(lat_seen)^p
         """
         self.model = model
+        if preset:  # a named preset overrides any `passes` list (so --set mobius_tta.preset=... works on every config)
+            if preset not in PRESETS:
+                raise ValueError(f"unknown preset {preset!r}; choose from {sorted(PRESETS)}")
+            passes = PRESETS[preset]
         specs = list(passes) if passes is not None else list(scales if scales is not None else [1.0])
         parsed = [_parse_pass(p) for p in specs]
         if not any(abs(pt) < 1e-6 and abs(sc - 1.0) < 1e-6 for pt, sc in parsed):
@@ -113,6 +164,8 @@ class MobiusTTAEnsemble:
             reanchor = "affine" if space == "disparity" else ("logscale" if scale == "metric" else "scale")
         self.reanchor = reanchor
         self.gate_lat = None if gate_lat in (None, [], ()) else (float(gate_lat[0]), float(gate_lat[1]))
+        self.fit_guard = None if not fit_guard else {"tau": float(fit_guard.get("tau", 0.5)),
+                                                     "a_max": float(fit_guard.get("a_max", 4.0))}
 
     def predict(self, rgb_erp: np.ndarray, identity_pred: Optional[np.ndarray] = None
                 ) -> Tuple[np.ndarray, List[Dict[str, np.ndarray]]]:
@@ -135,15 +188,22 @@ class MobiusTTAEnsemble:
                 pred_w = self.model.predict(warped_rgb, kind="erp")
                 unwarped = unwarp_depth_mobius(pred_w, scale_factor=scale, pitch_deg=pitch)
                 a, b = 1.0, 0.0
+                res, n_anchor = float("nan"), 0
                 if self.reanchor != "none" and ref is not None:
                     anchor = (lat0 < self.anchor_max_lat) & (lat_seen < self.anchor_max_lat)
                     if anchor.sum() < 200:  # e.g. pitch 90: overlap of the two equators is small
                         score = np.maximum(lat0, lat_seen)
                         anchor = score <= np.percentile(score, 10.0)
                     a, b = _robust_fit(unwarped[anchor], ref[anchor], self.reanchor)
+                    res = fit_quality(unwarped[anchor], ref[anchor], a, b, self.reanchor)
+                    n_anchor = int(anchor.sum())
                     unwarped = a * unwarped + b
 
             w = np.clip(np.cos(np.deg2rad(lat_seen)) ** self.weight_power, self.min_weight, 1.0)
+            g = 1.0
+            if self.fit_guard is not None and not is_id:
+                g = guard_weight(res, a, self.fit_guard["tau"], self.fit_guard["a_max"])
+                w = w * g
             if self.gate_lat is not None and not is_id:
                 lo, hi = self.gate_lat
                 t = np.clip((lat0 - lo) / max(hi - lo, 1e-6), 0.0, 1.0)
@@ -153,7 +213,8 @@ class MobiusTTAEnsemble:
             preds.append(np.where(valid, unwarped, np.nan))
             weights.append(w)
             diags.append({"pitch": pitch, "scale": scale, "anchor_a": a, "anchor_b": b,
-                          "unwarped_pred": unwarped, "weight": w})
+                          "anchor_res": (float("nan") if is_id else res), "anchor_n": (0 if is_id else n_anchor),
+                          "guard_w": g, "unwarped_pred": unwarped, "weight": w})
             logger.debug(f"pass pitch={pitch:+.0f} scale={scale:.3f}: anchor a={a:.4f} b={b:.4f}")
 
         P = np.stack(preds, 0)

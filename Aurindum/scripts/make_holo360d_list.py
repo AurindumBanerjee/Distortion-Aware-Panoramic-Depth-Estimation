@@ -12,6 +12,8 @@ import os
 
 ap = argparse.ArgumentParser()
 ap.add_argument("--root", default="data/holo360d")
+ap.add_argument("--frames_per_scene", type=int, default=0,
+                help="keep at most N evenly spaced frames per scene (0 = all), so that a few long scenes do not dominate")
 a = ap.parse_args()
 rows = {"test": [], "indoor": [], "outdoor": []}
 skipped = 0
@@ -19,7 +21,11 @@ for scene in sorted(os.listdir(a.root)):
     base = os.path.join(a.root, scene, scene)
     if not os.path.isdir(os.path.join(base, "rgb")):
         continue
-    for f in sorted(os.listdir(os.path.join(base, "rgb"))):
+    files = sorted(os.listdir(os.path.join(base, "rgb")))
+    if a.frames_per_scene and len(files) > a.frames_per_scene:
+        idx = [round(i * (len(files) - 1) / (a.frames_per_scene - 1)) for i in range(a.frames_per_scene)] if a.frames_per_scene > 1 else [0]
+        files = [files[i] for i in sorted(set(idx))]
+    for f in files:
         st = os.path.splitext(f)[0]
         rgb, dep, msk = (f"{scene}/{scene}/rgb/{f}", f"{scene}/{scene}/depth/mesh_depth/{st}.exr", f"{scene}/{scene}/mask/{f}")
         if not all(os.path.isfile(os.path.join(a.root, p)) for p in (rgb, dep, msk)):
