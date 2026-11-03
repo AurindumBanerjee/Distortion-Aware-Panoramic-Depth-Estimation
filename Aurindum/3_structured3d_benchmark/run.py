@@ -39,7 +39,7 @@ from best_model.tracker import BestModelTracker
 from datasets.synthetic import _texture_bank, random_scene, render_erp
 from models.depth_model import EncodedDepthOracle, MiDaSWrapper
 from tta_ensemble import MobiusTTAEnsemble
-from evaluation.protocol import format_table, summarize_methods
+from evaluation.protocol import format_band_table, format_table, summarize_methods
 
 # Local modules
 from benchmark_evaluator import run_single_benchmark_scene
@@ -165,7 +165,7 @@ def main():
     H = cfg["data"].get("height", 256)
     W = cfg["data"].get("width", 512)
 
-    method_keys = ["Baseline", "Tangent_Spatial", "Method1_GradientFusion", "Method2_MobiusTTA"]
+    method_keys = ["Baseline", "Tangent_Spatial", "Method1_GradientFusion", "Method2_MobiusTTA", "Control_YawEnsemble"]
     accumulators: Dict[str, List[Dict]] = {m: [] for m in method_keys}
     sample_vis = None
     tex_bank = _texture_bank(seed=42)
@@ -220,6 +220,10 @@ def main():
                         f"{min_depth}-{max_depth} m]")
             for line in format_table(summary[proto], stat):
                 logger.info(line)
+    for name in method_keys[1:]:
+        logger.info(f"\n--- {name} vs Baseline, per band [{protocols[0]}, median] ---")
+        for line in format_band_table(summary[protocols[0]], name):
+            logger.info(line)
     logger.info("=" * 95)
 
     record = {
@@ -234,14 +238,18 @@ def main():
     with open(out_dir / "benchmark_summary.json", "w") as f:
         json.dump(record, f, indent=2)
 
-    csv_lines = ["Protocol,Stat,Method,Global_AbsRel,Polar_60_75_AbsRel,Polar_75_90_AbsRel,Delta1,WinRate_75_90"]
+    csv_lines = ["Protocol,Stat,Method,Global_AbsRel,Polar_60_75_AbsRel,Polar_75_90_AbsRel,Delta1,WinRate_75_90,"
+                 "Gain_75_90_median,Gain_CI_low,Gain_CI_high,P_Wilcoxon_75_90"]
     for proto in protocols:
         for stat in ("median", "mean"):
             for m_name in method_keys:
                 m = summary[proto][m_name][stat]
                 wr = summary[proto][m_name]["win_rate_vs_baseline"].get("75-90", float("nan"))
+                pt = summary[proto][m_name].get("paired_vs_baseline", {}).get("75-90", {})
+                g = [pt.get(k, float("nan")) for k in ("rel_gain_median", "ci_low", "ci_high", "p_wilcoxon")]
                 csv_lines.append(f"{proto},{stat},{m_name},{m['all']['abs_rel']:.4f},{m['60-75']['abs_rel']:.4f},"
-                                 f"{m['75-90']['abs_rel']:.4f},{m['all']['d1']:.4f},{wr:.3f}")
+                                 f"{m['75-90']['abs_rel']:.4f},{m['all']['d1']:.4f},{wr:.3f},"
+                                 f"{g[0]:.4f},{g[1]:.4f},{g[2]:.4f},{g[3]:.4g}")
     with open(out_dir / "benchmark_table.csv", "w") as f:
         f.write("\n".join(csv_lines) + "\n")
     logger.info(f"Saved benchmark results to {out_dir / 'benchmark_summary.json'}")
@@ -249,9 +257,10 @@ def main():
     winner_name = min(method_keys, key=lambda m: summary[headline][m]["median"]["75-90"]["abs_rel"])
     logger.info(f"🏆 Best polar (75-90°) method on this benchmark [{headline}, median]: {winner_name}")
 
-    tracker = BestModelTracker(str(AURINDUM_DIR / "best_model"), benchmark=record["benchmark"] + cfg.get("benchmark_suffix", ""))
+    tracker = BestModelTracker(str(AURINDUM_DIR / "best_model"), benchmark=record["benchmark"])
     win_pred_key = {"Baseline": "baseline", "Tangent_Spatial": "tangent_spatial",
-                    "Method1_GradientFusion": "method1_grad", "Method2_MobiusTTA": "method2_mobius"}[winner_name]
+                    "Method1_GradientFusion": "method1_grad", "Method2_MobiusTTA": "method2_mobius",
+                    "Control_YawEnsemble": "control_yaw"}[winner_name]
     tracker.update_if_best(
         method_name=f"Structured3D: {winner_name}",
         config=cfg,

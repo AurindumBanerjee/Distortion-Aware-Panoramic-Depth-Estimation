@@ -35,7 +35,7 @@ from best_model.tracker import BestModelTracker
 from datasets.synthetic import _texture_bank, random_scene, render_erp
 from evaluation.latitude_analysis import per_band_metrics
 from evaluation.metrics import compute_metrics, to_metric_depth
-from evaluation.protocol import BANDS, align_to_gt, summarize_methods
+from evaluation.protocol import BANDS, align_to_gt, format_band_table, summarize_methods
 from geometry.erp_projection import sample_erp
 from geometry.spherical import erp_lonlat_grid, latitude_map, lonlat_to_xyz
 from geometry.tangent_plane import (
@@ -306,15 +306,11 @@ def main():
     summary = summarize_methods({"Baseline": all_base_metrics, "Method1_GradientFusion": all_fused_metrics}, protocols)
     headline = protocols[0]
     for proto in protocols:
-        for stat in ("median", "mean"):
+        for name in ['Method1_GradientFusion']:
             logger.info("\n" + "=" * 90)
-            logger.info(f"📊 METHOD 1 vs BASELINE  [{proto}, {stat} over {num_scenes} scenes]")
-            logger.info(f"{'Band':<8} | {'Baseline':>10} | {'Method 1':>10} | {'Improvement':>11} | {'Win rate':>8}")
-            for bnd in BANDS:
-                b_val = summary[proto]["Baseline"][stat][bnd]["abs_rel"]
-                f_val = summary[proto]["Method1_GradientFusion"][stat][bnd]["abs_rel"]
-                wr = summary[proto]["Method1_GradientFusion"]["win_rate_vs_baseline"][bnd]
-                logger.info(f"{bnd:<8} | {b_val:10.4f} | {f_val:10.4f} | {100 * (b_val - f_val) / b_val:+10.2f}% | {100 * wr:7.0f}%")
+            logger.info(f"📊 {name} vs BASELINE  [{proto}, median over {num_scenes} scenes; paired Wilcoxon + bootstrap CI]")
+            for line in format_band_table(summary[proto], name):
+                logger.info(line)
     logger.info("=" * 90)
 
     avg_base = summary[headline]["Baseline"]["median"]
@@ -334,7 +330,7 @@ def main():
         json.dump(metrics_record, f, indent=2)
     logger.info(f"Saved metrics summary to {out_dir / 'metrics_summary.json'}")
 
-    tracker = BestModelTracker(str(AURINDUM_DIR / "best_model"), benchmark="synthetic" + cfg.get("benchmark_suffix", ""))
+    tracker = BestModelTracker(str(AURINDUM_DIR / "best_model"), benchmark="synthetic")
     is_best = tracker.update_if_best(
         method_name="Gradient-Domain Polar Fusion",
         config=cfg,

@@ -83,3 +83,11 @@ def test_alignment_is_clamped():
     pred[:2] = -5.0  # would map to a negative / huge depth
     out = align_to_gt(pred, gt, np.ones_like(gt, bool), M(), "align-equatorial", 0.1, 10.0)
     assert out.max() <= 10.0 and out.min() >= 0.1
+
+
+def test_paired_test_detects_consistent_gain():
+    from evaluation.protocol import paired_test
+    base = [{"75-90": {"abs_rel": 0.5 + 0.01 * i}} for i in range(12)]
+    better = [{"75-90": {"abs_rel": 0.4 + 0.01 * i}} for i in range(12)]
+    r = paired_test(base, better, "75-90")
+    assert r["p_wilcoxon"] < 0.01 and r["ci_low"] > 0 and r["n"] == 12

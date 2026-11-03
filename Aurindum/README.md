@@ -75,6 +75,13 @@ with v2 and should not be reported.
 | Tracker | Synthetic and Structured3D results competed in one registry | per-benchmark registries `best_model/<benchmark>/` (top-level files = legacy v1) |
 | Models | DAP load failure silently fell back to MiDaS | fatal unless `model.allow_model_fallback: true` |
 
+**Is a method better?** Every table reports, per latitude band and vs the baseline (one plain ERP pass of the
+same frozen model): median AbsRel, the scene **win rate**, the median relative gain with a **95 % bootstrap CI**, and a
+two-sided **paired Wilcoxon** p-value over the same scenes. Claim an improvement only when the polar (60–90°) gain's CI
+excludes 0, p < 0.05 (needs ≥ ~10 scenes; with 6 scenes the smallest possible p is 0.031), it holds under both
+protocols, and the 0–30° bands do not degrade. `Control_YawEnsemble` runs the **same number of forward passes** as
+Möbius-TTA but only shifts longitude: Möbius-TTA must beat it, otherwise the gain is plain test-time averaging.
+
 Regression tests: `pytest -q tests/test_methods.py`. On a controlled affine-disparity oracle (random (s, t) per call,
 latitude-growing ERP noise) all three corrections now reduce 75–90° AbsRel in every scene.
 

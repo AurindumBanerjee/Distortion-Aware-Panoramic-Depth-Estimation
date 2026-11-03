@@ -154,3 +154,27 @@ class MobiusTTAEnsemble:
         if bad.any():
             fused[bad] = preds[0][bad]
         return fused, diags
+
+
+def yaw_shift_ensemble(model, rgb_erp: np.ndarray, n_passes: int, identity_pred: Optional[np.ndarray] = None,
+                       reanchor: str = "affine", anchor_max_lat: float = 30.0) -> np.ndarray:
+    """Compute-matched control for Möbius-TTA: the same number of forward passes, but each pass
+    only shifts longitude (a pixel roll), which leaves every pixel's latitude and ERP distortion
+    unchanged. Passes are re-anchored to the identity pass and averaged.
+
+    If Möbius-TTA beats this, the gain comes from showing the poles at low distortion, not from
+    plain test-time averaging.
+    """
+    H, W = rgb_erp.shape[:2]
+    lat0 = np.abs(latitude_map(H, W))
+    anchor = lat0 < anchor_max_lat
+    ref = (identity_pred if identity_pred is not None else model.predict(rgb_erp, kind="erp")).astype(np.float64)
+    preds = [ref]
+    for k in range(1, max(1, n_passes)):
+        shift = int(round(k * W / n_passes))
+        p = np.roll(model.predict(np.roll(rgb_erp, shift, axis=1), kind="erp").astype(np.float64), -shift, axis=1)
+        if reanchor != "none":
+            a, b = _robust_fit(p[anchor], ref[anchor], reanchor)
+            p = a * p + b
+        preds.append(p)
+    return np.nanmean(np.stack(preds, 0), axis=0)

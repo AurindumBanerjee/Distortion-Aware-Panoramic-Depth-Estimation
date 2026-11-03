@@ -102,15 +102,23 @@ def run_single_benchmark_scene(
     pred_mobius, _ = m2_ensemble.predict(rgb, identity_pred=pred_erp)
     res_mob, m_mob = ev(pred_mobius)
 
+    # 5. Compute-matched control: same number of passes as Möbius-TTA, longitude shifts only
+    from tta_ensemble import yaw_shift_ensemble
+    pred_yaw = yaw_shift_ensemble(model, rgb, n_passes=len(m2_ensemble.passes), identity_pred=pred_erp,
+                                  reanchor=m2_ensemble.reanchor, anchor_max_lat=m2_ensemble.anchor_max_lat)
+    res_yaw, m_yaw = ev(pred_yaw)
+
     return {
         "Baseline": res_base,
         "Tangent_Spatial": res_tan,
         "Method1_GradientFusion": res_grad,
         "Method2_MobiusTTA": res_mob,
+        "Control_YawEnsemble": res_yaw,
         "predictions": {
             "baseline": m_base,
             "tangent_spatial": m_tan,
             "method1_grad": m_grad,
             "method2_mobius": m_mob,
+            "control_yaw": m_yaw,
         },
     }

@@ -89,10 +89,44 @@ def depth_cap_from_cfg(cfg: Dict, default_min: float, default_max: float) -> tup
 BANDS = ["all", "0-15", "15-30", "30-45", "45-60", "60-75", "75-90"]
 
 
+def paired_test(base: List[Dict], method: List[Dict], band: str, key: str = "abs_rel",
+                n_boot: int = 2000, seed: int = 0) -> Dict[str, float]:
+    """Paired comparison of method vs baseline over the SAME scenes (lower `key` is better).
+
+    Returns
+      p_wilcoxon: two-sided Wilcoxon signed-rank p-value on per-scene differences
+      rel_gain_median: median over scenes of (base - method) / base   (> 0 = method better)
+      ci_low / ci_high: 95% bootstrap CI (scenes resampled) of rel_gain_median
+      n: number of paired scenes
+    """
+    b = np.array([m[band][key] for m in base], dtype=float)
+    x = np.array([m[band][key] for m in method], dtype=float)
+    ok = np.isfinite(b) & np.isfinite(x) & (b > 0)
+    b, x = b[ok], x[ok]
+    res = {"n": int(ok.sum()), "p_wilcoxon": float("nan"), "rel_gain_median": float("nan"),
+           "ci_low": float("nan"), "ci_high": float("nan")}
+    if len(b) < 2:
+        return res
+    rel = (b - x) / b
+    res["rel_gain_median"] = float(np.median(rel))
+    rng = np.random.default_rng(seed)
+    boots = np.median(rel[rng.integers(0, len(rel), (n_boot, len(rel)))], axis=1)
+    res["ci_low"], res["ci_high"] = (float(v) for v in np.percentile(boots, [2.5, 97.5]))
+    d = b - x
+    if np.any(d != 0):
+        try:
+            from scipy.stats import wilcoxon
+            res["p_wilcoxon"] = float(wilcoxon(b, x, zero_method="wilcox", alternative="two-sided").pvalue)
+        except Exception:
+            pass
+    return res
+
+
 def summarize_methods(per_scene: Dict[str, List[Dict]], protocols, baseline_key: str = "Baseline") -> Dict:
     """per_scene[method] = list over scenes of {protocol: per-band metrics}.
 
-    Returns {protocol: {method: {"mean": ..., "median": ..., "win_rate_vs_baseline": {band: x}}}}.
+    Returns {protocol: {method: {"mean", "median", "win_rate_vs_baseline": {band},
+                                 "paired_vs_baseline": {band: paired_test(...)}}}}.
     """
     out: Dict = {}
     for proto in protocols:
@@ -104,18 +138,45 @@ def summarize_methods(per_scene: Dict[str, List[Dict]], protocols, baseline_key:
                 "mean": aggregate(lst, "mean"),
                 "median": aggregate(lst, "median"),
                 "win_rate_vs_baseline": {b: win_rate(base, lst, b) for b in BANDS} if name != baseline_key else {},
+                "paired_vs_baseline": {b: paired_test(base, lst, b) for b in BANDS} if name != baseline_key else {},
             }
     return out
 
 
-def format_table(summary_proto: Dict, stat: str = "median") -> List[str]:
-    lines = [f"{'Method':<25} | {'Global AbsRel':>13} | {'60-75 AbsRel':>12} | {'75-90 AbsRel':>12} | "
-             f"{'d1 (all)':>8} | {'win 75-90':>9}"]
-    lines.append("-" * len(lines[0]))
+def _fmt_p(p: float) -> str:
+    if not np.isfinite(p):
+        return "   n/a"
+    return f"{p:6.3f}" if p >= 0.001 else "<0.001"
+
+
+def format_table(summary_proto: Dict, stat: str = "median", band: str = "75-90") -> List[str]:
+    """One row per method: global/polar AbsRel, d1, and the paired test vs baseline on `band`."""
+    hdr = (f"{'Method':<25} | {'Global AbsRel':>13} | {'60-75 AbsRel':>12} | {'75-90 AbsRel':>12} | "
+           f"{'d1 (all)':>8} | {'win ' + band:>9} | {'gain ' + band + ' [95% CI]':>24} | {'p (Wilcoxon)':>12}")
+    lines = [hdr, "-" * len(hdr)]
     for name, rec in summary_proto.items():
         m = rec[stat]
-        wr = rec["win_rate_vs_baseline"].get("75-90", float("nan"))
-        wr_s = "    -    " if not rec["win_rate_vs_baseline"] else f"{100 * wr:8.0f}%"
+        if rec["win_rate_vs_baseline"]:
+            wr = f"{100 * rec['win_rate_vs_baseline'][band]:8.0f}%"
+            pt = rec["paired_vs_baseline"][band]
+            gain = f"{100 * pt['rel_gain_median']:+6.1f}% [{100 * pt['ci_low']:+5.1f},{100 * pt['ci_high']:+5.1f}]"
+            pv = _fmt_p(pt["p_wilcoxon"])
+        else:
+            wr, gain, pv = "    -    ", "(reference)", "-"
         lines.append(f"{name:<25} | {m['all']['abs_rel']:13.4f} | {m['60-75']['abs_rel']:12.4f} | "
-                     f"{m['75-90']['abs_rel']:12.4f} | {100 * m['all']['d1']:7.2f}% | {wr_s}")
+                     f"{m['75-90']['abs_rel']:12.4f} | {100 * m['all']['d1']:7.2f}% | {wr} | {gain:>24} | {pv:>12}")
+    return lines
+
+
+def format_band_table(summary_proto: Dict, method: str, stat: str = "median", baseline_key: str = "Baseline") -> List[str]:
+    """Per-band baseline vs method with win rate, median relative gain + CI and Wilcoxon p."""
+    hdr = (f"{'Band':<8} | {'Baseline':>9} | {method[:12]:>12} | {'win':>5} | {'gain [95% CI]':>24} | {'p':>7}")
+    lines = [hdr, "-" * len(hdr)]
+    for b in BANDS:
+        bv = summary_proto[baseline_key][stat][b]["abs_rel"]
+        mv = summary_proto[method][stat][b]["abs_rel"]
+        wr = summary_proto[method]["win_rate_vs_baseline"][b]
+        pt = summary_proto[method]["paired_vs_baseline"][b]
+        gain = f"{100 * pt['rel_gain_median']:+6.1f}% [{100 * pt['ci_low']:+5.1f},{100 * pt['ci_high']:+5.1f}]"
+        lines.append(f"{b:<8} | {bv:9.4f} | {mv:12.4f} | {100 * wr:4.0f}% | {gain:>24} | {_fmt_p(pt['p_wilcoxon']):>7}")
     return lines

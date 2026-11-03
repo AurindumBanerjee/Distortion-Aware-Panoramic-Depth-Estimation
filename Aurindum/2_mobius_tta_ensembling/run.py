@@ -35,7 +35,7 @@ from best_model.tracker import BestModelTracker
 from datasets.synthetic import _texture_bank, random_scene, render_erp
 from evaluation.latitude_analysis import per_band_metrics
 from evaluation.metrics import compute_metrics, to_metric_depth
-from evaluation.protocol import BANDS, align_to_gt, summarize_methods
+from evaluation.protocol import BANDS, align_to_gt, format_band_table, summarize_methods
 from geometry.spherical import latitude_map
 from models.depth_model import EncodedDepthOracle, MiDaSWrapper
 
@@ -142,9 +142,14 @@ def evaluate_scene(
     ev = cfg.get("evaluation", {})
     protocols = tuple(ev.get("protocols", ["align-all", "align-equatorial"]))
     min_d, max_d = float(ev.get("min_depth", 0.05)), float(ev.get("max_depth", 50.0))
-    metrics_base, metrics_mobius = {}, {}
+    from tta_ensemble import yaw_shift_ensemble
+    pred_yaw = yaw_shift_ensemble(ensemble.model, rgb, n_passes=len(ensemble.passes), identity_pred=pred_erp,
+                                  reanchor=ensemble.reanchor, anchor_max_lat=ensemble.anchor_max_lat)
+    metrics_base, metrics_mobius, metrics_yaw = {}, {}, {}
     base_metric = mobius_metric = None
     for proto in protocols:
+        ym = align_to_gt(pred_yaw, gt_range, valid_gt, ensemble.model, protocol=proto, min_depth=min_d, max_depth=max_d)
+        metrics_yaw[proto] = per_band_metrics(ym, gt_range, valid_gt)
         bm = align_to_gt(pred_erp, gt_range, valid_gt, ensemble.model, protocol=proto, min_depth=min_d, max_depth=max_d)
         mm = align_to_gt(pred_mobius, gt_range, valid_gt, ensemble.model, protocol=proto, min_depth=min_d, max_depth=max_d)
         metrics_base[proto] = per_band_metrics(bm, gt_range, valid_gt)
@@ -152,7 +157,7 @@ def evaluate_scene(
         if base_metric is None:
             base_metric, mobius_metric = bm, mm
 
-    return metrics_base, metrics_mobius, base_metric, mobius_metric
+    return metrics_base, (metrics_mobius, metrics_yaw), base_metric, mobius_metric
 
 
 def main():
@@ -204,6 +209,7 @@ def main():
 
     all_base_metrics = []
     all_mobius_metrics = []
+    all_yaw_metrics = []
     sample_vis = None
     tex_bank = _texture_bank(seed=42)
 
@@ -218,7 +224,9 @@ def main():
             s_idx, rgb, gt_range, valid_gt, ensemble, cfg, logger
         )
         all_base_metrics.append(m_base)
+        m_mob, m_yaw = m_mob
         all_mobius_metrics.append(m_mob)
+        all_yaw_metrics.append(m_yaw)
 
         if sample_vis is None:
             sample_vis = (rgb, gt_range, mob_metric)
@@ -228,18 +236,15 @@ def main():
                     f"-> Möbius-TTA={m_mob[hp]['75-90']['abs_rel']:.4f}")
 
     protocols = list(all_base_metrics[0].keys())
-    summary = summarize_methods({"Baseline": all_base_metrics, "Method2_MobiusTTA": all_mobius_metrics}, protocols)
+    summary = summarize_methods({"Baseline": all_base_metrics, "Method2_MobiusTTA": all_mobius_metrics,
+                                 "Control_YawEnsemble": all_yaw_metrics}, protocols)
     headline = protocols[0]
     for proto in protocols:
-        for stat in ("median", "mean"):
+        for name in ['Method2_MobiusTTA', 'Control_YawEnsemble']:
             logger.info("\n" + "=" * 90)
-            logger.info(f"📊 METHOD 2 vs BASELINE  [{proto}, {stat} over {num_scenes} scenes]")
-            logger.info(f"{'Band':<8} | {'Baseline':>10} | {'Möbius':>10} | {'Improvement':>11} | {'Win rate':>8}")
-            for bnd in BANDS:
-                b_val = summary[proto]["Baseline"][stat][bnd]["abs_rel"]
-                m_val = summary[proto]["Method2_MobiusTTA"][stat][bnd]["abs_rel"]
-                wr = summary[proto]["Method2_MobiusTTA"]["win_rate_vs_baseline"][bnd]
-                logger.info(f"{bnd:<8} | {b_val:10.4f} | {m_val:10.4f} | {100 * (b_val - m_val) / b_val:+10.2f}% | {100 * wr:7.0f}%")
+            logger.info(f"📊 {name} vs BASELINE  [{proto}, median over {num_scenes} scenes; paired Wilcoxon + bootstrap CI]")
+            for line in format_band_table(summary[proto], name):
+                logger.info(line)
     logger.info("=" * 90)
 
     avg_base = summary[headline]["Baseline"]["median"]
@@ -253,13 +258,14 @@ def main():
         "baseline_metrics": avg_base,
         "mobius_metrics": avg_mob,
         "summary": summary,
-        "per_scene": {"Baseline": all_base_metrics, "Method2_MobiusTTA": all_mobius_metrics},
+        "per_scene": {"Baseline": all_base_metrics, "Method2_MobiusTTA": all_mobius_metrics,
+                      "Control_YawEnsemble": all_yaw_metrics},
     }
     with open(out_dir / "metrics_summary.json", "w") as f:
         json.dump(metrics_record, f, indent=2)
     logger.info(f"Saved metrics summary to {out_dir / 'metrics_summary.json'}")
 
-    tracker = BestModelTracker(str(AURINDUM_DIR / "best_model"), benchmark="synthetic" + cfg.get("benchmark_suffix", ""))
+    tracker = BestModelTracker(str(AURINDUM_DIR / "best_model"), benchmark="synthetic")
     is_best = tracker.update_if_best(
         method_name="Mobius TTA Ensembling",
         config=cfg,
