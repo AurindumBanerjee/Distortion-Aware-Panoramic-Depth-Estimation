@@ -35,6 +35,7 @@ from best_model.tracker import BestModelTracker
 from datasets.synthetic import _texture_bank, random_scene, render_erp
 from evaluation.latitude_analysis import per_band_metrics
 from evaluation.metrics import compute_metrics, to_metric_depth
+from evaluation.protocol import BANDS, align_to_gt, summarize_methods
 from geometry.erp_projection import sample_erp
 from geometry.spherical import erp_lonlat_grid, latitude_map, lonlat_to_xyz
 from geometry.tangent_plane import (
@@ -91,7 +92,9 @@ def load_model(cfg_model: Dict, logger: logging.Logger):
             logger.info(f"Loaded DAP foundation model from {weights_path} ({device}).")
             return wrapper
         except Exception as e:
-            logger.warning(f"Could not load DAP ({e}); trying MiDaS...")
+            if not cfg_model.get("allow_model_fallback", False):
+                raise RuntimeError(f"Could not load DAP: {e} (set model.allow_model_fallback to fall back to MiDaS)") from e
+            logger.warning(f"Could not load DAP ({e}); falling back to MiDaS (allow_model_fallback=true).")
 
     try:
         wrapper = MiDaSWrapper(
@@ -179,13 +182,14 @@ def evaluate_scene(
     aligned_ranges = []
     for pred_tan_erp, cos_ray, valid_mask in tan_results:
         aligned_r, fit_info = align_tangent_disparity_to_erp(
-            tangent_disp_on_erp=pred_tan_erp,
+            tangent_disp_on_erp=np.where(valid_mask, pred_tan_erp, np.nan),
             erp_disp_baseline=pred_erp,
             cos_ray=cos_ray,
             phi_deg_map=phi_deg_map,
-            anchor_max_lat=cfg.get("alignment", {}).get("anchor_max_lat", 35.0)
+            anchor_max_lat=cfg.get("alignment", {}).get("anchor_max_lat", 60.0)
         )
-        aligned_ranges.append(aligned_r)
+        logger.debug(f"    tangent alignment: {fit_info}")
+        aligned_ranges.append(aligned_r)  # ERP disparity (same space as pred_erp)
 
     # Merge tangent views
     merged_tangent = np.full_like(gt_range, np.nan)
@@ -205,25 +209,31 @@ def evaluate_scene(
             phi_deg_map=phi_deg_map,
             phi_threshold=phi_thresh,
             blend_margin=blend_cfg.get("blend_margin", 10.0),
-            solver_mode=blend_cfg.get("poisson_solver", "sor")
+            solver_mode=blend_cfg.get("poisson_solver", "sparse"),
+            rgb=rgb,
+            texture_tau=blend_cfg.get("texture_tau", 0.0),
+            texture_gate_mode=blend_cfg.get("texture_gate_mode", "erp"),
         )
     else:
         # Standard cosine blending fallback
         alpha = np.clip((phi_deg_map - (phi_thresh - 10)) / 20.0, 0.0, 1.0)
         alpha = 0.5 * (1.0 - np.cos(np.pi * alpha))
         valid_t = np.isfinite(merged_tangent)
-        fused_range = np.where(valid_t, (1.0 - alpha) * pred_erp + alpha * merged_tangent, pred_erp)
+        fused_range = np.where(valid_t, (1.0 - alpha) * pred_erp + alpha * np.nan_to_num(merged_tangent), pred_erp)
 
-    # --- 5. Metric Alignment & Evaluation ---
-    proto = cfg.get("evaluation", {}).get("align_protocol", "align-equatorial")
-    eq_mask = valid_gt & (phi_deg_map < 30.0)
-
-    # Align baseline and fused to GT
-    base_metric = align_prediction_to_gt(pred_erp, gt_range, eq_mask, model)
-    fused_metric = align_prediction_to_gt(fused_range, gt_range, eq_mask, model)
-
-    metrics_base = per_band_metrics(base_metric, gt_range, valid_gt)
-    metrics_fused = per_band_metrics(fused_metric, gt_range, valid_gt)
+    # --- 5. Metric Alignment & Evaluation (all protocols) ---
+    ev = cfg.get("evaluation", {})
+    protocols = tuple(ev.get("protocols", ["align-all", "align-equatorial"]))
+    min_d, max_d = float(ev.get("min_depth", 0.05)), float(ev.get("max_depth", 50.0))
+    metrics_base, metrics_fused = {}, {}
+    base_metric = fused_metric = None
+    for proto in protocols:
+        bm = align_to_gt(pred_erp, gt_range, valid_gt, model, protocol=proto, min_depth=min_d, max_depth=max_d)
+        fm = align_to_gt(fused_range, gt_range, valid_gt, model, protocol=proto, min_depth=min_d, max_depth=max_d)
+        metrics_base[proto] = per_band_metrics(bm, gt_range, valid_gt)
+        metrics_fused[proto] = per_band_metrics(fm, gt_range, valid_gt)
+        if base_metric is None:
+            base_metric, fused_metric = bm, fm
 
     return metrics_base, metrics_fused, base_metric, fused_metric
 
@@ -288,50 +298,43 @@ def main():
         if sample_vis is None:
             sample_vis = (rgb, gt_range, fused_metric)
 
-        logger.info(f"    Scene {s_idx + 1}: Polar AbsRel (75-90°) Baseline={m_base['75-90']['abs_rel']:.4f} "
-                    f"-> Method 1={m_fused['75-90']['abs_rel']:.4f}")
+        hp = next(iter(m_base))
+        logger.info(f"    Scene {s_idx + 1}: Polar AbsRel (75-90°, {hp}) Baseline={m_base[hp]['75-90']['abs_rel']:.4f} "
+                    f"-> Method 1={m_fused[hp]['75-90']['abs_rel']:.4f}")
 
-    # Aggregate metrics across scenes
-    def average_metrics(list_m: List[Dict]) -> Dict:
-        avg = {}
-        keys = list_m[0].keys()
-        for k in keys:
-            avg[k] = {}
-            subkeys = list_m[0][k].keys()
-            for sk in subkeys:
-                avg[k][sk] = float(np.mean([m[k][sk] for m in list_m]))
-        return avg
+    protocols = list(all_base_metrics[0].keys())
+    summary = summarize_methods({"Baseline": all_base_metrics, "Method1_GradientFusion": all_fused_metrics}, protocols)
+    headline = protocols[0]
+    for proto in protocols:
+        for stat in ("median", "mean"):
+            logger.info("\n" + "=" * 90)
+            logger.info(f"📊 METHOD 1 vs BASELINE  [{proto}, {stat} over {num_scenes} scenes]")
+            logger.info(f"{'Band':<8} | {'Baseline':>10} | {'Method 1':>10} | {'Improvement':>11} | {'Win rate':>8}")
+            for bnd in BANDS:
+                b_val = summary[proto]["Baseline"][stat][bnd]["abs_rel"]
+                f_val = summary[proto]["Method1_GradientFusion"][stat][bnd]["abs_rel"]
+                wr = summary[proto]["Method1_GradientFusion"]["win_rate_vs_baseline"][bnd]
+                logger.info(f"{bnd:<8} | {b_val:10.4f} | {f_val:10.4f} | {100 * (b_val - f_val) / b_val:+10.2f}% | {100 * wr:7.0f}%")
+    logger.info("=" * 90)
 
-    avg_base = average_metrics(all_base_metrics)
-    avg_fused = average_metrics(all_fused_metrics)
-
-    logger.info("\n" + "=" * 70)
-    logger.info("📊 SUMMARY RESULTS ACROSS ALL SCENES")
-    logger.info(f"{'Band':<15} | {'Baseline AbsRel':<18} | {'Method 1 AbsRel':<18} | {'Improvement':<12}")
-    logger.info("-" * 70)
-
-    bands = ["all", "0-15", "15-30", "30-45", "45-60", "60-75", "75-90"]
-    for b in bands:
-        b_val = avg_base[b]["abs_rel"]
-        f_val = avg_fused[b]["abs_rel"]
-        imp = ((b_val - f_val) / b_val) * 100.0
-        logger.info(f"{b:<15} | {b_val:<18.4f} | {f_val:<18.4f} | {imp:>+9.2f}%")
-    logger.info("=" * 70)
-
-    # Save metrics JSON
+    avg_base = summary[headline]["Baseline"]["median"]
+    avg_fused = summary[headline]["Method1_GradientFusion"]["median"]
     metrics_record = {
         "method": "Gradient-Domain Polar Fusion",
         "timestamp": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+        "benchmark": "synthetic",
         "config": cfg,
+        "headline": {"protocol": headline, "stat": "median"},
         "baseline_metrics": avg_base,
         "method1_metrics": avg_fused,
+        "summary": summary,
+        "per_scene": {"Baseline": all_base_metrics, "Method1_GradientFusion": all_fused_metrics},
     }
     with open(out_dir / "metrics_summary.json", "w") as f:
         json.dump(metrics_record, f, indent=2)
     logger.info(f"Saved metrics summary to {out_dir / 'metrics_summary.json'}")
 
-    # Check and update BestModelTracker
-    tracker = BestModelTracker(str(AURINDUM_DIR / "best_model"))
+    tracker = BestModelTracker(str(AURINDUM_DIR / "best_model"), benchmark="synthetic")
     is_best = tracker.update_if_best(
         method_name="Gradient-Domain Polar Fusion",
         config=cfg,
@@ -339,10 +342,10 @@ def main():
         rgb=sample_vis[0],
         gt_depth=sample_vis[1],
         pred_depth=sample_vis[2],
-        notes="Poisson gradient-domain polar blending with shift-decoupled disparity alignment."
+        notes=f"Median over {num_scenes} synthetic scenes, protocol {headline}."
     )
     if is_best:
-        logger.info("🎉 NEW GLOBAL BEST ACHIEVED by Method 1!")
+        logger.info("🎉 NEW BEST on the synthetic benchmark: Method 1")
 
 
 if __name__ == "__main__":

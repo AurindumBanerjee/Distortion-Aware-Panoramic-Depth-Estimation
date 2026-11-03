@@ -13,18 +13,24 @@ tangent:
   num_tangent_views: 2  # North pole (phi=+90) and South pole (phi=-90)
 
 alignment:
-  anchor_max_lat: 35.0
+  anchor_max_lat: 60.0   # anchor ring = tangent/ERP overlap with |phi| <= this (a 90 deg polar view reaches ~35-45 deg)
   mad_threshold: 2.5
 
 blending:
   mode: "gradient_poisson"  # Options: 'gradient_poisson', 'cosine_ramp', 'hard_cut'
   blend_margin: 10.0
-  poisson_solver: "sor"     # 'sor' or 'fft'
+  poisson_solver: "sparse"  # exact sparse least-squares integration (old 'sor' was 100 iterations, unconverged)
+  texture_tau: 0.0          # >0 enables texture gating of tangent gradients (RGB in [0,1]); try 0.02 / 0.05 / 0.1
+  texture_gate_mode: "erp"  # 'erp': use ERP gradient on textureless pixels | 'zero': G_tan *= gate
 
 evaluation:
   num_scenes: 6
   height: 256
   width: 512
-  align_protocol: "align-equatorial"  # 'align-equatorial' (|phi| < 30) or 'align-all'
+  # First protocol is the headline. 'align-all' = standard (fit on all valid pixels);
+  # 'align-equatorial' = fit on |phi| < 30 only (tests polar consistency, stricter).
+  protocols: ["align-all", "align-equatorial"]
+  min_depth: 0.05   # aligned predictions are clamped to the GT range
+  max_depth: 50.0
   output_dir: "outputs"
   log_dir: "logs"

@@ -26,11 +26,17 @@ logger = logging.getLogger("BestModelTracker")
 
 
 class BestModelTracker:
-    def __init__(self, tracker_dir: Optional[str] = None):
+    def __init__(self, tracker_dir: Optional[str] = None, benchmark: Optional[str] = None):
+        """benchmark: results on different datasets / protocols are not comparable, so each
+        benchmark (e.g. 'synthetic', 'structured3d') keeps its own registry in
+        <tracker_dir>/<benchmark>/. Without it the legacy top-level registry is used."""
         if tracker_dir is None:
             self.tracker_dir = Path(__file__).resolve().parent
         else:
             self.tracker_dir = Path(tracker_dir)
+        self.benchmark = benchmark
+        if benchmark:
+            self.tracker_dir = self.tracker_dir / benchmark
 
         self.tracker_dir.mkdir(parents=True, exist_ok=True)
         self.metrics_file = self.tracker_dir / "best_metrics.json"
@@ -118,6 +124,7 @@ class BestModelTracker:
         record = {
             "timestamp": timestamp,
             "method_name": method_name,
+            "benchmark": self.benchmark,
             "notes": notes,
             "polar_absrel": self._extract_polar_absrel(metrics),
             "global_absrel": self._extract_global_absrel(metrics),

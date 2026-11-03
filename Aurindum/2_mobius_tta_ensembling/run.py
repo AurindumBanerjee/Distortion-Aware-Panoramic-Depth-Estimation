@@ -35,6 +35,7 @@ from best_model.tracker import BestModelTracker
 from datasets.synthetic import _texture_bank, random_scene, render_erp
 from evaluation.latitude_analysis import per_band_metrics
 from evaluation.metrics import compute_metrics, to_metric_depth
+from evaluation.protocol import BANDS, align_to_gt, summarize_methods
 from geometry.spherical import latitude_map
 from models.depth_model import EncodedDepthOracle, MiDaSWrapper
 
@@ -85,7 +86,9 @@ def load_model(cfg_model: Dict, logger: logging.Logger):
             logger.info(f"Loaded DAP foundation model from {weights_path} ({device}).")
             return wrapper
         except Exception as e:
-            logger.warning(f"Could not load DAP ({e}); trying MiDaS...")
+            if not cfg_model.get("allow_model_fallback", False):
+                raise RuntimeError(f"Could not load DAP: {e} (set model.allow_model_fallback to fall back to MiDaS)") from e
+            logger.warning(f"Could not load DAP ({e}); falling back to MiDaS (allow_model_fallback=true).")
 
     try:
         wrapper = MiDaSWrapper(
@@ -130,18 +133,24 @@ def evaluate_scene(
     # --- 1. Baseline ERP Pass ---
     pred_erp = ensemble.model.predict(rgb, kind="erp")
 
-    # --- 2. Möbius TTA Multi-Pass Ensembling ---
-    pred_mobius, diagnostics = ensemble.predict(rgb)
+    # --- 2. Möbius TTA Multi-Pass Ensembling (identity pass reuses the baseline prediction) ---
+    pred_mobius, diagnostics = ensemble.predict(rgb, identity_pred=pred_erp)
+    for d in diagnostics[1:]:
+        logger.debug(f"    pass pitch={d['pitch']:+.0f} scale={d['scale']:.3f} anchor a={d['anchor_a']:.4f} b={d['anchor_b']:.4f}")
 
-    # --- 3. Metric Alignment & Evaluation ---
-    eq_mask = valid_gt & (phi_deg_map < 30.0)
-
-    # Align baseline and ensembled to GT
-    base_metric = align_prediction_to_gt(pred_erp, gt_range, eq_mask, ensemble.model)
-    mobius_metric = align_prediction_to_gt(pred_mobius, gt_range, eq_mask, ensemble.model)
-
-    metrics_base = per_band_metrics(base_metric, gt_range, valid_gt)
-    metrics_mobius = per_band_metrics(mobius_metric, gt_range, valid_gt)
+    # --- 3. Metric Alignment & Evaluation (all protocols) ---
+    ev = cfg.get("evaluation", {})
+    protocols = tuple(ev.get("protocols", ["align-all", "align-equatorial"]))
+    min_d, max_d = float(ev.get("min_depth", 0.05)), float(ev.get("max_depth", 50.0))
+    metrics_base, metrics_mobius = {}, {}
+    base_metric = mobius_metric = None
+    for proto in protocols:
+        bm = align_to_gt(pred_erp, gt_range, valid_gt, ensemble.model, protocol=proto, min_depth=min_d, max_depth=max_d)
+        mm = align_to_gt(pred_mobius, gt_range, valid_gt, ensemble.model, protocol=proto, min_depth=min_d, max_depth=max_d)
+        metrics_base[proto] = per_band_metrics(bm, gt_range, valid_gt)
+        metrics_mobius[proto] = per_band_metrics(mm, gt_range, valid_gt)
+        if base_metric is None:
+            base_metric, mobius_metric = bm, mm
 
     return metrics_base, metrics_mobius, base_metric, mobius_metric
 
@@ -174,15 +183,18 @@ def main():
     logger = setup_logger(log_dir)
     logger.info("=" * 70)
     logger.info("🚀 Starting Method 2: Test-Time Möbius Augmentation (Möbius-TTA)")
-    logger.info(f"Scales: {cfg['mobius_tta']['scales']}, Fusion: {cfg['mobius_tta']['fusion_mode']}")
+    logger.info(f"Passes: {cfg['mobius_tta'].get('passes', cfg['mobius_tta'].get('scales'))}, Fusion: {cfg['mobius_tta']['fusion_mode']}")
     logger.info("=" * 70)
 
     # Initialize model and ensemble
     model = load_model(cfg.get("model", {}), logger)
     ensemble = MobiusTTAEnsemble(
         model=model,
-        scales=cfg["mobius_tta"].get("scales", [1.0, 1.6, 0.625]),
-        fusion_mode=cfg["mobius_tta"].get("fusion_mode", "distortion_weighted")
+        passes=cfg["mobius_tta"].get("passes"),
+        scales=cfg["mobius_tta"].get("scales", [1.0]),
+        fusion_mode=cfg["mobius_tta"].get("fusion_mode", "distortion_weighted"),
+        reanchor=cfg["mobius_tta"].get("reanchor", "auto"),
+        anchor_max_lat=cfg["mobius_tta"].get("anchor_max_lat", 30.0),
     )
 
     # Run over test scenes
@@ -211,50 +223,43 @@ def main():
         if sample_vis is None:
             sample_vis = (rgb, gt_range, mob_metric)
 
-        logger.info(f"    Scene {s_idx + 1}: Polar AbsRel (75-90°) Baseline={m_base['75-90']['abs_rel']:.4f} "
-                    f"-> Möbius-TTA={m_mob['75-90']['abs_rel']:.4f}")
+        hp = next(iter(m_base))
+        logger.info(f"    Scene {s_idx + 1}: Polar AbsRel (75-90°, {hp}) Baseline={m_base[hp]['75-90']['abs_rel']:.4f} "
+                    f"-> Möbius-TTA={m_mob[hp]['75-90']['abs_rel']:.4f}")
 
-    # Aggregate metrics across scenes
-    def average_metrics(list_m: List[Dict]) -> Dict:
-        avg = {}
-        keys = list_m[0].keys()
-        for k in keys:
-            avg[k] = {}
-            subkeys = list_m[0][k].keys()
-            for sk in subkeys:
-                avg[k][sk] = float(np.mean([m[k][sk] for m in list_m]))
-        return avg
+    protocols = list(all_base_metrics[0].keys())
+    summary = summarize_methods({"Baseline": all_base_metrics, "Method2_MobiusTTA": all_mobius_metrics}, protocols)
+    headline = protocols[0]
+    for proto in protocols:
+        for stat in ("median", "mean"):
+            logger.info("\n" + "=" * 90)
+            logger.info(f"📊 METHOD 2 vs BASELINE  [{proto}, {stat} over {num_scenes} scenes]")
+            logger.info(f"{'Band':<8} | {'Baseline':>10} | {'Möbius':>10} | {'Improvement':>11} | {'Win rate':>8}")
+            for bnd in BANDS:
+                b_val = summary[proto]["Baseline"][stat][bnd]["abs_rel"]
+                m_val = summary[proto]["Method2_MobiusTTA"][stat][bnd]["abs_rel"]
+                wr = summary[proto]["Method2_MobiusTTA"]["win_rate_vs_baseline"][bnd]
+                logger.info(f"{bnd:<8} | {b_val:10.4f} | {m_val:10.4f} | {100 * (b_val - m_val) / b_val:+10.2f}% | {100 * wr:7.0f}%")
+    logger.info("=" * 90)
 
-    avg_base = average_metrics(all_base_metrics)
-    avg_mob = average_metrics(all_mobius_metrics)
-
-    logger.info("\n" + "=" * 70)
-    logger.info("📊 SUMMARY RESULTS ACROSS ALL SCENES")
-    logger.info(f"{'Band':<15} | {'Baseline AbsRel':<18} | {'Möbius-TTA AbsRel':<18} | {'Improvement':<12}")
-    logger.info("-" * 70)
-
-    bands = ["all", "0-15", "15-30", "30-45", "45-60", "60-75", "75-90"]
-    for b in bands:
-        b_val = avg_base[b]["abs_rel"]
-        m_val = avg_mob[b]["abs_rel"]
-        imp = ((b_val - m_val) / b_val) * 100.0
-        logger.info(f"{b:<15} | {b_val:<18.4f} | {m_val:<18.4f} | {imp:>+9.2f}%")
-    logger.info("=" * 70)
-
-    # Save metrics JSON
+    avg_base = summary[headline]["Baseline"]["median"]
+    avg_mob = summary[headline]["Method2_MobiusTTA"]["median"]
     metrics_record = {
         "method": "Mobius TTA Ensembling",
         "timestamp": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+        "benchmark": "synthetic",
         "config": cfg,
+        "headline": {"protocol": headline, "stat": "median"},
         "baseline_metrics": avg_base,
         "mobius_metrics": avg_mob,
+        "summary": summary,
+        "per_scene": {"Baseline": all_base_metrics, "Method2_MobiusTTA": all_mobius_metrics},
     }
     with open(out_dir / "metrics_summary.json", "w") as f:
         json.dump(metrics_record, f, indent=2)
     logger.info(f"Saved metrics summary to {out_dir / 'metrics_summary.json'}")
 
-    # Check and update BestModelTracker
-    tracker = BestModelTracker(str(AURINDUM_DIR / "best_model"))
+    tracker = BestModelTracker(str(AURINDUM_DIR / "best_model"), benchmark="synthetic")
     is_best = tracker.update_if_best(
         method_name="Mobius TTA Ensembling",
         config=cfg,
@@ -262,10 +267,11 @@ def main():
         rgb=sample_vis[0],
         gt_depth=sample_vis[1],
         pred_depth=sample_vis[2],
-        notes="Conformal Riemann sphere dilation TTA with distortion-weighted fusion."
+        notes=f"Median over {num_scenes} synthetic scenes, protocol {headline}. Rotation+dilation Möbius passes, "
+              f"equatorial re-anchoring, distortion-weighted fusion."
     )
     if is_best:
-        logger.info("🎉 NEW GLOBAL BEST ACHIEVED by Method 2!")
+        logger.info("🎉 NEW BEST on the synthetic benchmark: Method 2")
 
 
 if __name__ == "__main__":

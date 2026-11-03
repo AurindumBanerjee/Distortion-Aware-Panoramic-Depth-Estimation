@@ -39,6 +39,7 @@ from best_model.tracker import BestModelTracker
 from datasets.synthetic import _texture_bank, random_scene, render_erp
 from models.depth_model import EncodedDepthOracle, MiDaSWrapper
 from tta_ensemble import MobiusTTAEnsemble
+from evaluation.protocol import format_table, summarize_methods
 
 # Local modules
 from benchmark_evaluator import run_single_benchmark_scene
@@ -87,7 +88,9 @@ def load_model(cfg_model: Dict, logger: logging.Logger):
             logger.info(f"Loaded DAP foundation model from {weights_path} ({device}).")
             return wrapper
         except Exception as e:
-            logger.warning(f"Could not load DAP ({e}); trying MiDaS...")
+            if not cfg_model.get("allow_model_fallback", False):
+                raise RuntimeError(f"Could not load DAP: {e} (set model.allow_model_fallback to fall back to MiDaS)") from e
+            logger.warning(f"Could not load DAP ({e}); falling back to MiDaS (allow_model_fallback=true).")
 
     try:
         wrapper = MiDaSWrapper(
@@ -144,7 +147,19 @@ def main():
 
     # 2. Initialize models and ensemble
     model = load_model(cfg.get("model", {}), logger)
-    m2_ensemble = MobiusTTAEnsemble(model=model, scales=[1.0, 1.6, 0.625], fusion_mode="distortion_weighted")
+    m2_cfg = cfg.get("mobius_tta", {})
+    m2_ensemble = MobiusTTAEnsemble(
+        model=model,
+        passes=m2_cfg.get("passes"),
+        scales=m2_cfg.get("scales", [1.0]),
+        fusion_mode=m2_cfg.get("fusion_mode", "distortion_weighted"),
+        reanchor=m2_cfg.get("reanchor", "auto"),
+        anchor_max_lat=m2_cfg.get("anchor_max_lat", 30.0),
+    )
+    ev_cfg = cfg.get("evaluation", {})
+    protocols = tuple(ev_cfg.get("protocols", ["align-all", "align-equatorial"]))
+    min_depth = float(ev_cfg.get("min_depth", 0.1))
+    max_depth = float(ev_cfg.get("max_depth", 10.0))
 
     # 3. Benchmark evaluation
     H = cfg["data"].get("height", 256)
@@ -163,6 +178,7 @@ def main():
             rgb, gt_depth, valid_gt = load_structured3d_pair(
                 sc["rgb_path"], sc["depth_path"], target_hw=(H, W)
             )
+            valid_gt = valid_gt & (gt_depth >= min_depth) & (gt_depth <= max_depth)
         else:
             rng = np.random.default_rng(idx + 300)
             sc_obj = random_scene(rng, len(tex_bank))
@@ -177,84 +193,73 @@ def main():
             model=model,
             m1_solver=None,
             m2_ensemble=m2_ensemble,
-            phi_thresh=45.0
+            phi_thresh=cfg.get("method1", {}).get("phi_threshold", 45.0),
+            protocols=protocols,
+            min_depth=min_depth,
+            max_depth=max_depth,
+            m1_cfg=cfg.get("method1", {}),
         )
 
         for m_name in method_keys:
             accumulators[m_name].append(scene_results[m_name])
 
         if sample_vis is None:
-            preds = scene_results["predictions"]
-            sample_vis = {
-                "rgb": rgb,
-                "gt": gt_depth,
-                "preds": preds
-            }
+            sample_vis = {"rgb": rgb, "gt": gt_depth, "preds": scene_results["predictions"]}
 
-        # Log per-scene polar comparison
-        p_base = scene_results["Baseline"]["75-90"]["abs_rel"]
-        p_tan = scene_results["Tangent_Spatial"]["75-90"]["abs_rel"]
-        p_m1 = scene_results["Method1_GradientFusion"]["75-90"]["abs_rel"]
-        p_m2 = scene_results["Method2_MobiusTTA"]["75-90"]["abs_rel"]
-        logger.info(f"    Polar AbsRel (75-90°): Base={p_base:.4f} | Tan={p_tan:.4f} | M1(Grad)={p_m1:.4f} | M2(Möbius)={p_m2:.4f}")
+        hp = protocols[0]
+        pol = {m: scene_results[m][hp]["75-90"]["abs_rel"] for m in method_keys}
+        logger.info(f"    Polar AbsRel (75-90°, {hp}): Base={pol['Baseline']:.4f} | Tan={pol['Tangent_Spatial']:.4f} | "
+                    f"M1(Grad)={pol['Method1_GradientFusion']:.4f} | M2(Möbius)={pol['Method2_MobiusTTA']:.4f}")
 
-    # Compute averages
-    summary_results = {}
-    for m_name in method_keys:
-        avg_dict = {}
-        for b_name in ["all", "0-15", "15-30", "30-45", "45-60", "60-75", "75-90"]:
-            avg_dict[b_name] = {
-                "abs_rel": float(np.mean([item[b_name]["abs_rel"] for item in accumulators[m_name]])),
-                "rmse": float(np.mean([item[b_name]["rmse"] for item in accumulators[m_name]])),
-                "d1": float(np.mean([item[b_name]["d1"] for item in accumulators[m_name]]))
-            }
-        summary_results[m_name] = avg_dict
-
-    # Print publication-ready comparison table
-    logger.info("\n" + "=" * 95)
-    logger.info("🏆 FINAL STRUCTURED3D COMPARATIVE BENCHMARK")
-    logger.info(f"{'Method':<25} | {'Global AbsRel':<14} | {'Polar 60-75°':<14} | {'Polar 75-90°':<14} | {'δ < 1.25':<10}")
-    logger.info("-" * 95)
-
-    for m_name in method_keys:
-        g_ar = summary_results[m_name]["all"]["abs_rel"]
-        p_60 = summary_results[m_name]["60-75"]["abs_rel"]
-        p_75 = summary_results[m_name]["75-90"]["abs_rel"]
-        d1 = summary_results[m_name]["all"]["d1"] * 100.0
-        logger.info(f"{m_name:<25} | {g_ar:<14.4f} | {p_60:<14.4f} | {p_75:<14.4f} | {d1:>8.2f}%")
+    summary = summarize_methods(accumulators, protocols)
+    headline = protocols[0]
+    for proto in protocols:
+        for stat in ("median", "mean"):
+            logger.info("\n" + "=" * 95)
+            logger.info(f"🏆 STRUCTURED3D BENCHMARK  [{proto}, {stat} over {len(scenes)} scenes, depth clamp "
+                        f"{min_depth}-{max_depth} m]")
+            for line in format_table(summary[proto], stat):
+                logger.info(line)
     logger.info("=" * 95)
 
-    # Save summary JSON and CSV
+    record = {
+        "timestamp": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+        "benchmark": "structured3d" if not using_synthetic_fallback else "synthetic_fallback",
+        "num_scenes": len(scenes),
+        "scene_ids": [sc["id"] for sc in scenes],
+        "config": cfg,
+        "summary": summary,
+        "per_scene": {m: accumulators[m] for m in method_keys},
+    }
     with open(out_dir / "benchmark_summary.json", "w") as f:
-        json.dump(summary_results, f, indent=2)
+        json.dump(record, f, indent=2)
 
-    csv_lines = ["Method,Global_AbsRel,Polar_60_75_AbsRel,Polar_75_90_AbsRel,Delta1"]
-    for m_name in method_keys:
-        g_ar = summary_results[m_name]["all"]["abs_rel"]
-        p_60 = summary_results[m_name]["60-75"]["abs_rel"]
-        p_75 = summary_results[m_name]["75-90"]["abs_rel"]
-        d1 = summary_results[m_name]["all"]["d1"]
-        csv_lines.append(f"{m_name},{g_ar:.4f},{p_60:.4f},{p_75:.4f},{d1:.4f}")
+    csv_lines = ["Protocol,Stat,Method,Global_AbsRel,Polar_60_75_AbsRel,Polar_75_90_AbsRel,Delta1,WinRate_75_90"]
+    for proto in protocols:
+        for stat in ("median", "mean"):
+            for m_name in method_keys:
+                m = summary[proto][m_name][stat]
+                wr = summary[proto][m_name]["win_rate_vs_baseline"].get("75-90", float("nan"))
+                csv_lines.append(f"{proto},{stat},{m_name},{m['all']['abs_rel']:.4f},{m['60-75']['abs_rel']:.4f},"
+                                 f"{m['75-90']['abs_rel']:.4f},{m['all']['d1']:.4f},{wr:.3f}")
     with open(out_dir / "benchmark_table.csv", "w") as f:
-        f.write("\n".join(csv_lines))
-
+        f.write("\n".join(csv_lines) + "\n")
     logger.info(f"Saved benchmark results to {out_dir / 'benchmark_summary.json'}")
 
-    # Determine winning method
-    winner_name = min(method_keys, key=lambda m: summary_results[m]["75-90"]["abs_rel"])
-    logger.info(f"🏆 Winning Approach on Structured3D: {winner_name}")
+    winner_name = min(method_keys, key=lambda m: summary[headline][m]["median"]["75-90"]["abs_rel"])
+    logger.info(f"🏆 Best polar (75-90°) method on this benchmark [{headline}, median]: {winner_name}")
 
-    # Update BestModelTracker
-    tracker = BestModelTracker(str(AURINDUM_DIR / "best_model"))
-    win_pred_key = "method1_grad" if "Method1" in winner_name else ("method2_mobius" if "Method2" in winner_name else "baseline")
+    tracker = BestModelTracker(str(AURINDUM_DIR / "best_model"), benchmark=record["benchmark"])
+    win_pred_key = {"Baseline": "baseline", "Tangent_Spatial": "tangent_spatial",
+                    "Method1_GradientFusion": "method1_grad", "Method2_MobiusTTA": "method2_mobius"}[winner_name]
     tracker.update_if_best(
-        method_name=f"Structured3D Winner: {winner_name}",
+        method_name=f"Structured3D: {winner_name}",
         config=cfg,
-        metrics=summary_results[winner_name],
+        metrics=summary[headline][winner_name]["median"],
         rgb=sample_vis["rgb"],
         gt_depth=sample_vis["gt"],
         pred_depth=sample_vis["preds"][win_pred_key],
-        notes=f"Evaluated on real Structured3D indoor scenes. Winner outperforms baseline across polar latitude bands."
+        notes=f"Median over {len(scenes)} Structured3D panoramas, protocol {headline}."
     )
 
 

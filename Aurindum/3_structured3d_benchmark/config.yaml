@@ -13,7 +13,28 @@ data:
   height: 256
   width: 512
 
+method1:
+  phi_threshold: 45.0
+  fov_deg: 90.0
+  resolution: 384
+  anchor_max_lat: 60.0
+  blend_margin: 10.0
+  texture_tau: 0.0
+  texture_gate_mode: "erp"
+
+mobius_tta:
+  passes:
+    - {pitch: 90.0, scale: 1.0}
+    - {pitch: -90.0, scale: 1.0}
+    - {pitch: 0.0, scale: 1.6}
+    - {pitch: 0.0, scale: 0.625}
+  fusion_mode: "distortion_weighted"
+  reanchor: "auto"
+  anchor_max_lat: 30.0
+
 evaluation:
-  align_protocol: "align-equatorial"
+  protocols: ["align-all", "align-equatorial"]   # first = headline
+  min_depth: 0.1    # Structured3D GT valid range (mm PNG / 1000); predictions clamped to it
+  max_depth: 10.0
   output_dir: "outputs"
   log_dir: "logs"

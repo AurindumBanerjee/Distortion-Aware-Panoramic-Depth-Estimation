@@ -120,6 +120,92 @@ def solve_poisson_multigrid(
     return sol
 
 
+def _edge_gradients(img: np.ndarray):
+    """Forward-difference gradients on the ERP grid.
+
+    gx[i, j] = img[i, (j+1) % W] - img[i, j]   (longitude is periodic)
+    gy[i, j] = img[i+1, j]       - img[i, j]   (i < H-1; no edge across a pole)
+    NaNs propagate, so an edge is invalid if either endpoint is.
+    """
+    gx = np.roll(img, -1, axis=1) - img
+    gy = img[1:, :] - img[:-1, :]
+    return gx, gy
+
+
+def _texture_gate(rgb: np.ndarray, tau: float, H: int, W: int):
+    """Soft gate in [0, 1] per edge: ~0 where the RGB gradient is below tau (textureless)."""
+    g = rgb.astype(np.float64)
+    if g.max() > 1.5:
+        g = g / 255.0
+    if g.ndim == 3:
+        g = g.mean(-1)
+    if g.shape != (H, W):
+        import cv2
+        g = cv2.resize(g, (W, H), interpolation=cv2.INTER_AREA)
+    tx, ty = _edge_gradients(g)
+    soft = max(0.25 * tau, 1e-6)
+    sig = lambda t: 1.0 / (1.0 + np.exp(-(np.abs(t) - tau) / soft))
+    return sig(tx), sig(ty)
+
+
+def solve_screened_poisson_sparse(
+    base: np.ndarray,
+    gx: np.ndarray,
+    gy: np.ndarray,
+    fixed: np.ndarray,
+    cg_threshold: int = 300_000,
+) -> np.ndarray:
+    """Least-squares integration of a gradient field with Dirichlet constraints.
+
+    Solves  min_D  sum_edges (D_q - D_p - g_pq)^2   s.t.  D = base on `fixed`
+    on the ERP grid graph (periodic in longitude, Neumann at the poles: there is no
+    edge between the north-pole row and the south-pole row). The discrete operator is
+    exactly consistent with `_edge_gradients`, so integrating the gradients of an image
+    reproduces that image (unlike the previous central-difference / 5-point mismatch).
+    Uses a sparse direct solve (or CG for very large systems): exact, no iteration cap.
+    """
+    import scipy.sparse as sp
+    import scipy.sparse.linalg as spla
+
+    H, W = base.shape
+    N = H * W
+    idx = np.arange(N).reshape(H, W)
+
+    p_h, q_h = idx.ravel(), np.roll(idx, -1, axis=1).ravel()
+    p_v, q_v = idx[:-1].ravel(), idx[1:].ravel()
+    p = np.concatenate([p_h, p_v])
+    q = np.concatenate([q_h, q_v])
+    g = np.concatenate([gx.ravel(), gy.ravel()])
+    E = len(g)
+    rows = np.concatenate([np.arange(E), np.arange(E)])
+    cols = np.concatenate([q, p])
+    vals = np.concatenate([np.ones(E), -np.ones(E)])
+    A = sp.csr_matrix((vals, (rows, cols)), shape=(E, N))
+
+    fixed_f = fixed.ravel()
+    free = ~fixed_f
+    if not free.any():
+        return base.copy()
+    A_f = A[:, free]
+    A_c = A[:, fixed_f]
+    rhs_e = g - A_c @ base.ravel()[fixed_f]
+    M = (A_f.T @ A_f).tocsc()
+    b = A_f.T @ rhs_e
+    if not fixed_f.any():  # pure Neumann problem: pin the mean with a tiny regulariser
+        M = M + 1e-8 * sp.identity(M.shape[0], format="csc")
+    if M.shape[0] <= cg_threshold:
+        x = spla.spsolve(M, b)
+    else:
+        diag = M.diagonal()
+        pre = spla.LinearOperator(M.shape, matvec=lambda v: v / diag)
+        x, info = spla.cg(M, b, x0=base.ravel()[free], M=pre, maxiter=5000, rtol=1e-8)
+        if info != 0:
+            logger.warning(f"CG did not fully converge (info={info}).")
+    out = base.ravel().copy()
+    out[free] = x
+    return out.reshape(H, W)
+
+
 def gradient_domain_polar_fuse(
     d_erp: np.ndarray,
     d_tangent: np.ndarray,
@@ -127,72 +213,58 @@ def gradient_domain_polar_fuse(
     phi_deg_map: np.ndarray,
     phi_threshold: float = 45.0,
     blend_margin: float = 10.0,
-    solver_mode: str = "sor"
+    solver_mode: str = "sparse",
+    rgb: Optional[np.ndarray] = None,
+    texture_tau: float = 0.0,
+    texture_gate_mode: str = "erp",
 ) -> np.ndarray:
-    """Fuses ERP base depth and polar tangent depth in the gradient domain.
-    
-    Args:
-        d_erp: Baseline panoramic depth/disparity [H, W]
-        d_tangent: Backprojected tangent depth/disparity [H, W]
-        weight_map: Distortion/confidence weight in [0, 1] [H, W]
-        phi_deg_map: Absolute latitude in degrees [0, 90] [H, W]
-        phi_threshold: Onset latitude for polar correction (e.g. 45.0 deg)
-        blend_margin: Transition ramp margin in degrees
-        solver_mode: 'sor' (Dirichlet boundary) or 'fft'
-        
-    Returns:
-        fused_depth: Seamless gradient-fused depth map [H, W]
+    """Fuses ERP base disparity and aligned polar tangent disparity in the gradient domain.
+
+    Both inputs MUST be in the same space (ERP disparity); see shift_alignment.
+
+    G = (1 - alpha) * grad D_ERP + alpha * grad D_tan, alpha = cosine ramp in |phi| around
+    phi_threshold (x weight_map, x tangent validity). D is fixed to D_ERP wherever alpha == 0,
+    and the rest is the least-squares integral of G (solve_screened_poisson_sparse).
+
+    Texture gating (texture_tau > 0): tangent gradients on textureless pixels (|grad I| < tau,
+    image in [0, 1]) are distrusted.
+      texture_gate_mode='erp'  -> use the ERP gradient there instead (alpha *= gate)
+      texture_gate_mode='zero' -> G_tan *= gate (flattens textureless regions; the
+                                  formulation from the project notes; can bend planar ceilings)
     """
-    # 1. Compute smooth transition alpha mask w(phi) in [0, 1]
-    # w = 0 below (phi_threshold - margin), w = 1 above (phi_threshold + margin)
+    H, W = d_erp.shape
     phi_min = max(0.0, phi_threshold - blend_margin)
     phi_max = min(90.0, phi_threshold + blend_margin)
-    
-    raw_alpha = (phi_deg_map - phi_min) / max(phi_max - phi_min, 1e-4)
-    alpha = np.clip(raw_alpha, 0.0, 1.0)
-    # Cosine easing: 0.5 * (1 - cos(pi * alpha))
+    alpha = np.clip((phi_deg_map - phi_min) / max(phi_max - phi_min, 1e-4), 0.0, 1.0)
     alpha = 0.5 * (1.0 - np.cos(np.pi * alpha))
-    
-    # Modulate alpha by tangent validity and weight
     valid_tangent = np.isfinite(d_tangent) & (d_tangent > 0)
-    alpha = alpha * valid_tangent.astype(np.float32)
+    alpha = alpha * valid_tangent * np.clip(np.nan_to_num(weight_map, nan=0.0), 0.0, 1.0)
 
-    # 2. Compute individual gradient vector fields
-    gx_erp, gy_erp = compute_gradients(d_erp)
-    
-    # Safe tangent gradients (fill invalid with erp gradients)
-    d_tan_safe = np.where(valid_tangent, d_tangent, d_erp)
-    gx_tan, gy_tan = compute_gradients(d_tan_safe)
+    gx_e, gy_e = _edge_gradients(d_erp)
+    gx_t, gy_t = _edge_gradients(np.where(valid_tangent, d_tangent, np.nan))
+    # edge weight = mean of endpoint alphas; invalid tangent edges fall back to ERP
+    ax = 0.5 * (alpha + np.roll(alpha, -1, axis=1))
+    ay = 0.5 * (alpha[1:] + alpha[:-1])
+    ax = np.where(np.isfinite(gx_t), ax, 0.0)
+    ay = np.where(np.isfinite(gy_t), ay, 0.0)
+    gx_t = np.nan_to_num(gx_t)
+    gy_t = np.nan_to_num(gy_t)
 
-    # 3. Blend gradient fields: G = (1 - alpha) * grad_ERP + alpha * grad_Tangent
-    gx_fused = (1.0 - alpha) * gx_erp + alpha * gx_tan
-    gy_fused = (1.0 - alpha) * gy_erp + alpha * gy_tan
+    if texture_tau > 0 and rgb is not None:
+        tgx, tgy = _texture_gate(rgb, texture_tau, H, W)
+        if texture_gate_mode == "zero":
+            gx_t, gy_t = gx_t * tgx, gy_t * tgy
+        else:
+            ax, ay = ax * tgx, ay * tgy
 
-    # 4. Compute target divergence field
-    div_g = compute_divergence(gx_fused, gy_fused)
+    gx = (1.0 - ax) * gx_e + ax * gx_t
+    gy = (1.0 - ay) * gy_e + ay * gy_t
 
-    # 5. Solve Poisson equation
+    fixed = alpha < 1e-3
     if solver_mode == "fft":
-        # Fast FFT based solution
-        sol_raw = solve_poisson_fft(div_g)
-        # Shift DC component to match equator mean
-        equator_mask = phi_deg_map < 30.0
-        dc_offset = np.mean(d_erp[equator_mask]) - np.mean(sol_raw[equator_mask])
-        fused = sol_raw + dc_offset
-        # Hard anchor equatorial zone to exact ERP
-        fused = np.where(alpha < 1e-3, d_erp, fused)
-    else:
-        # Fixed boundary where alpha == 0 (equatorial zone preserved perfectly)
-        fixed_mask = (alpha < 1e-3)
-        fused = solve_poisson_multigrid(
-            base=d_erp,
-            div_g=div_g,
-            mask_fixed=fixed_mask,
-            max_iters=100,
-            tol=1e-4
-        )
+        logger.warning("solver_mode='fft' is deprecated (ignores the Dirichlet anchor); using 'sparse'.")
+    fused = solve_screened_poisson_sparse(d_erp, gx, gy, fixed)
 
-    # Safety clipping to ensure strictly positive depths
-    min_val = max(1e-3, np.percentile(d_erp[np.isfinite(d_erp) & (d_erp > 0)], 0.5) * 0.5)
-    fused = np.clip(fused, min_val, 1e4)
-    return fused
+    pos = d_erp[np.isfinite(d_erp) & (d_erp > 0)]
+    min_val = max(1e-6, 0.5 * np.percentile(pos, 0.5)) if pos.size else 1e-6
+    return np.clip(fused, min_val, None)

@@ -70,60 +70,67 @@ def align_tangent_disparity_to_erp(
     erp_disp_baseline: np.ndarray,
     cos_ray: np.ndarray,
     phi_deg_map: np.ndarray,
-    anchor_max_lat: float = 35.0,
-    max_tangent_radius: float = 0.85
+    anchor_max_lat: float = 60.0,
+    max_tangent_radius: float = 0.85,
+    return_range: bool = False,
+    min_anchor_pixels: int = 200,
 ) -> Tuple[np.ndarray, Dict[str, float]]:
-    """Aligns a tangent disparity prediction to the ERP baseline.
-    
+    """Aligns a tangent disparity prediction to the ERP baseline disparity.
+
+    The result is returned in the SAME space as `erp_disp_baseline` (ERP inverse range),
+    so it can be blended / gradient-fused with the ERP prediction directly. (The first
+    version returned *range* here and fused it against ERP *disparity*: a unit mismatch.)
+
+    Anchor pixels: tangent/ERP overlap with |phi| <= anchor_max_lat. A polar tangent view
+    with a 90 deg FOV only reaches down to ~35-45 deg latitude, so the old default of 35 deg
+    left (almost) no anchor pixels and silently fell back to fitting on the pole itself,
+    i.e. on exactly the region the ERP prediction is not trusted. The default ring is now
+    the 45-60 deg overlap band; if it is still too small we fall back to the lowest-latitude
+    20% of the overlap (never to the full cap).
+
     Args:
-        tangent_disp_on_erp: Tangent disparity warped onto ERP grid [H, W]
+        tangent_disp_on_erp: Tangent (planar) disparity warped onto the ERP grid [H, W]
         erp_disp_baseline: Baseline ERP disparity [H, W]
-        cos_ray: Cosine of ray angle relative to principal axis [H, W]
-        phi_deg_map: Latitude in degrees [H, W]
-        anchor_max_lat: Maximum latitude for anchor region (equatorial trust)
-        max_tangent_radius: Maximum normalized radius from tangent center
-        
+        cos_ray: Cosine of ray angle relative to the tangent principal axis [H, W]
+        phi_deg_map: |latitude| in degrees [H, W]
+        anchor_max_lat: Maximum |latitude| of anchor pixels
+        return_range: if True, return 1 / aligned disparity (legacy behaviour)
+
     Returns:
-        aligned_range: Aligned Euclidean range in ERP coordinates [H, W]
-        fit_info: Diagnostic parameters (scale, shift, inlier_ratio)
+        aligned: Aligned ERP disparity (or range if return_range) [H, W], NaN outside the view
+        fit_info: Diagnostic parameters (scale, shift, anchor_pixels, inlier_ratio)
     """
-    # Define anchor mask: low latitude in panorama AND central in tangent frame
-    anchor_mask = (
-        (phi_deg_map <= anchor_max_lat) &
+    overlap = (
         np.isfinite(tangent_disp_on_erp) & (tangent_disp_on_erp > 0) &
-        np.isfinite(erp_disp_baseline) & (erp_disp_baseline > 0)
+        np.isfinite(erp_disp_baseline) & (erp_disp_baseline > 0) & np.isfinite(cos_ray)
     )
+    anchor_mask = overlap & (phi_deg_map <= anchor_max_lat)
+    fallback = False
+    if anchor_mask.sum() < min_anchor_pixels and overlap.any():
+        thr = np.percentile(phi_deg_map[overlap], 20.0)
+        anchor_mask = overlap & (phi_deg_map <= thr)
+        fallback = True
+        logger.warning(f"Anchor ring |phi|<={anchor_max_lat} too small; using lowest-latitude 20% "
+                       f"of the overlap (|phi|<={thr:.1f}).")
 
-    if anchor_mask.sum() < 30:
-        # Fallback to general overlap if equatorial anchor is small
-        anchor_mask = (
-            np.isfinite(tangent_disp_on_erp) & (tangent_disp_on_erp > 0) &
-            np.isfinite(erp_disp_baseline) & (erp_disp_baseline > 0)
-        )
-
-    # Tangent disparity d is in planar projection: disp_planar = 1 / z
-    # ERP disparity is inverse range: disp_erp = 1 / r = cos_ray / z = cos_ray * disp_planar
-    # Model: disp_erp ~ A * (cos_ray * disp_tangent) + B * cos_ray + C
+    # Tangent disparity is planar: d_t ~ 1 / z.  ERP disparity ~ 1 / r = cos_ray / z.
+    # Model:  d_erp ~ a * (cos_ray * d_t) + b
     x = cos_ray * tangent_disp_on_erp
     y = erp_disp_baseline
-
     a, b, inliers = robust_affine_fit(x[anchor_mask], y[anchor_mask])
 
-    # Transform full tangent view
-    aligned_disp = a * (cos_ray * tangent_disp_on_erp) + b
-    # Ensure disparity is strictly positive
-    min_disp = 1e-4
-    aligned_disp = np.clip(aligned_disp, min_disp, 1e2)
-    aligned_range = 1.0 / aligned_disp
-
-    # Invalidate regions where tangent was originally invalid
-    invalid = ~np.isfinite(tangent_disp_on_erp) | (tangent_disp_on_erp <= 0)
-    aligned_range[invalid] = np.nan
+    aligned_disp = a * x + b
+    floor = max(1e-6, 0.25 * float(np.nanpercentile(y[overlap], 1.0))) if overlap.any() else 1e-6
+    aligned_disp = np.clip(aligned_disp, floor, None)
+    aligned_disp = np.where(overlap | (np.isfinite(tangent_disp_on_erp) & (tangent_disp_on_erp > 0)),
+                            aligned_disp, np.nan)
+    out = 1.0 / aligned_disp if return_range else aligned_disp
 
     fit_info = {
         "scale": a,
         "shift": b,
         "anchor_pixels": int(anchor_mask.sum()),
-        "inlier_ratio": float(inliers.sum() / max(anchor_mask.sum(), 1))
+        "inlier_ratio": float(inliers.sum() / max(anchor_mask.sum(), 1)),
+        "anchor_fallback": fallback,
     }
-    return aligned_range, fit_info
+    return out, fit_info

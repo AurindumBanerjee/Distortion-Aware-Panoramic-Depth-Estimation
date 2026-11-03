@@ -9,28 +9,27 @@ Evaluates 4 distinct paradigms side-by-side on real indoor scenes:
 from __future__ import annotations
 
 import logging
-from typing import Any, Dict, List, Tuple
+from typing import Any, Dict, List, Optional, Tuple
 
 import numpy as np
 
 from evaluation.latitude_analysis import per_band_metrics
-from evaluation.metrics import compute_metrics, to_metric_depth
+from evaluation.protocol import align_to_gt
 from geometry.spherical import latitude_map
 from geometry.tangent_plane import generate_tangent_plane, erp_to_tangent, tangent_to_erp
 
 logger = logging.getLogger("BenchmarkEvaluator")
 
 
-def align_prediction_to_gt(pred: np.ndarray, gt: np.ndarray, mask: np.ndarray, model) -> np.ndarray:
-    """Helper that adapts to depth/disparity and metric/affine model specifications."""
-    space = getattr(model, "space", getattr(model.spec, "space", "depth"))
-    if space == "disparity":
-        mode = "affine"
-    else:
-        scale = getattr(model, "scale", getattr(model.spec, "scale", "metric"))
-        mode = "none" if scale == "metric" else "lsq"
-    aligned, _ = to_metric_depth(pred, gt, mask, space=space, mode=mode)
-    return aligned
+def evaluate_all_protocols(pred, gt, valid, model, protocols, min_depth, max_depth):
+    """{protocol: per-band metrics} plus the aligned depth for the first protocol."""
+    out, first = {}, None
+    for proto in protocols:
+        d = align_to_gt(pred, gt, valid, model, protocol=proto, min_depth=min_depth, max_depth=max_depth)
+        out[proto] = per_band_metrics(d, gt, valid)
+        if first is None:
+            first = d
+    return out, first
 
 
 def run_single_benchmark_scene(
@@ -41,79 +40,67 @@ def run_single_benchmark_scene(
     model,
     m1_solver,
     m2_ensemble,
-    phi_thresh: float = 45.0
+    phi_thresh: float = 45.0,
+    protocols: Tuple[str, ...] = ("align-all", "align-equatorial"),
+    min_depth: float = 0.1,
+    max_depth: float = 10.0,
+    m1_cfg: Optional[Dict[str, Any]] = None,
 ) -> Dict[str, Dict]:
-    """Runs all 4 methods on a real panorama and returns aligned metric evaluations."""
-    H, W = gt_depth.shape
-    phi_deg_map = np.abs(latitude_map(H, W))
-    eq_anchor = valid_gt & (phi_deg_map < 30.0)
+    """Runs all 4 methods on a panorama. Returns {method: {protocol: per-band metrics}}.
 
-    # 1. Baseline ERP
-    pred_erp = model.predict(rgb, kind="erp")
-    m_base = align_prediction_to_gt(pred_erp, gt_depth, eq_anchor, model)
-    res_base = per_band_metrics(m_base, gt_depth, valid_gt)
-
-    # 2. Standard Tangent Polar Fusion (Spatial Cosine Ramp)
-    tangent_centers = [(0.0, 90.0), (0.0, -90.0)]
-    tan_preds = []
-    for tc, pc in tangent_centers:
-        plane = generate_tangent_plane(lon_deg=tc, lat_deg=pc, fov_deg=90.0, size=384)
-        rgb_tan = erp_to_tangent(rgb, plane)
-        p_tan = model.predict(rgb_tan, kind="perspective")
-        warp_res = tangent_to_erp(p_tan, plane, height=H, width=W)
-        p_on_erp = warp_res.values
-        cos_ray = warp_res.cos_axis
-        tan_preds.append((p_on_erp, cos_ray))
-
-    # Standard spatial cosine blend
-    alpha = np.clip((phi_deg_map - (phi_thresh - 10)) / 20.0, 0.0, 1.0)
-    alpha = 0.5 * (1.0 - np.cos(np.pi * alpha))
-    merged_tan = np.full_like(pred_erp, np.nan)
-    for p_tan_erp, _ in tan_preds:
-        val = np.isfinite(p_tan_erp)
-        merged_tan[val] = p_tan_erp[val]
-
-    val_tan = np.isfinite(merged_tan)
-    pred_spatial_tan = np.where(val_tan, (1.0 - alpha) * pred_erp + alpha * merged_tan, pred_erp)
-    m_tan = align_prediction_to_gt(pred_spatial_tan, gt_depth, eq_anchor, model)
-    res_tan = per_band_metrics(m_tan, gt_depth, valid_gt)
-
-    # 3. Method 1: Gradient-Domain Polar Fusion & Shift Alignment
+    All fusion happens in the model's ERP output space (disparity for MiDaS): tangent views
+    are first aligned to the ERP prediction with `align_tangent_disparity_to_erp` (v1 blended
+    raw tangent disparity with arbitrary per-crop (s, t) into the ERP map -> AbsRel ~146).
+    """
     from shift_alignment import align_tangent_disparity_to_erp
     from gradient_blending import gradient_domain_polar_fuse
 
-    aligned_t_ranges = []
-    for p_tan_erp, cos_ray in tan_preds:
-        al_r, _ = align_tangent_disparity_to_erp(
-            tangent_disp_on_erp=p_tan_erp,
-            erp_disp_baseline=pred_erp,
-            cos_ray=cos_ray,
-            phi_deg_map=phi_deg_map,
-            anchor_max_lat=35.0
-        )
-        aligned_t_ranges.append(al_r)
+    m1_cfg = m1_cfg or {}
+    H, W = gt_depth.shape
+    phi_deg_map = np.abs(latitude_map(H, W))
+    ev = lambda p: evaluate_all_protocols(p, gt_depth, valid_gt, model, protocols, min_depth, max_depth)
 
-    merged_aligned_tan = np.full_like(gt_depth, np.nan)
-    for r_tan in aligned_t_ranges:
-        v = np.isfinite(r_tan)
-        merged_aligned_tan[v] = r_tan[v]
+    # 1. Baseline ERP
+    pred_erp = model.predict(rgb, kind="erp").astype(np.float64)
+    res_base, m_base = ev(pred_erp)
 
-    pred_grad_fused = gradient_domain_polar_fuse(
-        d_erp=pred_erp,
-        d_tangent=merged_aligned_tan,
-        weight_map=np.ones_like(pred_erp),
-        phi_deg_map=phi_deg_map,
-        phi_threshold=phi_thresh,
-        blend_margin=10.0,
-        solver_mode="sor"
-    )
-    m_grad = align_prediction_to_gt(pred_grad_fused, gt_depth, eq_anchor, model)
-    res_grad = per_band_metrics(m_grad, gt_depth, valid_gt)
+    # Polar tangent views, aligned to the ERP prediction (shared by 2 and 3)
+    fov = m1_cfg.get("fov_deg", 90.0)
+    size = m1_cfg.get("resolution", 384)
+    aligned = []
+    for tc, pc in [(0.0, 90.0), (0.0, -90.0)]:
+        plane = generate_tangent_plane(lon_deg=tc, lat_deg=pc, fov_deg=fov, size=size)
+        p_tan = model.predict(erp_to_tangent(rgb, plane), kind="perspective")
+        warp_res = tangent_to_erp(p_tan, plane, height=H, width=W)
+        vals = np.where(warp_res.valid, warp_res.values, np.nan) if getattr(warp_res, "valid", None) is not None \
+            else warp_res.values
+        al, info = align_tangent_disparity_to_erp(
+            tangent_disp_on_erp=vals, erp_disp_baseline=pred_erp, cos_ray=warp_res.cos_axis,
+            phi_deg_map=phi_deg_map, anchor_max_lat=m1_cfg.get("anchor_max_lat", 60.0))
+        logger.debug(f"tangent lat={pc:+.0f}: {info}")
+        aligned.append(al)
+    merged = np.full_like(pred_erp, np.nan)
+    for al in aligned:
+        v = np.isfinite(al)
+        merged[v] = al[v]
 
-    # 4. Method 2: Möbius-TTA Ensembling
-    pred_mobius, _ = m2_ensemble.predict(rgb)
-    m_mob = align_prediction_to_gt(pred_mobius, gt_depth, eq_anchor, model)
-    res_mob = per_band_metrics(m_mob, gt_depth, valid_gt)
+    # 2. Spatial cosine-ramp blend of the ALIGNED tangent views
+    alpha = np.clip((phi_deg_map - (phi_thresh - 10)) / 20.0, 0.0, 1.0)
+    alpha = 0.5 * (1.0 - np.cos(np.pi * alpha))
+    val_tan = np.isfinite(merged)
+    pred_spatial_tan = np.where(val_tan, (1.0 - alpha) * pred_erp + alpha * np.nan_to_num(merged), pred_erp)
+    res_tan, m_tan = ev(pred_spatial_tan)
+
+    # 3. Method 1: gradient-domain fusion (same aligned views)
+    pred_grad = gradient_domain_polar_fuse(
+        d_erp=pred_erp, d_tangent=merged, weight_map=np.ones_like(pred_erp), phi_deg_map=phi_deg_map,
+        phi_threshold=phi_thresh, blend_margin=m1_cfg.get("blend_margin", 10.0), rgb=rgb,
+        texture_tau=m1_cfg.get("texture_tau", 0.0), texture_gate_mode=m1_cfg.get("texture_gate_mode", "erp"))
+    res_grad, m_grad = ev(pred_grad)
+
+    # 4. Method 2: Möbius TTA (reuses the baseline forward pass as the identity pass)
+    pred_mobius, _ = m2_ensemble.predict(rgb, identity_pred=pred_erp)
+    res_mob, m_mob = ev(pred_mobius)
 
     return {
         "Baseline": res_base,
@@ -125,5 +112,5 @@ def run_single_benchmark_scene(
             "tangent_spatial": m_tan,
             "method1_grad": m_grad,
             "method2_mobius": m_mob,
-        }
+        },
     }
