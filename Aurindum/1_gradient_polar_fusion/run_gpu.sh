@@ -20,7 +20,7 @@ mkdir -p logs outputs
 
 # Run full evaluation series
 python run.py \
-    --config config.yaml \
+    --config "${CONFIG:-config.yaml}" \
     --num_scenes 24 \
     --blend_mode gradient_poisson
 

@@ -259,7 +259,7 @@ def main():
         json.dump(metrics_record, f, indent=2)
     logger.info(f"Saved metrics summary to {out_dir / 'metrics_summary.json'}")
 
-    tracker = BestModelTracker(str(AURINDUM_DIR / "best_model"), benchmark="synthetic")
+    tracker = BestModelTracker(str(AURINDUM_DIR / "best_model"), benchmark="synthetic" + cfg.get("benchmark_suffix", ""))
     is_best = tracker.update_if_best(
         method_name="Mobius TTA Ensembling",
         config=cfg,

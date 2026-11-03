@@ -1,0 +1,45 @@
+# DAP (Depth Any Panoramas) variant of config.yaml: metric depth model at its native 512x1024.
+# Run via CONFIG=config_dap.yaml or the master script (normal config first, then this one).
+# Benchmark Configuration on Real Structured3D Panoramas
+method_name: "Structured3D Real Foundation Benchmark (DAP)"
+benchmark_suffix: "_dap"   # keeps DAP results in their own best_model/ registry
+model:
+  name: "dap"
+  repo: "third_party/DAP"
+  weights: "weights/dap/model.pth"
+  device: "auto"
+  space: "depth"
+  scale: "metric"
+
+data:
+  # Relative path inside Aurindum repo on the server
+  root: "data/structured3d"
+  max_scenes: 10
+  height: 512
+  width: 1024
+
+method1:
+  phi_threshold: 45.0
+  fov_deg: 90.0
+  resolution: 384
+  anchor_max_lat: 60.0
+  blend_margin: 10.0
+  texture_tau: 0.0
+  texture_gate_mode: "erp"
+
+mobius_tta:
+  passes:
+    - {pitch: 90.0, scale: 1.0}
+    - {pitch: -90.0, scale: 1.0}
+    - {pitch: 0.0, scale: 1.6}
+    - {pitch: 0.0, scale: 0.625}
+  fusion_mode: "distortion_weighted"
+  reanchor: "auto"
+  anchor_max_lat: 30.0
+
+evaluation:
+  protocols: ["align-all", "align-equatorial"]   # first = headline
+  min_depth: 0.1    # Structured3D GT valid range (mm PNG / 1000); predictions clamped to it
+  max_depth: 10.0
+  output_dir: "outputs_dap"
+  log_dir: "logs_dap"

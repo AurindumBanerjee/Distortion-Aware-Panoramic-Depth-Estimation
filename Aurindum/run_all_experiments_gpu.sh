@@ -2,12 +2,21 @@
 # ==============================================================================
 # Master GPU Experiment Suite: Sequential Execution
 #
-# Runs all 3 experiment series in order:
+# For each config in CONFIGS (default: the normal MiDaS config, then the DAP config)
+# runs the 3 experiment series in order:
 #   Series 1: Gradient-Domain Polar Fusion & Shift-Decoupled Alignment
 #   Series 2: Test-Time Möbius Augmentation Ensembling
 #   Series 3: Real Structured3D Comparative Foundation Benchmark
 #
-# Automatically updates 'best_model/' after each run.
+# Each config writes to its own outputs/logs folders (outputs/ + logs/ for config.yaml,
+# outputs_dap/ + logs_dap/ for config_dap.yaml) and its own best_model/ registry
+# ("synthetic", "structured3d" vs "synthetic_dap", "structured3d_dap").
+# A failing series or config does not stop the rest.
+#
+# Overrides:
+#   CONFIGS="config.yaml"                  only the normal run
+#   CONFIGS="config_dap.yaml"              only the DAP run
+#   CONDA_ENV=RL  CONDA_SH=<conda.sh>      environment
 # ==============================================================================
 set -uo pipefail
 
@@ -17,6 +26,7 @@ cd "$AURINDUM_DIR"
 mkdir -p "$AURINDUM_DIR/logs"
 TIMESTAMP=$(date +"%Y%m%d_%H%M%S")
 MASTER_LOG="$AURINDUM_DIR/logs/master_experiment_${TIMESTAMP}.log"
+CONFIGS="${CONFIGS:-config.yaml config_dap.yaml}"
 
 export PYTHONUNBUFFERED=1
 export CUDA_VISIBLE_DEVICES=${CUDA_VISIBLE_DEVICES:-0}
@@ -37,57 +47,65 @@ fi
 log "=========================================================================="
 log "🚀 Starting Master GPU Experiment Suite"
 log "Host: $(hostname) | CUDA Device: $CUDA_VISIBLE_DEVICES"
+log "Configs (in order): $CONFIGS"
 log "Log File: $MASTER_LOG"
 log "=========================================================================="
 
 # --- Preflight: fail fast instead of producing meaningless results ---
 log "Python: $(command -v python) | env: ${CONDA_DEFAULT_ENV:-none}"
 PREFLIGHT_OK=1
-[ -f "$AURINDUM_DIR/weights/dpt_hybrid_384.pt" ] || { log "❌ Missing weights/dpt_hybrid_384.pt"; PREFLIGHT_OK=0; }
 [ -d "$AURINDUM_DIR/data/structured3d/rgb" ] || { log "❌ Missing data/structured3d/rgb"; PREFLIGHT_OK=0; }
 python -c "import torch,sys; sys.exit(0 if torch.cuda.is_available() else 1)" || { log "❌ CUDA not available to torch"; PREFLIGHT_OK=0; }
 if [ "$PREFLIGHT_OK" != 1 ]; then log "Preflight failed; aborting."; exit 1; fi
 log "Preflight OK."
 
+# Per-config requirements (a config that cannot run is skipped, the others continue)
+config_ready() {
+    case "$1" in
+        *dap*)
+            [ -f "$AURINDUM_DIR/weights/dap/model.pth" ] || { log "❌ Missing weights/dap/model.pth"; return 1; }
+            [ -d "$AURINDUM_DIR/third_party/DAP/networks" ] || { log "❌ Missing third_party/DAP"; return 1; } ;;
+        *)
+            [ -f "$AURINDUM_DIR/weights/dpt_hybrid_384.pt" ] || { log "❌ Missing weights/dpt_hybrid_384.pt"; return 1; } ;;
+    esac
+    return 0
+}
+
+run_series() {  # run_series <index> <dir> <title> <config>
+    local idx="$1" dir="$2" title="$3" cfg="$4" t0 t1
+    log ">>> [$idx/3][$cfg] Running Series $idx: $title..."
+    t0=$(date +%s)
+    if (cd "$AURINDUM_DIR/$dir" && CONFIG="$cfg" bash run_gpu.sh >> "$MASTER_LOG" 2>&1); then
+        t1=$(date +%s)
+        log "✅ [$idx/3][$cfg] Series $idx completed successfully in $((t1 - t0)) seconds."
+    else
+        log "❌ [$idx/3][$cfg] Series $idx failed! Check $MASTER_LOG for details."
+    fi
+}
+
 START_TOTAL=$(date +%s)
 
-# --- SERIES 1 ---
-log ">>> [1/3] Running Experiment Series 1: Gradient-Domain Polar Fusion..."
-START_S1=$(date +%s)
-if (cd "$AURINDUM_DIR/1_gradient_polar_fusion" && bash run_gpu.sh >> "$MASTER_LOG" 2>&1); then
-    END_S1=$(date +%s)
-    log "✅ [1/3] Series 1 completed successfully in $((END_S1 - START_S1)) seconds."
-else
-    log "❌ [1/3] Series 1 failed! Check $MASTER_LOG for details."
-fi
-
-# --- SERIES 2 ---
-log ">>> [2/3] Running Experiment Series 2: Test-Time Möbius Ensembling..."
-START_S2=$(date +%s)
-if (cd "$AURINDUM_DIR/2_mobius_tta_ensembling" && bash run_gpu.sh >> "$MASTER_LOG" 2>&1); then
-    END_S2=$(date +%s)
-    log "✅ [2/3] Series 2 completed successfully in $((END_S2 - START_S2)) seconds."
-else
-    log "❌ [2/3] Series 2 failed! Check $MASTER_LOG for details."
-fi
-
-# --- SERIES 3 ---
-log ">>> [3/3] Running Experiment Series 3: Real Structured3D Benchmark..."
-START_S3=$(date +%s)
-if (cd "$AURINDUM_DIR/3_structured3d_benchmark" && bash run_gpu.sh >> "$MASTER_LOG" 2>&1); then
-    END_S3=$(date +%s)
-    log "✅ [3/3] Series 3 completed successfully in $((END_S3 - START_S3)) seconds."
-else
-    log "❌ [3/3] Series 3 failed! Check $MASTER_LOG for details."
-fi
+for CFG in $CONFIGS; do
+    log "=========================== CONFIG: $CFG ==========================="
+    if [ ! -f "$AURINDUM_DIR/1_gradient_polar_fusion/$CFG" ]; then
+        log "❌ $CFG not found; skipping."
+        continue
+    fi
+    if ! config_ready "$CFG"; then
+        log "Skipping $CFG (requirements missing)."
+        continue
+    fi
+    run_series 1 1_gradient_polar_fusion "Gradient-Domain Polar Fusion" "$CFG"
+    run_series 2 2_mobius_tta_ensembling "Test-Time Möbius Ensembling" "$CFG"
+    run_series 3 3_structured3d_benchmark "Real Structured3D Benchmark" "$CFG"
+done
 
 END_TOTAL=$(date +%s)
 log "=========================================================================="
 log "🎉 Master Experiment Suite Finished!"
 log "Total Runtime: $((END_TOTAL - START_TOTAL)) seconds."
-log "Current Best Model Status:"
-if [ -f "$AURINDUM_DIR/best_model/BEST_MODEL.md" ]; then
-    head -n 12 "$AURINDUM_DIR/best_model/BEST_MODEL.md" | while read -r line; do log "  $line"; done
-fi
-log "Detailed report available at: $AURINDUM_DIR/best_model/BEST_MODEL.md"
+log "Summary: ✅/❌ lines above show each series per config."
+for R in best_model/*/BEST_MODEL.md; do
+    [ -f "$AURINDUM_DIR/$R" ] && log "Best-model report: $AURINDUM_DIR/$R"
+done
 log "=========================================================================="

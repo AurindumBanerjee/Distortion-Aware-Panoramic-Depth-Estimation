@@ -249,7 +249,7 @@ def main():
     winner_name = min(method_keys, key=lambda m: summary[headline][m]["median"]["75-90"]["abs_rel"])
     logger.info(f"🏆 Best polar (75-90°) method on this benchmark [{headline}, median]: {winner_name}")
 
-    tracker = BestModelTracker(str(AURINDUM_DIR / "best_model"), benchmark=record["benchmark"])
+    tracker = BestModelTracker(str(AURINDUM_DIR / "best_model"), benchmark=record["benchmark"] + cfg.get("benchmark_suffix", ""))
     win_pred_key = {"Baseline": "baseline", "Tangent_Spatial": "tangent_spatial",
                     "Method1_GradientFusion": "method1_grad", "Method2_MobiusTTA": "method2_mobius"}[winner_name]
     tracker.update_if_best(

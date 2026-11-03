@@ -20,7 +20,7 @@ mkdir -p logs outputs data/curated_scenes
 
 # Run benchmark across real indoor scenes
 python run.py \
-    --config config.yaml \
+    --config "${CONFIG:-config.yaml}" \
     --max_scenes 20
 
 echo "========================================================================"

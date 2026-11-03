@@ -1,0 +1,41 @@
+# DAP (Depth Any Panoramas) variant of config.yaml: metric depth model at its native 512x1024.
+# Run via CONFIG=config_dap.yaml or the master script (normal config first, then this one).
+# Method 1 Configuration: Gradient-Domain Polar Fusion & Shift-Decoupled Alignment
+method_name: "Gradient-Domain Polar Fusion (DAP)"
+benchmark_suffix: "_dap"   # keeps DAP results in their own best_model/ registry
+model:
+  name: "dap"
+  repo: "third_party/DAP"
+  weights: "weights/dap/model.pth"
+  device: "auto"
+  space: "depth"
+  scale: "metric"
+
+tangent:
+  fov_deg: 90.0
+  resolution: 384
+  phi_threshold: 45.0
+  num_tangent_views: 2  # North pole (phi=+90) and South pole (phi=-90)
+
+alignment:
+  anchor_max_lat: 60.0   # anchor ring = tangent/ERP overlap with |phi| <= this (a 90 deg polar view reaches ~35-45 deg)
+  mad_threshold: 2.5
+
+blending:
+  mode: "gradient_poisson"  # Options: 'gradient_poisson', 'cosine_ramp', 'hard_cut'
+  blend_margin: 10.0
+  poisson_solver: "sparse"  # exact sparse least-squares integration (old 'sor' was 100 iterations, unconverged)
+  texture_tau: 0.0          # >0 enables texture gating of tangent gradients (RGB in [0,1]); try 0.02 / 0.05 / 0.1
+  texture_gate_mode: "erp"  # 'erp': use ERP gradient on textureless pixels | 'zero': G_tan *= gate
+
+evaluation:
+  num_scenes: 6
+  height: 512
+  width: 1024
+  # First protocol is the headline. 'align-all' = standard (fit on all valid pixels);
+  # 'align-equatorial' = fit on |phi| < 30 only (tests polar consistency, stricter).
+  protocols: ["align-all", "align-equatorial"]
+  min_depth: 0.05   # aligned predictions are clamped to the GT range
+  max_depth: 50.0
+  output_dir: "outputs_dap"
+  log_dir: "logs_dap"

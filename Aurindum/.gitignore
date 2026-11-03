@@ -37,3 +37,7 @@ __pycache__/
 
 # Third party clones
 third_party/DAP/
+outputs_*/
+**/outputs_*/
+logs_*/
+**/logs_*/
