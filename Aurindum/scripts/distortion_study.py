@@ -25,7 +25,7 @@ from evaluation.distortion_analysis import headline_protocol  # noqa: E402
 from evaluation.protocol import align_to_gt, group_of  # noqa: E402
 from geometry.spherical import latitude_map  # noqa: E402
 
-CLEAN_CHECKS = ("relevel_self", "gain_match", "denoise", "bilateral")  # blind mitigations a system might always apply
+CLEAN_CHECKS = ("relevel_self", "gain_match", "flatfield", "denoise", "bilateral")  # blind fixes a system might always apply
 
 
 def score(pred, gt, valid, model, region, min_d, max_d):
@@ -131,7 +131,7 @@ def main():
     keys = [k for k in rows[0] if isinstance(rows[0][k], dict) and k != "clean"]
     lines = [f"# Distortion study: {a.tag}", "", f"model `{getattr(model, 'name', '?')}` · {len(rows)} frames · "
              f"{len(set(r['group'] for r in rows))} clusters · AbsRel ({headline_protocol(model)})", "",
-             "Recovery = share of the damage undone: (degraded - mitigated) / (degraded - clean), median over frames.", ""]
+             "Recovery = share of the damage undone: (degraded - mitigated) / (degraded - clean), median over the frames where the fault cost at least 5%.", ""]
     med = lambda k, f: float(np.nanmedian([r[k][f] for r in rows if k in r and f in r[k]])) if any(k in r and f in r[k] for r in rows) else float("nan")
     lines += [f"Clean: all {med('clean', 'all'):.4f}, polar >= 60 deg {med('clean', 'polar'):.4f}", "",
               "**Blind mitigations on CLEAN images (do-no-harm check)**", "", "| mitigation | all | polar | worse than clean (frames) |", "|---|---:|---:|---:|"]
@@ -149,7 +149,9 @@ def main():
             rec_s, win = "", ""
             if mk not in ("clean", "none"):
                 r_ = [(r[f"{d.key}|none"][f] - r[k][f]) / max(r[f"{d.key}|none"][f] - r[f"{d.key}|clean"][f], 1e-6) for r in rows
-                      if np.isfinite(r[k][f]) and r[f"{d.key}|none"][f] - r[f"{d.key}|clean"][f] > 1e-4]
+                      # only frames where the fault really hurt (>= 5% worse than clean): elsewhere the ratio's
+                      # denominator is ~0 and the recovery is meaningless (e.g. +277% / -645% in the first pass)
+                      if np.isfinite(r[k][f]) and r[f"{d.key}|none"][f] - r[f"{d.key}|clean"][f] >= 0.05 * r[f"{d.key}|clean"][f]]
                 rec_s = f"{100 * np.median(r_):.0f}%" if r_ else "n/a"
                 win = f"{100 * np.mean([r[k][f] < r[f'{d.key}|none'][f] for r in rows if np.isfinite(r[k][f])]):.0f}%"
             extra = ""

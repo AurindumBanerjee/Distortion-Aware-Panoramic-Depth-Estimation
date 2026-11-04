@@ -168,3 +168,25 @@ def test_parallax_and_vignette_are_in_the_catalogue_with_their_fixes():
     _, ctx = keys["parallax"].apply(_tex(), {"depth": np.full((H, W), 1.0)})
     m = keys["parallax"].region(H, W, ctx)
     assert 0.05 < m.mean() < 0.2
+
+
+def test_estimate_down_refuses_implausible_tilts(monkeypatch):
+    import planar_prior
+    from distortions.catalogue import estimate_down, tilt_apply
+    # the real failure (MiDaS, one Structured3D frame): the fitted floor normal points UP, i.e. 'down' ~180 deg from the
+    # image's down. Such an estimate must be refused, or re-levelling turns the panorama upside down.
+    flipped = lambda *a, **k: (None, [{"pole": "floor", "c": [0.0, -1.0, 0.1], "inlier_share": 0.9},
+                                      {"pole": "ceiling", "c": [0.0, 1.0, 0.0], "inlier_share": 0.9}])
+    monkeypatch.setattr(planar_prior, "fit_polar_planes", flipped)
+    assert estimate_down(PERFECT, np.ones((H, W)), "depth") is None
+    monkeypatch.undo()
+    # a moderate tilt is still estimated exactly (and the limit is configurable)
+    tilted, ctx = tilt_apply(RGB, {"pitch": 20.0, "roll": 10.0})
+    est = estimate_down(PERFECT, m_none(PERFECT, tilted, ctx), "depth")
+    assert est is not None and np.degrees(np.arccos(np.clip(est @ (ctx["R"].T @ np.array([0, 1.0, 0])), -1, 1))) < 1.0
+    assert estimate_down(PERFECT, m_none(PERFECT, tilted, ctx), "depth", max_dev_deg=10.0) is None
+
+
+def test_study_recovery_counts_only_frames_where_the_fault_hurt():
+    src = (ROOT / "scripts" / "distortion_study.py").read_text()
+    assert ">= 0.05 * r[" in src and '"flatfield"' in src

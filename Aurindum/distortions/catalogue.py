@@ -237,9 +237,15 @@ def m_relevel_known(model, rgb_d, ctx):
     return releveled(model, rgb_d, ctx["R"].T)
 
 
-def estimate_down(model, pred_d, space: str) -> Optional[np.ndarray]:
+def estimate_down(model, pred_d, space: str, max_dev_deg: float = 45.0) -> Optional[np.ndarray]:
     """Gravity direction in the degraded frame from the model's OWN prediction: normals of the floor plane (nadir ring)
-    and of the ceiling plane (zenith ring), fitted robustly (planar_prior.fit_polar_planes), inlier-weighted."""
+    and of the ceiling plane (zenith ring), fitted robustly (planar_prior.fit_polar_planes), inlier-weighted.
+
+    Measured limitation (real MiDaS, 8 Structured3D frames tilted by 12 deg pitch + 8 deg roll): the estimate is off by
+    ~12 deg, about the whole tilt, because the model predicts the floor as if the image were level (its upright prior
+    shapes the prediction itself). A joint floor + ceiling fit with a shared disparity offset (removing the c_y / beta
+    trade-off of each ring) does not change this (11.3 vs 11.9 deg). A tilt cue independent of the model (vanishing
+    lines, IMU) is needed; this estimator is kept as the model-only baseline."""
     from planar_prior import fit_polar_planes
     _, infos = fit_polar_planes(pred_d, space, ring=(35.0, 65.0), min_inlier=0.0, max_tilt_deg=90.0, agree_tol=1e9)
     acc = np.zeros(3)
@@ -251,7 +257,13 @@ def estimate_down(model, pred_d, space: str) -> Optional[np.ndarray]:
         acc += (n if info["pole"] == "floor" else -n) * max(info.get("inlier_share", 0.0), 1e-3)
     if np.linalg.norm(acc) < 1e-9:
         return None
-    return acc / np.linalg.norm(acc)
+    acc = acc / np.linalg.norm(acc)
+    # plausibility: a handheld / tripod panorama is within a few tens of degrees of level, so an estimate more than
+    # max_dev_deg from the image's own 'down' is a failed plane fit (seen on real MiDaS output: a flipped normal, 158 deg),
+    # and re-levelling with it would turn the panorama upside down. Refuse it; the caller then leaves the image as is.
+    if np.degrees(np.arccos(np.clip(acc[1], -1.0, 1.0))) > max_dev_deg:
+        return None
+    return acc
 
 
 def m_relevel_self(model, rgb_d, ctx, iters: int = 2):
