@@ -1,0 +1,62 @@
+10:46:36 plan: 49 methods; stages ['main', 'reports', 'control', 'timing', 'qualitative']
+10:46:38 model: {'name': 'midas_dpt_swin2_tiny_256', 'space': 'disparity', 'scale': 'affine', 'geometry_erp': 'range', 'geometry_perspective': 'planar', 'device': 'cpu'}
+10:46:38 dataset: synthetic n=24 at 512x1024
+10:48:07 [1/24] scene_0000: 49 methods in 88.4s (peak RSS 1476 MB)
+10:49:36 [2/24] scene_0001: 49 methods in 89.6s (peak RSS 1477 MB)
+10:50:58 [3/24] scene_0002: 49 methods in 81.7s (peak RSS 1478 MB)
+10:52:22 [4/24] scene_0003: 49 methods in 84.2s (peak RSS 1478 MB)
+10:53:47 [5/24] scene_0004: 49 methods in 85.2s (peak RSS 1478 MB)
+10:55:17 [6/24] scene_0005: 49 methods in 89.5s (peak RSS 1480 MB)
+10:56:40 [7/24] scene_0006: 49 methods in 83.0s (peak RSS 1481 MB)
+10:58:06 [8/24] scene_0007: 49 methods in 85.6s (peak RSS 1481 MB)
+10:59:33 [9/24] scene_0008: 49 methods in 87.1s (peak RSS 1502 MB)
+11:01:01 [10/24] scene_0009: 49 methods in 87.9s (peak RSS 1502 MB)
+11:02:27 [11/24] scene_0010: 49 methods in 86.4s (peak RSS 1503 MB)
+11:03:58 [12/24] scene_0011: 49 methods in 90.6s (peak RSS 1520 MB)
+11:05:26 [13/24] scene_0012: 49 methods in 88.1s (peak RSS 1520 MB)
+11:06:51 [14/24] scene_0013: 49 methods in 85.7s (peak RSS 1521 MB)
+11:08:13 [15/24] scene_0014: 49 methods in 81.2s (peak RSS 1534 MB)
+11:09:36 [16/24] scene_0015: 49 methods in 83.0s (peak RSS 1534 MB)
+11:11:04 [17/24] scene_0016: 49 methods in 88.5s (peak RSS 1534 MB)
+11:12:32 [18/24] scene_0017: 49 methods in 87.4s (peak RSS 1534 MB)
+11:14:00 [19/24] scene_0018: 49 methods in 88.6s (peak RSS 1545 MB)
+11:15:27 [20/24] scene_0019: 49 methods in 87.1s (peak RSS 1557 MB)
+11:16:55 [21/24] scene_0020: 49 methods in 87.1s (peak RSS 1557 MB)
+11:18:18 [22/24] scene_0021: 49 methods in 83.5s (peak RSS 1567 MB)
+11:19:46 [23/24] scene_0022: 49 methods in 87.9s (peak RSS 1567 MB)
+11:21:15 [24/24] scene_0023: 49 methods in 88.7s (peak RSS 1567 MB)
+11:21:33 reports written to results/midas_swin2_tiny_synthetic/report_align-all
+11:21:46 reports written to results/midas_swin2_tiny_synthetic/report_align-equatorial
+11:21:52 [latitude-control] scene_0000 done
+11:21:56 [latitude-control] scene_0001 done
+11:22:01 [latitude-control] scene_0002 done
+11:22:06 [latitude-control] scene_0003 done
+11:22:10 [latitude-control] scene_0004 done
+11:22:15 [latitude-control] scene_0005 done
+11:22:20 [latitude-control] scene_0006 done
+11:22:25 [latitude-control] scene_0007 done
+11:22:30 [latitude-control] scene_0008 done
+11:22:34 [latitude-control] scene_0009 done
+11:22:39 [latitude-control] scene_0010 done
+11:22:44 [latitude-control] scene_0011 done
+11:22:49 [latitude-control] scene_0012 done
+11:22:53 [latitude-control] scene_0013 done
+11:22:58 [latitude-control] scene_0014 done
+11:23:02 [latitude-control] scene_0015 done
+11:23:07 [latitude-control] scene_0016 done
+11:23:11 [latitude-control] scene_0017 done
+11:23:16 [latitude-control] scene_0018 done
+11:23:21 [latitude-control] scene_0019 done
+11:23:26 [latitude-control] scene_0020 done
+11:23:30 [latitude-control] scene_0021 done
+11:23:35 [latitude-control] scene_0022 done
+11:23:40 [latitude-control] scene_0023 done
+11:24:08 [timing] scene_0000
+11:24:31 [timing] scene_0001
+11:24:53 [timing] scene_0002
+11:25:33 qualitative figures in results/midas_swin2_tiny_synthetic/qualitative
+11:25:33 done
+11:26:54 plan: 49 methods; stages ['reports']
+11:27:08 reports written to results/midas_swin2_tiny_synthetic/report_align-all
+11:27:17 reports written to results/midas_swin2_tiny_synthetic/report_align-equatorial
+11:27:17 done

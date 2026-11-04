@@ -1,0 +1,1772 @@
+[
+ {
+  "tags": [
+   "E1_baseline"
+  ],
+  "config": {
+   "method": "baseline",
+   "lat_threshold": 45.0,
+   "views_per_pole": 1,
+   "tangent_fov": null,
+   "tangent_size": 384,
+   "rotations": [
+    [
+     0.0,
+     90.0,
+     0.0
+    ]
+   ],
+   "merge": "prior",
+   "fusion": "cosine",
+   "band": 20.0,
+   "power": 2.0,
+   "prior_power": 2.0,
+   "align": "auto",
+   "tangent_geometry": null,
+   "sigma_agree": 0.1,
+   "sigma_local": 0.05,
+   "seam_width": 20.0,
+   "name": "baseline"
+  }
+ },
+ {
+  "tags": [
+   "E2_tangent",
+   "E5_threshold",
+   "E6_views",
+   "E7_fusion"
+  ],
+  "config": {
+   "method": "tangent",
+   "lat_threshold": 45,
+   "views_per_pole": 1,
+   "tangent_fov": null,
+   "tangent_size": 384,
+   "rotations": [
+    [
+     0.0,
+     90.0,
+     0.0
+    ],
+    [
+     0.0,
+     -90.0,
+     0.0
+    ]
+   ],
+   "merge": "prior",
+   "fusion": "cosine",
+   "band": 20,
+   "power": 2.0,
+   "prior_power": 2.0,
+   "align": "auto",
+   "tangent_geometry": null,
+   "sigma_agree": 0.1,
+   "sigma_local": 0.05,
+   "seam_width": 20,
+   "name": "tangent|t45|v1|cosine|prior"
+  }
+ },
+ {
+  "tags": [
+   "E3_rotation",
+   "E5_threshold",
+   "E7_fusion",
+   "E7_seam",
+   "E3_rotation_sets"
+  ],
+  "config": {
+   "method": "rotation",
+   "lat_threshold": 45,
+   "views_per_pole": 1,
+   "tangent_fov": null,
+   "tangent_size": 384,
+   "rotations": [
+    [
+     0.0,
+     90.0,
+     0.0
+    ],
+    [
+     0.0,
+     -90.0,
+     0.0
+    ]
+   ],
+   "merge": "prior",
+   "fusion": "cosine",
+   "band": 20,
+   "power": 2.0,
+   "prior_power": 2.0,
+   "align": "auto",
+   "tangent_geometry": null,
+   "sigma_agree": 0.1,
+   "sigma_local": 0.05,
+   "seam_width": 20,
+   "name": "rotation|t45|pitch90_pm|cosine|prior"
+  }
+ },
+ {
+  "tags": [
+   "E4_hybrid",
+   "E5_threshold",
+   "E6_views",
+   "E7_fusion",
+   "E7_merge",
+   "E7_seam",
+   "E4_hybrid_control"
+  ],
+  "config": {
+   "method": "hybrid",
+   "lat_threshold": 45,
+   "views_per_pole": 1,
+   "tangent_fov": null,
+   "tangent_size": 384,
+   "rotations": [
+    [
+     0.0,
+     90.0,
+     0.0
+    ],
+    [
+     0.0,
+     -90.0,
+     0.0
+    ]
+   ],
+   "merge": "prior",
+   "fusion": "cosine",
+   "band": 20,
+   "power": 2.0,
+   "prior_power": 2.0,
+   "align": "auto",
+   "tangent_geometry": null,
+   "sigma_agree": 0.1,
+   "sigma_local": 0.05,
+   "seam_width": 20,
+   "name": "hybrid|t45|v1|pitch90_pm|cosine|prior"
+  }
+ },
+ {
+  "tags": [
+   "E5_threshold"
+  ],
+  "config": {
+   "method": "tangent",
+   "lat_threshold": 30,
+   "views_per_pole": 1,
+   "tangent_fov": null,
+   "tangent_size": 384,
+   "rotations": [
+    [
+     0.0,
+     90.0,
+     0.0
+    ],
+    [
+     0.0,
+     -90.0,
+     0.0
+    ]
+   ],
+   "merge": "prior",
+   "fusion": "cosine",
+   "band": 20,
+   "power": 2.0,
+   "prior_power": 2.0,
+   "align": "auto",
+   "tangent_geometry": null,
+   "sigma_agree": 0.1,
+   "sigma_local": 0.05,
+   "seam_width": 20,
+   "name": "tangent|t30|v1|cosine|prior"
+  }
+ },
+ {
+  "tags": [
+   "E5_threshold"
+  ],
+  "config": {
+   "method": "rotation",
+   "lat_threshold": 30,
+   "views_per_pole": 1,
+   "tangent_fov": null,
+   "tangent_size": 384,
+   "rotations": [
+    [
+     0.0,
+     90.0,
+     0.0
+    ],
+    [
+     0.0,
+     -90.0,
+     0.0
+    ]
+   ],
+   "merge": "prior",
+   "fusion": "cosine",
+   "band": 20,
+   "power": 2.0,
+   "prior_power": 2.0,
+   "align": "auto",
+   "tangent_geometry": null,
+   "sigma_agree": 0.1,
+   "sigma_local": 0.05,
+   "seam_width": 20,
+   "name": "rotation|t30|pitch90_pm|cosine|prior"
+  }
+ },
+ {
+  "tags": [
+   "E5_threshold"
+  ],
+  "config": {
+   "method": "hybrid",
+   "lat_threshold": 30,
+   "views_per_pole": 1,
+   "tangent_fov": null,
+   "tangent_size": 384,
+   "rotations": [
+    [
+     0.0,
+     90.0,
+     0.0
+    ],
+    [
+     0.0,
+     -90.0,
+     0.0
+    ]
+   ],
+   "merge": "prior",
+   "fusion": "cosine",
+   "band": 20,
+   "power": 2.0,
+   "prior_power": 2.0,
+   "align": "auto",
+   "tangent_geometry": null,
+   "sigma_agree": 0.1,
+   "sigma_local": 0.05,
+   "seam_width": 20,
+   "name": "hybrid|t30|v1|pitch90_pm|cosine|prior"
+  }
+ },
+ {
+  "tags": [
+   "E5_threshold"
+  ],
+  "config": {
+   "method": "tangent",
+   "lat_threshold": 60,
+   "views_per_pole": 1,
+   "tangent_fov": null,
+   "tangent_size": 384,
+   "rotations": [
+    [
+     0.0,
+     90.0,
+     0.0
+    ],
+    [
+     0.0,
+     -90.0,
+     0.0
+    ]
+   ],
+   "merge": "prior",
+   "fusion": "cosine",
+   "band": 20,
+   "power": 2.0,
+   "prior_power": 2.0,
+   "align": "auto",
+   "tangent_geometry": null,
+   "sigma_agree": 0.1,
+   "sigma_local": 0.05,
+   "seam_width": 20,
+   "name": "tangent|t60|v1|cosine|prior"
+  }
+ },
+ {
+  "tags": [
+   "E5_threshold"
+  ],
+  "config": {
+   "method": "rotation",
+   "lat_threshold": 60,
+   "views_per_pole": 1,
+   "tangent_fov": null,
+   "tangent_size": 384,
+   "rotations": [
+    [
+     0.0,
+     90.0,
+     0.0
+    ],
+    [
+     0.0,
+     -90.0,
+     0.0
+    ]
+   ],
+   "merge": "prior",
+   "fusion": "cosine",
+   "band": 20,
+   "power": 2.0,
+   "prior_power": 2.0,
+   "align": "auto",
+   "tangent_geometry": null,
+   "sigma_agree": 0.1,
+   "sigma_local": 0.05,
+   "seam_width": 20,
+   "name": "rotation|t60|pitch90_pm|cosine|prior"
+  }
+ },
+ {
+  "tags": [
+   "E5_threshold"
+  ],
+  "config": {
+   "method": "hybrid",
+   "lat_threshold": 60,
+   "views_per_pole": 1,
+   "tangent_fov": null,
+   "tangent_size": 384,
+   "rotations": [
+    [
+     0.0,
+     90.0,
+     0.0
+    ],
+    [
+     0.0,
+     -90.0,
+     0.0
+    ]
+   ],
+   "merge": "prior",
+   "fusion": "cosine",
+   "band": 20,
+   "power": 2.0,
+   "prior_power": 2.0,
+   "align": "auto",
+   "tangent_geometry": null,
+   "sigma_agree": 0.1,
+   "sigma_local": 0.05,
+   "seam_width": 20,
+   "name": "hybrid|t60|v1|pitch90_pm|cosine|prior"
+  }
+ },
+ {
+  "tags": [
+   "E5_threshold"
+  ],
+  "config": {
+   "method": "tangent",
+   "lat_threshold": 75,
+   "views_per_pole": 1,
+   "tangent_fov": null,
+   "tangent_size": 384,
+   "rotations": [
+    [
+     0.0,
+     90.0,
+     0.0
+    ],
+    [
+     0.0,
+     -90.0,
+     0.0
+    ]
+   ],
+   "merge": "prior",
+   "fusion": "cosine",
+   "band": 20,
+   "power": 2.0,
+   "prior_power": 2.0,
+   "align": "auto",
+   "tangent_geometry": null,
+   "sigma_agree": 0.1,
+   "sigma_local": 0.05,
+   "seam_width": 20,
+   "name": "tangent|t75|v1|cosine|prior"
+  }
+ },
+ {
+  "tags": [
+   "E5_threshold"
+  ],
+  "config": {
+   "method": "rotation",
+   "lat_threshold": 75,
+   "views_per_pole": 1,
+   "tangent_fov": null,
+   "tangent_size": 384,
+   "rotations": [
+    [
+     0.0,
+     90.0,
+     0.0
+    ],
+    [
+     0.0,
+     -90.0,
+     0.0
+    ]
+   ],
+   "merge": "prior",
+   "fusion": "cosine",
+   "band": 20,
+   "power": 2.0,
+   "prior_power": 2.0,
+   "align": "auto",
+   "tangent_geometry": null,
+   "sigma_agree": 0.1,
+   "sigma_local": 0.05,
+   "seam_width": 20,
+   "name": "rotation|t75|pitch90_pm|cosine|prior"
+  }
+ },
+ {
+  "tags": [
+   "E5_threshold"
+  ],
+  "config": {
+   "method": "hybrid",
+   "lat_threshold": 75,
+   "views_per_pole": 1,
+   "tangent_fov": null,
+   "tangent_size": 384,
+   "rotations": [
+    [
+     0.0,
+     90.0,
+     0.0
+    ],
+    [
+     0.0,
+     -90.0,
+     0.0
+    ]
+   ],
+   "merge": "prior",
+   "fusion": "cosine",
+   "band": 20,
+   "power": 2.0,
+   "prior_power": 2.0,
+   "align": "auto",
+   "tangent_geometry": null,
+   "sigma_agree": 0.1,
+   "sigma_local": 0.05,
+   "seam_width": 20,
+   "name": "hybrid|t75|v1|pitch90_pm|cosine|prior"
+  }
+ },
+ {
+  "tags": [
+   "E6_views"
+  ],
+  "config": {
+   "method": "tangent",
+   "lat_threshold": 45,
+   "views_per_pole": 2,
+   "tangent_fov": null,
+   "tangent_size": 384,
+   "rotations": [
+    [
+     0.0,
+     90.0,
+     0.0
+    ],
+    [
+     0.0,
+     -90.0,
+     0.0
+    ]
+   ],
+   "merge": "prior",
+   "fusion": "cosine",
+   "band": 20,
+   "power": 2.0,
+   "prior_power": 2.0,
+   "align": "auto",
+   "tangent_geometry": null,
+   "sigma_agree": 0.1,
+   "sigma_local": 0.05,
+   "seam_width": 20,
+   "name": "tangent|t45|v2|cosine|prior"
+  }
+ },
+ {
+  "tags": [
+   "E6_views"
+  ],
+  "config": {
+   "method": "hybrid",
+   "lat_threshold": 45,
+   "views_per_pole": 2,
+   "tangent_fov": null,
+   "tangent_size": 384,
+   "rotations": [
+    [
+     0.0,
+     90.0,
+     0.0
+    ],
+    [
+     0.0,
+     -90.0,
+     0.0
+    ]
+   ],
+   "merge": "prior",
+   "fusion": "cosine",
+   "band": 20,
+   "power": 2.0,
+   "prior_power": 2.0,
+   "align": "auto",
+   "tangent_geometry": null,
+   "sigma_agree": 0.1,
+   "sigma_local": 0.05,
+   "seam_width": 20,
+   "name": "hybrid|t45|v2|pitch90_pm|cosine|prior"
+  }
+ },
+ {
+  "tags": [
+   "E6_views"
+  ],
+  "config": {
+   "method": "tangent",
+   "lat_threshold": 45,
+   "views_per_pole": 3,
+   "tangent_fov": null,
+   "tangent_size": 384,
+   "rotations": [
+    [
+     0.0,
+     90.0,
+     0.0
+    ],
+    [
+     0.0,
+     -90.0,
+     0.0
+    ]
+   ],
+   "merge": "prior",
+   "fusion": "cosine",
+   "band": 20,
+   "power": 2.0,
+   "prior_power": 2.0,
+   "align": "auto",
+   "tangent_geometry": null,
+   "sigma_agree": 0.1,
+   "sigma_local": 0.05,
+   "seam_width": 20,
+   "name": "tangent|t45|v3|cosine|prior"
+  }
+ },
+ {
+  "tags": [
+   "E6_views"
+  ],
+  "config": {
+   "method": "hybrid",
+   "lat_threshold": 45,
+   "views_per_pole": 3,
+   "tangent_fov": null,
+   "tangent_size": 384,
+   "rotations": [
+    [
+     0.0,
+     90.0,
+     0.0
+    ],
+    [
+     0.0,
+     -90.0,
+     0.0
+    ]
+   ],
+   "merge": "prior",
+   "fusion": "cosine",
+   "band": 20,
+   "power": 2.0,
+   "prior_power": 2.0,
+   "align": "auto",
+   "tangent_geometry": null,
+   "sigma_agree": 0.1,
+   "sigma_local": 0.05,
+   "seam_width": 20,
+   "name": "hybrid|t45|v3|pitch90_pm|cosine|prior"
+  }
+ },
+ {
+  "tags": [
+   "E6_views"
+  ],
+  "config": {
+   "method": "tangent",
+   "lat_threshold": 45,
+   "views_per_pole": 5,
+   "tangent_fov": null,
+   "tangent_size": 384,
+   "rotations": [
+    [
+     0.0,
+     90.0,
+     0.0
+    ],
+    [
+     0.0,
+     -90.0,
+     0.0
+    ]
+   ],
+   "merge": "prior",
+   "fusion": "cosine",
+   "band": 20,
+   "power": 2.0,
+   "prior_power": 2.0,
+   "align": "auto",
+   "tangent_geometry": null,
+   "sigma_agree": 0.1,
+   "sigma_local": 0.05,
+   "seam_width": 20,
+   "name": "tangent|t45|v5|cosine|prior"
+  }
+ },
+ {
+  "tags": [
+   "E6_views"
+  ],
+  "config": {
+   "method": "hybrid",
+   "lat_threshold": 45,
+   "views_per_pole": 5,
+   "tangent_fov": null,
+   "tangent_size": 384,
+   "rotations": [
+    [
+     0.0,
+     90.0,
+     0.0
+    ],
+    [
+     0.0,
+     -90.0,
+     0.0
+    ]
+   ],
+   "merge": "prior",
+   "fusion": "cosine",
+   "band": 20,
+   "power": 2.0,
+   "prior_power": 2.0,
+   "align": "auto",
+   "tangent_geometry": null,
+   "sigma_agree": 0.1,
+   "sigma_local": 0.05,
+   "seam_width": 20,
+   "name": "hybrid|t45|v5|pitch90_pm|cosine|prior"
+  }
+ },
+ {
+  "tags": [
+   "E7_fusion"
+  ],
+  "config": {
+   "method": "tangent",
+   "lat_threshold": 45,
+   "views_per_pole": 1,
+   "tangent_fov": null,
+   "tangent_size": 384,
+   "rotations": [
+    [
+     0.0,
+     90.0,
+     0.0
+    ],
+    [
+     0.0,
+     -90.0,
+     0.0
+    ]
+   ],
+   "merge": "prior",
+   "fusion": "hard",
+   "band": 20,
+   "power": 2.0,
+   "prior_power": 2.0,
+   "align": "auto",
+   "tangent_geometry": null,
+   "sigma_agree": 0.1,
+   "sigma_local": 0.05,
+   "seam_width": 20,
+   "name": "tangent|t45|v1|hard|prior"
+  }
+ },
+ {
+  "tags": [
+   "E7_fusion"
+  ],
+  "config": {
+   "method": "rotation",
+   "lat_threshold": 45,
+   "views_per_pole": 1,
+   "tangent_fov": null,
+   "tangent_size": 384,
+   "rotations": [
+    [
+     0.0,
+     90.0,
+     0.0
+    ],
+    [
+     0.0,
+     -90.0,
+     0.0
+    ]
+   ],
+   "merge": "prior",
+   "fusion": "hard",
+   "band": 20,
+   "power": 2.0,
+   "prior_power": 2.0,
+   "align": "auto",
+   "tangent_geometry": null,
+   "sigma_agree": 0.1,
+   "sigma_local": 0.05,
+   "seam_width": 20,
+   "name": "rotation|t45|pitch90_pm|hard|prior"
+  }
+ },
+ {
+  "tags": [
+   "E7_fusion"
+  ],
+  "config": {
+   "method": "hybrid",
+   "lat_threshold": 45,
+   "views_per_pole": 1,
+   "tangent_fov": null,
+   "tangent_size": 384,
+   "rotations": [
+    [
+     0.0,
+     90.0,
+     0.0
+    ],
+    [
+     0.0,
+     -90.0,
+     0.0
+    ]
+   ],
+   "merge": "prior",
+   "fusion": "hard",
+   "band": 20,
+   "power": 2.0,
+   "prior_power": 2.0,
+   "align": "auto",
+   "tangent_geometry": null,
+   "sigma_agree": 0.1,
+   "sigma_local": 0.05,
+   "seam_width": 20,
+   "name": "hybrid|t45|v1|pitch90_pm|hard|prior"
+  }
+ },
+ {
+  "tags": [
+   "E7_fusion"
+  ],
+  "config": {
+   "method": "tangent",
+   "lat_threshold": 45,
+   "views_per_pole": 1,
+   "tangent_fov": null,
+   "tangent_size": 384,
+   "rotations": [
+    [
+     0.0,
+     90.0,
+     0.0
+    ],
+    [
+     0.0,
+     -90.0,
+     0.0
+    ]
+   ],
+   "merge": "prior",
+   "fusion": "linear",
+   "band": 20,
+   "power": 2.0,
+   "prior_power": 2.0,
+   "align": "auto",
+   "tangent_geometry": null,
+   "sigma_agree": 0.1,
+   "sigma_local": 0.05,
+   "seam_width": 20,
+   "name": "tangent|t45|v1|linear|prior"
+  }
+ },
+ {
+  "tags": [
+   "E7_fusion"
+  ],
+  "config": {
+   "method": "rotation",
+   "lat_threshold": 45,
+   "views_per_pole": 1,
+   "tangent_fov": null,
+   "tangent_size": 384,
+   "rotations": [
+    [
+     0.0,
+     90.0,
+     0.0
+    ],
+    [
+     0.0,
+     -90.0,
+     0.0
+    ]
+   ],
+   "merge": "prior",
+   "fusion": "linear",
+   "band": 20,
+   "power": 2.0,
+   "prior_power": 2.0,
+   "align": "auto",
+   "tangent_geometry": null,
+   "sigma_agree": 0.1,
+   "sigma_local": 0.05,
+   "seam_width": 20,
+   "name": "rotation|t45|pitch90_pm|linear|prior"
+  }
+ },
+ {
+  "tags": [
+   "E7_fusion"
+  ],
+  "config": {
+   "method": "hybrid",
+   "lat_threshold": 45,
+   "views_per_pole": 1,
+   "tangent_fov": null,
+   "tangent_size": 384,
+   "rotations": [
+    [
+     0.0,
+     90.0,
+     0.0
+    ],
+    [
+     0.0,
+     -90.0,
+     0.0
+    ]
+   ],
+   "merge": "prior",
+   "fusion": "linear",
+   "band": 20,
+   "power": 2.0,
+   "prior_power": 2.0,
+   "align": "auto",
+   "tangent_geometry": null,
+   "sigma_agree": 0.1,
+   "sigma_local": 0.05,
+   "seam_width": 20,
+   "name": "hybrid|t45|v1|pitch90_pm|linear|prior"
+  }
+ },
+ {
+  "tags": [
+   "E7_fusion"
+  ],
+  "config": {
+   "method": "tangent",
+   "lat_threshold": 45,
+   "views_per_pole": 1,
+   "tangent_fov": null,
+   "tangent_size": 384,
+   "rotations": [
+    [
+     0.0,
+     90.0,
+     0.0
+    ],
+    [
+     0.0,
+     -90.0,
+     0.0
+    ]
+   ],
+   "merge": "prior",
+   "fusion": "sigmoid",
+   "band": 20,
+   "power": 2.0,
+   "prior_power": 2.0,
+   "align": "auto",
+   "tangent_geometry": null,
+   "sigma_agree": 0.1,
+   "sigma_local": 0.05,
+   "seam_width": 20,
+   "name": "tangent|t45|v1|sigmoid|prior"
+  }
+ },
+ {
+  "tags": [
+   "E7_fusion"
+  ],
+  "config": {
+   "method": "rotation",
+   "lat_threshold": 45,
+   "views_per_pole": 1,
+   "tangent_fov": null,
+   "tangent_size": 384,
+   "rotations": [
+    [
+     0.0,
+     90.0,
+     0.0
+    ],
+    [
+     0.0,
+     -90.0,
+     0.0
+    ]
+   ],
+   "merge": "prior",
+   "fusion": "sigmoid",
+   "band": 20,
+   "power": 2.0,
+   "prior_power": 2.0,
+   "align": "auto",
+   "tangent_geometry": null,
+   "sigma_agree": 0.1,
+   "sigma_local": 0.05,
+   "seam_width": 20,
+   "name": "rotation|t45|pitch90_pm|sigmoid|prior"
+  }
+ },
+ {
+  "tags": [
+   "E7_fusion"
+  ],
+  "config": {
+   "method": "hybrid",
+   "lat_threshold": 45,
+   "views_per_pole": 1,
+   "tangent_fov": null,
+   "tangent_size": 384,
+   "rotations": [
+    [
+     0.0,
+     90.0,
+     0.0
+    ],
+    [
+     0.0,
+     -90.0,
+     0.0
+    ]
+   ],
+   "merge": "prior",
+   "fusion": "sigmoid",
+   "band": 20,
+   "power": 2.0,
+   "prior_power": 2.0,
+   "align": "auto",
+   "tangent_geometry": null,
+   "sigma_agree": 0.1,
+   "sigma_local": 0.05,
+   "seam_width": 20,
+   "name": "hybrid|t45|v1|pitch90_pm|sigmoid|prior"
+  }
+ },
+ {
+  "tags": [
+   "E7_fusion"
+  ],
+  "config": {
+   "method": "tangent",
+   "lat_threshold": 45,
+   "views_per_pole": 1,
+   "tangent_fov": null,
+   "tangent_size": 384,
+   "rotations": [
+    [
+     0.0,
+     90.0,
+     0.0
+    ],
+    [
+     0.0,
+     -90.0,
+     0.0
+    ]
+   ],
+   "merge": "prior",
+   "fusion": "polynomial",
+   "band": 20,
+   "power": 2.0,
+   "prior_power": 2.0,
+   "align": "auto",
+   "tangent_geometry": null,
+   "sigma_agree": 0.1,
+   "sigma_local": 0.05,
+   "seam_width": 20,
+   "name": "tangent|t45|v1|polynomial|prior"
+  }
+ },
+ {
+  "tags": [
+   "E7_fusion"
+  ],
+  "config": {
+   "method": "rotation",
+   "lat_threshold": 45,
+   "views_per_pole": 1,
+   "tangent_fov": null,
+   "tangent_size": 384,
+   "rotations": [
+    [
+     0.0,
+     90.0,
+     0.0
+    ],
+    [
+     0.0,
+     -90.0,
+     0.0
+    ]
+   ],
+   "merge": "prior",
+   "fusion": "polynomial",
+   "band": 20,
+   "power": 2.0,
+   "prior_power": 2.0,
+   "align": "auto",
+   "tangent_geometry": null,
+   "sigma_agree": 0.1,
+   "sigma_local": 0.05,
+   "seam_width": 20,
+   "name": "rotation|t45|pitch90_pm|polynomial|prior"
+  }
+ },
+ {
+  "tags": [
+   "E7_fusion"
+  ],
+  "config": {
+   "method": "hybrid",
+   "lat_threshold": 45,
+   "views_per_pole": 1,
+   "tangent_fov": null,
+   "tangent_size": 384,
+   "rotations": [
+    [
+     0.0,
+     90.0,
+     0.0
+    ],
+    [
+     0.0,
+     -90.0,
+     0.0
+    ]
+   ],
+   "merge": "prior",
+   "fusion": "polynomial",
+   "band": 20,
+   "power": 2.0,
+   "prior_power": 2.0,
+   "align": "auto",
+   "tangent_geometry": null,
+   "sigma_agree": 0.1,
+   "sigma_local": 0.05,
+   "seam_width": 20,
+   "name": "hybrid|t45|v1|pitch90_pm|polynomial|prior"
+  }
+ },
+ {
+  "tags": [
+   "E7_fusion"
+  ],
+  "config": {
+   "method": "tangent",
+   "lat_threshold": 45,
+   "views_per_pole": 1,
+   "tangent_fov": null,
+   "tangent_size": 384,
+   "rotations": [
+    [
+     0.0,
+     90.0,
+     0.0
+    ],
+    [
+     0.0,
+     -90.0,
+     0.0
+    ]
+   ],
+   "merge": "prior",
+   "fusion": "confidence",
+   "band": 20,
+   "power": 2.0,
+   "prior_power": 2.0,
+   "align": "auto",
+   "tangent_geometry": null,
+   "sigma_agree": 0.1,
+   "sigma_local": 0.05,
+   "seam_width": 20,
+   "name": "tangent|t45|v1|confidence|prior"
+  }
+ },
+ {
+  "tags": [
+   "E7_fusion",
+   "E3_rotation_sets"
+  ],
+  "config": {
+   "method": "rotation",
+   "lat_threshold": 45,
+   "views_per_pole": 1,
+   "tangent_fov": null,
+   "tangent_size": 384,
+   "rotations": [
+    [
+     0.0,
+     90.0,
+     0.0
+    ],
+    [
+     0.0,
+     -90.0,
+     0.0
+    ]
+   ],
+   "merge": "prior",
+   "fusion": "confidence",
+   "band": 20,
+   "power": 2.0,
+   "prior_power": 2.0,
+   "align": "auto",
+   "tangent_geometry": null,
+   "sigma_agree": 0.1,
+   "sigma_local": 0.05,
+   "seam_width": 20,
+   "name": "rotation|t45|pitch90_pm|confidence|prior"
+  }
+ },
+ {
+  "tags": [
+   "E7_fusion"
+  ],
+  "config": {
+   "method": "hybrid",
+   "lat_threshold": 45,
+   "views_per_pole": 1,
+   "tangent_fov": null,
+   "tangent_size": 384,
+   "rotations": [
+    [
+     0.0,
+     90.0,
+     0.0
+    ],
+    [
+     0.0,
+     -90.0,
+     0.0
+    ]
+   ],
+   "merge": "prior",
+   "fusion": "confidence",
+   "band": 20,
+   "power": 2.0,
+   "prior_power": 2.0,
+   "align": "auto",
+   "tangent_geometry": null,
+   "sigma_agree": 0.1,
+   "sigma_local": 0.05,
+   "seam_width": 20,
+   "name": "hybrid|t45|v1|pitch90_pm|confidence|prior"
+  }
+ },
+ {
+  "tags": [
+   "E7_merge",
+   "E3_rotation_sets"
+  ],
+  "config": {
+   "method": "rotation",
+   "lat_threshold": 45,
+   "views_per_pole": 1,
+   "tangent_fov": null,
+   "tangent_size": 384,
+   "rotations": [
+    [
+     0.0,
+     90.0,
+     0.0
+    ],
+    [
+     0.0,
+     -90.0,
+     0.0
+    ],
+    [
+     90.0,
+     90.0,
+     0.0
+    ],
+    [
+     90.0,
+     -90.0,
+     0.0
+    ]
+   ],
+   "merge": "prior",
+   "fusion": "cosine",
+   "band": 20,
+   "power": 2.0,
+   "prior_power": 2.0,
+   "align": "auto",
+   "tangent_geometry": null,
+   "sigma_agree": 0.1,
+   "sigma_local": 0.05,
+   "seam_width": 20,
+   "name": "rotation|t45|pitch90_x4|cosine|prior"
+  }
+ },
+ {
+  "tags": [
+   "E7_merge"
+  ],
+  "config": {
+   "method": "rotation",
+   "lat_threshold": 45,
+   "views_per_pole": 1,
+   "tangent_fov": null,
+   "tangent_size": 384,
+   "rotations": [
+    [
+     0.0,
+     90.0,
+     0.0
+    ],
+    [
+     0.0,
+     -90.0,
+     0.0
+    ],
+    [
+     90.0,
+     90.0,
+     0.0
+    ],
+    [
+     90.0,
+     -90.0,
+     0.0
+    ]
+   ],
+   "merge": "mean",
+   "fusion": "cosine",
+   "band": 20,
+   "power": 2.0,
+   "prior_power": 2.0,
+   "align": "auto",
+   "tangent_geometry": null,
+   "sigma_agree": 0.1,
+   "sigma_local": 0.05,
+   "seam_width": 20,
+   "name": "rotation|t45|pitch90_x4|cosine|mean"
+  }
+ },
+ {
+  "tags": [
+   "E7_merge"
+  ],
+  "config": {
+   "method": "hybrid",
+   "lat_threshold": 45,
+   "views_per_pole": 1,
+   "tangent_fov": null,
+   "tangent_size": 384,
+   "rotations": [
+    [
+     0.0,
+     90.0,
+     0.0
+    ],
+    [
+     0.0,
+     -90.0,
+     0.0
+    ]
+   ],
+   "merge": "mean",
+   "fusion": "cosine",
+   "band": 20,
+   "power": 2.0,
+   "prior_power": 2.0,
+   "align": "auto",
+   "tangent_geometry": null,
+   "sigma_agree": 0.1,
+   "sigma_local": 0.05,
+   "seam_width": 20,
+   "name": "hybrid|t45|v1|pitch90_pm|cosine|mean"
+  }
+ },
+ {
+  "tags": [
+   "E7_merge"
+  ],
+  "config": {
+   "method": "rotation",
+   "lat_threshold": 45,
+   "views_per_pole": 1,
+   "tangent_fov": null,
+   "tangent_size": 384,
+   "rotations": [
+    [
+     0.0,
+     90.0,
+     0.0
+    ],
+    [
+     0.0,
+     -90.0,
+     0.0
+    ],
+    [
+     90.0,
+     90.0,
+     0.0
+    ],
+    [
+     90.0,
+     -90.0,
+     0.0
+    ]
+   ],
+   "merge": "median",
+   "fusion": "cosine",
+   "band": 20,
+   "power": 2.0,
+   "prior_power": 2.0,
+   "align": "auto",
+   "tangent_geometry": null,
+   "sigma_agree": 0.1,
+   "sigma_local": 0.05,
+   "seam_width": 20,
+   "name": "rotation|t45|pitch90_x4|cosine|median"
+  }
+ },
+ {
+  "tags": [
+   "E7_merge"
+  ],
+  "config": {
+   "method": "hybrid",
+   "lat_threshold": 45,
+   "views_per_pole": 1,
+   "tangent_fov": null,
+   "tangent_size": 384,
+   "rotations": [
+    [
+     0.0,
+     90.0,
+     0.0
+    ],
+    [
+     0.0,
+     -90.0,
+     0.0
+    ]
+   ],
+   "merge": "median",
+   "fusion": "cosine",
+   "band": 20,
+   "power": 2.0,
+   "prior_power": 2.0,
+   "align": "auto",
+   "tangent_geometry": null,
+   "sigma_agree": 0.1,
+   "sigma_local": 0.05,
+   "seam_width": 20,
+   "name": "hybrid|t45|v1|pitch90_pm|cosine|median"
+  }
+ },
+ {
+  "tags": [
+   "E7_seam"
+  ],
+  "config": {
+   "method": "rotation",
+   "lat_threshold": 45,
+   "views_per_pole": 1,
+   "tangent_fov": null,
+   "tangent_size": 384,
+   "rotations": [
+    [
+     0.0,
+     90.0,
+     0.0
+    ],
+    [
+     0.0,
+     -90.0,
+     0.0
+    ]
+   ],
+   "merge": "prior",
+   "fusion": "cosine",
+   "band": 20,
+   "power": 2.0,
+   "prior_power": 2.0,
+   "align": "auto",
+   "tangent_geometry": null,
+   "sigma_agree": 0.1,
+   "sigma_local": 0.05,
+   "seam_width": 0.0,
+   "name": "rotation|t45|pitch90_pm|cosine|prior|seam0"
+  }
+ },
+ {
+  "tags": [
+   "E7_seam"
+  ],
+  "config": {
+   "method": "hybrid",
+   "lat_threshold": 45,
+   "views_per_pole": 1,
+   "tangent_fov": null,
+   "tangent_size": 384,
+   "rotations": [
+    [
+     0.0,
+     90.0,
+     0.0
+    ],
+    [
+     0.0,
+     -90.0,
+     0.0
+    ]
+   ],
+   "merge": "prior",
+   "fusion": "cosine",
+   "band": 20,
+   "power": 2.0,
+   "prior_power": 2.0,
+   "align": "auto",
+   "tangent_geometry": null,
+   "sigma_agree": 0.1,
+   "sigma_local": 0.05,
+   "seam_width": 0.0,
+   "name": "hybrid|t45|v1|pitch90_pm|cosine|prior|seam0"
+  }
+ },
+ {
+  "tags": [
+   "E4_hybrid_control"
+  ],
+  "config": {
+   "method": "hybrid",
+   "lat_threshold": 45,
+   "views_per_pole": 1,
+   "tangent_fov": null,
+   "tangent_size": 384,
+   "rotations": [
+    [
+     90.0,
+     0.0,
+     0.0
+    ],
+    [
+     180.0,
+     0.0,
+     0.0
+    ],
+    [
+     270.0,
+     0.0,
+     0.0
+    ]
+   ],
+   "merge": "prior",
+   "fusion": "cosine",
+   "band": 20,
+   "power": 2.0,
+   "prior_power": 2.0,
+   "align": "auto",
+   "tangent_geometry": null,
+   "sigma_agree": 0.1,
+   "sigma_local": 0.05,
+   "seam_width": 20,
+   "name": "hybrid|t45|v1|yaw_only_x3|cosine|prior"
+  }
+ },
+ {
+  "tags": [
+   "E3_rotation_sets"
+  ],
+  "config": {
+   "method": "rotation",
+   "lat_threshold": 45,
+   "views_per_pole": 1,
+   "tangent_fov": null,
+   "tangent_size": 384,
+   "rotations": [
+    [
+     0.0,
+     90.0,
+     0.0
+    ]
+   ],
+   "merge": "prior",
+   "fusion": "cosine",
+   "band": 20,
+   "power": 2.0,
+   "prior_power": 2.0,
+   "align": "auto",
+   "tangent_geometry": null,
+   "sigma_agree": 0.1,
+   "sigma_local": 0.05,
+   "seam_width": 20,
+   "name": "rotation|t45|pitch90|cosine|prior"
+  }
+ },
+ {
+  "tags": [
+   "E3_rotation_sets"
+  ],
+  "config": {
+   "method": "rotation",
+   "lat_threshold": 45,
+   "views_per_pole": 1,
+   "tangent_fov": null,
+   "tangent_size": 384,
+   "rotations": [
+    [
+     0.0,
+     90.0,
+     0.0
+    ]
+   ],
+   "merge": "prior",
+   "fusion": "confidence",
+   "band": 20,
+   "power": 2.0,
+   "prior_power": 2.0,
+   "align": "auto",
+   "tangent_geometry": null,
+   "sigma_agree": 0.1,
+   "sigma_local": 0.05,
+   "seam_width": 20,
+   "name": "rotation|t45|pitch90|confidence|prior"
+  }
+ },
+ {
+  "tags": [
+   "E3_rotation_sets"
+  ],
+  "config": {
+   "method": "rotation",
+   "lat_threshold": 45,
+   "views_per_pole": 1,
+   "tangent_fov": null,
+   "tangent_size": 384,
+   "rotations": [
+    [
+     0.0,
+     90.0,
+     0.0
+    ],
+    [
+     0.0,
+     -90.0,
+     0.0
+    ],
+    [
+     90.0,
+     90.0,
+     0.0
+    ],
+    [
+     90.0,
+     -90.0,
+     0.0
+    ]
+   ],
+   "merge": "prior",
+   "fusion": "confidence",
+   "band": 20,
+   "power": 2.0,
+   "prior_power": 2.0,
+   "align": "auto",
+   "tangent_geometry": null,
+   "sigma_agree": 0.1,
+   "sigma_local": 0.05,
+   "seam_width": 20,
+   "name": "rotation|t45|pitch90_x4|confidence|prior"
+  }
+ },
+ {
+  "tags": [
+   "E3_rotation_sets"
+  ],
+  "config": {
+   "method": "rotation",
+   "lat_threshold": 45,
+   "views_per_pole": 1,
+   "tangent_fov": null,
+   "tangent_size": 384,
+   "rotations": [
+    [
+     0.0,
+     45.0,
+     0.0
+    ],
+    [
+     0.0,
+     -45.0,
+     0.0
+    ]
+   ],
+   "merge": "prior",
+   "fusion": "cosine",
+   "band": 20,
+   "power": 2.0,
+   "prior_power": 2.0,
+   "align": "auto",
+   "tangent_geometry": null,
+   "sigma_agree": 0.1,
+   "sigma_local": 0.05,
+   "seam_width": 20,
+   "name": "rotation|t45|pitch45_pm|cosine|prior"
+  }
+ },
+ {
+  "tags": [
+   "E3_rotation_sets"
+  ],
+  "config": {
+   "method": "rotation",
+   "lat_threshold": 45,
+   "views_per_pole": 1,
+   "tangent_fov": null,
+   "tangent_size": 384,
+   "rotations": [
+    [
+     0.0,
+     45.0,
+     0.0
+    ],
+    [
+     0.0,
+     -45.0,
+     0.0
+    ]
+   ],
+   "merge": "prior",
+   "fusion": "confidence",
+   "band": 20,
+   "power": 2.0,
+   "prior_power": 2.0,
+   "align": "auto",
+   "tangent_geometry": null,
+   "sigma_agree": 0.1,
+   "sigma_local": 0.05,
+   "seam_width": 20,
+   "name": "rotation|t45|pitch45_pm|confidence|prior"
+  }
+ },
+ {
+  "tags": [
+   "E3_rotation_sets"
+  ],
+  "config": {
+   "method": "rotation",
+   "lat_threshold": 45,
+   "views_per_pole": 1,
+   "tangent_fov": null,
+   "tangent_size": 384,
+   "rotations": [
+    [
+     90.0,
+     0.0,
+     0.0
+    ],
+    [
+     180.0,
+     0.0,
+     0.0
+    ],
+    [
+     270.0,
+     0.0,
+     0.0
+    ]
+   ],
+   "merge": "prior",
+   "fusion": "cosine",
+   "band": 20,
+   "power": 2.0,
+   "prior_power": 2.0,
+   "align": "auto",
+   "tangent_geometry": null,
+   "sigma_agree": 0.1,
+   "sigma_local": 0.05,
+   "seam_width": 20,
+   "name": "rotation|t45|yaw_only_x3|cosine|prior"
+  }
+ },
+ {
+  "tags": [
+   "E3_rotation_sets"
+  ],
+  "config": {
+   "method": "rotation",
+   "lat_threshold": 45,
+   "views_per_pole": 1,
+   "tangent_fov": null,
+   "tangent_size": 384,
+   "rotations": [
+    [
+     90.0,
+     0.0,
+     0.0
+    ],
+    [
+     180.0,
+     0.0,
+     0.0
+    ],
+    [
+     270.0,
+     0.0,
+     0.0
+    ]
+   ],
+   "merge": "prior",
+   "fusion": "confidence",
+   "band": 20,
+   "power": 2.0,
+   "prior_power": 2.0,
+   "align": "auto",
+   "tangent_geometry": null,
+   "sigma_agree": 0.1,
+   "sigma_local": 0.05,
+   "seam_width": 20,
+   "name": "rotation|t45|yaw_only_x3|confidence|prior"
+  }
+ }
+]

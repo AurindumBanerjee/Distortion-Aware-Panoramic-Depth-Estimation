@@ -1,0 +1,3 @@
+08:59:18 plan: 3 methods; stages ['main']
+08:59:24 model: {'name': 'midas_dpt_hybrid_384', 'space': 'disparity', 'scale': 'affine', 'geometry_erp': 'range', 'geometry_perspective': 'planar', 'device': 'cpu'}
+08:59:24 dataset: synthetic n=24 at 512x1024
