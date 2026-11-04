@@ -63,7 +63,7 @@ class PanoramaDataset:
     def __init__(self, root: str, list_file: str, height: int = 512, width: int = 1024, name: str = "synthetic",
                  depth_scale: Optional[float] = None, max_depth: Optional[float] = None,
                  min_depth: Optional[float] = None, limit: Optional[int] = None, exr_scale: Optional[float] = None,
-                 subset: str = "first"):
+                 subset: str = "first", id_filter=None):
         p = dict(PRESETS.get(name, PRESETS["synthetic"]))
         if depth_scale is not None:
             p["depth_scale"] = depth_scale
@@ -79,6 +79,8 @@ class PanoramaDataset:
         lf = list_file if os.path.isabs(list_file) else os.path.join(root, list_file)
         with open(lf) as f:
             self.items: List[Tuple[str, ...]] = [tuple(l.split()[:3]) for l in f if l.strip()]
+        if id_filter is not None:  # e.g. calibration / evaluation split; applied BEFORE the subset so 'spread' stays inside it
+            self.items = [it for i, it in enumerate(self.items) if id_filter(self.sample_id(i))]
         if limit and limit < len(self.items):
             # 'first' : the first N lines (reproduces earlier runs). Split lists are ordered by scene, so this covers
             #           only the first few houses / environments (e.g. 60 PanoX frames = 3 of 8 environments).
@@ -93,6 +95,20 @@ class PanoramaDataset:
 
     def __len__(self):
         return len(self.items)
+
+    def sample_id(self, i: int) -> str:
+        """Id of sample i without reading any file (same rule as __getitem__)."""
+        rgb_rel = self.items[i][0]
+        sid = os.path.splitext(os.path.basename(rgb_rel))[0]
+        parts = rgb_rel.replace("\\", "/").split("/")
+        if len(parts) > 2:  # nested layouts (PanoX: <scene>/<scene>/rgb/0002.png) -> ids must be unique across scenes
+            sid = f"{parts[0]}_{sid}"
+        return sid
+
+    def keep(self, predicate) -> "PanoramaDataset":
+        """Restrict to samples whose id satisfies predicate(id) (e.g. a calibration / evaluation split). In place."""
+        self.items = [it for i, it in enumerate(self.items) if predicate(self.sample_id(i))]
+        return self
 
     def _read_depth(self, path: str) -> np.ndarray:
         ext = os.path.splitext(path)[1].lower()
@@ -138,11 +154,7 @@ class PanoramaDataset:
                 mk = cv2.resize(mk, (self.w, self.h), interpolation=cv2.INTER_NEAREST)
             valid &= mk > 127
         d = np.where(valid, d, np.nan).astype(np.float32)
-        sid = os.path.splitext(os.path.basename(rgb_rel))[0]
-        parts = rgb_rel.replace("\\", "/").split("/")
-        if len(parts) > 2:  # nested layouts (PanoX: <scene>/<scene>/rgb/0002.png) -> ids must be unique across scenes
-            sid = f"{parts[0]}_{sid}"
-        return Sample(sid, rgb, d, valid)
+        return Sample(self.sample_id(i), rgb, d, valid)
 
     def __iter__(self) -> Iterator[Sample]:
         for i in range(len(self)):

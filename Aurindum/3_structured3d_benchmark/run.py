@@ -115,6 +115,16 @@ def load_model(cfg_model: Dict, logger: logging.Logger):
         return EncodedDepthOracle(strength=0.3, power=2.0)
 
 
+def _split_filter(part):
+    """data.split: 'calib' | 'eval' | None/'all'. Split by cluster hash (evaluation.distortion_analysis.split_of)."""
+    if part in (None, "", "all"):
+        return None
+    if part not in ("calib", "eval"):
+        raise ValueError(f"data.split must be calib, eval or all, got {part!r}")
+    from evaluation.distortion_analysis import split_of
+    return lambda sid: split_of(sid) == part
+
+
 def main():
     parser = argparse.ArgumentParser(description="Method 3: Real Structured3D Panoramic Benchmark")
     parser.add_argument("--config", type=str, default="config.yaml", help="Path to config.yaml")
@@ -174,7 +184,8 @@ def main():
             from datasets.panorama import PanoramaDataset
             pano_ds = PanoramaDataset(str(cand), list_name, height=cfg["data"].get("height", 256),
                                       width=cfg["data"].get("width", 512), name=dataset_name,
-                                      limit=max_scenes, subset=cfg["data"].get("subset", "first"))
+                                      limit=max_scenes, subset=cfg["data"].get("subset", "first"),
+                                      id_filter=_split_filter(cfg["data"].get("split")))
             logger.info(f"Loaded {len(pano_ds)} {dataset_name} panoramas from {cand / list_name}")
             break
     if pano_ds is not None:
@@ -197,6 +208,12 @@ def main():
     # 2. Initialize models and ensemble
     model = load_model(cfg.get("model", {}), logger)
     m2_cfg = cfg.get("mobius_tta", {})
+    curve = None
+    if cfg.get("distortion_curve"):  # Part B: a measured distortion response (scripts/distortion_sweep.py)
+        from evaluation.distortion_analysis import load_curve
+        cp = Path(cfg["distortion_curve"])
+        curve = load_curve(str(cp if cp.is_absolute() else AURINDUM_DIR / cp), cfg.get("distortion_curve_estimator", "global"))
+        logger.info(f"Distortion curve {cp}: onset {curve['onset']} deg ({curve['estimator']} estimator)")
     m2_ensemble = MobiusTTAEnsemble(
         model=model,
         passes=m2_cfg.get("passes"),
@@ -210,6 +227,9 @@ def main():
         reanchor_scope=m2_cfg.get("reanchor_scope", "identity"),
         sync_max_lat=m2_cfg.get("sync_max_lat", 45.0),
         consensus=m2_cfg.get("consensus", False),
+        curve=curve,
+        curve_weights=m2_cfg.get("curve_weights", False),
+        curve_gate=m2_cfg.get("curve_gate", False),
     )
     ev_cfg = cfg.get("evaluation", {})
     protocols = tuple(ev_cfg.get("protocols") or default_protocols(model))
@@ -264,6 +284,7 @@ def main():
             max_depth=max_depth,
             m1_cfg=cfg.get("method1", {}),
             methods=cfg["evaluation"].get("methods"),
+            curve=curve,
         )
 
         for m_name in method_keys:

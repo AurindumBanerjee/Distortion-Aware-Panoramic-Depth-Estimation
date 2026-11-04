@@ -46,6 +46,7 @@ def run_single_benchmark_scene(
     max_depth: float = 10.0,
     m1_cfg: Optional[Dict[str, Any]] = None,
     methods: Optional[Tuple[str, ...]] = None,
+    curve: Optional[Dict] = None,
 ) -> Dict[str, Dict]:
     """Runs all 4 methods on a panorama. Returns {method: {protocol: per-band metrics}}.
 
@@ -67,7 +68,17 @@ def run_single_benchmark_scene(
     res_base, m_base = ev(pred_erp)
 
     res_tan = m_tan = res_grad = m_grad = None
-    if want & {"Tangent_Spatial", "Method1_GradientFusion"}:
+    m1_gate = None  # method1.curve_gate: ramp from the measured onset; no onset -> both tangent methods return the baseline
+    if (m1_cfg or {}).get("curve_gate"):
+        if curve is None:
+            raise ValueError("method1.curve_gate needs a measured curve (config key distortion_curve)")
+        m1_gate = "identity" if curve.get("onset") is None else float(curve["onset"])
+    if m1_gate == "identity":
+        if "Tangent_Spatial" in want:
+            res_tan, m_tan = res_base, m_base
+        if "Method1_GradientFusion" in want:
+            res_grad, m_grad = res_base, m_base
+    elif want & {"Tangent_Spatial", "Method1_GradientFusion"}:
         # Polar views (tangent for perspective models, rotated ERP for ERP-native metric models such as DAP),
         # aligned to the ERP prediction in the fusion space (disparity or log depth). Shared by 2 and 3.
         merged_f, fs, infos = polar_predictions(
@@ -76,7 +87,9 @@ def run_single_benchmark_scene(
             anchor_max_lat=m1_cfg.get("anchor_max_lat", 60.0), shift_model=m1_cfg.get("shift_model", "cos"))
         for info in infos:
             logger.debug(f"polar view: {info}")
-        common = dict(phi_threshold=phi_thresh, blend_margin=m1_cfg.get("blend_margin", 10.0))
+        margin = m1_cfg.get("blend_margin", 10.0)
+        # with a measured onset the fusion ramp STARTS at the onset (ramp = phi_threshold -/+ margin)
+        common = dict(phi_threshold=(phi_thresh if m1_gate is None else m1_gate + margin), blend_margin=margin)
 
         # 2. Spatial cosine-ramp blend of the ALIGNED polar views
         if "Tangent_Spatial" in want:
