@@ -84,8 +84,14 @@ def align_view_to_reference(view: np.ndarray, ref: np.ndarray, anchor: np.ndarra
         info["inlier_frac"] = float(inl.mean())
         return v * coef[0] + coef[1], info
 
-    # disparity space (affine-invariant models)
-    if geometry == "planar" and cos_axis is not None:
+    # disparity space. Affine-invariant models may use an affine fit, while
+    # scale-invariant models (e.g. DA360) must not gain a free intercept.
+    if mode == "scale":
+        src = view if geometry != "planar" or cos_axis is None else cos_axis * view
+        A = src[a, None]
+        coef, inl = robust_lstsq(A, ref[a])
+        out = coef[0] * src
+    elif geometry == "planar" and cos_axis is not None:
         c = cos_axis
         A = np.stack([c[a] * view[a], c[a], np.ones(a.sum())], -1)
         coef, inl = robust_lstsq(A, ref[a])

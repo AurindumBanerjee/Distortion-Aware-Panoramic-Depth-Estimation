@@ -1,0 +1,29 @@
+seed: 53
+output_dir: followup_experiments/05_fov_resolution_sweep/outputs
+model:
+  name: midas
+  model_type: dpt_hybrid_384
+  weights: "{ENV:MIDAS_WEIGHTS|weights/dpt_hybrid_384.pt}"
+  device: cuda
+  erp_net_height: 384
+dataset:
+  name: panox
+  root: "{ENV:PANOX_ROOT|../../panox/panox}"
+  list: test.txt
+  height: 512
+  width: 1024
+  max_scenes: 200
+inference:
+  fov_degrees: [70, 90, 110, 130]
+  tangent_resolutions: [256, 384, 512]
+  polar_threshold: 45
+  views_per_pole: 1
+  fusion: cosine
+  band: 20
+  power: 2.0
+  align: affine
+  batch_size: 4
+evaluation:
+  protocols: [align-all, align-equatorial]
+  min_depth: 0.05
+  max_depth: 100.0

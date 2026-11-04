@@ -1,0 +1,2 @@
+# Optional dependency for PanoX float32 EXR depth when OpenCV lacks EXR decoding.
+OpenEXR>=3.2

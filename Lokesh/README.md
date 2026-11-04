@@ -233,3 +233,22 @@ results/<run>/
   resolution.{csv,md}, runtime_cold.{csv,md}
   qualitative/                        8-panel comparisons + tangent-view pipeline figures
 ```
+ 
+## 11. Follow-up studies (November 2026)
+
+Five additional experiments are maintained separately in [followup_experiments/README.md](followup_experiments/README.md).
+They do not replace or rewrite the existing E1–E11 pipeline above.
+
+| Study | Purpose |
+|---|---|
+| 01 — scale-only protocol | DA360 scale-only disparity evaluation vs affine-fit sensitivity |
+| 02 — domain-conditioned gate | PanoX leave-one-environment-out calibration of the rotation gate |
+| 03 — PanDA-inspired distillation | Frozen DA360 pseudo-label teacher and compact student training |
+| 04 — 20-view 360MonoDepth-style | Full-sphere icosahedral tangent baseline vs two-pole tangent correction |
+| 05 — FOV/resolution sweep | Tangent-view FOV × output-resolution sensitivity |
+
+Each study has its own `config.yaml`, `run.py`, GPU launcher, logs and timestamped `outputs/` folder.
+The Kaggle entrypoint is `followup_experiments/kaggle_two_t4_runner.ipynb`; it is designed for a
+two-T4 Kaggle kernel. DA360-dependent studies require the official DA360 repository and checkpoint
+to be mounted separately. GPU runs are not considered complete until the Kaggle notebook has executed
+and written its result reports.
