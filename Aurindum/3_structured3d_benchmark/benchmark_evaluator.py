@@ -91,6 +91,7 @@ def run_single_benchmark_scene(
             res_grad, m_grad = ev(pred_grad)
 
     res_pp = m_pp = None
+    pinfo = None
     if "Method1_PlanarPrior" in want:
         # 3b. Training-free floor / ceiling plane prior, fused in the gradient domain (no extra forward pass)
         from planar_prior import fit_polar_planes
@@ -121,6 +122,8 @@ def run_single_benchmark_scene(
         res_yaw, m_yaw = ev(pred_yaw)
 
     out = {"Baseline": res_base, "predictions": {"baseline": m_base}}
+    if pinfo is not None:
+        out["planar_info"] = [{k: v for k, v in i.items() if k != "c"} for i in pinfo]  # per-pole accept / reject record
     for name, res, key, pred in (("Tangent_Spatial", res_tan, "tangent_spatial", m_tan),
                                  ("Method1_GradientFusion", res_grad, "method1_grad", m_grad),
                                  ("Method1_PlanarPrior", res_pp, "method1_planar", m_pp),

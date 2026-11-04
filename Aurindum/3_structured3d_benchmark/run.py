@@ -227,6 +227,7 @@ def main():
     method_keys = [m for m in all_methods if m == "Baseline" or (sel and m in sel) or (not sel and m not in opt_in)]
     accumulators: Dict[str, List[Dict]] = {m: [] for m in method_keys}
     sample_vis = None
+    planar_infos = []
     tex_bank = _texture_bank(seed=42)
 
     for idx, sc in enumerate(scenes):
@@ -268,12 +269,49 @@ def main():
         for m_name in method_keys:
             accumulators[m_name].append(scene_results[m_name])
 
+        if "planar_info" in scene_results:
+            planar_infos.append(scene_results["planar_info"])
         if sample_vis is None:
             sample_vis = {"rgb": rgb, "gt": gt_depth, "preds": scene_results["predictions"]}
 
         hp = protocols[0]
         pol = {m: scene_results[m][hp]["75-90"]["abs_rel"] for m in method_keys}
         logger.info(f"    Polar AbsRel (75-90°, {hp}): " + " | ".join(f"{m.split('_')[0]}={v:.4f}" for m, v in pol.items()))
+
+    planar_report = None
+    if planar_infos and "Method1_PlanarPrior" in accumulators:
+        import collections
+        planar_report = {"per_pole": {}, "gain_by_status": {}}
+        logger.info("\n--- Planar prior decisions (per pole, all frames) ---")
+        for pole in ("floor", "ceiling"):
+            rows = [i for fr in planar_infos for i in fr if i.get("pole") == pole]
+            if not rows:
+                continue
+            acc = [i for i in rows if i.get("accepted")]
+            why = collections.Counter(("accepted" if i.get("accepted") else str(i.get("reason", "?")).split(" ")[0] + " " + " ".join(str(i.get("reason", "")).split(" ")[1:2])) for i in rows)
+            share = [i["inlier_share"] for i in rows if "inlier_share" in i]
+            tilt = [i["tilt_deg"] for i in rows if "tilt_deg" in i]
+            used = [i["cap_share_used"] for i in acc if "cap_share_used" in i]
+            planar_report["per_pole"][pole] = {
+                "frames": len(rows), "accepted": len(acc), "accept_rate": len(acc) / len(rows),
+                "reasons": dict(why), "median_inlier_share": float(np.median(share)) if share else None,
+                "median_tilt_deg": float(np.median(tilt)) if tilt else None,
+                "median_cap_share_used": float(np.median(used)) if used else None}
+            logger.info(f"  {pole:8s}: accepted {len(acc)}/{len(rows)} ({100 * len(acc) / len(rows):.0f}%) | "
+                        f"median inlier share {np.median(share) if share else float('nan'):.2f}, tilt "
+                        f"{np.median(tilt) if tilt else float('nan'):.1f} deg, cap share kept "
+                        f"{np.median(used) if used else float('nan'):.2f} | " + ", ".join(f"{k}: {v}" for k, v in why.most_common()))
+        # does acceptance matter? 75-90 gain of the prior vs baseline, split by whether any pole was accepted
+        hp0 = protocols[0]
+        b = np.array([r[hp0]["75-90"]["abs_rel"] for r in accumulators["Baseline"]], dtype=float)
+        x = np.array([r[hp0]["75-90"]["abs_rel"] for r in accumulators["Method1_PlanarPrior"]], dtype=float)
+        anyacc = np.array([any(i.get("accepted") for i in fr) for fr in planar_infos])
+        for lab, msk in (("any pole accepted", anyacc), ("no pole accepted", ~anyacc)):
+            ok = msk & np.isfinite(b) & np.isfinite(x) & (b > 0)
+            if ok.sum():
+                g = float(np.median((b[ok] - x[ok]) / b[ok]))
+                planar_report["gain_by_status"][lab] = {"frames": int(ok.sum()), "median_gain_75_90": g}
+                logger.info(f"  {lab:18s}: {int(ok.sum()):4d} frames, median 75-90 gain {100 * g:+.1f}% [{hp0}]")
 
     # Scenes from the same house / environment are correlated: bootstrap and Wilcoxon run over clusters.
     groups = [group_of(sc["id"]) for sc in scenes]
@@ -302,6 +340,8 @@ def main():
         "summary": summary,
         "per_scene": {m: accumulators[m] for m in method_keys},
     }
+    if planar_report is not None:
+        record["planar_prior"] = planar_report
     with open(out_dir / "benchmark_summary.json", "w") as f:
         json.dump(record, f, indent=2)
 
