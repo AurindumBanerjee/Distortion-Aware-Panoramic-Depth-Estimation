@@ -20,7 +20,7 @@ import numpy as np
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from analysis_common import ROOT, add_common_args, depth_range, load_config, load_dataset, load_model  # noqa: E402
-from evaluation.distortion_analysis import DEFAULT_PITCHES, summarize_sweep, sweep_frame  # noqa: E402
+from evaluation.distortion_analysis import MODES, default_values, summarize_sweep, sweep_frame  # noqa: E402
 
 
 def planar_mask_for(model, pred):
@@ -38,17 +38,24 @@ def report(summary: dict, tag: str, model_name: str) -> str:
              f"model `{model_name}` · {summary['n_frames']} frames · {summary['n_clusters']} clusters · bins "
              f"{summary['bin_deg']:.0f} deg · onset rule: two consecutive bins with cluster-CI lower bound of dE above "
              f"{100 * summary['rel_min']:.0f}% of the equator-seen error", "",
+             f"**Sweep mode: {summary.get('mode', 'rotation')}** "
+             + {"rotation": "(pitch rotations: content moves in latitude, the scene is tipped)",
+                "dilation": "(stereographic dilations: content moves in latitude, up stays up, content is magnified by exp(log_mag))",
+                "flip": "(roll 180: same |latitude|, upside down; dE = orientation penalty, not distortion)"}[summary.get("mode", "rotation")],
+             "",
              f"**Onset latitude (global estimator, used by Part B): {summary['onset_global']}**  ·  local estimator "
-             f"(sensitivity only): {summary['onset_local']}", "",
+             f"(sensitivity only): {summary['onset_local']}  ·  non-planar content only: {summary.get('onset_nonplanar')}", "",
              "dE = error of a pixel seen at latitude L minus the error of the SAME pixel in the pass where it is seen "
              "closest to the equator (content fixed). ratio = E(L) / E_ref of the same samples. floor = GT rotated there "
              "and back (interpolation cost, not distortion).", "",
-             "| seen lat | E (global) | dE [95% CI] | ratio | dE local | floor | clusters |", "|---|---:|---:|---:|---:|---:|---:|"]
+             "| seen lat | E (global) | dE [95% CI] | ratio | dE local | floor | ref lat | log mag | clusters |",
+             "|---|---:|---:|---:|---:|---:|---:|---:|---:|"]
     for j, cc in enumerate(c):
         dg = summary["de_global"]
         lines.append(f"| {cc:.1f} | {f(summary['e_global']['mean'][j])} | {f(dg['mean'][j])} [{f(dg['ci_lo'][j])}, "
                      f"{f(dg['ci_hi'][j])}] | {summary['ratio_global'][j]:.2f} | {f(summary['de_local']['mean'][j])} | "
-                     f"{f(summary['floor']['mean'][j])} | {dg['n_clusters'][j]} |")
+                     f"{f(summary['floor']['mean'][j])} | {summary['ref_lat']['mean'][j]:.1f} | "
+                     f"{summary['log_mag']['mean'][j]:+.2f} | {dg['n_clusters'][j]} |")
     if "de_global_planar" in summary:
         lines += ["", "**A4 content split** (dE global): planar cap pixels (accepted floor / ceiling plane) vs the rest", "",
                   "| seen lat | dE planar | dE non-planar |", "|---|---:|---:|"]
@@ -88,7 +95,11 @@ def figure(summary: dict, path: Path, title: str):
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     add_common_args(ap)
-    ap.add_argument("--pitches", default=",".join(str(p) for p in DEFAULT_PITCHES))
+    ap.add_argument("--mode", default="rotation", choices=MODES,
+                    help="rotation (pitch; tips the scene) | dilation (stereographic lambda; keeps up, magnifies) | "
+                         "flip (roll 180; same |lat|, upside down: orientation penalty only)")
+    ap.add_argument("--values", default=None, help="comma list of pitches (deg) / lambdas / rolls; default per mode")
+    ap.add_argument("--pitches", default=None, help="deprecated alias of --values for --mode rotation")
     ap.add_argument("--bin", type=float, default=5.0)
     ap.add_argument("--rel_min", type=float, default=0.10)
     ap.add_argument("--no_planar", action="store_true", help="skip the A4 planar / non-planar split")
@@ -97,9 +108,9 @@ def main():
     model = load_model(cfg)
     ds = load_dataset(cfg, a.split, a.max_scenes)
     min_d, max_d = depth_range(cfg)
-    pitches = [float(p) for p in a.pitches.split(",")]
-    if 0.0 not in pitches:
-        raise SystemExit("the pitch list must contain 0 (the plain ERP pass)")
+    raw = a.values or a.pitches
+    from fractions import Fraction  # accepts 0.5, 1/16, -90
+    values = [float(Fraction(v.strip())) for v in raw.split(",")] if raw else list(default_values(a.mode))
     frames, ids, skipped = [], [], 0
     for i in range(len(ds)):
         smp = ds[i]
@@ -107,8 +118,8 @@ def main():
         valid = smp.valid & (gt >= min_d) & (gt <= max_d)
         pred0 = np.asarray(model.predict(smp.rgb, kind="erp"), dtype=np.float64)
         pm = None if a.no_planar else planar_mask_for(model, pred0)
-        fr = sweep_frame(model, smp.rgb, gt, valid, pitches=pitches, bin_deg=a.bin, min_depth=min_d, max_depth=max_d,
-                         identity_pred=pred0, planar_mask=pm)
+        fr = sweep_frame(model, smp.rgb, gt, valid, bin_deg=a.bin, min_depth=min_d, max_depth=max_d,
+                         identity_pred=pred0, planar_mask=pm, mode=a.mode, values=values)
         if fr is None:
             skipped += 1
             continue
@@ -120,11 +131,12 @@ def main():
     summ = summarize_sweep(frames, ids, a.bin, rel_min=a.rel_min)
     out = ROOT / "results"
     out.mkdir(exist_ok=True)
-    rec = {"tag": a.tag, "config": cfg, "split": a.split, "pitches": pitches, "scene_ids": ids, "skipped": skipped,
+    rec = {"tag": a.tag, "config": cfg, "split": a.split, "mode": a.mode, "values": values, "scene_ids": ids, "skipped": skipped,
            "model": getattr(model, "name", "?"), "frames": frames, "summary": summ}
     (out / f"sweep_{a.tag}.json").write_text(json.dumps(rec), encoding="utf-8")
     (out / f"SWEEP_{a.tag}.md").write_text(report(summ, a.tag, rec["model"]), encoding="utf-8")
-    figure(summ, out / f"sweep_{a.tag}.png", f"{a.tag}: {rec['model']}, {summ['n_frames']} frames / {summ['n_clusters']} clusters")
+    figure(summ, out / f"sweep_{a.tag}.png",
+           f"{a.tag} ({a.mode}): {rec['model']}, {summ['n_frames']} frames / {summ['n_clusters']} clusters")
     print(f"onset (global) = {summ['onset_global']}  ->  results/SWEEP_{a.tag}.md")
 
 

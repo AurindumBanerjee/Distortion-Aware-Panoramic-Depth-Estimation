@@ -6,17 +6,22 @@ import glob
 import json
 import os
 import sys
+import warnings
 
 import numpy as np
 
+warnings.filterwarnings("ignore", category=RuntimeWarning)  # empty bins (e.g. no non-planar cap pixels) -> n/a
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 out = os.path.join(ROOT, "results", "ROUND3_ANALYSIS.md")
 lines = ["# Round 3, Part A: distortion analysis", "",
          "Causal onset: first seen-latitude bin (sweep, content fixed per pixel) whose excess error is significant "
          "(cluster CI) and >= 10% of the equator-seen error. `None` = no measurable distortion effect: Part B then leaves "
          "this model unchanged.", "",
-         "| sweep tag | model | frames / clusters | causal onset (deg) | dE 75-90 [95% CI] | ratio 75-90 | dE 75-90 planar / non-planar |",
-         "|---|---|---:|---:|---:|---:|---:|"]
+         "Modes: rotation (tips the scene), dilation (keeps up, magnifies), flip (same latitude upside down: dE is the "
+         "orientation penalty). A distortion effect should appear in BOTH rotation and dilation; an orientation effect makes "
+         "rotation dE negative, dilation ~0 and flip dE positive.", "",
+         "| sweep tag | mode | model | frames / clusters | onset (deg) | onset non-planar | dE 75-90 [95% CI] | ratio 75-90 | dE 75-90 planar / non-planar |",
+         "|---|---|---|---:|---:|---:|---:|---:|---:|"]
 f = lambda v: "n/a" if v is None or not np.isfinite(v) else f"{v:.4f}"
 for p in sorted(glob.glob(os.path.join(ROOT, "results", "sweep_*.json"))):
     r = json.load(open(p))
@@ -32,7 +37,8 @@ for p in sorted(glob.glob(os.path.join(ROOT, "results", "sweep_*.json"))):
     if "de_global_planar" in s:
         pl = f"{f(float(np.nanmean(np.array(s['de_global_planar']['mean'], float)[j])))} / " \
              f"{f(float(np.nanmean(np.array(s['de_global_nonplanar']['mean'], float)[j])))}"
-    lines.append(f"| {r['tag']} | {r.get('model', '?')} | {s['n_frames']} / {s['n_clusters']} | {s['onset_global']} | "
+    lines.append(f"| {r['tag']} | {s.get('mode', r.get('mode', 'rotation'))} | {r.get('model', '?')} | {s['n_frames']} / "
+                 f"{s['n_clusters']} | {s['onset_global']} | {s.get('onset_nonplanar', 'n/a')} | "
                  f"{f(m)} [{f(lo)}, {f(hi)}] | {ratio:.2f} | {pl} |")
 lines += ["", "Descriptive onset (plain ERP latitude profile; mixes distortion, content and protocol):", "",
           "| profile tag | model | protocol | onset (deg) | AbsRel 0-15 | AbsRel 75-90 |", "|---|---|---|---:|---:|---:|"]

@@ -118,11 +118,61 @@ def frame_profile(pred: np.ndarray, gt: np.ndarray, valid: np.ndarray, model, pr
 # A2: distortion sweep for one frame
 # ----------------------------------------------------------------------------------------------------------------
 
+DEFAULT_DILATIONS = (1 / 16, 1 / 4, 1 / 2, 1.0, 2.0, 4.0, 16.0)
+MODES = ("rotation", "dilation", "flip")
+
+
+def default_values(mode: str):
+    return {"rotation": DEFAULT_PITCHES, "dilation": DEFAULT_DILATIONS, "flip": (0.0, 180.0)}[mode]
+
+
+def _is_identity(mode: str, v: float) -> bool:
+    return abs(v - (1.0 if mode == "dilation" else 0.0)) < 1e-9
+
+
+def _pass_view(model, rgb: np.ndarray, gt_f: np.ndarray, mode: str, v: float):
+    """(prediction on the ORIGINAL grid, |latitude| at which each original pixel was seen, GT round trip,
+    log local magnification of each original pixel) for one non-identity pass.
+
+      rotation : pitch v (deg); tips the scene (floor no longer below), magnification 1
+      dilation : stereographic dilation by lambda = v (pitch 0); keeps 'up' up (meridians stay meridians), but content
+                 is magnified locally by k = cos(lat_seen) / cos(lat) (conformal map that preserves longitude)
+      flip     : roll v (deg, use 180): the scene upside down; every pixel keeps its |latitude| (same distortion),
+                 only the orientation changes -> isolates the orientation penalty
+    """
+    H, W = gt_f.shape
+    if mode == "dilation":
+        from mobius_transform import unwarp_depth_mobius, unwarp_sampling_lonlat, warp_erp_mobius
+        warped, seen = warp_erp_mobius(rgb, scale_factor=v, pitch_deg=0.0)
+        pred = np.asarray(unwarp_depth_mobius(np.asarray(model.predict(warped, kind="erp"), dtype=np.float64),
+                                              scale_factor=v, pitch_deg=0.0), dtype=np.float64)
+        g_w, _ = warp_erp_mobius(gt_f, scale_factor=v, pitch_deg=0.0)
+        floor = np.asarray(unwarp_depth_mobius(np.asarray(g_w, dtype=np.float64), scale_factor=v, pitch_deg=0.0))
+        _, lat_s = unwarp_sampling_lonlat(H, W, v, 0.0)
+        lat0 = np.radians(latitude_map(H, W))
+        logk = np.log(np.clip(np.cos(lat_s), 1e-6, None) / np.clip(np.cos(lat0), 1e-6, None))
+        return pred, np.asarray(seen, dtype=np.float64), floor, logk
+    R = rotation_from_ypr(pitch_deg=v) if mode == "rotation" else rotation_from_ypr(roll_deg=v)
+    rgb_rot = np.clip(np.rint(np.asarray(rotate_erp(rgb.astype(np.float32), R))), 0, 255).astype(np.uint8)
+    p_rot = np.asarray(model.predict(rgb_rot, kind="erp"), dtype=np.float64)
+    pred = np.asarray(rotate_erp(p_rot, R.T), dtype=np.float64)
+    seen = np.abs(rotated_latitude(H, W, R))
+    # perfect model: GT carried into the transformed frame and back (one resampling on the input image, one on the
+    # output, as for the prediction)
+    floor = np.asarray(rotate_erp(np.asarray(rotate_erp(gt_f, R), dtype=np.float64), R.T), dtype=np.float64)
+    return pred, seen, floor, np.zeros((H, W))
+
+
 def sweep_frame(model, rgb: np.ndarray, gt: np.ndarray, valid: np.ndarray,
                 pitches: Sequence[float] = DEFAULT_PITCHES, bin_deg: float = 5.0,
                 min_depth: float = 0.1, max_depth: float = 10.0, identity_pred: Optional[np.ndarray] = None,
-                planar_mask: Optional[np.ndarray] = None) -> Dict:
+                planar_mask: Optional[np.ndarray] = None, mode: str = "rotation",
+                values: Optional[Sequence[float]] = None) -> Dict:
     """Per seen-latitude bin statistics of one frame (see module docstring).
+
+    mode 'rotation' (values = pitches, default) and 'dilation' (values = lambdas): dE is taken against the pass in which
+    each pixel is seen closest to the equator. mode 'flip' (values 0, 180): dE = error upside down minus error upright
+    of the same pixel at the same |latitude| (pure orientation penalty); only the flipped pass is accumulated.
 
     Returns None if fewer than 500 pixels are valid in every pass, else a dict of per-bin lists (n_bins = 90 / bin_deg):
       n                     pixel-pass samples in the bin
@@ -135,24 +185,27 @@ def sweep_frame(model, rgb: np.ndarray, gt: np.ndarray, valid: np.ndarray,
     H, W = gt.shape
     edges = bin_edges(bin_deg)
     nb = len(edges) - 1
-    preds, seens, floors = [], [], []
+    if mode not in MODES:
+        raise ValueError(f"unknown sweep mode {mode!r} ({MODES})")
+    vals = list(values) if values is not None else (list(pitches) if mode == "rotation" else list(default_values(mode)))
+    if not any(_is_identity(mode, v) for v in vals):
+        raise ValueError("the pass list must contain the identity (pitch 0 / lambda 1 / roll 0)")
+    preds, seens, floors, logks = [], [], [], []
     gt_f = np.where(valid, gt, np.nan).astype(np.float64)
-    for th in pitches:
-        if abs(th) < 1e-9:
+    for v in vals:
+        if _is_identity(mode, v):
             p = identity_pred if identity_pred is not None else model.predict(rgb, kind="erp")
             preds.append(np.asarray(p, dtype=np.float64))
             seens.append(np.abs(latitude_map(H, W)))
             floors.append(gt_f.copy())
+            logks.append(np.zeros((H, W)))
             continue
-        R = rotation_from_ypr(pitch_deg=th)
-        rgb_rot = np.clip(np.rint(np.asarray(rotate_erp(rgb.astype(np.float32), R))), 0, 255).astype(np.uint8)
-        p_rot = np.asarray(model.predict(rgb_rot, kind="erp"), dtype=np.float64)
-        preds.append(np.asarray(rotate_erp(p_rot, R.T), dtype=np.float64))
-        seens.append(np.abs(rotated_latitude(H, W, R)))
-        # perfect model: GT carried into the rotated frame and back (two bilinear resamplings, as for the prediction:
-        # one on the input image, one on the output)
-        g_rot = np.asarray(rotate_erp(gt_f, R), dtype=np.float64)
-        floors.append(np.asarray(rotate_erp(g_rot, R.T), dtype=np.float64))
+        pr, se, fl, lk = _pass_view(model, rgb, gt_f, mode, float(v))
+        preds.append(pr)
+        seens.append(se)
+        floors.append(fl)
+        logks.append(lk)
+    pitches = vals  # K below = number of passes
 
     # common pixel set: valid GT and a finite, positive prediction in EVERY pass (same content in every bin)
     common = valid & (gt > 0)
@@ -160,9 +213,10 @@ def sweep_frame(model, rgb: np.ndarray, gt: np.ndarray, valid: np.ndarray,
         common &= np.isfinite(p) & (p > 0)
     K = len(pitches)
     res = {k: np.zeros(nb) for k in ("n", "e_global", "e_local", "de_global", "de_local", "ref_global", "ref_local",
-                                     "floor", "n_floor")}
+                                     "floor", "n_floor", "ref_lat", "log_mag")}
     if planar_mask is not None:
-        for k in ("de_global_planar", "de_global_nonplanar", "n_planar", "n_nonplanar"):
+        for k in ("de_global_planar", "de_global_nonplanar", "n_planar", "n_nonplanar", "ref_global_planar",
+                  "ref_global_nonplanar"):
             res[k] = np.zeros(nb)
     if common.sum() < 500:
         return None  # too few pixels valid in every pass: the caller skips this frame
@@ -171,8 +225,10 @@ def sweep_frame(model, rgb: np.ndarray, gt: np.ndarray, valid: np.ndarray,
     E_l = np.full_like(E_g, np.nan)
     L = np.zeros_like(E_g)
     F = np.full_like(E_g, np.nan)
+    LK = np.zeros_like(E_g)
     g_c = gt[common]
-    for k, (p, s, fl) in enumerate(zip(preds, seens, floors)):
+    for k, (p, s, fl, lk) in enumerate(zip(preds, seens, floors, logks)):
+        LK[k] = lk[common]
         a_g = align_to_gt(p, gt, common, model, protocol=("align-all" if headline_protocol(model) == "align-all" else "none"),
                           min_depth=min_depth, max_depth=max_depth)
         E_g[k] = _abs_rel(a_g[common], g_c)
@@ -186,12 +242,21 @@ def sweep_frame(model, rgb: np.ndarray, gt: np.ndarray, valid: np.ndarray,
         E_l[k] = _abs_rel(a_l[common], g_c)
         L[k] = s[common]
         F[k] = _abs_rel(np.clip(fl[common], min_depth, max_depth), g_c)
-    ref_k = np.argmin(L, axis=0)  # pass in which each pixel is seen closest to the equator
+    id_k = next(k for k, v in enumerate(pitches) if _is_identity(mode, v))
+    if mode == "flip":
+        ref_k = np.full(L.shape[1], id_k)  # same |latitude| in both passes: compare with the upright pass
+    else:
+        ref_k = np.argmin(L, axis=0)  # pass in which each pixel is seen closest to the equator
     cols = np.arange(L.shape[1])
+    ref_lat = L[ref_k, cols]
     ref_g, ref_l = E_g[ref_k, cols], E_l[ref_k, cols]
     planar_c = planar_mask[common] if planar_mask is not None else None
-    for k in range(K):
+    acc_passes = [k for k in range(K) if not (mode == "flip" and k == id_k)]
+    for k in acc_passes:
         bi = _bin_index(L[k], edges)
+        okr = np.isfinite(E_g[k]) & np.isfinite(ref_g)
+        res["ref_lat"] += np.bincount(bi[okr], weights=ref_lat[okr], minlength=nb)
+        res["log_mag"] += np.bincount(bi[okr], weights=LK[k][okr], minlength=nb)
         for name, E, ref in (("global", E_g[k], ref_g), ("local", E_l[k], ref_l)):
             ok = np.isfinite(E) & np.isfinite(ref)
             res[f"e_{name}"] += np.bincount(bi[ok], weights=E[ok], minlength=nb)
@@ -203,6 +268,7 @@ def sweep_frame(model, rgb: np.ndarray, gt: np.ndarray, valid: np.ndarray,
                     for lab, sel in (("planar", planar_c), ("nonplanar", ~planar_c)):
                         o2 = ok & sel
                         res[f"de_global_{lab}"] += np.bincount(bi[o2], weights=(E - ref)[o2], minlength=nb)
+                        res[f"ref_global_{lab}"] += np.bincount(bi[o2], weights=ref[o2], minlength=nb)
                         res[f"n_{lab}"] += np.bincount(bi[o2], minlength=nb)
         okf = np.isfinite(F[k])
         res["floor"] += np.bincount(bi[okf], weights=F[k][okf], minlength=nb)
@@ -210,11 +276,13 @@ def sweep_frame(model, rgb: np.ndarray, gt: np.ndarray, valid: np.ndarray,
     # note: e_local / de_local use the same count as global up to bins with < 200 pixels in a pass (then NaN, skipped);
     # keep a separate count for them
     n_loc = np.zeros(nb)
-    for k in range(K):
+    for k in acc_passes:
         bi = _bin_index(L[k], edges)
         ok = np.isfinite(E_l[k]) & np.isfinite(ref_l)
         n_loc += np.bincount(bi[ok], minlength=nb)
-    out = {"n": res["n"].tolist(), "n_local": n_loc.tolist(), "n_floor": res["n_floor"].tolist()}
+    out = {"n": res["n"].tolist(), "n_local": n_loc.tolist(), "n_floor": res["n_floor"].tolist(), "mode": mode}
+    for k in ("ref_lat", "log_mag"):
+        out[k] = np.where(res["n"] > 0, res[k] / np.maximum(res["n"], 1), np.nan).tolist()
     for k in ("e_global", "de_global", "ref_global"):
         out[k] = np.where(res["n"] > 0, res[k] / np.maximum(res["n"], 1), np.nan).tolist()
     for k in ("e_local", "de_local", "ref_local"):
@@ -225,6 +293,7 @@ def sweep_frame(model, rgb: np.ndarray, gt: np.ndarray, valid: np.ndarray,
             n = res[f"n_{lab}"]
             out[f"n_{lab}"] = n.tolist()
             out[f"de_global_{lab}"] = np.where(n > 0, res[f"de_global_{lab}"] / np.maximum(n, 1), np.nan).tolist()
+            out[f"ref_global_{lab}"] = np.where(n > 0, res[f"ref_global_{lab}"] / np.maximum(n, 1), np.nan).tolist()
     return out
 
 
@@ -289,7 +358,9 @@ def summarize_sweep(frames: List[Dict], ids: Sequence[str], bin_deg: float, n_bo
     out = {"centres": centres, "bin_deg": bin_deg, "n_frames": len(frames), "n_clusters": len(set(groups)),
            "rel_min": rel_min}
     keys = [k for k in ("e_global", "e_local", "de_global", "de_local", "floor", "ref_global", "ref_local",
-                        "de_global_planar", "de_global_nonplanar") if k in frames[0]]
+                        "de_global_planar", "de_global_nonplanar", "ref_global_planar", "ref_global_nonplanar",
+                        "ref_lat", "log_mag") if k in frames[0]]
+    out["mode"] = frames[0].get("mode", "rotation")
     for k in keys:
         out[k] = cluster_curve(np.array([f[k] for f in frames], float), groups, n_boot=n_boot)
     for est in ("global", "local"):
@@ -300,6 +371,14 @@ def summarize_sweep(frames: List[Dict], ids: Sequence[str], bin_deg: float, n_bo
         e, r = np.array(out[f"e_{est}"]["mean"]), np.array(out[f"ref_{est}"]["mean"])
         with np.errstate(invalid="ignore", divide="ignore"):
             out[f"ratio_{est}"] = np.where(r > 0, e / r, np.nan).tolist()
+    if "de_global_nonplanar" in out:  # E2: onset on content that is NOT floor / ceiling (orientation-light content)
+        cur = out["de_global_nonplanar"]
+        out["onset_nonplanar"] = onset_from_curve(centres, cur["ci_lo"], ref=out["ref_global_nonplanar"]["mean"],
+                                                  rel_min=rel_min, min_clusters=cur["n_clusters"])
+        e = np.array(out["ref_global_nonplanar"]["mean"]) + np.array(cur["mean"])
+        with np.errstate(invalid="ignore", divide="ignore"):
+            out["ratio_nonplanar"] = np.where(np.array(out["ref_global_nonplanar"]["mean"]) > 0,
+                                              e / np.array(out["ref_global_nonplanar"]["mean"]), np.nan).tolist()
     return out
 
 
@@ -312,8 +391,10 @@ def load_curve(path: str, estimator: str = "global") -> Dict:
     with open(path) as f:
         s = json.load(f)
     s = s.get("summary", s)
+    if f"ratio_{estimator}" not in s:
+        raise KeyError(f"{path} has no '{estimator}' curve (estimators: global, local, nonplanar)")
     return {"centres": s["centres"], "ratio": s[f"ratio_{estimator}"], "onset": s[f"onset_{estimator}"],
-            "source": path, "estimator": estimator}
+            "source": path, "estimator": estimator, "mode": s.get("mode", "rotation")}
 
 
 def curve_ratio(curve: Dict, lat_seen_abs: np.ndarray) -> np.ndarray:

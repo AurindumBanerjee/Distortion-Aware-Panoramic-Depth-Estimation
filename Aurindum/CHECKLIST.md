@@ -139,6 +139,19 @@ Part B must output its baseline (verified as an identity check).
 `MODELS`, `N_CALIB`, `N_DESC`, `ESC`. Tests: `tests/test_distortion_analysis.py` (sweep separates distortion from content,
 onset rule, split, do-no-harm bit-for-bit for Tangent / Method 1 / Method 2).
 
+## Round 3b (after the round-3 results, 4 Nov)
+
+Round 3 found no causal onset in any model, but the content split showed the rotation sweep confounds distortion with
+orientation (a pitch rotation tips the scene; floors stop being "below"). Round 3b, pre-registered in
+`PREREG_round3b.md`, adds:
+- [x] dilation sweep (`--mode dilation`: content moves in latitude, up stays up; magnification reported), flip sweep
+      (`--mode flip`: same latitude upside down = orientation penalty), onset on non-planar content (validated on
+      synthetic orientation-only and distortion-only models: the three modes separate the two effects)
+- [x] uniform-weight ensembles (`mobius_tta.weight_power: 0`): X4 confirmatory 3-pass rotation, X5 5/7-pass dose-response,
+      X6 orientation-preserving dilation ensemble, X7 curve correction only for models with an onset in BOTH the dilation
+      and the non-planar rotation sweep
+- [ ] run `scripts/run_round3b.sh start` (stages S, B, R), then judge against PREREG_round3b.md
+
 ## Run order
 
 1. A2 sweep and A1 profiles on the calibration split (fit L*_m and E_m(L)) → **decide** which models get corrections.
