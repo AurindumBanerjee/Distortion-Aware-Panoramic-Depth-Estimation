@@ -230,6 +230,8 @@ def main():
         curve=curve,
         curve_weights=m2_cfg.get("curve_weights", False),
         curve_gate=m2_cfg.get("curve_gate", False),
+        weight_power=m2_cfg.get("weight_power", 2.0),   # 0 -> every pass weighted equally (uniform ensemble)
+        min_weight=m2_cfg.get("min_weight", 0.02),
     )
     ev_cfg = cfg.get("evaluation", {})
     protocols = tuple(ev_cfg.get("protocols") or default_protocols(model))
