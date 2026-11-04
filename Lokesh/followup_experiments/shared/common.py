@@ -22,6 +22,9 @@ import yaml
 ROOT = Path(__file__).resolve().parents[2]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
+SHARED = Path(__file__).resolve().parent
+if str(SHARED) not in sys.path:
+    sys.path.insert(0, str(SHARED))
 
 
 def _expand_env(value: Any) -> Any:
