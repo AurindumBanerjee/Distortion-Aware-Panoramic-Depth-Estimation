@@ -206,6 +206,10 @@ def test_group_of_clusters_by_house_environment_and_holo_scene():
     assert group_of("Indoor_016_1753495960.845721") == "Indoor_016"
     assert group_of("Outdoor_001_1752225730.993451") == "Outdoor_001"
     assert group_of("something") == "something"
+    # PanoX environment names with digits / underscores (first version split these into one cluster per frame)
+    assert group_of("Diner50_0002") == "Diner50"
+    assert group_of("FeudalJapan_Meshingun_0000") == "FeudalJapan_Meshingun"
+    assert group_of("Mountain_Environment_Set_0028") == "Mountain_Environment_Set"
 
 
 def test_panorama_dataset_applies_mask_column_and_keeps_metres(tmp_path):

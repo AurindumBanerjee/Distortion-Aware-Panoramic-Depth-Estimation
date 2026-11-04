@@ -117,7 +117,10 @@ def group_of(scene_id) -> str:
     m = re.match(r"((?:Indoor|Outdoor)_\d+)_", sid)  # Holo360D 'Indoor_016_1753495960.845721' -> scene 'Indoor_016'
     if m:
         return m.group(1)
-    m = re.match(r"([A-Za-z]+)_\d+$", sid)  # PanoX: 'ClothingStore_0028' -> environment 'ClothingStore'
+    # PanoX: '<environment>_<frame>' -> environment. Environment names may contain digits and underscores
+    # ('Diner50_0002', 'FeudalJapan_Meshingun_0000', 'Mountain_Environment_Set_0028'); the first version only
+    # accepted letters, so 3 of the 8 environments fell back to one cluster per frame (80 groups instead of 8).
+    m = re.match(r"(.+?)_\d+$", sid)
     return m.group(1) if m else sid
 
 
