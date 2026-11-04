@@ -212,6 +212,9 @@ class MobiusTTAEnsemble:
         sync_max_lat: float = 45.0,
         consensus: bool = False,
         consensus_k: float = 2.5,
+        curve: Optional[Dict] = None,
+        curve_weights: bool = False,
+        curve_gate: bool = False,
     ):
         """
         Args:
@@ -238,6 +241,12 @@ class MobiusTTAEnsemble:
                        poles, where the identity-only fit has no data.
             consensus: per-pixel robust fusion: a pass that disagrees with the per-pixel median of the aligned
                        passes by more than ~consensus_k robust sigmas is down-weighted (label-free outlier rejection).
+            curve: a measured distortion response (evaluation.distortion_analysis.load_curve: centres, ratio, onset).
+            curve_weights: fusion weight of a pass at a pixel = 1 / ratio(L_seen)^2 (inverse expected squared error from
+                       the measured curve) instead of cos(L_seen)^weight_power.
+            curve_gate: correction ramp from the measured onset (overrides gate_lat). If the model shows NO distortion
+                       effect (onset None), predict() returns the identity prediction unchanged and runs no extra pass
+                       (do no harm).
             anchor_max_lat: anchor pixels must have |lat| below this in both frames
             weight_power: w = cos(lat_seen)^p
         """
@@ -270,6 +279,15 @@ class MobiusTTAEnsemble:
         self.sync_max_lat = float(sync_max_lat)
         self.consensus = bool(consensus)
         self.consensus_k = float(consensus_k)
+        if (curve_weights or curve_gate) and curve is None:
+            raise ValueError("curve_weights / curve_gate need a measured curve (config key distortion_curve)")
+        self.curve, self.curve_weights, self.curve_gate = curve, bool(curve_weights), bool(curve_gate)
+        self.identity_only = False
+        if self.curve_gate:
+            from evaluation.distortion_analysis import curve_gate_range
+            rng = curve_gate_range(curve)
+            self.identity_only = rng is None
+            self.gate_lat = rng
         self.fit_guard = None if not fit_guard else {"tau": float(fit_guard.get("tau", 0.5)),
                                                      "a_max": float(fit_guard.get("a_max", 4.0))}
 
@@ -278,6 +296,12 @@ class MobiusTTAEnsemble:
         """Run all passes and fuse. `identity_pred` may be passed to reuse a baseline forward pass."""
         H, W = rgb_erp.shape[:2]
         lat0 = np.abs(latitude_map(H, W))
+        if self.identity_only:  # measured curve: no distortion effect for this model -> no correction at all
+            u = identity_pred if identity_pred is not None else self.model.predict(rgb_erp, kind="erp")
+            u = np.asarray(u, dtype=np.float64)
+            return u.copy(), [{"pitch": 0.0, "scale": 1.0, "anchor_a": 1.0, "anchor_b": 0.0, "anchor_res": float("nan"),
+                               "anchor_n": 0, "guard_w": 1.0, "unwarped_pred": u, "weight": np.ones_like(u),
+                               "identity_only": True}]
 
         # 1. forward passes, brought back to the original grid (raw, not yet re-anchored)
         raw, seen, is_ids = [], [], []
@@ -316,7 +340,11 @@ class MobiusTTAEnsemble:
                 n_anchor = int(anchor.sum())
                 unwarped = a * unwarped + b
 
-            w = np.clip(np.cos(np.deg2rad(lat_seen)) ** self.weight_power, self.min_weight, 1.0)
+            if self.curve_weights:
+                from evaluation.distortion_analysis import curve_ratio
+                w = np.clip(1.0 / curve_ratio(self.curve, lat_seen) ** 2, self.min_weight, 1.0)
+            else:
+                w = np.clip(np.cos(np.deg2rad(lat_seen)) ** self.weight_power, self.min_weight, 1.0)
             g = 1.0
             if self.fit_guard is not None and not is_id:
                 g = guard_weight(res, a, self.fit_guard["tau"], self.fit_guard["a_max"])
@@ -350,6 +378,9 @@ class MobiusTTAEnsemble:
         bad = ~np.isfinite(fused)
         if bad.any():
             fused[bad] = preds[0][bad]
+        if len(preds) > 1:  # where no other pass contributes (gate, guard), return the identity EXACTLY (no x*w/w rounding)
+            only_id = Wt[1:].sum(0) <= 0
+            fused[only_id] = preds[0][only_id]
         return fused, diags
 
 
