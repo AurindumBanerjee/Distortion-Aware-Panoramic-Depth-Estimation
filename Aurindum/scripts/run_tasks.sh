@@ -12,7 +12,7 @@
 # Env (all optional):
 #   STANFORD_ROOT  default data/stanford2d3d   (needs area_5a/pano/{rgb,depth} ...)
 #   NYC_RGB, NYC_DEPTH  source folders nyc_raw_images_panorama / nyc_distance_panorama_npy; linked into data/nyc_dap
-#   MODELS (default "midas dap da360 da2"), SETS (default "s3 panox holo_in holo_out stanford nyc"), N (default 40)
+#   MODELS (default "midas dap da360 da2"), SETS (default "s3 panox holo_in holo_out"; stanford / nyc are opt-in), N (default 40)
 #   SKIP_ROUND3B=1 to run only the distortion study. CONDA_ENV, CONDA_SH, CUDA_VISIBLE_DEVICES, HF_HOME as usual.
 # Nothing is committed: when it finishes, commit results/ yourself.
 # ==============================================================================
@@ -48,7 +48,7 @@ do_setup() {
     if [ -d "$SR/area_5a" ] || [ -d "$SR/area_5b" ]; then
         [ "$SR" != data/stanford2d3d ] && [ ! -e data/stanford2d3d ] && ln -s "$(cd "$SR" && pwd)" data/stanford2d3d
         python scripts/make_stanford_list.py --root data/stanford2d3d --areas area_5a area_5b --out test.txt && say "✅ stanford2d3d list"
-    else say "⚠️  Stanford2D3D not found at $SR (area_5a / area_5b): skipped later"; fi
+    else say "·  Stanford2D3D not present (optional, not in the default sets)"; fi
     if [ -n "${NYC_RGB:-}" ] && [ -n "${NYC_DEPTH:-}" ]; then
         mkdir -p data/nyc_dap
         [ -e data/nyc_dap/rgb ] || ln -s "$(cd "$NYC_RGB" && pwd)" data/nyc_dap/rgb
@@ -56,7 +56,7 @@ do_setup() {
     fi
     if [ -d data/nyc_dap/rgb ] && [ -d data/nyc_dap/depth ]; then
         python scripts/make_nyc_list.py --root data/nyc_dap && say "✅ nyc_dap list"
-    else say "⚠️  NYC not found (set NYC_RGB and NYC_DEPTH, or put data/nyc_dap/{rgb,depth}): skipped later"; fi
+    else say "·  NYC not present (optional, not in the default sets)"; fi
     [ "$ok" = 1 ] && say "🎉 setup OK" || { say "❌ setup has blocking problems (above)"; return 1; }
 }
 

@@ -1,14 +1,16 @@
 #!/usr/bin/env bash
 # Exploratory distortion study (distortions/catalogue.py, scripts/distortion_study.py) for every model x dataset.
 #   scripts/run_distortion_study.sh start | status | stop | run
-# Env: MODELS (default "midas dap da360 da2"), SETS (default "s3 panox holo_in holo_out stanford nyc"), N (frames, default 40),
+# Env: MODELS (default "midas dap da360 da2"), SETS (default "s3 panox holo_in holo_out"; optional stanford, nyc), N (frames, default 40),
 #      ONLY (comma list of distortion keys), TAG_PREFIX (prepended to every output name, e.g. smoke_), CONDA_ENV, CONDA_SH, CUDA_VISIBLE_DEVICES, HF_HOME.
 # Writes results/STUDY_<model>_<set>.md, study_<model>_<set>.json and example images in study_<model>_<set>_img/.
 set -uo pipefail
 AUR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$AUR"
 mkdir -p logs results
-MODELS="${MODELS:-midas dap da360 da2}"; SETS="${SETS:-s3 panox holo_in holo_out stanford nyc}"; N="${N:-40}"
+MODELS="${MODELS:-midas dap da360 da2}"
+SETS="${SETS:-s3 panox holo_in holo_out}"   # opt-in: add stanford / nyc (scripts/download_extra_datasets.sh)
+N="${N:-40}"
 say() { echo "[$(date +'%F %T')] $*"; }
 cfg_of() {
     local m="$1" d="$2"
