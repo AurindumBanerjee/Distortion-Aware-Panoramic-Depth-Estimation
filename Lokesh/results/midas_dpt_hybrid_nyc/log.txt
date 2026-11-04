@@ -1,0 +1,300 @@
+21:57:22 plan: 49 methods; stages ['geometry', 'main', 'reports', 'control', 'resolution', 'timing', 'qualitative']
+21:57:26 geometry: worst point angle err 1.19e-12 deg, worst ERP->tan->ERP mean rel err 3.81e-06
+21:57:30 model: {'name': 'midas_dpt_hybrid_384', 'space': 'disparity', 'scale': 'affine', 'geometry_erp': 'range', 'geometry_perspective': 'planar', 'device': 'cpu'}
+21:57:30 dataset: nyc_dap n=40 at 512x1024
+22:00:44 [1/40] C:_panorama_0: 49 methods in 193.7s (peak RSS 1880 MB)
+22:03:42 [2/40] C:_panorama_1: 49 methods in 178.4s (peak RSS 1875 MB)
+22:06:43 [3/40] C:_panorama_2: 49 methods in 180.5s (peak RSS 1816 MB)
+22:09:42 [4/40] C:_panorama_3: 49 methods in 178.5s (peak RSS 1839 MB)
+22:12:36 [5/40] C:_panorama_4: 49 methods in 174.8s (peak RSS 1840 MB)
+22:15:32 [6/40] C:_panorama_5: 49 methods in 175.3s (peak RSS 1853 MB)
+22:18:28 [7/40] C:_panorama_6: 49 methods in 176.4s (peak RSS 1849 MB)
+22:21:24 [8/40] C:_panorama_7: 49 methods in 176.1s (peak RSS 1873 MB)
+22:24:21 [9/40] C:_panorama_8: 49 methods in 176.3s (peak RSS 1849 MB)
+22:27:17 [10/40] C:_panorama_9: 49 methods in 176.3s (peak RSS 1848 MB)
+22:30:12 [11/40] C:_panorama_10: 49 methods in 174.8s (peak RSS 1869 MB)
+22:33:13 [12/40] C:_panorama_11: 49 methods in 180.5s (peak RSS 1889 MB)
+22:36:09 [13/40] C:_panorama_12: 49 methods in 176.7s (peak RSS 1855 MB)
+22:39:05 [14/40] C:_panorama_13: 49 methods in 175.4s (peak RSS 1866 MB)
+22:42:01 [15/40] C:_panorama_14: 49 methods in 175.7s (peak RSS 1865 MB)
+22:44:56 [16/40] C:_panorama_15: 49 methods in 175.3s (peak RSS 1887 MB)
+22:47:54 [17/40] C:_panorama_16: 49 methods in 178.1s (peak RSS 1859 MB)
+22:50:50 [18/40] C:_panorama_17: 49 methods in 176.0s (peak RSS 1836 MB)
+22:53:49 [19/40] C:_panorama_18: 49 methods in 178.8s (peak RSS 1894 MB)
+22:56:45 [20/40] C:_panorama_19: 49 methods in 175.4s (peak RSS 1904 MB)
+22:59:41 [21/40] C:_panorama_20: 49 methods in 175.8s (peak RSS 1881 MB)
+23:02:37 [22/40] C:_panorama_21: 49 methods in 176.0s (peak RSS 1908 MB)
+23:05:33 [23/40] C:_panorama_22: 49 methods in 176.7s (peak RSS 1879 MB)
+23:08:30 [24/40] C:_panorama_23: 49 methods in 176.5s (peak RSS 1901 MB)
+23:11:26 [25/40] C:_panorama_24: 49 methods in 175.8s (peak RSS 1875 MB)
+23:14:23 [26/40] C:_panorama_25: 49 methods in 177.4s (peak RSS 1876 MB)
+23:17:20 [27/40] C:_panorama_26: 49 methods in 176.8s (peak RSS 1890 MB)
+23:20:16 [28/40] C:_panorama_27: 49 methods in 175.5s (peak RSS 1918 MB)
+23:23:11 [29/40] C:_panorama_28: 49 methods in 175.3s (peak RSS 1896 MB)
+23:26:08 [30/40] C:_panorama_29: 49 methods in 177.0s (peak RSS 1920 MB)
+23:29:06 [31/40] C:_panorama_30: 49 methods in 177.1s (peak RSS 1892 MB)
+23:32:02 [32/40] C:_panorama_31: 49 methods in 176.4s (peak RSS 1914 MB)
+23:34:59 [33/40] C:_panorama_32: 49 methods in 176.5s (peak RSS 1896 MB)
+23:37:59 [34/40] C:_panorama_33: 49 methods in 180.6s (peak RSS 1888 MB)
+23:40:55 [35/40] C:_panorama_34: 49 methods in 175.4s (peak RSS 1890 MB)
+23:43:51 [36/40] C:_panorama_35: 49 methods in 176.4s (peak RSS 1894 MB)
+23:46:48 [37/40] C:_panorama_36: 49 methods in 176.1s (peak RSS 1866 MB)
+23:49:45 [38/40] C:_panorama_37: 49 methods in 176.9s (peak RSS 1917 MB)
+23:52:46 [39/40] C:_panorama_38: 49 methods in 181.6s (peak RSS 1896 MB)
+05:06:10 plan: 49 methods; stages ['geometry', 'main', 'reports', 'control', 'resolution', 'timing', 'qualitative']
+05:06:14 geometry: worst point angle err 1.19e-12 deg, worst ERP->tan->ERP mean rel err 3.81e-06
+05:06:18 model: {'name': 'midas_dpt_hybrid_384', 'space': 'disparity', 'scale': 'affine', 'geometry_erp': 'range', 'geometry_perspective': 'planar', 'device': 'cpu'}
+05:06:18 dataset: nyc_dap n=40 at 512x1024
+05:09:22 [1/40] C:_panorama_0: 49 methods in 183.5s (peak RSS 1880 MB)
+05:12:10 plan: 49 methods; stages ['geometry', 'main', 'reports', 'control', 'resolution', 'timing', 'qualitative']
+05:12:14 geometry: worst point angle err 1.19e-12 deg, worst ERP->tan->ERP mean rel err 3.81e-06
+05:12:17 model: {'name': 'midas_dpt_hybrid_384', 'space': 'disparity', 'scale': 'affine', 'geometry_erp': 'range', 'geometry_perspective': 'planar', 'device': 'cpu'}
+05:12:17 dataset: nyc_dap n=4 at 512x1024
+05:15:11 [1/4] C:_panorama_0: 49 methods in 173.7s (peak RSS 1881 MB)
+05:18:16 [2/4] C:_panorama_1: 49 methods in 185.3s (peak RSS 1864 MB)
+05:21:02 [3/4] C:_panorama_2: 49 methods in 166.5s (peak RSS 1874 MB)
+05:23:43 [4/4] C:_panorama_3: 49 methods in 160.2s (peak RSS 1844 MB)
+05:23:55 reports written to results/midas_dpt_hybrid_nyc\report_align-all
+05:24:03 reports written to results/midas_dpt_hybrid_nyc\report_align-equatorial
+05:24:26 [latitude-control] C:_panorama_0 done
+05:24:49 [latitude-control] C:_panorama_1 done
+05:25:11 [latitude-control] C:_panorama_2 done
+05:25:32 [latitude-control] C:_panorama_3 done
+05:25:46 [1/12] C:_panorama_0: 4 methods in 12.1s (peak RSS 2003 MB)
+05:25:57 [2/12] C:_panorama_1: 4 methods in 11.2s (peak RSS 2007 MB)
+05:26:08 [3/12] C:_panorama_2: 4 methods in 11.1s (peak RSS 2008 MB)
+05:26:20 [4/12] C:_panorama_3: 4 methods in 11.3s (peak RSS 1996 MB)
+05:26:31 [5/12] C:_panorama_4: 4 methods in 11.3s (peak RSS 2007 MB)
+05:26:43 [6/12] C:_panorama_5: 4 methods in 11.3s (peak RSS 1999 MB)
+05:26:54 [7/12] C:_panorama_6: 4 methods in 11.0s (peak RSS 2006 MB)
+05:27:05 [8/12] C:_panorama_7: 4 methods in 11.5s (peak RSS 2005 MB)
+05:27:17 [9/12] C:_panorama_8: 4 methods in 11.4s (peak RSS 2002 MB)
+05:27:28 [10/12] C:_panorama_9: 4 methods in 11.2s (peak RSS 1996 MB)
+05:27:39 [11/12] C:_panorama_10: 4 methods in 10.9s (peak RSS 2005 MB)
+05:27:50 [12/12] C:_panorama_11: 4 methods in 11.3s (peak RSS 2006 MB)
+05:28:12 [1/12] C:_panorama_0: 4 methods in 21.4s (peak RSS 1950 MB)
+05:28:32 [2/12] C:_panorama_1: 4 methods in 20.1s (peak RSS 1913 MB)
+05:28:52 [3/12] C:_panorama_2: 4 methods in 19.8s (peak RSS 1876 MB)
+05:29:12 [4/12] C:_panorama_3: 4 methods in 20.1s (peak RSS 1933 MB)
+05:29:32 [5/12] C:_panorama_4: 4 methods in 20.2s (peak RSS 1933 MB)
+05:29:53 [6/12] C:_panorama_5: 4 methods in 20.2s (peak RSS 1932 MB)
+05:30:13 [7/12] C:_panorama_6: 4 methods in 20.8s (peak RSS 1934 MB)
+05:30:34 [8/12] C:_panorama_7: 4 methods in 20.3s (peak RSS 1931 MB)
+05:30:54 [9/12] C:_panorama_8: 4 methods in 20.3s (peak RSS 1935 MB)
+05:31:14 [10/12] C:_panorama_9: 4 methods in 20.2s (peak RSS 1965 MB)
+05:31:35 [11/12] C:_panorama_10: 4 methods in 20.6s (peak RSS 1957 MB)
+05:31:56 [12/12] C:_panorama_11: 4 methods in 21.2s (peak RSS 1925 MB)
+05:32:33 [1/12] C:_panorama_0: 4 methods in 36.5s (peak RSS 3028 MB)
+05:33:09 [2/12] C:_panorama_1: 4 methods in 35.7s (peak RSS 3122 MB)
+05:33:44 [3/12] C:_panorama_2: 4 methods in 35.2s (peak RSS 3158 MB)
+05:34:20 [4/12] C:_panorama_3: 4 methods in 35.5s (peak RSS 3192 MB)
+05:34:56 [5/12] C:_panorama_4: 4 methods in 36.2s (peak RSS 3194 MB)
+05:35:32 [6/12] C:_panorama_5: 4 methods in 36.4s (peak RSS 3189 MB)
+05:36:08 [7/12] C:_panorama_6: 4 methods in 35.3s (peak RSS 3194 MB)
+05:36:43 [8/12] C:_panorama_7: 4 methods in 35.5s (peak RSS 3190 MB)
+05:37:19 [9/12] C:_panorama_8: 4 methods in 35.5s (peak RSS 3191 MB)
+05:37:54 [10/12] C:_panorama_9: 4 methods in 35.2s (peak RSS 3194 MB)
+05:38:32 [11/12] C:_panorama_10: 4 methods in 37.7s (peak RSS 2686 MB)
+05:39:07 [12/12] C:_panorama_11: 4 methods in 34.8s (peak RSS 2697 MB)
+05:40:51 [timing] C:_panorama_0
+05:42:32 [timing] C:_panorama_1
+05:44:16 [timing] C:_panorama_2
+05:45:08 qualitative figures in results/midas_dpt_hybrid_nyc\qualitative
+05:45:08 done
+15:31:33 plan: 49 methods; stages ['geometry', 'main', 'reports', 'control', 'resolution', 'timing', 'qualitative']
+15:31:37 geometry: worst point angle err 1.19e-12 deg, worst ERP->tan->ERP mean rel err 3.81e-06
+15:31:42 model: {'name': 'midas_dpt_hybrid_384', 'space': 'disparity', 'scale': 'affine', 'geometry_erp': 'range', 'geometry_perspective': 'planar', 'device': 'cpu'}
+15:31:42 dataset: nyc_dap n=75 at 512x1024
+15:34:53 [1/75] C:_panorama_0: 49 methods in 191.0s (peak RSS 1881 MB)
+15:37:44 [2/75] C:_panorama_1: 49 methods in 170.4s (peak RSS 1873 MB)
+15:40:39 [3/75] C:_panorama_2: 49 methods in 175.2s (peak RSS 1814 MB)
+15:43:36 [4/75] C:_panorama_3: 49 methods in 177.1s (peak RSS 1847 MB)
+15:46:23 [5/75] C:_panorama_4: 49 methods in 167.1s (peak RSS 1851 MB)
+15:49:12 [6/75] C:_panorama_5: 49 methods in 168.5s (peak RSS 1862 MB)
+15:51:52 [7/75] C:_panorama_6: 49 methods in 160.3s (peak RSS 1862 MB)
+15:54:43 [8/75] C:_panorama_7: 49 methods in 170.1s (peak RSS 1721 MB)
+15:57:47 [9/75] C:_panorama_8: 49 methods in 184.5s (peak RSS 1619 MB)
+16:00:51 [10/75] C:_panorama_9: 49 methods in 183.3s (peak RSS 1531 MB)
+16:03:51 [11/75] C:_panorama_10: 49 methods in 180.8s (peak RSS 1545 MB)
+16:06:52 [12/75] C:_panorama_11: 49 methods in 180.2s (peak RSS 1537 MB)
+16:09:51 [13/75] C:_panorama_12: 49 methods in 179.1s (peak RSS 1501 MB)
+16:12:51 [14/75] C:_panorama_13: 49 methods in 179.5s (peak RSS 1513 MB)
+16:15:52 [15/75] C:_panorama_14: 49 methods in 181.2s (peak RSS 1512 MB)
+16:18:52 [16/75] C:_panorama_15: 49 methods in 180.0s (peak RSS 1535 MB)
+16:21:50 [17/75] C:_panorama_16: 49 methods in 178.3s (peak RSS 1507 MB)
+16:24:49 [18/75] C:_panorama_17: 49 methods in 178.6s (peak RSS 1481 MB)
+16:27:47 [19/75] C:_panorama_18: 49 methods in 178.5s (peak RSS 1540 MB)
+16:30:48 [20/75] C:_panorama_19: 49 methods in 180.9s (peak RSS 1552 MB)
+16:33:47 [21/75] C:_panorama_20: 49 methods in 178.6s (peak RSS 1528 MB)
+16:36:48 [22/75] C:_panorama_21: 49 methods in 181.1s (peak RSS 1556 MB)
+16:39:49 [23/75] C:_panorama_22: 49 methods in 180.8s (peak RSS 1526 MB)
+16:42:49 [24/75] C:_panorama_23: 49 methods in 179.3s (peak RSS 1549 MB)
+16:45:49 [25/75] C:_panorama_24: 49 methods in 180.0s (peak RSS 1522 MB)
+16:48:49 [26/75] C:_panorama_25: 49 methods in 180.4s (peak RSS 1523 MB)
+16:51:49 [27/75] C:_panorama_26: 49 methods in 179.7s (peak RSS 1544 MB)
+16:54:51 [28/75] C:_panorama_27: 49 methods in 182.4s (peak RSS 1566 MB)
+16:57:54 [29/75] C:_panorama_28: 49 methods in 182.2s (peak RSS 1543 MB)
+17:00:55 [30/75] C:_panorama_29: 49 methods in 181.0s (peak RSS 1568 MB)
+17:03:57 [31/75] C:_panorama_30: 49 methods in 182.1s (peak RSS 1541 MB)
+17:07:00 [32/75] C:_panorama_31: 49 methods in 183.2s (peak RSS 1561 MB)
+17:10:02 [33/75] C:_panorama_32: 49 methods in 181.8s (peak RSS 1544 MB)
+17:13:04 [34/75] C:_panorama_33: 49 methods in 181.7s (peak RSS 1537 MB)
+17:16:07 [35/75] C:_panorama_34: 49 methods in 183.4s (peak RSS 1538 MB)
+17:19:09 [36/75] C:_panorama_35: 49 methods in 181.9s (peak RSS 1536 MB)
+17:22:10 [37/75] C:_panorama_36: 49 methods in 181.0s (peak RSS 1678 MB)
+17:25:12 [38/75] C:_panorama_37: 49 methods in 182.0s (peak RSS 1733 MB)
+17:28:15 [39/75] C:_panorama_38: 49 methods in 182.8s (peak RSS 1747 MB)
+17:31:18 [40/75] C:_panorama_39: 49 methods in 182.6s (peak RSS 1743 MB)
+17:34:19 [41/75] C:_panorama_40: 49 methods in 181.2s (peak RSS 1762 MB)
+17:37:20 [42/75] C:_panorama_41: 49 methods in 180.9s (peak RSS 1749 MB)
+17:40:22 [43/75] C:_panorama_42: 49 methods in 181.6s (peak RSS 1747 MB)
+17:43:31 [44/75] C:_panorama_43: 49 methods in 189.0s (peak RSS 1748 MB)
+17:46:33 [45/75] C:_panorama_44: 49 methods in 181.7s (peak RSS 1740 MB)
+17:49:37 [46/75] C:_panorama_45: 49 methods in 183.9s (peak RSS 1752 MB)
+17:52:39 [47/75] C:_panorama_46: 49 methods in 181.7s (peak RSS 1763 MB)
+17:55:42 [48/75] C:_panorama_47: 49 methods in 183.8s (peak RSS 1758 MB)
+17:58:48 [49/75] C:_panorama_48: 49 methods in 184.9s (peak RSS 1775 MB)
+18:01:53 [50/75] C:_panorama_49: 49 methods in 185.1s (peak RSS 1761 MB)
+18:04:57 [51/75] C:_panorama_50: 49 methods in 183.8s (peak RSS 1764 MB)
+18:07:58 [52/75] C:_panorama_51: 49 methods in 181.7s (peak RSS 1767 MB)
+18:11:02 [53/75] C:_panorama_52: 49 methods in 183.9s (peak RSS 1770 MB)
+18:14:06 [54/75] C:_panorama_53: 49 methods in 183.9s (peak RSS 1738 MB)
+18:17:09 [55/75] C:_panorama_54: 49 methods in 182.3s (peak RSS 1773 MB)
+18:20:10 [56/75] C:_panorama_55: 49 methods in 181.1s (peak RSS 1772 MB)
+18:23:12 [57/75] C:_panorama_56: 49 methods in 181.6s (peak RSS 1781 MB)
+18:26:13 [58/75] C:_panorama_57: 49 methods in 181.2s (peak RSS 1782 MB)
+18:29:14 [59/75] C:_panorama_58: 49 methods in 181.0s (peak RSS 1777 MB)
+18:32:20 [60/75] C:_panorama_59: 49 methods in 186.3s (peak RSS 1777 MB)
+18:35:27 [61/75] C:_panorama_60: 49 methods in 187.1s (peak RSS 1779 MB)
+18:38:31 [62/75] C:_panorama_61: 49 methods in 183.7s (peak RSS 1732 MB)
+18:41:37 [63/75] C:_panorama_62: 49 methods in 185.3s (peak RSS 1790 MB)
+18:44:40 [64/75] C:_panorama_63: 49 methods in 183.4s (peak RSS 1777 MB)
+18:47:51 [65/75] C:_panorama_64: 49 methods in 190.3s (peak RSS 1790 MB)
+18:50:55 [66/75] C:_panorama_65: 49 methods in 184.1s (peak RSS 1790 MB)
+18:54:01 [67/75] C:_panorama_66: 49 methods in 185.9s (peak RSS 1784 MB)
+18:57:06 [68/75] C:_panorama_67: 49 methods in 185.6s (peak RSS 1786 MB)
+19:00:10 [69/75] C:_panorama_68: 49 methods in 183.4s (peak RSS 1787 MB)
+19:03:16 [70/75] C:_panorama_69: 49 methods in 186.3s (peak RSS 1806 MB)
+19:06:24 [71/75] C:_panorama_70: 49 methods in 187.2s (peak RSS 1801 MB)
+19:09:28 [72/75] C:_panorama_71: 49 methods in 184.0s (peak RSS 1779 MB)
+19:12:30 [73/75] C:_panorama_72: 49 methods in 182.8s (peak RSS 1795 MB)
+19:15:37 [74/75] C:_panorama_73: 49 methods in 186.8s (peak RSS 1803 MB)
+19:18:41 [75/75] C:_panorama_74: 49 methods in 183.2s (peak RSS 1797 MB)
+19:19:02 reports written to results/midas_dpt_hybrid_nyc\report_align-all
+19:19:12 reports written to results/midas_dpt_hybrid_nyc\report_align-equatorial
+19:19:37 [latitude-control] C:_panorama_0 done
+19:20:01 [latitude-control] C:_panorama_1 done
+19:20:25 [latitude-control] C:_panorama_2 done
+19:20:49 [latitude-control] C:_panorama_3 done
+19:21:13 [latitude-control] C:_panorama_4 done
+19:21:37 [latitude-control] C:_panorama_5 done
+19:22:00 [latitude-control] C:_panorama_6 done
+19:22:23 [latitude-control] C:_panorama_7 done
+19:22:46 [latitude-control] C:_panorama_8 done
+19:23:10 [latitude-control] C:_panorama_9 done
+19:23:34 [latitude-control] C:_panorama_10 done
+19:23:58 [latitude-control] C:_panorama_11 done
+19:24:21 [latitude-control] C:_panorama_12 done
+19:24:44 [latitude-control] C:_panorama_13 done
+19:25:08 [latitude-control] C:_panorama_14 done
+19:25:31 [latitude-control] C:_panorama_15 done
+19:25:55 [latitude-control] C:_panorama_16 done
+19:26:18 [latitude-control] C:_panorama_17 done
+19:26:42 [latitude-control] C:_panorama_18 done
+19:27:05 [latitude-control] C:_panorama_19 done
+19:27:29 [latitude-control] C:_panorama_20 done
+19:27:52 [latitude-control] C:_panorama_21 done
+19:28:16 [latitude-control] C:_panorama_22 done
+19:28:40 [latitude-control] C:_panorama_23 done
+19:29:03 [latitude-control] C:_panorama_24 done
+19:29:27 [latitude-control] C:_panorama_25 done
+19:29:51 [latitude-control] C:_panorama_26 done
+19:30:14 [latitude-control] C:_panorama_27 done
+19:30:38 [latitude-control] C:_panorama_28 done
+19:31:02 [latitude-control] C:_panorama_29 done
+19:31:25 [latitude-control] C:_panorama_30 done
+19:31:49 [latitude-control] C:_panorama_31 done
+19:32:13 [latitude-control] C:_panorama_32 done
+19:32:36 [latitude-control] C:_panorama_33 done
+19:33:00 [latitude-control] C:_panorama_34 done
+19:33:24 [latitude-control] C:_panorama_35 done
+19:33:47 [latitude-control] C:_panorama_36 done
+19:34:11 [latitude-control] C:_panorama_37 done
+19:34:36 [latitude-control] C:_panorama_38 done
+19:34:59 [latitude-control] C:_panorama_39 done
+19:35:23 [latitude-control] C:_panorama_40 done
+19:35:47 [latitude-control] C:_panorama_41 done
+19:36:10 [latitude-control] C:_panorama_42 done
+19:36:35 [latitude-control] C:_panorama_43 done
+19:36:58 [latitude-control] C:_panorama_44 done
+19:37:24 [latitude-control] C:_panorama_45 done
+19:37:47 [latitude-control] C:_panorama_46 done
+19:38:11 [latitude-control] C:_panorama_47 done
+19:38:35 [latitude-control] C:_panorama_48 done
+19:38:58 [latitude-control] C:_panorama_49 done
+19:39:22 [latitude-control] C:_panorama_50 done
+19:39:53 [latitude-control] C:_panorama_51 done
+19:40:20 [latitude-control] C:_panorama_52 done
+19:40:46 [latitude-control] C:_panorama_53 done
+19:41:12 [latitude-control] C:_panorama_54 done
+19:41:38 [latitude-control] C:_panorama_55 done
+19:42:03 [latitude-control] C:_panorama_56 done
+19:42:28 [latitude-control] C:_panorama_57 done
+19:42:53 [latitude-control] C:_panorama_58 done
+19:43:19 [latitude-control] C:_panorama_59 done
+19:43:51 [latitude-control] C:_panorama_60 done
+19:44:34 [latitude-control] C:_panorama_61 done
+19:45:06 [latitude-control] C:_panorama_62 done
+19:45:39 [latitude-control] C:_panorama_63 done
+19:46:11 [latitude-control] C:_panorama_64 done
+19:46:41 [latitude-control] C:_panorama_65 done
+19:47:09 [latitude-control] C:_panorama_66 done
+19:47:37 [latitude-control] C:_panorama_67 done
+19:48:05 [latitude-control] C:_panorama_68 done
+19:48:31 [latitude-control] C:_panorama_69 done
+19:48:55 [latitude-control] C:_panorama_70 done
+19:49:20 [latitude-control] C:_panorama_71 done
+19:49:48 [latitude-control] C:_panorama_72 done
+19:50:21 [latitude-control] C:_panorama_73 done
+19:50:50 [latitude-control] C:_panorama_74 done
+19:51:17 [1/12] C:_panorama_0: 4 methods in 15.6s (peak RSS 1825 MB)
+19:51:33 [2/12] C:_panorama_1: 4 methods in 15.9s (peak RSS 1825 MB)
+19:51:49 [3/12] C:_panorama_2: 4 methods in 15.6s (peak RSS 1817 MB)
+19:52:04 [4/12] C:_panorama_3: 4 methods in 15.4s (peak RSS 1804 MB)
+19:52:20 [5/12] C:_panorama_4: 4 methods in 15.4s (peak RSS 1815 MB)
+19:52:36 [6/12] C:_panorama_5: 4 methods in 15.7s (peak RSS 1817 MB)
+19:52:50 [7/12] C:_panorama_6: 4 methods in 14.4s (peak RSS 1798 MB)
+19:53:07 [8/12] C:_panorama_7: 4 methods in 16.4s (peak RSS 1821 MB)
+19:53:20 [9/12] C:_panorama_8: 4 methods in 13.7s (peak RSS 1821 MB)
+19:53:34 [10/12] C:_panorama_9: 4 methods in 13.7s (peak RSS 1820 MB)
+19:53:51 [11/12] C:_panorama_10: 4 methods in 16.4s (peak RSS 1822 MB)
+19:54:06 [12/12] C:_panorama_11: 4 methods in 14.9s (peak RSS 1827 MB)
+19:54:33 [1/12] C:_panorama_0: 4 methods in 27.0s (peak RSS 1916 MB)
+19:54:56 [2/12] C:_panorama_1: 4 methods in 23.3s (peak RSS 1927 MB)
+19:55:20 [3/12] C:_panorama_2: 4 methods in 24.2s (peak RSS 1834 MB)
+19:55:48 [4/12] C:_panorama_3: 4 methods in 27.2s (peak RSS 1866 MB)
+19:56:11 [5/12] C:_panorama_4: 4 methods in 22.8s (peak RSS 1870 MB)
+19:56:38 [6/12] C:_panorama_5: 4 methods in 26.8s (peak RSS 1843 MB)
+19:57:01 [7/12] C:_panorama_6: 4 methods in 23.2s (peak RSS 1886 MB)
+19:57:22 [8/12] C:_panorama_7: 4 methods in 20.6s (peak RSS 1887 MB)
+19:57:44 [9/12] C:_panorama_8: 4 methods in 22.4s (peak RSS 1906 MB)
+19:58:09 [10/12] C:_panorama_9: 4 methods in 25.2s (peak RSS 1892 MB)
+19:58:35 [11/12] C:_panorama_10: 4 methods in 25.3s (peak RSS 1880 MB)
+19:58:58 [12/12] C:_panorama_11: 4 methods in 23.2s (peak RSS 1891 MB)
+19:59:38 [1/12] C:_panorama_0: 4 methods in 39.6s (peak RSS 2927 MB)
+20:00:16 [2/12] C:_panorama_1: 4 methods in 38.3s (peak RSS 2902 MB)
+20:00:56 [3/12] C:_panorama_2: 4 methods in 39.5s (peak RSS 2935 MB)
+20:01:33 [4/12] C:_panorama_3: 4 methods in 37.3s (peak RSS 2938 MB)
+20:02:13 [5/12] C:_panorama_4: 4 methods in 40.3s (peak RSS 2936 MB)
+20:02:57 [6/12] C:_panorama_5: 4 methods in 43.8s (peak RSS 2713 MB)
+20:03:34 [7/12] C:_panorama_6: 4 methods in 36.9s (peak RSS 2727 MB)
+20:04:08 [8/12] C:_panorama_7: 4 methods in 33.7s (peak RSS 2751 MB)
+20:04:42 [9/12] C:_panorama_8: 4 methods in 34.0s (peak RSS 2753 MB)
+20:05:17 [10/12] C:_panorama_9: 4 methods in 34.3s (peak RSS 2747 MB)
+20:05:57 [11/12] C:_panorama_10: 4 methods in 40.1s (peak RSS 2716 MB)
+20:06:39 [12/12] C:_panorama_11: 4 methods in 42.6s (peak RSS 2735 MB)
+20:08:50 [timing] C:_panorama_0
+20:10:42 [timing] C:_panorama_1
+20:12:45 [timing] C:_panorama_2
+20:13:46 qualitative figures in results/midas_dpt_hybrid_nyc\qualitative
+20:13:46 done

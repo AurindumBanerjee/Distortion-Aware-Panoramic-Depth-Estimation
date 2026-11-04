@@ -1,0 +1,13 @@
+,,signed_log_err,signed_log_err,abs_rel,abs_rel
+,,mean,std,mean,std
+pole,view,,,,
+north,baseline,0.1615,0.4281,0.4721,0.4286
+north,hybrid_final,0.1073,0.1945,0.1924,0.1766
+north,rotation_pitch+90,0.067,0.2565,0.2125,0.2119
+north,rotation_pitch-90,-0.002,0.1445,0.135,0.048
+north,tangent_lat+90,0.244,0.3424,0.4282,0.3963
+south,baseline,-0.4047,0.2061,0.3169,0.1451
+south,hybrid_final,0.0358,0.2302,0.187,0.1465
+south,rotation_pitch+90,0.2939,0.3273,0.4858,0.3389
+south,rotation_pitch-90,0.4145,0.1749,0.5491,0.2657
+south,tangent_lat-90,-0.2979,0.3145,0.2691,0.1655
