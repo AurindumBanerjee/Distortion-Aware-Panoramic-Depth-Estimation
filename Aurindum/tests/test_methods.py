@@ -210,6 +210,8 @@ def test_group_of_clusters_by_house_environment_and_holo_scene():
     assert group_of("Diner50_0002") == "Diner50"
     assert group_of("FeudalJapan_Meshingun_0000") == "FeudalJapan_Meshingun"
     assert group_of("Mountain_Environment_Set_0028") == "Mountain_Environment_Set"
+    assert group_of("area_5a_camera_00d10d86db1e435081a837ced388375f_office_24_frame_equirectangular_domain_rgb") == "area_5a_office_24"
+    assert group_of("panorama_0") == group_of("panorama_19") == "nyc_0000" and group_of("panorama_20") == "nyc_0001"
 
 
 def test_panorama_dataset_applies_mask_column_and_keeps_metres(tmp_path):

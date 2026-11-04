@@ -148,6 +148,73 @@ def lowres_apply(rgb, ctx):
     return cv2.resize(small, (W, H), interpolation=cv2.INTER_CUBIC), ctx
 
 
+def _lens_angle_deg(H, W):
+    """Angle (deg) of every ERP ray from the optical axis of the lens that images it in a dual-fisheye camera
+    (front lens looks along +z and covers |lon| < 90, back lens along -z)."""
+    from geometry.spherical import erp_to_sphere
+    z = erp_to_sphere(H, W).numpy()[..., 2]
+    return np.degrees(np.arccos(np.clip(np.abs(z), 0.0, 1.0)))
+
+
+def _parallax_view(rgb, depth, baseline, d_stitch, sign, iters=4):
+    """Image the clean scene through ONE lens of a dual-fisheye rig and stitch it as the software does.
+
+    Lens centre c = sign * (0, 0, baseline / 2). The stitcher assumes every point lies on a sphere of radius d_stitch
+    around the rig centre, so a scene point P = r d (true direction d, range r from the rig centre) seen by the lens
+    along u = (P - c)/|P - c| is placed where that ray meets the stitching sphere: d' = normalise(c + t u), |c + t u| = d_stitch. Points at r = d_stitch are
+    exact; nearer points are displaced away from the lens axis, farther ones towards it. The output is the image the
+    stitcher writes, I_out(d') = I(d): solved backwards for every output pixel d' by fixed-point iteration on d.
+    """
+    from geometry.erp_projection import sample_erp
+    from geometry.spherical import erp_to_sphere, sphere_to_erp
+    H, W = depth.shape
+    c = np.array([0.0, 0.0, sign * baseline / 2.0])
+    dp = erp_to_sphere(H, W).numpy()  # output directions d'
+    d = dp.copy()
+    for _ in range(iters):
+        u_, v_ = sphere_to_erp(d, H, W)
+        r = np.asarray(sample_erp(depth.astype(np.float64), u_, v_, mode="bilinear"))
+        P = d * r[..., None]
+        uvec = P - c
+        uvec /= np.linalg.norm(uvec, axis=-1, keepdims=True)
+        # intersection of the lens ray c + t u (t > 0) with the stitching sphere |x| = d_stitch around the rig centre
+        cu = uvec @ c
+        t = -cu + np.sqrt(np.maximum(cu ** 2 - c @ c + d_stitch ** 2, 0.0))
+        f = c + t[..., None] * uvec
+        f /= np.linalg.norm(f, axis=-1, keepdims=True)
+        d = d + (dp - f)  # move the source direction by the residual of its forward mapping
+        d /= np.linalg.norm(d, axis=-1, keepdims=True)
+    u_, v_ = sphere_to_erp(d, H, W)
+    out = np.asarray(sample_erp(rgb.astype(np.float32), u_, v_, mode="bilinear"))
+    return np.clip(np.rint(out), 0, 255).astype(np.uint8)
+
+
+def parallax_apply(rgb, ctx):
+    """Dual-fisheye stitching with a lens baseline: each hemisphere comes from its own lens (parallax displaced), and
+    a band of +-blend_deg around the two stitch lines blends both lenses (double images / tears of near objects)."""
+    depth = np.asarray(ctx["depth"], dtype=np.float64)
+    b, D0 = ctx.get("baseline", 0.05), ctx.get("d_stitch", 2.0)
+    front = _parallax_view(rgb, depth, b, D0, +1)
+    back = _parallax_view(rgb, depth, b, D0, -1)
+    w = seam_weight(*rgb.shape[:2], feather_deg=ctx.get("blend_deg", 5.0))[..., None]
+    out = w * front.astype(np.float32) + (1 - w) * back.astype(np.float32)
+    return np.clip(np.rint(out), 0, 255).astype(np.uint8), {**ctx, "seam_band": ctx.get("blend_deg", 5.0)}
+
+
+def seam_band_mask(H, W, ctx):
+    _, lon = _lat_lon_deg(H, W)
+    return np.abs(np.abs(lon) - 90.0) <= ctx.get("seam_band", 5.0) + 3.0
+
+
+def vignette_apply(rgb, ctx):
+    """Residual fisheye vignetting: brightness falls with the angle from each lens axis (towards the stitch lines,
+    90 deg off-axis); the stitcher's correction profile is imperfect, so a falloff to `edge` remains at the seams."""
+    th = _lens_angle_deg(*rgb.shape[:2])
+    v = 1.0 - (1.0 - ctx.get("edge", 0.45)) * (th / 90.0) ** ctx.get("power", 2.0)
+    out = rgb.astype(np.float32) * v[..., None]
+    return np.clip(np.rint(out), 0, 255).astype(np.uint8), {**ctx, "vignette": v}
+
+
 # ------------------------------------------------------------------------------------------------------------------
 # mitigations (return a prediction in the DEGRADED frame)
 # ------------------------------------------------------------------------------------------------------------------
@@ -302,6 +369,34 @@ def m_wiener(model, rgb_d, ctx, snr=0.01):
     return _pred(model, np.clip(np.rint(out), 0, 255).astype(np.uint8))
 
 
+def m_seam_inpaint(model, rgb_d, ctx):
+    """Known stitch geometry: inpaint the blend band around the two stitch lines (where the double images are), then
+    predict. Needs no depth and no image of the clean scene."""
+    H, W = rgb_d.shape[:2]
+    _, lon = _lat_lon_deg(H, W)
+    band = np.abs(np.abs(lon) - 90.0) <= ctx.get("seam_band", 5.0)
+    return _pred(model, _inpaint_erp(rgb_d, band, radius=3))
+
+
+def m_flatfield(model, rgb_d, ctx, nbins=18):
+    """Blind flat-field: estimate the brightness profile against the lens-axis angle as the median luminance per angle
+    bin (scene content averages out over a whole panorama), fit a smooth even polynomial, divide it out, predict."""
+    H, W = rgb_d.shape[:2]
+    th = _lens_angle_deg(H, W)
+    lum = rgb_d.astype(np.float32).mean(-1)
+    edges = np.linspace(0, 90, nbins + 1)
+    cen = 0.5 * (edges[:-1] + edges[1:])
+    med = np.array([np.median(lum[(th >= a) & (th < b)]) for a, b in zip(edges[:-1], edges[1:])])
+    ok = np.isfinite(med) & (med > 1)
+    A = np.stack([np.ones(ok.sum()), (cen[ok] / 90) ** 2, (cen[ok] / 90) ** 4], -1)
+    coef, *_ = np.linalg.lstsq(A, med[ok], rcond=None)
+    prof = coef[0] + coef[1] * (th / 90) ** 2 + coef[2] * (th / 90) ** 4
+    gain = np.clip(coef[0] / np.maximum(prof, 1e-3), 1.0, 4.0)  # only brighten, never darken
+    ctx["flatfield_gain_edge"] = float(np.median(gain[th > 85]))
+    out = rgb_d.astype(np.float32) * gain[..., None]
+    return _pred(model, np.clip(np.rint(out), 0, 255).astype(np.uint8))
+
+
 def m_denoise(model, rgb_d, ctx):
     return _pred(model, cv2.fastNlMeansDenoisingColored(rgb_d, None, 10, 10, 7, 21))
 
@@ -320,6 +415,8 @@ MITIGATIONS: Dict[str, Tuple[str, Callable]] = {
     "gain_match": ("blind lens-gain matching across the stitch lines", m_gain_match),
     "wiener": ("Wiener deconvolution, known yaw kernel (gyro)", m_wiener),
     "denoise": ("non-local-means denoising", m_denoise),
+    "seam_inpaint": ("inpaint the stitch blend band (known seam geometry)", m_seam_inpaint),
+    "flatfield": ("blind flat-field from the brightness-vs-lens-angle profile", m_flatfield),
     "bilateral": ("bilateral smoothing (deblocking)", m_bilateral),
 }
 
@@ -339,6 +436,15 @@ CATALOGUE: List[Distortion] = [
                "Dual-fisheye cameras meter each lens separately; facing a window, one hemisphere is brighter and warmer and "
                "the stitch lines (longitude +-90 deg) show a step.",
                seam_apply, mitigations=["gain_match"]),
+    Distortion("parallax", "Stitching parallax of a dual-lens rig (5 cm baseline)",
+               "The two fisheye lenses sit a few centimetres apart; the stitcher assumes all points are about 2 m away, "
+               "so nearer objects are displaced differently in each lens and tear or double at the stitch lines "
+               "(longitude +-90 deg), worst for furniture and people close to the camera.",
+               parallax_apply, region=seam_band_mask, mitigations=["seam_inpaint"]),
+    Distortion("vignette", "Residual fisheye vignetting (seams 55% darker)",
+               "Fisheye lenses lose light towards the edge of their field (the stitch lines); vendor flat-field profiles are "
+               "approximate, so a darkening band remains along the seams, strongest in cheap cameras and at high ISO.",
+               vignette_apply, mitigations=["flatfield"]),
     Distortion("yawblur", "Camera shake during exposure (yaw, 9 px)",
                "Handheld capture in dim light: a small rotation about the vertical axis during the exposure smears every "
                "row by the same longitude arc.",

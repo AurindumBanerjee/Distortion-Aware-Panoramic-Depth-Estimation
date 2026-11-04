@@ -114,6 +114,15 @@ def group_of(scene_id) -> str:
     m = re.match(r"(scene_\d+)", sid)
     if m:
         return m.group(1)
+    # Stanford2D3D 'area_5a_camera_<hash>_office_24_frame_equirectangular_domain_rgb' -> 'area_5a_office_24' (room)
+    m = re.match(r"(area_[0-9a-z]+)_camera_[0-9a-f]+_([A-Za-z]+_\d+)_frame", sid)
+    if m:
+        return f"{m.group(1)}_{m.group(2)}"
+    # DAP NYC street panoramas 'panorama_<n>': consecutive captures along a route are correlated; no scene id is
+    # published, so blocks of 20 consecutive panoramas form one cluster (an assumption, stated in the write-up)
+    m = re.match(r"panorama_(\d+)$", sid)
+    if m:
+        return f"nyc_{int(m.group(1)) // 20:04d}"
     m = re.match(r"((?:Indoor|Outdoor)_\d+)_", sid)  # Holo360D 'Indoor_016_1753495960.845721' -> scene 'Indoor_016'
     if m:
         return m.group(1)

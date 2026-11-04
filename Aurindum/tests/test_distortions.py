@@ -105,3 +105,66 @@ def test_photometric_distortions_change_pixels_but_not_shape():
         assert rd.shape == RGB.shape and rd.dtype == np.uint8
     rd, _ = D["noise"].apply(np.full((H, W, 3), 128, np.uint8), {"seed": 1})
     assert rd.std() > 5
+
+
+# ---------- parallax and vignetting ----------
+def _tex(seed=0):
+    rng = np.random.default_rng(seed)
+    t = cv2.resize(rng.integers(0, 255, (H // 4, W // 4, 3)).astype(np.uint8), (W, H), interpolation=cv2.INTER_NEAREST)
+    return t
+
+
+import cv2  # noqa: E402
+
+
+def test_parallax_is_identity_for_points_on_the_stitching_sphere_and_zero_baseline():
+    from distortions.catalogue import parallax_apply
+    tex = _tex()
+    out, _ = parallax_apply(tex, {"depth": np.full((H, W), 2.0), "d_stitch": 2.0, "baseline": 0.05})
+    assert np.abs(out.astype(float) - tex).mean() < 1.0                 # everything on the stitching sphere: no shift
+    out0, _ = parallax_apply(tex, {"depth": np.full((H, W), 0.5), "baseline": 0.0})
+    assert np.abs(out0.astype(float) - tex).mean() < 1.0                # no baseline: no parallax at any depth
+
+
+def test_parallax_displaces_near_content_and_doubles_it_at_the_seam():
+    from distortions.catalogue import _parallax_view
+    from geometry.spherical import erp_lonlat_grid
+    lon, lat = (np.degrees(x.numpy()) for x in erp_lonlat_grid(H, W))
+    tex = np.zeros((H, W, 3), np.uint8)
+    # vertical stripes: at the stitch line the displacement runs along longitude (away from the lens axis), so only
+    # structure that varies with longitude reveals it
+    tex[((lon // 8).astype(int) % 2) == 0] = 255
+    depth = np.full((H, W), 0.3)
+    front = _parallax_view(tex, depth, 0.10, 2.0, +1)
+    back = _parallax_view(tex, depth, 0.10, 2.0, -1)
+    # the lenses see the near band from different centres: at the stitch line the two images disagree
+    seam = (np.abs(np.abs(lon) - 90) < 3) & (np.abs(lat) < 25)
+    assert np.abs(front[seam].astype(float) - back[seam]).mean() > 5
+    # the displacement grows with the angle from the lens axis (~ sin): next to the axis it is far smaller than at the
+    # seam (90 deg off-axis), where it is about (b/2)(1/r - 1/D0) = 0.14 rad = 8 deg here
+    def shift_deg(img, rows, lon_lo, lon_hi):
+        m = (lon[0] > lon_lo) & (lon[0] < lon_hi)
+        a, b = tex[rows][:, m, 0].astype(float).mean(0), img[rows][:, m, 0].astype(float).mean(0)
+        best = min(range(-12, 13), key=lambda k: np.abs(np.roll(a, k) - b).mean())
+        return abs(best) * 360.0 / W
+    rows = slice(H // 2 - 2, H // 2 + 2)
+    assert shift_deg(front, rows, 60, 120) > 5 and shift_deg(front, rows, -20, 20) <= 2
+
+
+def test_vignetting_darkens_the_seams_and_flatfield_undoes_it_blindly():
+    from distortions.catalogue import _lens_angle_deg, m_flatfield, vignette_apply
+    tex = _tex(1)
+    out, ctx = vignette_apply(tex, {})
+    th = _lens_angle_deg(H, W)
+    assert out[th > 80].mean() < 0.65 * tex[th > 80].mean() and abs(out[th < 10].mean() - tex[th < 10].mean()) < 3
+    c = {}
+    m_flatfield(PERFECT, out, c)
+    assert c["flatfield_gain_edge"] == pytest.approx(1 / ctx["vignette"][th > 85].mean(), rel=0.15)
+
+
+def test_parallax_and_vignette_are_in_the_catalogue_with_their_fixes():
+    keys = {d.key: d for d in CATALOGUE}
+    assert keys["parallax"].mitigations == ["seam_inpaint"] and keys["vignette"].mitigations == ["flatfield"]
+    _, ctx = keys["parallax"].apply(_tex(), {"depth": np.full((H, W), 1.0)})
+    m = keys["parallax"].region(H, W, ctx)
+    assert 0.05 < m.mean() < 0.2

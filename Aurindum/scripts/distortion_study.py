@@ -95,7 +95,10 @@ def main():
         ex = i < a.examples
         imgs = {"rgb": smp.rgb, "clean": clean_al, "err_clean": np.abs(clean_al - gt) / np.where(gt > 0, gt, 1)} if ex else {}
         for d in dists:
-            rgb_d, ctx = d.apply(smp.rgb, {"seed": i})
+            # the clean GT range lets physically based degradations (stitching parallax) image the scene from a
+            # displaced lens; invalid GT (sky, holes) is treated as lying on the stitching sphere (no displacement)
+            depth_ctx = np.where(valid, gt, 2.0)
+            rgb_d, ctx = d.apply(smp.rgb, {"seed": i, "depth": depth_ctx})
             region = d.region(H, W, ctx) if d.region else None
             rec[f"{d.key}|clean"], _ = score(clean, gt, valid, model, region, min_d, max_d)
             best = None
@@ -138,7 +141,7 @@ def main():
     for d in dists:
         f = "region" if d.region is not None else "all"
         lines += ["", f"## {d.title}", "", f"*Cause:* {d.cause}", "",
-                  f"| method | all | polar >= 60 | {'occluded region' if f == 'region' else '-'} | recovery ({f}) | better than degraded |",
+                  f"| method | all | polar >= 60 | {'affected region' if f == 'region' else '-'} | recovery ({f}) | better than degraded |",
                   "|---|---:|---:|---:|---:|---:|"]
         for mk in ["clean", "none"] + d.mitigations:
             k = f"{d.key}|{mk}"

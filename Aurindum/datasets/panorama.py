@@ -36,6 +36,9 @@ PRESETS = {
     "panox": dict(depth_scale=1.0, max_depth=100.0, min_depth=0.05, exr_scale=0.01),
     # Holo360D (real LiDAR-mesh GT): float32 EXR range in METRES, NaN where the mesh has no data (sky). List file
     # carries a 3rd column with the per-frame mask jpg (value > 127 = valid; excludes the operator / rig).
+    # DAP NYC outdoor street panoramas: float64 .npy range in metres (about 4-974 m). List built by
+    # Lokesh/scripts/make_nyc_list.py (rgb/panorama_<n>.png depth/erp_distance_<n>.npy).
+    "nyc_dap": dict(depth_scale=1.0, max_depth=1000.0, min_depth=0.5),
     "holo360d": dict(depth_scale=1.0, max_depth=100.0, min_depth=0.1, exr_scale=1.0),
 }
 

@@ -1,25 +1,27 @@
 #!/usr/bin/env bash
 # Exploratory distortion study (distortions/catalogue.py, scripts/distortion_study.py) for every model x dataset.
 #   scripts/run_distortion_study.sh start | status | stop | run
-# Env: MODELS (default "midas dap da360 da2"), SETS (default "s3 panox holo_in holo_out"), N (frames, default 40),
-#      ONLY (comma list of distortion keys), CONDA_ENV, CONDA_SH, CUDA_VISIBLE_DEVICES, HF_HOME.
+# Env: MODELS (default "midas dap da360 da2"), SETS (default "s3 panox holo_in holo_out stanford nyc"), N (frames, default 40),
+#      ONLY (comma list of distortion keys), TAG_PREFIX (prepended to every output name, e.g. smoke_), CONDA_ENV, CONDA_SH, CUDA_VISIBLE_DEVICES, HF_HOME.
 # Writes results/STUDY_<model>_<set>.md, study_<model>_<set>.json and example images in study_<model>_<set>_img/.
 set -uo pipefail
 AUR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$AUR"
 mkdir -p logs results
-MODELS="${MODELS:-midas dap da360 da2}"; SETS="${SETS:-s3 panox holo_in holo_out}"; N="${N:-40}"
+MODELS="${MODELS:-midas dap da360 da2}"; SETS="${SETS:-s3 panox holo_in holo_out stanford nyc}"; N="${N:-40}"
 say() { echo "[$(date +'%F %T')] $*"; }
 cfg_of() {
     local m="$1" d="$2"
     if [ "$m" = dap ]; then
-        case "$d" in s3) echo "config_dap.yaml";; panox) echo "config_dap_panox.yaml";; holo_in) echo "config_dap_holo360d_indoor.yaml";; holo_out) echo "config_dap_holo360d_outdoor.yaml";; esac
+        case "$d" in s3) echo "config_dap.yaml";; panox) echo "config_dap_panox.yaml";; holo_in) echo "config_dap_holo360d_indoor.yaml";; holo_out) echo "config_dap_holo360d_outdoor.yaml";; stanford) echo "config_dap_stanford2d3d.yaml";; nyc) echo "config_dap_nyc.yaml";; esac
     else
-        case "$d" in s3) echo "config.yaml";; panox) echo "config_panox.yaml";; holo_in) echo "config_holo360d_indoor.yaml";; holo_out) echo "config_holo360d_outdoor.yaml";; esac
+        case "$d" in s3) echo "config.yaml";; panox) echo "config_panox.yaml";; holo_in) echo "config_holo360d_indoor.yaml";; holo_out) echo "config_holo360d_outdoor.yaml";; stanford) echo "config_stanford2d3d.yaml";; nyc) echo "config_nyc.yaml";; esac
     fi
 }
 model_sets() { case "$1" in da360|da2) echo "--set model.name=$1";; *) echo "";; esac; }
-data_ok() { case "$1" in s3) [ -f data/structured3d/test.txt ];; panox) [ -f data/panox/test.txt ];; holo_*) [ -f data/holo360d/test.txt ];; esac; }
+data_ok() { case "$1" in s3) [ -f data/structured3d/test.txt ];; panox) [ -f data/panox/test.txt ];; holo_*) [ -f data/holo360d/test.txt ];;
+    stanford) [ -f data/stanford2d3d/test.txt ] || { say "skip stanford: build data/stanford2d3d/test.txt (scripts/make_stanford_list.py --out test.txt)"; false; };;
+    nyc) [ -f data/nyc_dap/test.txt ] || { say "skip nyc: build data/nyc_dap/test.txt (scripts/make_nyc_list.py, or scripts/run_tasks.sh setup with NYC_RGB / NYC_DEPTH)"; false; };; esac; }
 do_run() {
     CONDA_SH="${CONDA_SH:-/DATA/Aurindum/conda/etc/profile.d/conda.sh}"
     if [ -f "$CONDA_SH" ]; then set +u; source "$CONDA_SH"; conda activate "${CONDA_ENV:-RL}"; set -u; fi
@@ -31,7 +33,7 @@ do_run() {
         data_ok $d || continue
         sp=all; [ "$d" = s3 ] && sp=eval   # S3 calibration houses stay untouched
         local t0; t0=$(date +%s); say ">>> $m $d"
-        if python scripts/distortion_study.py --config "3_structured3d_benchmark/$(cfg_of $m $d)" --tag "${m}_${d}" --split $sp \
+        if python scripts/distortion_study.py --config "3_structured3d_benchmark/$(cfg_of $m $d)" --tag "${TAG_PREFIX:-}${m}_${d}" --split $sp \
             --max_scenes "$N" --examples 2 $only $(model_sets $m); then say "✅ $m $d ($(( $(date +%s) - t0 )) s)"; else say "❌ $m $d FAILED"; fi
     done; done
     say "🎉 Distortion study finished."
