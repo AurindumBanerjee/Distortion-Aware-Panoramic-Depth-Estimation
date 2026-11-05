@@ -1,9 +1,6 @@
-# Generated runs, caches and logs
-results/*
-!results/.gitkeep
-*/logs/*.log
-*/outputs/*
-!*/outputs/.gitkeep
+# Large temporary caches and binary checkpoints (outputs, reports, logs, and CSVs are tracked in git)
 03_panda_style_finetuning/pseudo_cache/
+*.pt
+*.pth
 __pycache__/
 *.pyc
