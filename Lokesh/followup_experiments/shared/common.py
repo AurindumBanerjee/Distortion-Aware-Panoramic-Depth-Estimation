@@ -95,6 +95,19 @@ def load_model(model_cfg: dict):
 
 def load_dataset(data_cfg: dict, *, height: int | None = None, width: int | None = None,
                  limit: int | None = None):
+    # Ensure ROOT is at sys.path[0] so 'datasets' always resolves to Lokesh/datasets
+    if str(ROOT) in sys.path:
+        sys.path.remove(str(ROOT))
+    sys.path.insert(0, str(ROOT))
+
+    # Purge any foreign or shadowed 'datasets' module (e.g. from DA360 repo)
+    if "datasets" in sys.modules:
+        mod = sys.modules["datasets"]
+        if getattr(mod, "__file__", None) and not str(mod.__file__).startswith(str(ROOT)):
+            for m in list(sys.modules):
+                if m == "datasets" or m.startswith("datasets."):
+                    del sys.modules[m]
+
     from datasets.panorama import PanoramaDataset
     root = Path(data_cfg["root"])
     if not root.is_absolute():

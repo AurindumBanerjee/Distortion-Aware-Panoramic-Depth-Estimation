@@ -35,10 +35,10 @@ def main():
     np.random.seed(seed)
     if not torch.cuda.is_available():
         raise SystemExit("CUDA is required. Enable the Kaggle T4 accelerator.")
+    ds = load_dataset(cfg["dataset"], limit=args.limit)
     model = load_model(cfg["model"])
     if model.spec.space != "disparity":
         raise SystemExit(f"Expected a disparity model, got {model.spec}")
-    ds = load_dataset(cfg["dataset"], limit=args.limit)
     stamp = time.strftime("%Y%m%d_%H%M%S")
     out_base = args.output_dir or cfg["output_dir"]
     out = prepare_output(Path(out_base) / f"run_{stamp}", overwrite=args.overwrite)

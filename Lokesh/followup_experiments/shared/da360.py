@@ -34,7 +34,7 @@ class DA360Wrapper(DepthModelWrapper):
 
         # DA360's repository uses top-level module names (networks/checkpoint).
         for module_name in list(sys.modules):
-            if module_name == "networks" or module_name.startswith("networks.") or module_name == "checkpoint":
+            if module_name in {"networks", "checkpoint", "datasets"} or module_name.startswith(("networks.", "checkpoint.", "datasets.")):
                 del sys.modules[module_name]
         sys.path.insert(0, repo)
         old = os.getcwd()
@@ -53,6 +53,14 @@ class DA360Wrapper(DepthModelWrapper):
             net.load_state_dict(state_dict_from_checkpoint(ckpt, net.state_dict()), strict=False)
         finally:
             os.chdir(old)
+            if repo in sys.path:
+                sys.path.remove(repo)
+            # Remove any shadowed modules that DA360 imported
+            for module_name in list(sys.modules):
+                if module_name in {"datasets", "data", "utils"} or module_name.startswith(("datasets.", "data.", "utils.")):
+                    mod = sys.modules[module_name]
+                    if getattr(mod, "__file__", None) and str(repo) in str(mod.__file__):
+                        del sys.modules[module_name]
 
         self.model = net.eval().to(self.device)
         self.mean = torch.tensor([0.485, 0.456, 0.406], device=self.device).view(1, 3, 1, 1)

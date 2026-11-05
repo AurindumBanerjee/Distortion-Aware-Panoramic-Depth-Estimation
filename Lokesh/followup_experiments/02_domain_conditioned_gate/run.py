@@ -23,8 +23,8 @@ def main():
     cfg = load_config(a.config, a.set)
     if not torch.cuda.is_available():
         raise SystemExit("CUDA required; enable Kaggle T4 accelerator.")
-    model = load_model(cfg["model"])
     ds = load_dataset(cfg["dataset"], limit=a.limit)
+    model = load_model(cfg["model"])
     out = prepare_output(Path(a.output_dir or cfg["output_dir"]) /
                          ("run_" + time.strftime("%Y%m%d_%H%M%S")), a.overwrite)
     inf, ev = cfg["inference"], cfg["evaluation"]
@@ -61,7 +61,15 @@ def main():
 
     envs = sorted(set(groups.values()))
     if len(envs) < 3:
-        raise RuntimeError(f"Need at least 3 independent environment groups for LOEO, found: {envs}")
+        if a.limit:
+            print(f"Pilot mode: only {len(envs)} environment group(s) in the limited subset: {envs}.")
+            print("Switching to leave-one-scene-out grouping for the pilot run.")
+            for sid in groups:
+                groups[sid] = sid
+                records[sid]["environment"] = sid
+            envs = sorted(set(groups.values()))
+        else:
+            raise RuntimeError(f"Need at least 3 independent environment groups for LOEO, found: {envs}")
     min_gain = float(cfg.get("gate", {}).get("minimum_calibration_gain", 0.005))
     folds, scene_rows = [], []
     for heldout in envs:
