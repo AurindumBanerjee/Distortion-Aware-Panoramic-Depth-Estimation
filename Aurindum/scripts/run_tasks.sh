@@ -33,7 +33,7 @@ do_setup() {
     local ok=1
     say "== 1. tests"
     local tlog; tlog=$(mktemp)
-    if python -m pytest tests -q -p no:cacheprovider > "$tlog" 2>&1; then tail -1 "$tlog"; else tail -15 "$tlog"; say "❌ tests failed: fix before running anything"; ok=0; fi
+    if python -m pytest tests -q -p no:cacheprovider --basetemp "$(mktemp -d)/pytest" > "$tlog" 2>&1; then tail -1 "$tlog"; else tail -15 "$tlog"; say "❌ tests failed: fix before running anything"; ok=0; fi
     rm -f "$tlog"
     say "== 2. GPU and models"
     python -c "import torch,sys; print('CUDA:', torch.cuda.is_available()); sys.exit(0 if torch.cuda.is_available() else 1)" || { say "❌ no CUDA"; ok=0; }
