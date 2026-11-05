@@ -21,6 +21,10 @@ import time
 import zipfile
 from pathlib import Path
 
+# Ensure UTF-8 output on Windows consoles
+if hasattr(sys.stdout, "reconfigure"):
+    sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+
 ROOT = Path(__file__).resolve().parents[1]
 NB_PATH = ROOT / "followup_experiments" / "kaggle_two_t4_runner.ipynb"
 TARGET_DIR = ROOT / "followup_experiments"
@@ -46,7 +50,6 @@ def extract_payloads_from_notebook(nb_path: Path) -> list[tuple[str, str]]:
             full_text = "".join(texts)
 
             # 1. Search for per-stage payloads
-            # Pattern: === STAGE_SYNC_PAYLOAD_START: <stage> === ... === STAGE_SYNC_PAYLOAD_END: <stage> ===
             pattern = re.compile(
                 r"===\s*STAGE_SYNC_PAYLOAD_START:\s*([^\s=]+)\s*===\s*\n?(.*?)\n?===\s*STAGE_SYNC_PAYLOAD_END:\s*\1\s*===",
                 re.DOTALL,
@@ -143,7 +146,6 @@ def commit_to_git(summary_label: str) -> None:
     """Stages and commits any updated files in followup_experiments."""
     repo_root = ROOT.parent
     try:
-        # Check if anything changed in followup_experiments
         status = subprocess.run(
             ["git", "-C", str(repo_root), "status", "--porcelain", "Lokesh/followup_experiments/"],
             stdout=subprocess.PIPE,
@@ -164,7 +166,7 @@ def commit_to_git(summary_label: str) -> None:
             ["git", "-C", str(repo_root), "commit", "-m", commit_msg],
             check=True,
         )
-        print(f"✅ Git commit created: {commit_msg}")
+        print(f"[OK] Git commit created: {commit_msg}")
     except Exception as e:
         print(f"Note: Git commit notice: {e}. Output files are safely preserved on disk.")
 
@@ -184,7 +186,6 @@ def sync_once() -> int:
             total_files += n
             labels.append(label)
 
-    # Also rescue dashboard reports if available
     rescued = rescue_reports_from_dashboard(NB_PATH)
     total_files += rescued
 
@@ -201,7 +202,7 @@ def sync_once() -> int:
 
 
 def watch_mode(interval_sec: float = 5.0) -> None:
-    print(f"👀 Watching {NB_PATH} every {interval_sec}s for completed experiment runs...")
+    print(f"Watching {NB_PATH} every {interval_sec}s for completed experiment runs...")
     print("Press Ctrl+C to stop.")
     last_mtime = 0.0
     processed_payloads: set[str] = set()

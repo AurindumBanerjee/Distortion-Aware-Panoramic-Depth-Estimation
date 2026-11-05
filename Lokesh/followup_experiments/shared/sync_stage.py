@@ -2,9 +2,10 @@
 """Auto-sync script: packages and streams experiment outputs immediately after each run.
 
 Designed for remote execution (e.g. Kaggle / Colab / remote Linux VM).
-Emits base64 payloads to stdout so that VS Code Jupyter client automatically
-saves them into the local .ipynb file in real time. Also creates physical zip
-archives in /kaggle/working and optionally performs git commit/push if GITHUB_PAT is set.
+Emits 76-char wrapped base64 payloads to stdout so that VS Code Jupyter client
+automatically saves them into the local .ipynb file in real time without UI lag.
+Also creates physical zip archives in /kaggle/working and optionally performs git
+commit/push if GITHUB_PAT is set.
 """
 from __future__ import annotations
 
@@ -46,20 +47,31 @@ def sync_stage(stage_key: str, working_dir: Path | None = None) -> int:
     logs_dir = stage_path / "logs"
 
     files_to_pack: list[Path] = []
+    
+    # Target only the latest run directory to ensure instant synchronization
     if outputs_dir.is_dir():
-        for f in outputs_dir.rglob("*"):
-            if f.is_file() and f.suffix.lower() not in {".pt", ".pth", ".bin"}:
-                files_to_pack.append(f)
+        run_folders = sorted(
+            [d for d in outputs_dir.iterdir() if d.is_dir()],
+            key=lambda p: p.stat().st_mtime,
+        )
+        if run_folders:
+            latest_run = run_folders[-1]
+            for f in latest_run.rglob("*"):
+                if f.is_file() and f.suffix.lower() not in {".pt", ".pth", ".bin"}:
+                    files_to_pack.append(f)
+                    
     if logs_dir.is_dir():
-        for f in logs_dir.rglob("*.log"):
-            if f.is_file():
-                files_to_pack.append(f)
+        log_files = sorted(
+            [f for f in logs_dir.iterdir() if f.is_file() and f.suffix == ".log"],
+            key=lambda p: p.stat().st_mtime,
+        )
+        if log_files:
+            files_to_pack.append(log_files[-1])
 
     if not files_to_pack:
         print(f"[AUTO-SYNC] No output files found for {stage_dir_name}", flush=True)
         return 0
 
-    # Sort files by modification time
     files_to_pack.sort(key=lambda p: p.stat().st_mtime)
 
     # 1. In-memory zip for base64 payload
@@ -70,7 +82,8 @@ def sync_stage(stage_key: str, working_dir: Path | None = None) -> int:
             zf.write(f, arcname=str(rel))
 
     zip_bytes = buf.getvalue()
-    payload = base64.b64encode(zip_bytes).decode("ascii")
+    # Use MIME 76-character line wrapping to prevent Monaco editor / VS Code layout freezes
+    payload = base64.encodebytes(zip_bytes).decode("ascii")
 
     # 2. Save physical zip archives
     working = working_dir or Path("/kaggle/working")
@@ -101,7 +114,7 @@ def sync_stage(stage_key: str, working_dir: Path | None = None) -> int:
     print(f"=== STAGE_SYNC_PAYLOAD_START: {stage_dir_name} ===", flush=True)
     print(payload, flush=True)
     print(f"=== STAGE_SYNC_PAYLOAD_END: {stage_dir_name} ===", flush=True)
-    print(f"✅ [AUTO-SYNC] Stage {stage_dir_name} sync payload streamed to local client!\n", flush=True)
+    print(f"[AUTO-SYNC] Stage {stage_dir_name} sync payload streamed to local client!\n", flush=True)
 
     # 4. Optional direct Git push if GITHUB_PAT is available in environment
     try_git_push(stage_dir_name)
@@ -167,7 +180,7 @@ def try_git_push(stage_dir_name: str) -> None:
                     text=True,
                 )
                 if push_proc.returncode == 0:
-                    print(f"✅ [AUTO-SYNC] Pushed {stage_dir_name} outputs directly to GitHub!", flush=True)
+                    print(f"[AUTO-SYNC] Pushed {stage_dir_name} outputs directly to GitHub!", flush=True)
                 else:
                     print(f"[AUTO-SYNC] Git push skipped/failed: {push_proc.stderr.strip()}", flush=True)
     except Exception as e:
@@ -185,4 +198,3 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-
