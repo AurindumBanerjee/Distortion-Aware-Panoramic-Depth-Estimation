@@ -1,0 +1,210 @@
+{
+  "experiment": "01_scale_only_protocol",
+  "model": {
+    "name": "da360",
+    "space": "disparity",
+    "scale": "scale",
+    "geometry_erp": "range",
+    "geometry_perspective": "range",
+    "device": "cuda"
+  },
+  "dataset": {
+    "name": "structured3d",
+    "root": "/kaggle/input/datasets/lokeshmotwani213/structured3d-panoramic-depth/structured3d",
+    "list": "test.txt",
+    "height": 512,
+    "width": 1024,
+    "max_scenes": 200
+  },
+  "num_scenes": 16,
+  "environment": {
+    "python": "3.13.16",
+    "platform": "Linux-6.18.55+-x86_64-with-glibc2.39",
+    "torch": "2.11.0+cu130",
+    "cuda_available": true,
+    "cuda_devices": [
+      "Tesla T4"
+    ],
+    "time": "2026-11-05 02:34:11"
+  },
+  "summary": {
+    "align-all": {
+      "scale": {
+        "all": {
+          "mean_abs_rel": 0.02599715041357051,
+          "median_abs_rel": 0.014980846595675818,
+          "n_scenes": 16
+        },
+        "45-60": {
+          "mean_abs_rel": 0.02404936959680611,
+          "median_abs_rel": 0.011804444171468913,
+          "n_scenes": 16
+        },
+        "60-75": {
+          "mean_abs_rel": 0.023282018469304444,
+          "median_abs_rel": 0.011329073092456204,
+          "n_scenes": 16
+        },
+        "75-90": {
+          "mean_abs_rel": 0.0221572393480469,
+          "median_abs_rel": 0.007725273261802255,
+          "n_scenes": 16
+        }
+      },
+      "affine": {
+        "all": {
+          "mean_abs_rel": 0.024625343537174136,
+          "median_abs_rel": 0.014878988515847066,
+          "n_scenes": 16
+        },
+        "45-60": {
+          "mean_abs_rel": 0.021027237759959433,
+          "median_abs_rel": 0.010609938467592494,
+          "n_scenes": 16
+        },
+        "60-75": {
+          "mean_abs_rel": 0.01900320227374995,
+          "median_abs_rel": 0.010124935541461082,
+          "n_scenes": 16
+        },
+        "75-90": {
+          "mean_abs_rel": 0.016329883030974456,
+          "median_abs_rel": 0.0067810579932749,
+          "n_scenes": 16
+        }
+      }
+    },
+    "align-equatorial": {
+      "scale": {
+        "all": {
+          "mean_abs_rel": 0.026940773570216205,
+          "median_abs_rel": 0.015294108262957044,
+          "n_scenes": 16
+        },
+        "45-60": {
+          "mean_abs_rel": 0.026436971421827205,
+          "median_abs_rel": 0.01403262182366146,
+          "n_scenes": 16
+        },
+        "60-75": {
+          "mean_abs_rel": 0.02528733383093294,
+          "median_abs_rel": 0.015172842018846888,
+          "n_scenes": 16
+        },
+        "75-90": {
+          "mean_abs_rel": 0.0258961393286365,
+          "median_abs_rel": 0.009864236977496305,
+          "n_scenes": 16
+        }
+      },
+      "affine": {
+        "all": {
+          "mean_abs_rel": 0.024011238232383263,
+          "median_abs_rel": 0.017474357182748167,
+          "n_scenes": 16
+        },
+        "45-60": {
+          "mean_abs_rel": 0.023028496897901277,
+          "median_abs_rel": 0.015822691723415747,
+          "n_scenes": 16
+        },
+        "60-75": {
+          "mean_abs_rel": 0.021209730526071474,
+          "median_abs_rel": 0.016116911369450534,
+          "n_scenes": 16
+        },
+        "75-90": {
+          "mean_abs_rel": 0.01974520584583494,
+          "median_abs_rel": 0.014284744086780161,
+          "n_scenes": 16
+        }
+      }
+    }
+  },
+  "paired_cluster_bootstrap_scale_vs_affine": {
+    "align-all": {
+      "all": {
+        "n_scenes": 16,
+        "n_groups": 16,
+        "median_gain": -0.004374893701995709,
+        "ci95": [
+          -0.022471808098060913,
+          0.02689915967919264
+        ],
+        "direction": "positive = scale-only lower AbsRel than affine"
+      },
+      "45-60": {
+        "n_scenes": 16,
+        "n_groups": 16,
+        "median_gain": -0.05557639751325211,
+        "ci95": [
+          -0.10296495145604853,
+          0.004479723894079004
+        ],
+        "direction": "positive = scale-only lower AbsRel than affine"
+      },
+      "60-75": {
+        "n_scenes": 16,
+        "n_groups": 16,
+        "median_gain": -0.06204286153304435,
+        "ci95": [
+          -0.23878484154281504,
+          -0.009268031199957566
+        ],
+        "direction": "positive = scale-only lower AbsRel than affine"
+      },
+      "75-90": {
+        "n_scenes": 16,
+        "n_groups": 16,
+        "median_gain": -0.12582350039387216,
+        "ci95": [
+          -0.36189915212404883,
+          -1.7447209174172874e-05
+        ],
+        "direction": "positive = scale-only lower AbsRel than affine"
+      }
+    },
+    "align-equatorial": {
+      "all": {
+        "n_scenes": 16,
+        "n_groups": 16,
+        "median_gain": 0.013720163920198713,
+        "ci95": [
+          -0.13486636388817,
+          0.1794916210648049
+        ],
+        "direction": "positive = scale-only lower AbsRel than affine"
+      },
+      "45-60": {
+        "n_scenes": 16,
+        "n_groups": 16,
+        "median_gain": 0.027173564298156892,
+        "ci95": [
+          -0.1916148910523974,
+          0.3062511223834323
+        ],
+        "direction": "positive = scale-only lower AbsRel than affine"
+      },
+      "60-75": {
+        "n_scenes": 16,
+        "n_groups": 16,
+        "median_gain": 0.026315353034620317,
+        "ci95": [
+          -0.2733748464850554,
+          0.32833986617829936
+        ],
+        "direction": "positive = scale-only lower AbsRel than affine"
+      },
+      "75-90": {
+        "n_scenes": 16,
+        "n_groups": 16,
+        "median_gain": -0.05595818460575871,
+        "ci95": [
+          -0.4751884650354583,
+          0.41345345732369815
+        ],
+        "direction": "positive = scale-only lower AbsRel than affine"
+      }
+    }
+  }
+}

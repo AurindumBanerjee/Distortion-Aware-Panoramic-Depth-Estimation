@@ -1,0 +1,396 @@
+{
+  "experiment": "04_mono360_20view",
+  "model": {
+    "name": "midas_dpt_hybrid_384",
+    "space": "disparity",
+    "scale": "affine",
+    "geometry_erp": "range",
+    "geometry_perspective": "planar",
+    "device": "cuda"
+  },
+  "environment": {
+    "python": "3.13.16",
+    "platform": "Linux-6.18.55+-x86_64-with-glibc2.39",
+    "torch": "2.11.0+cu130",
+    "cuda_available": true,
+    "cuda_devices": [
+      "Tesla T4"
+    ],
+    "time": "2026-11-05 02:40:08"
+  },
+  "n_scenes": 16,
+  "summary": {
+    "align-all": {
+      "baseline": {
+        "all": {
+          "mean": 0.41827013199858154,
+          "median": 0.48918333617231824
+        },
+        "60-75": {
+          "mean": 0.1986324484449934,
+          "median": 0.23765952972696938
+        },
+        "75-90": {
+          "mean": 0.27086147170124253,
+          "median": 0.33287647242063834
+        }
+      },
+      "two_pole_tangent": {
+        "all": {
+          "mean": 0.5746133153723628,
+          "median": 0.6190402925763204
+        },
+        "60-75": {
+          "mean": 0.1533042885803674,
+          "median": 0.1766113602456385
+        },
+        "75-90": {
+          "mean": 0.1843739433647436,
+          "median": 0.20398205972286715
+        }
+      },
+      "mono360_20view": {
+        "all": {
+          "mean": 0.7628272750394274,
+          "median": 1.041952630649401
+        },
+        "60-75": {
+          "mean": 0.1554950381905452,
+          "median": 0.19689818986204166
+        },
+        "75-90": {
+          "mean": 0.1749166929117585,
+          "median": 0.20919177855158066
+        }
+      }
+    },
+    "align-equatorial": {
+      "baseline": {
+        "all": {
+          "mean": 0.2962446600640959,
+          "median": 0.31356638121192587
+        },
+        "60-75": {
+          "mean": 0.3272944898345258,
+          "median": 0.34284183240416904
+        },
+        "75-90": {
+          "mean": 0.42740217988988416,
+          "median": 0.43706460346138615
+        }
+      },
+      "two_pole_tangent": {
+        "all": {
+          "mean": 0.25096066677697976,
+          "median": 0.26434006618257744
+        },
+        "60-75": {
+          "mean": 0.2458154637410156,
+          "median": 0.24421766555010044
+        },
+        "75-90": {
+          "mean": 0.27957334348211943,
+          "median": 0.27190073847749097
+        }
+      },
+      "mono360_20view": {
+        "all": {
+          "mean": 0.2919369952657074,
+          "median": 0.36496644126068417
+        },
+        "60-75": {
+          "mean": 0.20895285906278835,
+          "median": 0.238037617415769
+        },
+        "75-90": {
+          "mean": 0.24359940937492766,
+          "median": 0.28967273034144214
+        }
+      }
+    }
+  },
+  "paired_cluster_bootstrap_vs_baseline": {
+    "align-all": {
+      "two_pole_tangent": {
+        "all": {
+          "n_scenes": 16,
+          "n_groups": 1,
+          "median_gain": -0.2098656667307074,
+          "ci95": [
+            -0.2098656667307074,
+            -0.2098656667307074
+          ]
+        },
+        "60-75": {
+          "n_scenes": 16,
+          "n_groups": 1,
+          "median_gain": 0.24174209178669842,
+          "ci95": [
+            0.24174209178669842,
+            0.24174209178669842
+          ]
+        },
+        "75-90": {
+          "n_scenes": 16,
+          "n_groups": 1,
+          "median_gain": 0.38216794472375587,
+          "ci95": [
+            0.38216794472375587,
+            0.38216794472375587
+          ]
+        }
+      },
+      "mono360_20view": {
+        "all": {
+          "n_scenes": 16,
+          "n_groups": 1,
+          "median_gain": -0.732535391725706,
+          "ci95": [
+            -0.732535391725706,
+            -0.732535391725706
+          ]
+        },
+        "60-75": {
+          "n_scenes": 16,
+          "n_groups": 1,
+          "median_gain": 0.16842770856011446,
+          "ci95": [
+            0.16842770856011446,
+            0.16842770856011446
+          ]
+        },
+        "75-90": {
+          "n_scenes": 16,
+          "n_groups": 1,
+          "median_gain": 0.38591574281050517,
+          "ci95": [
+            0.38591574281050517,
+            0.38591574281050517
+          ]
+        }
+      }
+    },
+    "align-equatorial": {
+      "two_pole_tangent": {
+        "all": {
+          "n_scenes": 16,
+          "n_groups": 1,
+          "median_gain": 0.1742249818631083,
+          "ci95": [
+            0.1742249818631083,
+            0.1742249818631083
+          ]
+        },
+        "60-75": {
+          "n_scenes": 16,
+          "n_groups": 1,
+          "median_gain": 0.26730003228734756,
+          "ci95": [
+            0.26730003228734756,
+            0.26730003228734756
+          ]
+        },
+        "75-90": {
+          "n_scenes": 16,
+          "n_groups": 1,
+          "median_gain": 0.36210956062241767,
+          "ci95": [
+            0.36210956062241767,
+            0.36210956062241767
+          ]
+        }
+      },
+      "mono360_20view": {
+        "all": {
+          "n_scenes": 16,
+          "n_groups": 1,
+          "median_gain": 0.04163350334465022,
+          "ci95": [
+            0.04163350334465022,
+            0.04163350334465022
+          ]
+        },
+        "60-75": {
+          "n_scenes": 16,
+          "n_groups": 1,
+          "median_gain": 0.34571239976930224,
+          "ci95": [
+            0.34571239976930224,
+            0.34571239976930224
+          ]
+        },
+        "75-90": {
+          "n_scenes": 16,
+          "n_groups": 1,
+          "median_gain": 0.4269823385488523,
+          "ci95": [
+            0.4269823385488523,
+            0.4269823385488523
+          ]
+        }
+      }
+    }
+  },
+  "per_scene_runtime": {
+    "ClothingStore_0002": {
+      "baseline_calls": 1,
+      "two_pole_total_calls": 3,
+      "mono360_calls": 20,
+      "mono360_alignment_runtime_s": 9.733030073000009,
+      "mono360_alignment_energy": [
+        1.3323284751682198,
+        4.508154918988233
+      ]
+    },
+    "ClothingStore_0028": {
+      "baseline_calls": 1,
+      "two_pole_total_calls": 3,
+      "mono360_calls": 20,
+      "mono360_alignment_runtime_s": 9.688684846999877,
+      "mono360_alignment_energy": [
+        1.3133536413387046,
+        4.4922769307537465
+      ]
+    },
+    "ClothingStore_0033": {
+      "baseline_calls": 1,
+      "two_pole_total_calls": 3,
+      "mono360_calls": 20,
+      "mono360_alignment_runtime_s": 9.444956499,
+      "mono360_alignment_energy": [
+        1.3530193059641156,
+        4.42760263682209
+      ]
+    },
+    "ClothingStore_0067": {
+      "baseline_calls": 1,
+      "two_pole_total_calls": 3,
+      "mono360_calls": 20,
+      "mono360_alignment_runtime_s": 10.225534597000205,
+      "mono360_alignment_energy": [
+        1.3295354399733927,
+        3.635970303980689
+      ]
+    },
+    "ClothingStore_0079": {
+      "baseline_calls": 1,
+      "two_pole_total_calls": 3,
+      "mono360_calls": 20,
+      "mono360_alignment_runtime_s": 9.936297212000227,
+      "mono360_alignment_energy": [
+        1.4011012600796917,
+        3.9339292492965425
+      ]
+    },
+    "ClothingStore_0082": {
+      "baseline_calls": 1,
+      "two_pole_total_calls": 3,
+      "mono360_calls": 20,
+      "mono360_alignment_runtime_s": 9.665042724999694,
+      "mono360_alignment_energy": [
+        1.3732854075655985,
+        3.8051357343496255
+      ]
+    },
+    "ClothingStore_0092": {
+      "baseline_calls": 1,
+      "two_pole_total_calls": 3,
+      "mono360_calls": 20,
+      "mono360_alignment_runtime_s": 9.740111342999626,
+      "mono360_alignment_energy": [
+        1.3545657714778798,
+        3.954682235313772
+      ]
+    },
+    "ClothingStore_0127": {
+      "baseline_calls": 1,
+      "two_pole_total_calls": 3,
+      "mono360_calls": 20,
+      "mono360_alignment_runtime_s": 10.000695422999797,
+      "mono360_alignment_energy": [
+        1.3175629589037645,
+        4.137093079590023
+      ]
+    },
+    "ClothingStore_0128": {
+      "baseline_calls": 1,
+      "two_pole_total_calls": 3,
+      "mono360_calls": 20,
+      "mono360_alignment_runtime_s": 10.020191808999698,
+      "mono360_alignment_energy": [
+        1.2799306267108348,
+        4.110042733096982
+      ]
+    },
+    "ClothingStore_0141": {
+      "baseline_calls": 1,
+      "two_pole_total_calls": 3,
+      "mono360_calls": 20,
+      "mono360_alignment_runtime_s": 9.99580257200023,
+      "mono360_alignment_energy": [
+        1.2568852754042017,
+        4.185011115727007
+      ]
+    },
+    "ClothingStore_0151": {
+      "baseline_calls": 1,
+      "two_pole_total_calls": 3,
+      "mono360_calls": 20,
+      "mono360_alignment_runtime_s": 9.998885072000121,
+      "mono360_alignment_energy": [
+        1.3587055251344349,
+        4.343274480408651
+      ]
+    },
+    "ClothingStore_0164": {
+      "baseline_calls": 1,
+      "two_pole_total_calls": 3,
+      "mono360_calls": 20,
+      "mono360_alignment_runtime_s": 9.78225823899993,
+      "mono360_alignment_energy": [
+        1.2060486663452015,
+        4.1042471219879015
+      ]
+    },
+    "ClothingStore_0168": {
+      "baseline_calls": 1,
+      "two_pole_total_calls": 3,
+      "mono360_calls": 20,
+      "mono360_alignment_runtime_s": 10.236151738999979,
+      "mono360_alignment_energy": [
+        1.15882111891179,
+        4.043381768487966
+      ]
+    },
+    "ClothingStore_0183": {
+      "baseline_calls": 1,
+      "two_pole_total_calls": 3,
+      "mono360_calls": 20,
+      "mono360_alignment_runtime_s": 10.039944705999915,
+      "mono360_alignment_energy": [
+        1.298909167670873,
+        4.471000142185011
+      ]
+    },
+    "ClothingStore_0186": {
+      "baseline_calls": 1,
+      "two_pole_total_calls": 3,
+      "mono360_calls": 20,
+      "mono360_alignment_runtime_s": 9.777266386000065,
+      "mono360_alignment_energy": [
+        1.2277626230259617,
+        4.330344254650073
+      ]
+    },
+    "ClothingStore_0187": {
+      "baseline_calls": 1,
+      "two_pole_total_calls": 3,
+      "mono360_calls": 20,
+      "mono360_alignment_runtime_s": 10.055947093000213,
+      "mono360_alignment_energy": [
+        1.2978193820701183,
+        4.447998618537097
+      ]
+    }
+  }
+}
