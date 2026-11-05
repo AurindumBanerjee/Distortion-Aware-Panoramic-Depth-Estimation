@@ -1,0 +1,27 @@
+xFormers not available
+xFormers not available
+pretrained model is not available.
+Model: {'name': 'da360', 'space': 'disparity', 'scale': 'scale', 'geometry_erp': 'range', 'geometry_perspective': 'range', 'device': 'cuda'} | scenes: 200 | candidate gates: [30, 40, 45, 50, 60, 70]
+/kaggle/working/DA360/networks/da360.py:74: FutureWarning: `torch.cuda.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cuda', args...)` instead.
+  with autocast(enabled=self.mixed_precision):
+[10/200] ClothingStore_0141 (ClothingStore)
+[20/200] ClothingStore_0206 (ClothingStore)
+[30/200] Diner50_0082 (Diner50)
+[40/200] Diner50_0191 (Diner50)
+[50/200] Diner50_0282 (Diner50)
+[60/200] FeudalJapan_Meshingun_0060 (FeudalJapan_Meshingun)
+[70/200] FeudalJapan_Meshingun_0161 (FeudalJapan_Meshingun)
+[80/200] ModularBakeryShop_0064 (ModularBakeryShop)
+[90/200] ModularBakeryShop_0142 (ModularBakeryShop)
+[100/200] ModularBakeryShop_0256 (ModularBakeryShop)
+[110/200] Mountain_Environment_Set_0141 (Mountain_Environment_Set)
+[120/200] Mountain_Environment_Set_0206 (Mountain_Environment_Set)
+[130/200] SouthOfFrance_0079 (SouthOfFrance)
+[140/200] SouthOfFrance_0186 (SouthOfFrance)
+[150/200] SouthOfFrance_0266 (SouthOfFrance)
+[160/200] Warehouse_0128 (Warehouse)
+[170/200] Warehouse_0202 (Warehouse)
+[180/200] YellowParrot_0067 (YellowParrot)
+[190/200] YellowParrot_0183 (YellowParrot)
+[200/200] YellowParrot_0254 (YellowParrot)
+Saved /kaggle/working/Lokesh/followup_experiments/02_domain_conditioned_gate/outputs/run_20261105_193545/REPORT.md
