@@ -132,3 +132,28 @@ def test_detect_caps_survives_heavy_jpeg_with_an_edge_inside_a_block():
             if ctx.get(k) is not None:
                 assert abs(caps[k] - ctx[k]) < 3.0  # within half a JPEG block (8 rows = 5.6 deg at H = 256)
     assert cap_fault(detect_caps(jpeg_apply(img, {})[0])) is None
+
+
+def _study_rows():
+    return [{"seam|none": {"all": 1.0}, "seam|clean": {"all": 0.5}, "seam|gain_match": {"all": 0.6}} for _ in range(10)]
+
+
+def test_calibration_never_reads_external_datasets(tmp_path):
+    import subprocess
+    for tag in ("dap_s3", "dap_panox", "dap_stanford", "dap_nyc", "dap_s3mini"):
+        (tmp_path / f"study_{tag}.json").write_text(json.dumps({"rows": _study_rows()}))
+    out = subprocess.run([sys.executable, str(ROOT / "scripts" / "calibrate_correction.py"), "--results", str(tmp_path)],
+                         capture_output=True, text=True, cwd=ROOT)
+    assert out.returncode == 0, out.stderr
+    text = (tmp_path / "CORRECTION_POLICY.md").read_text()
+    assert "| s3 |" in text and "| panox |" in text and "stanford" not in text.split("\n## ")[1] and "nyc" not in text.split("\n## ")[1]
+
+
+def test_external_runs_are_tested_with_a_policy_from_core_sets_only(tmp_path):
+    from run_correction import heldout_policy
+    for tag in ("dap_s3", "dap_panox", "dap_stanford", "dap_nyc"):
+        (tmp_path / f"study_{tag}.json").write_text(json.dumps({"rows": _study_rows()}))
+    _, trained = heldout_policy("dap", "stanford", tmp_path)
+    assert trained == ["panox", "s3"]
+    _, trained = heldout_policy("dap", "s3", tmp_path)
+    assert trained == ["panox"]          # a core run still leaves its own dataset out, and never sees the external ones

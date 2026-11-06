@@ -36,7 +36,7 @@ do_run() {
         sp=all; [ "$d" = s3 ] && sp=eval   # S3 calibration houses stay untouched
         local t0; t0=$(date +%s); say ">>> $m $d"
         if python scripts/distortion_study.py --config "3_structured3d_benchmark/$(cfg_of $m $d)" --tag "${TAG_PREFIX:-}${m}_${d}" --split $sp \
-            --max_scenes "$N" --examples 2 $only $(model_sets $m); then say "✅ $m $d ($(( $(date +%s) - t0 )) s)"; else say "❌ $m $d FAILED"; fi
+            --max_scenes "$N" --examples 3 $only $(model_sets $m); then say "✅ $m $d ($(( $(date +%s) - t0 )) s)"; else say "❌ $m $d FAILED"; fi
     done; done
     say "🎉 Distortion study finished."
 }

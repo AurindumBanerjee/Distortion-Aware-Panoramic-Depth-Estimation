@@ -1,5 +1,7 @@
 # Capture-aware correction: learned policy and held-out test
 
+Learned from the core datasets only: holo_in, holo_out, panox, s3. Stanford2D3D / NYC are not used here (see results/EXTERNAL_stanford_nyc.md).
+
 Fix per (model, fault) chosen on the other datasets (leave-one-dataset-out) and scored on the held-out one. A fix is kept only if its median change vs no fix is below -2% and it improves at least 60% of training frames; otherwise no fix ('none').
 
 Columns per held-out dataset: chosen fix · median change vs uncorrected · frames improved · median recovery (frames hurt >= 5%). The metric is the affected region for missing-pixel faults, else the whole panorama. `relevel_known` and `wiener` need sensor data (IMU / gyro).

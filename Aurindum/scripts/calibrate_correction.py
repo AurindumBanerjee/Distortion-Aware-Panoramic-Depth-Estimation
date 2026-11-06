@@ -27,6 +27,9 @@ sys.path.insert(0, str(ROOT))
 from distortions.catalogue import CATALOGUE, MITIGATIONS  # noqa: E402
 
 FAULTS = {d.key: d for d in CATALOGUE}
+# The fix choices are learned from these datasets ONLY. Stanford2D3D and NYC are external: never used to choose or
+# tune anything, only to test the finished policy (scripts/run_correction.py writes their results to results/external/).
+CORE_SETS = ("s3", "panox", "holo_in", "holo_out")
 
 
 def metric_of(d) -> str:
@@ -74,16 +77,21 @@ def choose(train, fault, min_gain, min_win):
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--results", default=str(ROOT / "results"))
+    ap.add_argument("--sets", default=",".join(CORE_SETS), help="datasets the policy is learned from (default: the four core sets; "
+                    "external sets stanford / nyc must not be listed)")
     ap.add_argument("--min_gain", type=float, default=0.02, help="required median improvement (fraction) on training")
     ap.add_argument("--min_win", type=float, default=0.6, help="required share of training frames improved")
     a = ap.parse_args()
     res = Path(a.results)
+    sets = set(a.sets.split(","))
     data = defaultdict(dict)  # model -> dataset -> rows
     for p in sorted(res.glob("study_*.json")):
         tag = p.stem[len("study_"):]
         if tag.startswith("smoke") or "_" not in tag or tag.endswith("mini"):  # mini = early pilot runs
             continue
         model, ds = tag.split("_", 1)
+        if ds not in sets:
+            continue
         data[model][ds] = json.loads(p.read_text())["rows"]
     if not data:
         sys.exit(f"no study_<model>_<dataset>.json in {res}")
@@ -91,6 +99,8 @@ def main():
     faults = [d.key for d in CATALOGUE if d.mitigations]
     policy, lines = {}, []
     lines += ["# Capture-aware correction: learned policy and held-out test", "",
+              f"Learned from the core datasets only: {', '.join(sorted(sets))}. Stanford2D3D / NYC are not used here "
+              "(see results/EXTERNAL_stanford_nyc.md).", "",
               "Fix per (model, fault) chosen on the other datasets (leave-one-dataset-out) and scored on the held-out one. "
               f"A fix is kept only if its median change vs no fix is below -{100 * a.min_gain:.0f}% and it improves at least "
               f"{100 * a.min_win:.0f}% of training frames; otherwise no fix ('none').", "",

@@ -121,8 +121,11 @@ DA360 was trained on Structured3D, so its Structured3D numbers are in-domain.
 | `scripts/diagnose_reanchor.py` | per-pass intrinsic vs realised gain of rotated passes |
 | `scripts/run_tasks.sh` | **current driver**: `setup`, `smoke`, `start` (distortion study, then round 3b, then summaries), `status`, `stop` |
 | `scripts/run_distortion_study.sh` | the study queue (MODELS, SETS, N, ONLY, TAG_PREFIX) |
-| `scripts/calibrate_correction.py` | learns the correction policy from `study_*.json` (leave-one-dataset-out; keeps no fix unless one wins) -> `results/correction_policy.json`, `CORRECTION_POLICY.md`; CPU only |
-| `scripts/run_correction.py` | end-to-end held-out test of `correct()` on a real model -> `results/CORRECTION_<tag>.md` |
+| `scripts/calibrate_correction.py` | learns the correction policy from the CORE `study_*.json` only (s3, panox, holo_in, holo_out; stanford / nyc are never used; leave-one-dataset-out; keeps no fix unless one wins) -> `results/correction_policy.json`, `CORRECTION_POLICY.md`; CPU only |
+| `scripts/run_correction.py` | end-to-end held-out test of `correct()` on a real model -> `results/CORRECTION_<tag>.md`; external sets (stanford / nyc) write to `results/external/` and are tested with a policy learned on the four core sets only |
+| `scripts/run_holistic.sh` | **the one driver for a full pass** over every model x dataset: study -> external sweeps -> correction -> report + figures. Skips what already exists (FORCE=1 reruns). Env: MODELS, SETS (default all six), N, N_SWEEP |
+| `scripts/make_figures.py` | every comparison figure from `results/` (CPU, seconds): clean error, fault cost, per-fault technique heatmaps, do-no-harm, correction gain, sweep curves, and image montages (degraded vs clean vs fixed, all models stacked, end-to-end before/after) -> `results/figures/` + `INDEX.md` |
+| `scripts/external_report.py` | separate report for Stanford2D3D + NYC -> `results/EXTERNAL_stanford_nyc.md` (fault costs from the study files, end-to-end results from `results/external/`) |
 | `scripts/run_correction.sh` | queue for the two above (MODELS, SETS, N, TAG_PREFIX) |
 | `scripts/run_round3b.sh`, `run_round3.sh` | round 3b / 3 queues (stages S/B/R, A1/A2/B/D) |
 | `scripts/run_next_experiments.sh`, `run_mobius_ablation.sh` | round 2 queues (stages A-I), ablation |
@@ -146,6 +149,7 @@ DA360 was trained on Structured3D, so its Structured3D numbers are in-domain.
 | `test_geometry.py`, `test_scene_projection.py` | conventions, sampling, rotations, tangent projection, range vs z |
 | `test_methods.py` | Poisson exactness, alignment (3-term fit), Moebius round trip, ensembles, gates, presets, fit guard, joint re-anchoring, planar prior, `group_of`, dataset subset / mask loading |
 | `test_distortion_analysis.py` | sweep separates distortion from content and orientation (synthetic models with known answers), onset rule, split, do-no-harm (corrections return the baseline bit for bit when no onset is measured) |
+| `test_figures.py` | every figure type is drawn from a synthetic results folder with core and external sets |
 | `test_correction.py` | cap detection (simulated masks reproduced, rendered flat pole rows ignored), routing in `correct()`, policy selection |
 | `test_distortions.py` | catalogue geometry: tilt round trip and re-levelling, occlusion fixes, gain matching, Wiener, parallax, vignetting, flat-field |
 | `test_pipeline.py`, `test_dap_wrapper.py` | end-to-end oracle pipeline, DAP wrapper plumbing (fake repo) |

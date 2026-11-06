@@ -168,3 +168,28 @@ orientation (a pitch rotation tips the scene; floors stop being "below"). Round 
 - [x] end-to-end smoke on CPU (MiDaS, 4 S3 frames): clean images pass through unchanged
 - [ ] server: `scripts/run_correction.sh start` (needs the study JSONs in results/; ~same cost as the study) ->
       `results/CORRECTION_<model>_<set>.md`: held-out gains of the whole front end per model and dataset
+
+## Stanford2D3D and NYC are external (independent of the core results)
+
+- they never choose or tune a fix: `calibrate_correction.py` learns the policy from s3 / panox / holo_in / holo_out only
+  (`CORE_SETS`); `run_correction.py` tests stanford / nyc with that policy and writes to `results/external/`
+- study files keep their own names (`study_<model>_{stanford,nyc}.json`) and are ignored by the calibration
+- report them with `python scripts/external_report.py` -> `results/EXTERNAL_stanford_nyc.md`, separate from `CORRECTION_POLICY.md`
+- Stanford's simulated `nadir` / `vfov` faults fall inside its real black caps: not a meaningful fault test; its `clean`
+  scenario (real caps detected and filled) is the real-occlusion result
+- re-running Stanford with area 5b: the new files overwrite the 5a-only ones; use only the final ones
+
+## Holistic runs (from now on)
+
+Every run produces results AND comparison material, and goes through one driver:
+
+- `scripts/run_holistic.sh start` (status / stop): study (images saved for 3 frames per cell) -> rotation / dilation / flip
+  sweeps on NYC (Stanford skipped: its real black caps confound the sweeps; `SWEEP_STANFORD=1` to force) -> correction
+  pipeline per model x dataset with before / after images -> `external_report.py` + `make_figures.py`
+- it skips pairs that already have results, except correction results from before this version (they lack images and used
+  a policy that also saw the external sets): those are redone. `FORCE=1` redoes everything
+- outputs: `results/figures/` (INDEX.md lists them): `fig_clean_error`, `fig_fault_cost`, `fig_fix_<fault>` (technique x
+  model x dataset), `fig_do_no_harm`, `fig_correction_gain`, `fig_sweeps_<mode>`, and the image montages in `visual/`
+  (degraded input | clean | degraded | fixed | errors), `visual_models/` (all models stacked, same frame) and
+  `visual_correction/` (end-to-end before / after)
+- images and PNGs are small; commit `results/figures/` and the `*_img/` folders with the results

@@ -70,7 +70,7 @@ def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     add_common_args(ap)
     ap.add_argument("--only", default=None, help="comma list of distortion keys (default: all)")
-    ap.add_argument("--examples", type=int, default=2, help="frames for which images are saved")
+    ap.add_argument("--examples", type=int, default=3, help="frames for which images are saved")
     ap.set_defaults(split="all", max_scenes=40)
     a = ap.parse_args()
     cfg = load_config(a.config, a.overrides)
