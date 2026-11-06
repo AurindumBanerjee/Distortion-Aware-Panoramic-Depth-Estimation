@@ -158,3 +158,13 @@ orientation (a pitch rotation tips the scene; floors stop being "below"). Round 
 2. B5 identity checks (unit tests plus one smoke run).
 3. A1–A4 and B1–B3 on the evaluation split, all models and datasets.
 4. Summary (`scripts/collect_results.py`), figures, write-up.
+
+## Capture-aware correction (model-agnostic front end, `distortions/correction.py`)
+
+- [x] policy learned from the 16 study files, leave-one-dataset-out (`scripts/calibrate_correction.py`, CPU, seconds):
+      `results/CORRECTION_POLICY.md`, `results/correction_policy.json`
+- [x] cap detection from the image (`detect_caps`): 0 false alarms on 96 clean / photometrically degraded real frames,
+      138/144 simulated caps found (with and without JPEG q8), edge within 1.6 deg; misses fall back to no fix
+- [x] end-to-end smoke on CPU (MiDaS, 4 S3 frames): clean images pass through unchanged
+- [ ] server: `scripts/run_correction.sh start` (needs the study JSONs in results/; ~same cost as the study) ->
+      `results/CORRECTION_<model>_<set>.md`: held-out gains of the whole front end per model and dataset

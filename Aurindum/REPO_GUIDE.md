@@ -89,6 +89,7 @@ DA360 was trained on Structured3D, so its Structured3D numbers are in-domain.
 | `evaluation/latitude_analysis.py` | per-band metrics (0-15 ... 75-90), latitude profiles, onset helper |
 | `evaluation/distortion_analysis.py` | **round 3**: calibration split `split_of` (hash of cluster id), latitude profile, **distortion sweep** (`sweep_frame`, modes rotation / dilation / flip), cluster-robust curves, onset rule, curve loading for Part B |
 | `distortions/catalogue.py` | **capture faults + fixes** (section 6) |
+| `distortions/correction.py` | **capture-aware correction front end** for any model: `correct(model, rgb, CaptureMeta, policy)`; caps detected from the image (`detect_caps`), tilt / shake from sensor metadata, fix per fault from a learned policy |
 
 ### Methods
 
@@ -120,6 +121,9 @@ DA360 was trained on Structured3D, so its Structured3D numbers are in-domain.
 | `scripts/diagnose_reanchor.py` | per-pass intrinsic vs realised gain of rotated passes |
 | `scripts/run_tasks.sh` | **current driver**: `setup`, `smoke`, `start` (distortion study, then round 3b, then summaries), `status`, `stop` |
 | `scripts/run_distortion_study.sh` | the study queue (MODELS, SETS, N, ONLY, TAG_PREFIX) |
+| `scripts/calibrate_correction.py` | learns the correction policy from `study_*.json` (leave-one-dataset-out; keeps no fix unless one wins) -> `results/correction_policy.json`, `CORRECTION_POLICY.md`; CPU only |
+| `scripts/run_correction.py` | end-to-end held-out test of `correct()` on a real model -> `results/CORRECTION_<tag>.md` |
+| `scripts/run_correction.sh` | queue for the two above (MODELS, SETS, N, TAG_PREFIX) |
 | `scripts/run_round3b.sh`, `run_round3.sh` | round 3b / 3 queues (stages S/B/R, A1/A2/B/D) |
 | `scripts/run_next_experiments.sh`, `run_mobius_ablation.sh` | round 2 queues (stages A-I), ablation |
 | `scripts/make_*_list.py`, `download_extra_datasets.sh` | dataset lists; optional Stanford2D3D / NYC download |
@@ -142,6 +146,7 @@ DA360 was trained on Structured3D, so its Structured3D numbers are in-domain.
 | `test_geometry.py`, `test_scene_projection.py` | conventions, sampling, rotations, tangent projection, range vs z |
 | `test_methods.py` | Poisson exactness, alignment (3-term fit), Moebius round trip, ensembles, gates, presets, fit guard, joint re-anchoring, planar prior, `group_of`, dataset subset / mask loading |
 | `test_distortion_analysis.py` | sweep separates distortion from content and orientation (synthetic models with known answers), onset rule, split, do-no-harm (corrections return the baseline bit for bit when no onset is measured) |
+| `test_correction.py` | cap detection (simulated masks reproduced, rendered flat pole rows ignored), routing in `correct()`, policy selection |
 | `test_distortions.py` | catalogue geometry: tilt round trip and re-levelling, occlusion fixes, gain matching, Wiener, parallax, vignetting, flat-field |
 | `test_pipeline.py`, `test_dap_wrapper.py` | end-to-end oracle pipeline, DAP wrapper plumbing (fake repo) |
 

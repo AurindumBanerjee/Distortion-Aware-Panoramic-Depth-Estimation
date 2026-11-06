@@ -1,0 +1,22 @@
+{
+  "da2": {
+    "tilt": "relevel_known",
+    "nadir": "plane_fill",
+    "vfov": "inpaint_erp",
+    "yawblur": "wiener"
+  },
+  "da360": {
+    "yawblur": "wiener"
+  },
+  "dap": {
+    "tilt": "relevel_known",
+    "nadir": "plane_fill",
+    "vfov": "inpaint_erp",
+    "yawblur": "wiener",
+    "jpeg": "bilateral"
+  },
+  "midas": {
+    "tilt": "relevel_known",
+    "yawblur": "wiener"
+  }
+}
