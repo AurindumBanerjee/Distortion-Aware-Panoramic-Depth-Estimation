@@ -51,6 +51,6 @@ mobius_tta:
 evaluation:
   protocols: ["align-all", "align-equatorial"]   # first = headline
   min_depth: 0.1    # Structured3D GT valid range (mm PNG / 1000); predictions clamped to it
-  max_depth: 1000.0
+  max_depth: 100.0   # the GT meshes the sky as a ~650-1050 m dome (16-19% of pixels): excluded, as in the DAP config and Holo360D outdoor
   output_dir: "outputs_nyc"
   log_dir: "logs"

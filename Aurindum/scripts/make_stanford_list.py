@@ -20,7 +20,7 @@ for area in a.areas:
     for rgb in sorted(glob.glob(os.path.join(a.root, area, "pano", "rgb", "*_rgb.png"))):
         dep = rgb.replace(os.sep + "rgb" + os.sep, os.sep + "depth" + os.sep).replace("_rgb.png", "_depth.png")
         if os.path.exists(dep):
-            lines.append(f"{os.path.relpath(rgb, a.root)} {os.path.relpath(dep, a.root)}")
-with open(os.path.join(a.root, a.out), "w") as f:
+            lines.append(f"{os.path.relpath(rgb, a.root)} {os.path.relpath(dep, a.root)}".replace(os.sep, "/"))  # forward slashes: the list is used on Linux too
+with open(os.path.join(a.root, a.out), "w", newline="\n") as f:
     f.write("\n".join(lines) + "\n")
 print(f"{len(lines)} pairs -> {os.path.join(a.root, a.out)}")

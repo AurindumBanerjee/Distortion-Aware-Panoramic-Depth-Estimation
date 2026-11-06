@@ -28,6 +28,6 @@ for n in sorted(ids):
         lines.append(f"rgb/panorama_{n}.png depth/erp_distance_{n}.npy\n")
     else:
         missing += 1
-with open(os.path.join(a.root, "test.txt"), "w") as fh:
+with open(os.path.join(a.root, "test.txt"), "w", newline="\n") as fh:
     fh.writelines(lines)
 print(f"{len(lines)} pairs -> {os.path.join(a.root, 'test.txt')} ({missing} RGB files without depth skipped)")

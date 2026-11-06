@@ -18,15 +18,33 @@ cd "$(dirname "$0")/.."
 DATA="${DATA:-data}"
 say() { echo "[$(date +'%F %T')] $*"; }
 
+# Resumable download that survives network drops: retries with growing waits, continues where it stopped, and
+# stops early only when the file is complete. Returns 1 after MAX_TRIES failures in a row without progress.
+fetch_resume() {
+    local url="$1" dst="$2" tries=0 last=-1 size
+    while :; do
+        if curl -fL --retry 5 --retry-all-errors --retry-delay 5 --connect-timeout 30 --speed-limit 100000 --speed-time 120 -C - -o "$dst" "$url"; then return 0; fi
+        size=$(stat -c %s "$dst" 2>/dev/null || echo 0)
+        if [ "$size" -gt "$last" ]; then tries=0; else tries=$((tries + 1)); fi   # progress resets the counter
+        last=$size
+        [ "$tries" -ge "${MAX_TRIES:-8}" ] && return 1
+        local w=$(( 10 * (tries + 1) )); [ "$w" -gt 120 ] && w=120
+        say "download interrupted at $((size / 1048576)) MB; resuming in ${w}s (failed attempts without progress: $tries)"; sleep "$w"
+    done
+}
+
 stanford() {
     local out="$DATA/stanford2d3d"; mkdir -p "$out"
     for area in area_5a area_5b; do
-        if [ -d "$out/$area/pano/rgb" ] && [ -n "$(ls -A "$out/$area/pano/rgb" 2>/dev/null)" ]; then say "$area already there"; continue; fi
-        local tar="$out/${area}_no_xyz.tar"
-        say "downloading $area (resumable; several GB)"
-        curl -fL --retry 5 -C - -o "$tar" "https://cvg-data.inf.ethz.ch/2d3ds/no_xyz/${area}_no_xyz.tar"
-        say "extracting panorama RGB + depth of $area"
-        tar -xf "$tar" -C "$out" --wildcards "*/pano/rgb/*" "*/pano/depth/*"
+        if [ -d "$out/$area/pano/rgb" ] && [ -n "$(ls -A "$out/$area/pano/rgb" 2>/dev/null)" ]            && [ "$(ls "$out/$area/pano/rgb" | wc -l)" = "$(ls "$out/$area/pano/depth" 2>/dev/null | wc -l)" ]; then say "$area already there"; continue; fi
+        local tar="$out/${area}_no_xyz.tar" url="https://cvg-data.inf.ethz.ch/2d3ds/no_xyz/${area}_no_xyz.tar" try ok=0
+        for try in 1 2 3; do
+            fetch_resume "$url" "$tar" || { say "❌ $area download kept failing"; break; }
+            say "extracting panorama RGB + depth of $area (attempt $try)"
+            if tar -xf "$tar" -C "$out" --wildcards "*/pano/rgb/*" "*/pano/depth/*"; then ok=1; break; fi
+            say "archive looks corrupt: deleting it and downloading again"; rm -f "$tar"
+        done
+        [ "$ok" = 1 ] || { say "❌ $area failed; rerun this script to resume"; continue; }
         [ "${KEEP_TAR:-0}" = 1 ] || rm -f "$tar"
     done
     python scripts/make_stanford_list.py --root "$out" --areas area_5a area_5b --out test.txt
@@ -35,30 +53,8 @@ stanford() {
 nyc() {
     local out="$DATA/nyc_dap"; mkdir -p "$out"
     python -m pip show huggingface_hub >/dev/null 2>&1 || python -m pip install -q huggingface_hub
-    python - "$out" "${NYC_STEP:-5}" "${NYC_MAX_ID:-1907}" <<'PY'
-import os, shutil, sys
-from huggingface_hub import hf_hub_download
-out, step, max_id = sys.argv[1], int(sys.argv[2]), int(sys.argv[3])
-os.makedirs(f"{out}/rgb", exist_ok=True); os.makedirs(f"{out}/depth", exist_ok=True)
-ok = miss = 0
-for n in range(0, max_id + 1, step):
-    pairs = ((f"nyc_raw_images_panorama/panorama_{n}.png", f"{out}/rgb/panorama_{n}.png"),
-             (f"nyc_distance_panorama_npy/erp_distance_{n}.npy", f"{out}/depth/erp_distance_{n}.npy"))
-    try:
-        for src, dst in pairs:
-            if not os.path.exists(dst):
-                # download straight into a staging folder (no second copy in the HF cache), then move into place
-                p = hf_hub_download("Coaa1/DAP_data", src, repo_type="dataset", local_dir=f"{out}/_hf")
-                shutil.move(p, dst)
-        ok += 1
-    except Exception as e:  # an id may not exist; skip it
-        miss += 1
-        print(f"skip {n}: {type(e).__name__}")
-    if ok % 25 == 0 and ok:
-        print(f"{ok} pairs", flush=True)
-shutil.rmtree(f"{out}/_hf", ignore_errors=True)
-print(f"done: {ok} pairs, {miss} skipped")
-PY
+    # retries network errors, skips blobs the hub no longer serves (using a neighbouring id), validates every file
+    HF_HUB_DISABLE_SYMLINKS_WARNING=1 python scripts/hf_fetch_retry.py --out "$out" --step "${NYC_STEP:-5}" --max_id "${NYC_MAX_ID:-1907}"
     python scripts/make_nyc_list.py --root "$out"
 }
 

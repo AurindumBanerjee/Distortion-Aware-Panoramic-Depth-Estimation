@@ -38,7 +38,7 @@ PRESETS = {
     # carries a 3rd column with the per-frame mask jpg (value > 127 = valid; excludes the operator / rig).
     # DAP NYC outdoor street panoramas: float64 .npy range in metres (about 4-974 m). List built by
     # Lokesh/scripts/make_nyc_list.py (rgb/panorama_<n>.png depth/erp_distance_<n>.npy).
-    "nyc_dap": dict(depth_scale=1.0, max_depth=1000.0, min_depth=0.5),
+    "nyc_dap": dict(depth_scale=1.0, max_depth=100.0, min_depth=0.5),  # sky dome ~650-1050 m in the GT: masked
     "holo360d": dict(depth_scale=1.0, max_depth=100.0, min_depth=0.1, exr_scale=1.0),
 }
 
