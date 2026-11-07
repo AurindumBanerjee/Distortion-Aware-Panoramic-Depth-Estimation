@@ -6,6 +6,13 @@
 data/
 **/data/
 *.zip
+*.tar
+*.tgz
+**/_dl/
+dataset/
+**/dataset/
+datasets/
+**/datasets_raw/
 *.tar.gz
 *.exr
 *.npy
