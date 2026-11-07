@@ -21,6 +21,7 @@ The protocol below
 """
 from __future__ import annotations
 
+import os
 from typing import Dict, List, Optional
 
 import numpy as np
@@ -72,6 +73,8 @@ def align_to_gt(pred: np.ndarray, gt: np.ndarray, valid: np.ndarray, model, prot
         # relative depth: least-squares scale; metric depth under align-*: median scale
         # (removes a global scale error only, as in the DAP / PanDA evaluation code)
         mode = "lsq" if scale != "metric" else "median"
+        if os.environ.get("PANO_ALIGN_MODE") in ("lsq", "median"):  # check only: e.g. median for a relative model
+            mode = os.environ["PANO_ALIGN_MODE"]
     m = alignment_mask(valid, protocol, eq_max_lat)
     aligned, _ = to_metric_depth(pred, gt, m, space=space, mode=mode, max_depth=max_depth, min_depth=min_depth)
     aligned = np.where(np.isfinite(aligned), aligned, max_depth)

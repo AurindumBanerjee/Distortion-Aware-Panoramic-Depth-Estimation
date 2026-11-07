@@ -127,7 +127,7 @@ def load_policy(path: Optional[str], model_key: Optional[str]) -> Dict[str, str]
 
 
 def correct(model, rgb: np.ndarray, meta: Optional[CaptureMeta] = None, policy: Optional[Dict[str, str]] = None,
-            detect: bool = True) -> Tuple[np.ndarray, List[str]]:
+            detect: bool = True, order: str = "photometric_first") -> Tuple[np.ndarray, List[str]]:
     """Depth for `rgb` (on its own grid) with the capture-aware fixes the policy allows. Returns (prediction, log).
 
     Order: a known tilt is handled first and alone (re-levelling rotates the caps away from the poles, so the cap
@@ -164,6 +164,10 @@ def correct(model, rgb: np.ndarray, meta: Optional[CaptureMeta] = None, policy: 
             return fix(k)(model, img, ctx), log
         # a photometric fix and a cap fix both wanted: apply the photometric one to the IMAGE only (the catalogue fixes
         # end in a prediction, so the cleaned image is produced through a capturing model stub)
+        if order == "cap_first" and cf is not None:
+            # fill the caps BEFORE the smoothing, so that it never blurs the patch edge into the visible scene
+            from distortions.catalogue import _inpaint_tangent
+            img = _inpaint_tangent(img, occlusion_mask(img.shape[0], img.shape[1], caps))
         img = _image_after(k, img, ctx)
 
     if cf is not None:

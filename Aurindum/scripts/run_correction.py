@@ -77,6 +77,8 @@ def main():
     ap.add_argument("--model_key", required=True, help="model part of the study tags: midas / dap / da360 / da2")
     ap.add_argument("--dataset_key", required=True, help="dataset part of the study tag held out from the policy")
     ap.add_argument("--examples", type=int, default=3, help="frames for which before / after images are saved")
+    ap.add_argument("--order", default="photometric_first", choices=["photometric_first", "cap_first"],
+                    help="with a photometric fix AND a cap fix: smooth first (default) or fill the caps first")
     ap.set_defaults(split="all", max_scenes=40)
     a = ap.parse_args()
     res = ROOT / "results"
@@ -106,7 +108,7 @@ def main():
             back = (lambda p: d.to_original(p, ctx)) if d is not None else (lambda p: p)
             region = d.region(H, W, ctx) if (d is not None and d.region) else None
             raw = clean_pred if scen == "clean" else np.asarray(model.predict(x, kind="erp"), dtype=np.float64)
-            fixed, log = correct(model, x, meta, policy)
+            fixed, log = correct(model, x, meta, policy, order=a.order)
             s_clean, al_clean = score(clean_pred, gt, valid, model, region, min_d, max_d)
             s_raw, al_raw = score(back(raw), gt, valid, model, region, min_d, max_d)
             s_fix, al_fix = score(back(fixed), gt, valid, model, region, min_d, max_d)
