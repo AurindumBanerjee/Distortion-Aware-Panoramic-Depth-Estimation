@@ -49,7 +49,7 @@ class CaptureMeta:
     caps: Optional[Dict[str, Optional[float]]] = None
 
 
-def detect_caps(rgb: np.ndarray, tols: Tuple[float, ...] = (3.0, 14.0), min_deg: float = 10.0, band_deg: float = 4.0,
+def detect_caps(rgb: np.ndarray, tols: Tuple[float, ...] = (3.0, 14.0), min_deg: float = 10.0, band_deg: float = 2.8,
                 share: float = 0.9, edge_pct: float = 95.0, wobble_deg: float = 2.0) -> Dict[str, Optional[float]]:
     """Find occluded polar caps: a region around a pole filled with one colour (a tripod / logo patch, or the black band
     of a limited-FOV capture) whose edge is a circle of constant latitude.
