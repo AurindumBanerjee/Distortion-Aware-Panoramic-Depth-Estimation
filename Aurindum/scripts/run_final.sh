@@ -24,7 +24,8 @@ MODELS="${MODELS:-midas dap da360 da2}"
 STAGES="${STAGES:-full_ext median hires core_more summary}"
 N_STANFORD="${N_STANFORD:-373}"; N_NYC="${N_NYC:-147}"; N_HR="${N_HR:-100}"; N_CORE="${N_CORE:-100}"; N_MEDIAN="${N_MEDIAN:-40}"
 CORE="s3 panox holo_in holo_out"
-say() { echo "[$(date +'%F %T')] $*"; }
+FAILED=()
+say() { echo "[$(date +'%F %T')] $*"; case "$*" in *❌*) FAILED+=("$*");; esac; }
 cfg_of() {
     local m="$1" d="$2"
     if [ "$m" = dap ]; then
@@ -109,7 +110,10 @@ do_run() {
             python scripts/make_figures.py && say "✅ figures" || say "❌ figures FAILED" ;;
         esac
     done
-    say "🎉 Final experiments finished. Commit results/."
+    { echo "# Finished: final experiments"; echo; echo "Completed $(date +'%F %T'). Stages: $STAGES. Models: $MODELS."; echo
+      echo "Failed steps: ${#FAILED[@]}"; for f in ${FAILED[@]+"${FAILED[@]}"}; do echo "* $f"; done
+      echo; echo "Results: results/FINAL_ablations.md, results/external/, results/figures/. Nothing was committed."; } > results/finished.md
+    say "🎉 Final experiments finished (results/finished.md). Commit results/."
 }
 pids() { pgrep -f "$AUR/scripts/run_final.sh run" 2>/dev/null | grep -v "^$$\$" || true; }
 case "${1:-status}" in
