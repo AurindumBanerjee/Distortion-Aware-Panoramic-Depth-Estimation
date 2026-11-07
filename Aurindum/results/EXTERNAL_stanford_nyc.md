@@ -26,13 +26,13 @@ Run, analysed and reported independently of the core datasets (Structured3D, Pan
 | midas | yawblur | 0.2305 | 0.2410 | +0.1% | 45% | 45% | tilt:relevel_known, yawblur:wiener |
 | midas | jpeg | 0.2584 | 0.2584 | +0.0% | 0% | 0% | tilt:relevel_known, yawblur:wiener |
 | midas | nadir+jpeg | 0.0886 | 0.0886 | +0.0% | 0% | 0% | tilt:relevel_known, yawblur:wiener |
-| dap | clean | 0.1596 | 0.1596 | +0.0% | 0% | 0% | tilt:relevel_known, nadir:plane_fill, vfov:inpaint_erp, yawblur:wiener, jpeg:bilateral |
+| dap | clean | 0.1596 | 0.0912 | -34.6% | 100% | 0% | tilt:relevel_known, nadir:plane_fill, vfov:inpaint_erp, yawblur:wiener, jpeg:bilateral |
 | dap | tilt | 0.2281 | 0.1512 | -32.9% | 100% | 0% | tilt:relevel_known, nadir:plane_fill, vfov:inpaint_erp, yawblur:wiener, jpeg:bilateral |
-| dap | nadir | 0.3716 | 0.0750 | -70.2% | 98% | 2% | tilt:relevel_known, nadir:plane_fill, vfov:inpaint_erp, yawblur:wiener, jpeg:bilateral |
+| dap | nadir | 0.3716 | 0.1207 | -47.8% | 98% | 2% | tilt:relevel_known, nadir:plane_fill, vfov:inpaint_erp, yawblur:wiener, jpeg:bilateral |
 | dap | vfov | 0.7405 | 0.2931 | -61.0% | 100% | 0% | tilt:relevel_known, nadir:plane_fill, vfov:inpaint_erp, yawblur:wiener, jpeg:bilateral |
-| dap | yawblur | 0.1694 | 0.1557 | -9.5% | 80% | 20% | tilt:relevel_known, nadir:plane_fill, vfov:inpaint_erp, yawblur:wiener, jpeg:bilateral |
-| dap | jpeg | 0.2644 | 0.2215 | -12.4% | 90% | 2% | tilt:relevel_known, nadir:plane_fill, vfov:inpaint_erp, yawblur:wiener, jpeg:bilateral |
-| dap | nadir+jpeg | 0.3352 | 0.1027 | -50.0% | 90% | 10% | tilt:relevel_known, nadir:plane_fill, vfov:inpaint_erp, yawblur:wiener, jpeg:bilateral |
+| dap | yawblur | 0.1694 | 0.1055 | -28.7% | 98% | 2% | tilt:relevel_known, nadir:plane_fill, vfov:inpaint_erp, yawblur:wiener, jpeg:bilateral |
+| dap | jpeg | 0.2644 | 0.1287 | -43.0% | 98% | 2% | tilt:relevel_known, nadir:plane_fill, vfov:inpaint_erp, yawblur:wiener, jpeg:bilateral |
+| dap | nadir+jpeg | 0.3352 | 0.0777 | -63.6% | 90% | 10% | tilt:relevel_known, nadir:plane_fill, vfov:inpaint_erp, yawblur:wiener, jpeg:bilateral |
 | da360 | clean | 0.1448 | 0.1448 | +0.0% | 0% | 0% | yawblur:wiener |
 | da360 | tilt | 0.1641 | 0.1641 | +0.0% | 0% | 0% | yawblur:wiener |
 | da360 | nadir | 0.0668 | 0.0668 | +0.0% | 0% | 0% | yawblur:wiener |
@@ -40,13 +40,13 @@ Run, analysed and reported independently of the core datasets (Structured3D, Pan
 | da360 | yawblur | 0.1682 | 0.1506 | -6.7% | 80% | 15% | yawblur:wiener |
 | da360 | jpeg | 0.1116 | 0.1116 | +0.0% | 0% | 0% | yawblur:wiener |
 | da360 | nadir+jpeg | 0.0435 | 0.0435 | +0.0% | 0% | 0% | yawblur:wiener |
-| da2 | clean | 0.0738 | 0.0737 | +1.1% | 38% | 50% | tilt:relevel_known, nadir:plane_fill, vfov:inpaint_erp, yawblur:wiener |
+| da2 | clean | 0.0738 | 0.0672 | -5.5% | 70% | 30% | tilt:relevel_known, nadir:plane_fill, vfov:inpaint_erp, yawblur:wiener |
 | da2 | tilt | 0.1000 | 0.0706 | -27.2% | 90% | 10% | tilt:relevel_known, nadir:plane_fill, vfov:inpaint_erp, yawblur:wiener |
-| da2 | nadir | 0.1791 | 0.0349 | -81.0% | 100% | 0% | tilt:relevel_known, nadir:plane_fill, vfov:inpaint_erp, yawblur:wiener |
+| da2 | nadir | 0.1791 | 0.0380 | -78.5% | 100% | 0% | tilt:relevel_known, nadir:plane_fill, vfov:inpaint_erp, yawblur:wiener |
 | da2 | vfov | 0.0955 | 0.0675 | -29.1% | 78% | 22% | tilt:relevel_known, nadir:plane_fill, vfov:inpaint_erp, yawblur:wiener |
-| da2 | yawblur | 0.0774 | 0.0811 | +0.8% | 48% | 48% | tilt:relevel_known, nadir:plane_fill, vfov:inpaint_erp, yawblur:wiener |
-| da2 | jpeg | 0.0785 | 0.2208 | +55.0% | 10% | 90% | tilt:relevel_known, nadir:plane_fill, vfov:inpaint_erp, yawblur:wiener |
-| da2 | nadir+jpeg | 0.1702 | 0.1607 | +4.4% | 45% | 52% | tilt:relevel_known, nadir:plane_fill, vfov:inpaint_erp, yawblur:wiener |
+| da2 | yawblur | 0.0774 | 0.0771 | -3.8% | 65% | 30% | tilt:relevel_known, nadir:plane_fill, vfov:inpaint_erp, yawblur:wiener |
+| da2 | jpeg | 0.0785 | 0.0861 | +0.8% | 45% | 50% | tilt:relevel_known, nadir:plane_fill, vfov:inpaint_erp, yawblur:wiener |
+| da2 | nadir+jpeg | 0.1702 | 0.1445 | +1.6% | 48% | 52% | tilt:relevel_known, nadir:plane_fill, vfov:inpaint_erp, yawblur:wiener |
 
 *The `clean` row is the real-occlusion test: Stanford's own black caps are detected and filled (whole-panorama error; detection rate is not meaningful there because every frame has caps).*
 
@@ -74,11 +74,11 @@ Run, analysed and reported independently of the core datasets (Structured3D, Pan
 | midas | nadir+jpeg | 0.1140 | 0.1140 | +0.0% | 0% | 0% | tilt:relevel_known, yawblur:wiener |
 | dap | clean | 0.0334 | 0.0334 | +0.0% | 0% | 0% | tilt:relevel_known, nadir:plane_fill, vfov:inpaint_erp, yawblur:wiener, jpeg:bilateral |
 | dap | tilt | 0.0936 | 0.0478 | -46.9% | 98% | 2% | tilt:relevel_known, nadir:plane_fill, vfov:inpaint_erp, yawblur:wiener, jpeg:bilateral |
-| dap | nadir | 0.5031 | 0.0437 | -88.9% | 92% | 5% | tilt:relevel_known, nadir:plane_fill, vfov:inpaint_erp, yawblur:wiener, jpeg:bilateral |
+| dap | nadir | 0.5031 | 0.0494 | -85.5% | 78% | 18% | tilt:relevel_known, nadir:plane_fill, vfov:inpaint_erp, yawblur:wiener, jpeg:bilateral |
 | dap | vfov | 0.7170 | 0.4224 | -39.4% | 98% | 2% | tilt:relevel_known, nadir:plane_fill, vfov:inpaint_erp, yawblur:wiener, jpeg:bilateral |
 | dap | yawblur | 0.1234 | 0.0479 | -61.2% | 92% | 8% | tilt:relevel_known, nadir:plane_fill, vfov:inpaint_erp, yawblur:wiener, jpeg:bilateral |
 | dap | jpeg | 0.1664 | 0.1540 | -7.7% | 78% | 8% | tilt:relevel_known, nadir:plane_fill, vfov:inpaint_erp, yawblur:wiener, jpeg:bilateral |
-| dap | nadir+jpeg | 0.3306 | 0.2478 | -1.3% | 52% | 45% | tilt:relevel_known, nadir:plane_fill, vfov:inpaint_erp, yawblur:wiener, jpeg:bilateral |
+| dap | nadir+jpeg | 0.3306 | 0.2684 | +2.5% | 45% | 55% | tilt:relevel_known, nadir:plane_fill, vfov:inpaint_erp, yawblur:wiener, jpeg:bilateral |
 | da360 | clean | 0.0643 | 0.0643 | +0.0% | 0% | 0% | yawblur:wiener |
 | da360 | tilt | 0.0688 | 0.0688 | +0.0% | 0% | 0% | yawblur:wiener |
 | da360 | nadir | 0.0140 | 0.0140 | +0.0% | 0% | 0% | yawblur:wiener |
@@ -88,7 +88,7 @@ Run, analysed and reported independently of the core datasets (Structured3D, Pan
 | da360 | nadir+jpeg | 0.0459 | 0.0459 | +0.0% | 0% | 0% | yawblur:wiener |
 | da2 | clean | 0.6345 | 0.6345 | +0.0% | 0% | 0% | tilt:relevel_known, nadir:plane_fill, vfov:inpaint_erp, yawblur:wiener |
 | da2 | tilt | 0.5591 | 0.6504 | +15.3% | 10% | 88% | tilt:relevel_known, nadir:plane_fill, vfov:inpaint_erp, yawblur:wiener |
-| da2 | nadir | 0.7203 | 0.7610 | +6.5% | 10% | 85% | tilt:relevel_known, nadir:plane_fill, vfov:inpaint_erp, yawblur:wiener |
+| da2 | nadir | 0.7203 | 0.7610 | +6.2% | 12% | 82% | tilt:relevel_known, nadir:plane_fill, vfov:inpaint_erp, yawblur:wiener |
 | da2 | vfov | 0.7767 | 0.8348 | +5.1% | 25% | 68% | tilt:relevel_known, nadir:plane_fill, vfov:inpaint_erp, yawblur:wiener |
 | da2 | yawblur | 0.6924 | 0.6517 | -4.3% | 72% | 28% | tilt:relevel_known, nadir:plane_fill, vfov:inpaint_erp, yawblur:wiener |
 | da2 | jpeg | 0.6802 | 0.6802 | +0.0% | 0% | 0% | tilt:relevel_known, nadir:plane_fill, vfov:inpaint_erp, yawblur:wiener |
