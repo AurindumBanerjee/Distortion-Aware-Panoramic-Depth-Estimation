@@ -19,34 +19,34 @@ Run, analysed and reported independently of the core datasets (Structured3D, Pan
 
 | model | scenario | uncorrected | corrected | change | better | worse | policy |
 |---|---|---:|---:|---:|---:|---:|---|
-| midas | clean | 0.2420 | 0.2420 | +0.0% | 0% | 0% | tilt:relevel_known, yawblur:wiener |
-| midas | tilt | 0.2338 | 0.2418 | +2.0% | 40% | 57% | tilt:relevel_known, yawblur:wiener |
-| midas | nadir | 0.0906 | 0.0906 | +0.0% | 0% | 0% | tilt:relevel_known, yawblur:wiener |
-| midas | vfov | 0.1255 | 0.1255 | +0.0% | 0% | 0% | tilt:relevel_known, yawblur:wiener |
-| midas | yawblur | 0.2305 | 0.2410 | +0.1% | 45% | 45% | tilt:relevel_known, yawblur:wiener |
-| midas | jpeg | 0.2584 | 0.2584 | +0.0% | 0% | 0% | tilt:relevel_known, yawblur:wiener |
+| midas | clean | 0.2515 | 0.2515 | +0.0% | 0% | 0% | tilt:relevel_known, yawblur:wiener |
+| midas | tilt | 0.2482 | 0.2500 | +0.6% | 42% | 46% | tilt:relevel_known, yawblur:wiener |
+| midas | nadir | 0.0939 | 0.0939 | +0.0% | 0% | 0% | tilt:relevel_known, yawblur:wiener |
+| midas | vfov | 0.1359 | 0.1359 | +0.0% | 0% | 0% | tilt:relevel_known, yawblur:wiener |
+| midas | yawblur | 0.2455 | 0.2492 | +0.6% | 38% | 46% | tilt:relevel_known, yawblur:wiener |
+| midas | jpeg | 0.2505 | 0.2505 | +0.0% | 0% | 0% | tilt:relevel_known, yawblur:wiener |
 | midas | nadir+jpeg | 0.0886 | 0.0886 | +0.0% | 0% | 0% | tilt:relevel_known, yawblur:wiener |
-| dap | clean | 0.1596 | 0.0912 | -34.6% | 100% | 0% | tilt:relevel_known, nadir:plane_fill, vfov:inpaint_erp, yawblur:wiener, jpeg:bilateral |
-| dap | tilt | 0.2281 | 0.1512 | -32.9% | 100% | 0% | tilt:relevel_known, nadir:plane_fill, vfov:inpaint_erp, yawblur:wiener, jpeg:bilateral |
-| dap | nadir | 0.3716 | 0.1207 | -47.8% | 98% | 2% | tilt:relevel_known, nadir:plane_fill, vfov:inpaint_erp, yawblur:wiener, jpeg:bilateral |
-| dap | vfov | 0.7405 | 0.2931 | -61.0% | 100% | 0% | tilt:relevel_known, nadir:plane_fill, vfov:inpaint_erp, yawblur:wiener, jpeg:bilateral |
-| dap | yawblur | 0.1694 | 0.1055 | -28.7% | 98% | 2% | tilt:relevel_known, nadir:plane_fill, vfov:inpaint_erp, yawblur:wiener, jpeg:bilateral |
-| dap | jpeg | 0.2644 | 0.1287 | -43.0% | 98% | 2% | tilt:relevel_known, nadir:plane_fill, vfov:inpaint_erp, yawblur:wiener, jpeg:bilateral |
-| dap | nadir+jpeg | 0.3352 | 0.0777 | -63.6% | 90% | 10% | tilt:relevel_known, nadir:plane_fill, vfov:inpaint_erp, yawblur:wiener, jpeg:bilateral |
-| da360 | clean | 0.1448 | 0.1448 | +0.0% | 0% | 0% | yawblur:wiener |
-| da360 | tilt | 0.1641 | 0.1641 | +0.0% | 0% | 0% | yawblur:wiener |
-| da360 | nadir | 0.0668 | 0.0668 | +0.0% | 0% | 0% | yawblur:wiener |
-| da360 | vfov | 0.0754 | 0.0754 | +0.0% | 0% | 0% | yawblur:wiener |
-| da360 | yawblur | 0.1682 | 0.1506 | -6.7% | 80% | 15% | yawblur:wiener |
-| da360 | jpeg | 0.1116 | 0.1116 | +0.0% | 0% | 0% | yawblur:wiener |
-| da360 | nadir+jpeg | 0.0435 | 0.0435 | +0.0% | 0% | 0% | yawblur:wiener |
-| da2 | clean | 0.0738 | 0.0672 | -5.5% | 70% | 30% | tilt:relevel_known, nadir:plane_fill, vfov:inpaint_erp, yawblur:wiener |
-| da2 | tilt | 0.1000 | 0.0706 | -27.2% | 90% | 10% | tilt:relevel_known, nadir:plane_fill, vfov:inpaint_erp, yawblur:wiener |
-| da2 | nadir | 0.1791 | 0.0380 | -78.5% | 100% | 0% | tilt:relevel_known, nadir:plane_fill, vfov:inpaint_erp, yawblur:wiener |
-| da2 | vfov | 0.0955 | 0.0675 | -29.1% | 78% | 22% | tilt:relevel_known, nadir:plane_fill, vfov:inpaint_erp, yawblur:wiener |
-| da2 | yawblur | 0.0774 | 0.0771 | -3.8% | 65% | 30% | tilt:relevel_known, nadir:plane_fill, vfov:inpaint_erp, yawblur:wiener |
-| da2 | jpeg | 0.0785 | 0.0861 | +0.8% | 45% | 50% | tilt:relevel_known, nadir:plane_fill, vfov:inpaint_erp, yawblur:wiener |
-| da2 | nadir+jpeg | 0.1702 | 0.1445 | +1.6% | 48% | 52% | tilt:relevel_known, nadir:plane_fill, vfov:inpaint_erp, yawblur:wiener |
+| dap | clean | 0.1500 | 0.0927 | -34.8% | 99% | 1% | tilt:relevel_known, nadir:plane_fill, vfov:inpaint_erp, yawblur:wiener, jpeg:bilateral |
+| dap | tilt | 0.2194 | 0.1462 | -32.0% | 99% | 1% | tilt:relevel_known, nadir:plane_fill, vfov:inpaint_erp, yawblur:wiener, jpeg:bilateral |
+| dap | nadir | 0.3483 | 0.1520 | -41.6% | 97% | 3% | tilt:relevel_known, nadir:plane_fill, vfov:inpaint_erp, yawblur:wiener, jpeg:bilateral |
+| dap | vfov | 0.7598 | 0.3065 | -59.1% | 100% | 0% | tilt:relevel_known, nadir:plane_fill, vfov:inpaint_erp, yawblur:wiener, jpeg:bilateral |
+| dap | yawblur | 0.1665 | 0.1047 | -32.9% | 97% | 2% | tilt:relevel_known, nadir:plane_fill, vfov:inpaint_erp, yawblur:wiener, jpeg:bilateral |
+| dap | jpeg | 0.2739 | 0.1403 | -47.1% | 98% | 2% | tilt:relevel_known, nadir:plane_fill, vfov:inpaint_erp, yawblur:wiener, jpeg:bilateral |
+| dap | nadir+jpeg | 0.2689 | 0.0655 | -71.7% | 94% | 6% | tilt:relevel_known, nadir:plane_fill, vfov:inpaint_erp, yawblur:wiener, jpeg:bilateral |
+| da360 | clean | 0.1509 | 0.1509 | +0.0% | 0% | 0% | yawblur:wiener |
+| da360 | tilt | 0.1662 | 0.1662 | +0.0% | 0% | 0% | yawblur:wiener |
+| da360 | nadir | 0.0770 | 0.0770 | +0.0% | 0% | 0% | yawblur:wiener |
+| da360 | vfov | 0.0629 | 0.0629 | +0.0% | 0% | 0% | yawblur:wiener |
+| da360 | yawblur | 0.1731 | 0.1565 | -6.2% | 73% | 24% | yawblur:wiener |
+| da360 | jpeg | 0.1184 | 0.1184 | +0.0% | 0% | 0% | yawblur:wiener |
+| da360 | nadir+jpeg | 0.0453 | 0.0453 | +0.0% | 0% | 0% | yawblur:wiener |
+| da2 | clean | 0.0678 | 0.0629 | -6.6% | 77% | 21% | tilt:relevel_known, nadir:plane_fill, vfov:inpaint_erp, yawblur:wiener |
+| da2 | tilt | 0.0962 | 0.0663 | -27.9% | 92% | 8% | tilt:relevel_known, nadir:plane_fill, vfov:inpaint_erp, yawblur:wiener |
+| da2 | nadir | 0.1741 | 0.0380 | -78.1% | 99% | 1% | tilt:relevel_known, nadir:plane_fill, vfov:inpaint_erp, yawblur:wiener |
+| da2 | vfov | 0.0982 | 0.0672 | -23.3% | 87% | 13% | tilt:relevel_known, nadir:plane_fill, vfov:inpaint_erp, yawblur:wiener |
+| da2 | yawblur | 0.0713 | 0.0698 | -6.5% | 68% | 28% | tilt:relevel_known, nadir:plane_fill, vfov:inpaint_erp, yawblur:wiener |
+| da2 | jpeg | 0.0757 | 0.0894 | +8.0% | 35% | 64% | tilt:relevel_known, nadir:plane_fill, vfov:inpaint_erp, yawblur:wiener |
+| da2 | nadir+jpeg | 0.1602 | 0.1375 | -2.2% | 52% | 47% | tilt:relevel_known, nadir:plane_fill, vfov:inpaint_erp, yawblur:wiener |
 
 *The `clean` row is the real-occlusion test: Stanford's own black caps are detected and filled (whole-panorama error; detection rate is not meaningful there because every frame has caps).*
 
@@ -65,32 +65,32 @@ Run, analysed and reported independently of the core datasets (Structured3D, Pan
 
 | model | scenario | uncorrected | corrected | change | better | worse | policy |
 |---|---|---:|---:|---:|---:|---:|---|
-| midas | clean | 0.2214 | 0.2214 | +0.0% | 0% | 0% | tilt:relevel_known, yawblur:wiener |
-| midas | tilt | 0.2574 | 0.2250 | -2.8% | 62% | 32% | tilt:relevel_known, yawblur:wiener |
-| midas | nadir | 0.0614 | 0.0614 | +0.0% | 0% | 0% | tilt:relevel_known, yawblur:wiener |
-| midas | vfov | 0.3264 | 0.3264 | +0.0% | 0% | 0% | tilt:relevel_known, yawblur:wiener |
-| midas | yawblur | 0.2676 | 0.2343 | -8.3% | 80% | 10% | tilt:relevel_known, yawblur:wiener |
-| midas | jpeg | 0.3238 | 0.3238 | +0.0% | 0% | 0% | tilt:relevel_known, yawblur:wiener |
-| midas | nadir+jpeg | 0.1140 | 0.1140 | +0.0% | 0% | 0% | tilt:relevel_known, yawblur:wiener |
-| dap | clean | 0.0334 | 0.0334 | +0.0% | 0% | 0% | tilt:relevel_known, nadir:plane_fill, vfov:inpaint_erp, yawblur:wiener, jpeg:bilateral |
-| dap | tilt | 0.0936 | 0.0478 | -46.9% | 98% | 2% | tilt:relevel_known, nadir:plane_fill, vfov:inpaint_erp, yawblur:wiener, jpeg:bilateral |
-| dap | nadir | 0.5031 | 0.0494 | -85.5% | 78% | 18% | tilt:relevel_known, nadir:plane_fill, vfov:inpaint_erp, yawblur:wiener, jpeg:bilateral |
-| dap | vfov | 0.7170 | 0.4224 | -39.4% | 98% | 2% | tilt:relevel_known, nadir:plane_fill, vfov:inpaint_erp, yawblur:wiener, jpeg:bilateral |
-| dap | yawblur | 0.1234 | 0.0479 | -61.2% | 92% | 8% | tilt:relevel_known, nadir:plane_fill, vfov:inpaint_erp, yawblur:wiener, jpeg:bilateral |
-| dap | jpeg | 0.1664 | 0.1540 | -7.7% | 78% | 8% | tilt:relevel_known, nadir:plane_fill, vfov:inpaint_erp, yawblur:wiener, jpeg:bilateral |
-| dap | nadir+jpeg | 0.3306 | 0.2684 | +2.5% | 45% | 55% | tilt:relevel_known, nadir:plane_fill, vfov:inpaint_erp, yawblur:wiener, jpeg:bilateral |
-| da360 | clean | 0.0643 | 0.0643 | +0.0% | 0% | 0% | yawblur:wiener |
-| da360 | tilt | 0.0688 | 0.0688 | +0.0% | 0% | 0% | yawblur:wiener |
-| da360 | nadir | 0.0140 | 0.0140 | +0.0% | 0% | 0% | yawblur:wiener |
-| da360 | vfov | 0.2007 | 0.2007 | +0.0% | 0% | 0% | yawblur:wiener |
-| da360 | yawblur | 0.0912 | 0.0713 | -18.9% | 90% | 8% | yawblur:wiener |
-| da360 | jpeg | 0.1289 | 0.1289 | +0.0% | 0% | 0% | yawblur:wiener |
-| da360 | nadir+jpeg | 0.0459 | 0.0459 | +0.0% | 0% | 0% | yawblur:wiener |
-| da2 | clean | 0.6345 | 0.6345 | +0.0% | 0% | 0% | tilt:relevel_known, nadir:plane_fill, vfov:inpaint_erp, yawblur:wiener |
-| da2 | tilt | 0.5591 | 0.6504 | +15.3% | 10% | 88% | tilt:relevel_known, nadir:plane_fill, vfov:inpaint_erp, yawblur:wiener |
-| da2 | nadir | 0.7203 | 0.7610 | +6.2% | 12% | 82% | tilt:relevel_known, nadir:plane_fill, vfov:inpaint_erp, yawblur:wiener |
-| da2 | vfov | 0.7767 | 0.8348 | +5.1% | 25% | 68% | tilt:relevel_known, nadir:plane_fill, vfov:inpaint_erp, yawblur:wiener |
-| da2 | yawblur | 0.6924 | 0.6517 | -4.3% | 72% | 28% | tilt:relevel_known, nadir:plane_fill, vfov:inpaint_erp, yawblur:wiener |
-| da2 | jpeg | 0.6802 | 0.6802 | +0.0% | 0% | 0% | tilt:relevel_known, nadir:plane_fill, vfov:inpaint_erp, yawblur:wiener |
-| da2 | nadir+jpeg | 0.8240 | 0.8242 | +0.0% | 0% | 42% | tilt:relevel_known, nadir:plane_fill, vfov:inpaint_erp, yawblur:wiener |
+| midas | clean | 0.2198 | 0.2198 | +0.0% | 0% | 0% | tilt:relevel_known, yawblur:wiener |
+| midas | tilt | 0.2433 | 0.2177 | -2.8% | 67% | 27% | tilt:relevel_known, yawblur:wiener |
+| midas | nadir | 0.0608 | 0.0608 | +0.0% | 0% | 0% | tilt:relevel_known, yawblur:wiener |
+| midas | vfov | 0.3230 | 0.3230 | +0.0% | 0% | 0% | tilt:relevel_known, yawblur:wiener |
+| midas | yawblur | 0.2574 | 0.2190 | -7.6% | 82% | 12% | tilt:relevel_known, yawblur:wiener |
+| midas | jpeg | 0.3225 | 0.3225 | +0.0% | 0% | 0% | tilt:relevel_known, yawblur:wiener |
+| midas | nadir+jpeg | 0.1144 | 0.1144 | +0.0% | 0% | 0% | tilt:relevel_known, yawblur:wiener |
+| dap | clean | 0.0352 | 0.0352 | +0.0% | 0% | 0% | tilt:relevel_known, nadir:plane_fill, vfov:inpaint_erp, yawblur:wiener, jpeg:bilateral |
+| dap | tilt | 0.0915 | 0.0477 | -47.4% | 98% | 2% | tilt:relevel_known, nadir:plane_fill, vfov:inpaint_erp, yawblur:wiener, jpeg:bilateral |
+| dap | nadir | 0.5238 | 0.0426 | -89.3% | 79% | 20% | tilt:relevel_known, nadir:plane_fill, vfov:inpaint_erp, yawblur:wiener, jpeg:bilateral |
+| dap | vfov | 0.7129 | 0.4396 | -36.4% | 99% | 1% | tilt:relevel_known, nadir:plane_fill, vfov:inpaint_erp, yawblur:wiener, jpeg:bilateral |
+| dap | yawblur | 0.1272 | 0.0487 | -60.4% | 92% | 7% | tilt:relevel_known, nadir:plane_fill, vfov:inpaint_erp, yawblur:wiener, jpeg:bilateral |
+| dap | jpeg | 0.1764 | 0.1638 | -7.9% | 82% | 12% | tilt:relevel_known, nadir:plane_fill, vfov:inpaint_erp, yawblur:wiener, jpeg:bilateral |
+| dap | nadir+jpeg | 0.3219 | 0.2688 | +1.3% | 47% | 52% | tilt:relevel_known, nadir:plane_fill, vfov:inpaint_erp, yawblur:wiener, jpeg:bilateral |
+| da360 | clean | 0.0629 | 0.0629 | +0.0% | 0% | 0% | yawblur:wiener |
+| da360 | tilt | 0.0690 | 0.0690 | +0.0% | 0% | 0% | yawblur:wiener |
+| da360 | nadir | 0.0157 | 0.0157 | +0.0% | 0% | 0% | yawblur:wiener |
+| da360 | vfov | 0.1964 | 0.1964 | +0.0% | 0% | 0% | yawblur:wiener |
+| da360 | yawblur | 0.0909 | 0.0703 | -17.5% | 91% | 7% | yawblur:wiener |
+| da360 | jpeg | 0.1299 | 0.1299 | +0.0% | 0% | 0% | yawblur:wiener |
+| da360 | nadir+jpeg | 0.0495 | 0.0495 | +0.0% | 0% | 0% | yawblur:wiener |
+| da2 | clean | 0.6378 | 0.6378 | +0.0% | 0% | 0% | tilt:relevel_known, nadir:plane_fill, vfov:inpaint_erp, yawblur:wiener |
+| da2 | tilt | 0.5629 | 0.6507 | +13.7% | 14% | 84% | tilt:relevel_known, nadir:plane_fill, vfov:inpaint_erp, yawblur:wiener |
+| da2 | nadir | 0.7210 | 0.7549 | +6.3% | 12% | 86% | tilt:relevel_known, nadir:plane_fill, vfov:inpaint_erp, yawblur:wiener |
+| da2 | vfov | 0.7784 | 0.8290 | +6.1% | 20% | 74% | tilt:relevel_known, nadir:plane_fill, vfov:inpaint_erp, yawblur:wiener |
+| da2 | yawblur | 0.6972 | 0.6553 | -4.5% | 72% | 24% | tilt:relevel_known, nadir:plane_fill, vfov:inpaint_erp, yawblur:wiener |
+| da2 | jpeg | 0.6750 | 0.6750 | +0.0% | 0% | 0% | tilt:relevel_known, nadir:plane_fill, vfov:inpaint_erp, yawblur:wiener |
+| da2 | nadir+jpeg | 0.8072 | 0.8158 | +0.0% | 1% | 31% | tilt:relevel_known, nadir:plane_fill, vfov:inpaint_erp, yawblur:wiener |
 
