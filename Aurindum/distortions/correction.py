@@ -49,8 +49,8 @@ class CaptureMeta:
     caps: Optional[Dict[str, Optional[float]]] = None
 
 
-def detect_caps(rgb: np.ndarray, tols: Tuple[float, ...] = (3.0, 14.0), min_deg: float = 10.0, band_rows: int = 4,
-                share: float = 0.9) -> Dict[str, Optional[float]]:
+def detect_caps(rgb: np.ndarray, tols: Tuple[float, ...] = (3.0, 14.0), min_deg: float = 10.0, band_deg: float = 4.0,
+                share: float = 0.9, edge_pct: float = 95.0, wobble_deg: float = 2.0) -> Dict[str, Optional[float]]:
     """Find occluded polar caps: a region around a pole filled with one colour (a tripod / logo patch, or the black band
     of a limited-FOV capture) whose edge is a circle of constant latitude.
 
@@ -59,18 +59,22 @@ def detect_caps(rgb: np.ndarray, tols: Tuple[float, ...] = (3.0, 14.0), min_deg:
     tolerance (14: JPEG quality 8 moves flat pixels by up to ~10 levels). A cap is accepted if
       (a) the median run spans at least min_deg of latitude: rendered panoramas have 1-2 flat rows at the pole (one 3D
           point stretched over the row), real patches and band captures span 15-40 deg; and
-      (b) its edge is a constant latitude: at least `share` of the columns end within `band_rows` rows of the median.
+      (b) its edge is a constant latitude: at least `share` of the columns end within `band_deg` degrees of the median
+          (an ANGLE, not rows: the real Stanford2D3D caps wobble by 2.8 deg between columns at every resolution, which
+          a 4-row band passed at 256 x 512 and failed at 512 x 1024).
     (b) is what separates a pasted patch from a real uniform ceiling or floor: Structured3D renders noiseless white
     ceilings that are flat over 25 deg, but a room's ceiling edge in ERP is a wave (the walls), not a circle.
 
     Returns {"nadir_from": a, "zenith_from": b} in the convention of catalogue.occlusion_mask (cap = |lat| > value),
-    None for a pole without a cap; the edge is the median run length (a row boundary). A cap whose colour matches the
+    None for a pole without a cap; the edge is the `edge_pct` percentile of the per-column run lengths, so that
+    the mask covers the black pixels of (almost) every column instead of leaving a black ring where the edge wobbles. A cap whose colour matches the
     scene right outside it is missed (prediction then runs uncorrected); sensor noise ON the patch also defeats it,
     but patches are added after capture, so in practice only compression touches them."""
     H = rgb.shape[0]
     x = rgb.astype(np.int16)
     deg = 180.0 / H
     min_rows = max(2, int(np.ceil(min_deg / deg)))
+    band_rows = max(2, int(np.ceil(band_deg / deg)))
 
     def run(block, tol):  # block: (rows from the pole outwards, W, 3)
         c = np.median(block[0], axis=0)
@@ -79,7 +83,11 @@ def detect_caps(rgb: np.ndarray, tols: Tuple[float, ...] = (3.0, 14.0), min_deg:
         med = int(np.median(L))
         if med < min_rows or med >= H // 2:
             return 0
-        return med if np.mean(np.abs(L - med) <= band_rows) >= share else 0
+        if np.mean(np.abs(L - med) <= band_rows) < share:
+            return 0
+        # cover the wobbling edge (Stanford: p95 - median ~ 1.4 deg) but never extend further than `wobble_deg` past the
+        # median: a loose tolerance can run on into a dark floor in a few columns
+        return int(min(np.ceil(np.percentile(L, edge_pct)), med + np.ceil(wobble_deg / deg)))
 
     # every tolerance that yields a constant-latitude edge is a valid reading; the largest is used (JPEG ringing makes
     # the tight one stop a few rows short, while a loose one that runs into a same-coloured floor fails test (b))
@@ -88,6 +96,14 @@ def detect_caps(rgb: np.ndarray, tols: Tuple[float, ...] = (3.0, 14.0), min_deg:
     k_bot = best(x[::-1][: H // 2])
     return {"zenith_from": 90.0 - k_top * deg if k_top else None,
             "nadir_from": 90.0 - k_bot * deg if k_bot else None}
+
+
+JPEG_EDGE_MARGIN_DEG = 1.5
+
+
+def grow_caps(caps: Dict[str, Optional[float]], deg: float) -> Dict[str, Optional[float]]:
+    """Enlarge detected caps by `deg` toward the equator (cap = |lat| > value, so the value goes down)."""
+    return {k: (None if v is None else max(float(v) - deg, 0.0)) for k, v in caps.items()}
 
 
 def cap_fault(caps: Dict[str, Optional[float]]) -> Optional[str]:
@@ -134,6 +150,8 @@ def correct(model, rgb: np.ndarray, meta: Optional[CaptureMeta] = None, policy: 
     photometric = [(f, k) for f, k in photometric if k != "none"]
 
     caps = meta.caps if meta.caps is not None else (detect_caps(rgb) if detect else {})
+    if meta.caps is None and "jpeg" in meta.flags:
+        caps = grow_caps(caps, JPEG_EDGE_MARGIN_DEG)   # block ringing shortens the detected run by 0.7-1.4 deg (Stanford, q8)
     cf = cap_fault(caps) if caps else None
     cap_fix = policy.get(cf, "none") if cf else "none"
 

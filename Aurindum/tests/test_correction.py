@@ -157,3 +157,40 @@ def test_external_runs_are_tested_with_a_policy_from_core_sets_only(tmp_path):
     assert trained == ["panox", "s3"]
     _, trained = heldout_policy("dap", "s3", tmp_path)
     assert trained == ["panox"]          # a core run still leaves its own dataset out, and never sees the external ones
+
+
+def _wobbly_caps(h, w, cap_deg=24.6, wobble_deg=1.4, seed=0):
+    """Scene with black polar caps whose edge wobbles from column to column by +-wobble_deg (real Stanford2D3D: 2.8 deg p5-p95)."""
+    img = _tex(h, w, seed)
+    rng = np.random.default_rng(seed)
+    wob = np.round(rng.uniform(-wobble_deg, wobble_deg, w) * h / 180.0).astype(int)
+    k = int(round(cap_deg * h / 180.0))
+    for j in range(w):
+        img[: k + wob[j], j] = 0
+        img[h - k - wob[j]:, j] = 0
+    return img
+
+
+def test_wobbly_real_caps_are_found_at_any_resolution():
+    for h, w in ((128, 256), (256, 512), (512, 1024), (1024, 2048)):
+        caps = detect_caps(_wobbly_caps(h, w))
+        assert cap_fault(caps) == "vfov", (h, caps)
+        # the mask must cover the black pixels of (almost) every column: edge at or beyond the widest black column - 1 row
+        assert caps["nadir_from"] <= 90.0 - (24.6 + 1.4) + 0.8 + 180.0 / h, (h, caps)
+
+
+def test_jpeg_flag_grows_the_detected_caps():
+    from distortions.correction import JPEG_EDGE_MARGIN_DEG, grow_caps
+    assert grow_caps({"nadir_from": 62.0, "zenith_from": None}, JPEG_EDGE_MARGIN_DEG) == {"nadir_from": 62.0 - JPEG_EDGE_MARGIN_DEG, "zenith_from": None}
+    x, _ = D["nadir"].apply(_tex(), {})
+    rec = Recorder()
+    caps = detect_caps(x)
+    calls = []
+    import distortions.correction as dc
+    orig = dc.MITIGATIONS["inpaint_erp"]
+    try:
+        dc.MITIGATIONS["inpaint_erp"] = (orig[0], lambda m, img, ctx: calls.append(dict(ctx)) or np.zeros(img.shape[:2]))
+        dc.correct(rec, x, CaptureMeta(flags={"jpeg"}), {"nadir": "inpaint_erp"})
+    finally:
+        dc.MITIGATIONS["inpaint_erp"] = orig
+    assert calls and abs(calls[0]["nadir_from"] - (caps["nadir_from"] - JPEG_EDGE_MARGIN_DEG)) < 1e-6
