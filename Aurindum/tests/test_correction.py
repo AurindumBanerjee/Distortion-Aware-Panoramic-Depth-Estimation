@@ -10,7 +10,8 @@ for p in (ROOT, ROOT / "1_gradient_polar_fusion", ROOT / "2_mobius_tta_ensemblin
     sys.path.insert(0, str(p))
 
 from distortions.catalogue import CATALOGUE, MITIGATIONS, occlusion_mask  # noqa: E402
-from distortions.correction import (CaptureMeta, _image_after, cap_fault, correct, detect_caps,  # noqa: E402
+from distortions.correction import (JPEG_EDGE_MARGIN_DEG, CaptureMeta, _image_after, cap_fault, correct, detect_caps,  # noqa: E402
+                                    grow_caps,
                                     load_policy)
 from models.depth_model import EncodedDepthOracle, encode_depth_as_image  # noqa: E402
 from tests.test_distortions import GT, RGB, _rel  # noqa: E402
@@ -194,3 +195,28 @@ def test_jpeg_flag_grows_the_detected_caps():
     finally:
         dc.MITIGATIONS["inpaint_erp"] = orig
     assert calls and abs(calls[0]["nadir_from"] - (caps["nadir_from"] - JPEG_EDGE_MARGIN_DEG)) < 1e-6
+
+
+def test_two_photometric_flags_both_run_in_order():
+    x, ctx = D["yawblur"].apply(_tex(), {})
+    m = Recorder()
+    _, log = correct(m, x, CaptureMeta(kernel=ctx["kernel"], flags={"jpeg"}), {"yawblur": "wiener", "jpeg": "bilateral"})
+    assert log == ["yawblur: wiener", "jpeg: bilateral"]
+    expect = _image_after("bilateral", _image_after("wiener", x, {"kernel": ctx["kernel"]}), {"kernel": ctx["kernel"]})
+    assert len(m.seen) == 1 and (m.seen[0] == expect).all()
+
+
+def test_cap_first_fills_before_smoothing_and_the_cap_fix_runs_once_on_the_result():
+    from distortions.catalogue import _inpaint_tangent
+    x, _ = D["nadir"].apply(_tex(), {})
+    import distortions.correction as dc
+    seen, orig = [], dc.MITIGATIONS["inpaint_erp"]
+    try:
+        dc.MITIGATIONS["inpaint_erp"] = (orig[0], lambda m, img, c: seen.append(img.copy()) or np.zeros(img.shape[:2]))
+        _, log = dc.correct(Recorder(), x, CaptureMeta(flags={"jpeg"}), {"nadir": "inpaint_erp", "jpeg": "bilateral"}, order="cap_first")
+    finally:
+        dc.MITIGATIONS["inpaint_erp"] = orig
+    caps = grow_caps(detect_caps(x), JPEG_EDGE_MARGIN_DEG)
+    pre = _inpaint_tangent(x, occlusion_mask(128, 256, caps))
+    assert len(seen) == 1 and (seen[0] == _image_after("bilateral", pre, {})).all()
+    assert log[0] == "jpeg: bilateral" and log[1].startswith("nadir")

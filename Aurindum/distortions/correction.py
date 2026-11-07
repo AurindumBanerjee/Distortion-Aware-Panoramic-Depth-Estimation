@@ -131,8 +131,8 @@ def correct(model, rgb: np.ndarray, meta: Optional[CaptureMeta] = None, policy: 
     """Depth for `rgb` (on its own grid) with the capture-aware fixes the policy allows. Returns (prediction, log).
 
     Order: a known tilt is handled first and alone (re-levelling rotates the caps away from the poles, so the cap
-    fixes, which assume polar caps in the capture frame, are not combined with it); then photometric fixes (one, the
-    first flagged fault that has a fix in the policy); then missing caps. Each step only changes the image or the
+    fixes, which assume polar caps in the capture frame, are not combined with it); then every flagged photometric fault
+    that has a fix in the policy, in a fixed order; then missing caps. Each step only changes the image or the
     inference, never the model."""
     meta = meta or CaptureMeta()
     policy = DEFAULT_POLICY if policy is None else policy
@@ -156,19 +156,26 @@ def correct(model, rgb: np.ndarray, meta: Optional[CaptureMeta] = None, policy: 
     cap_fix = policy.get(cf, "none") if cf else "none"
 
     if photometric:
-        f, k = photometric[0]
-        if f == "yawblur":
+        if meta.kernel is not None:
             ctx["kernel"] = meta.kernel
-        log.append(f"{f}: {k}")
         if cap_fix == "none":
+            # every flagged photometric fix runs, in order: all but the last on the IMAGE only, the last ends in the prediction
+            for f, k in photometric[:-1]:
+                log.append(f"{f}: {k}")
+                img = _image_after(k, img, ctx)
+            f, k = photometric[-1]
+            log.append(f"{f}: {k}")
             return fix(k)(model, img, ctx), log
-        # a photometric fix and a cap fix both wanted: apply the photometric one to the IMAGE only (the catalogue fixes
-        # end in a prediction, so the cleaned image is produced through a capturing model stub)
+        # photometric fix(es) and a cap fix both wanted: the photometric ones change the IMAGE only (the catalogue fixes
+        # end in a prediction, so the cleaned image is produced through a capturing model stub); the cap fix ends it
         if order == "cap_first" and cf is not None:
-            # fill the caps BEFORE the smoothing, so that it never blurs the patch edge into the visible scene
+            # provisional fill BEFORE the smoothing, so that it does not blur the patch edge into the visible scene; the
+            # cap fix below fills the same mask again from the smoothed surroundings and replaces these pixels
             from distortions.catalogue import _inpaint_tangent
             img = _inpaint_tangent(img, occlusion_mask(img.shape[0], img.shape[1], caps))
-        img = _image_after(k, img, ctx)
+        for f, k in photometric:
+            log.append(f"{f}: {k}")
+            img = _image_after(k, img, ctx)
 
     if cf is not None:
         log.append(f"{cf} (caps {caps}): {cap_fix}")
