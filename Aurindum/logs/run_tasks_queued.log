@@ -1,0 +1,35 @@
+[2026-11-04 23:00:17] waiting for the GPU to be idle for 3 min, then running: bash /DATA/Aurindum/queue_tasks.sh
+[2026-11-05 00:18:52] GPU idle: starting
+[2026-11-05 00:18:53] 🚀 tasks: distortion study, round 3b, summaries
+[2026-11-05 00:18:53] == 1. tests
+                    )
+E                   OSError: The temporary directory /DATA/Aurindum/tmp/pytest-of-Aurindum is not owned by the current user. Fix this and try again.
+
+../../conda/envs/RL/lib/python3.10/site-packages/_pytest/tmpdir.py:178: OSError
+=========================== short test summary info ============================
+ERROR tests/test_dap_wrapper.py::test_dap_wrapper_contract - OSError: The tem...
+ERROR tests/test_distortion_analysis.py::test_dataset_split_is_applied_before_the_spread_subset
+ERROR tests/test_distortion_analysis.py::test_curve_ratio_gate_and_load - OSE...
+ERROR tests/test_distortion_analysis.py::test_nonplanar_onset_and_curve_loading_by_estimator
+ERROR tests/test_methods.py::test_tracker_replaces_nan_record - OSError: The ...
+ERROR tests/test_methods.py::test_missing_config_is_fatal - OSError: The temp...
+ERROR tests/test_methods.py::test_panorama_dataset_applies_mask_column_and_keeps_metres
+ERROR tests/test_methods.py::test_dataset_subset_spread_covers_every_scene - ...
+ERROR tests/test_methods.py::test_panoramic_model_builder_dispatch_and_missing_repo_errors
+84 passed, 9 errors in 16.54s
+[2026-11-05 00:19:11] ❌ tests failed: fix before running anything
+[2026-11-05 00:19:11] == 2. GPU and models
+CUDA: True
+[2026-11-05 00:19:13] ✅ MiDaS
+[2026-11-05 00:19:13] ✅ DAP
+[2026-11-05 00:19:13] ✅ DA360
+[2026-11-05 00:19:18] ✅ DA^2 code (weights come from $HF_HOME offline cache)
+[2026-11-05 00:19:18] == 3. datasets
+[2026-11-05 00:19:18] ✅ structured3d (300 frames)
+[2026-11-05 00:19:18] ✅ panox (200 frames)
+[2026-11-05 00:19:18] ✅ holo360d (362 frames)
+[2026-11-05 00:19:18] ·  Stanford2D3D not present (optional, not in the default sets)
+[2026-11-05 00:19:18] ·  NYC not present (optional, not in the default sets)
+[2026-11-05 00:19:18] ❌ setup has blocking problems (above)
+[2026-11-05 00:19:18] ❌ setup failed, nothing run
+[2026-11-05 00:19:18] finished (exit 1)

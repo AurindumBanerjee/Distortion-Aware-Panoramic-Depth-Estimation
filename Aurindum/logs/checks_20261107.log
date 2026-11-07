@@ -1,0 +1,178 @@
+== 2: DA2 on NYC, median alignment
+held-out policy: {'tilt': 'relevel_known', 'nadir': 'plane_fill', 'vfov': 'inpaint_erp', 'yawblur': 'wiener'} chosen on ['holo_in', 'holo_out', 'panox', 's3']
+xFormers not available
+xFormers not available
+xFormers not available
+[1/40] panorama_21: clean 0.186->0.186, tilt 0.228->0.195, nadir 0.164->0.175, vfov 0.159->0.159, yawblur 0.204->0.191, jpeg 0.206->0.206, nadir+jpeg 0.164->0.204
+[2/40] panorama_120: clean 0.245->0.245, tilt 0.289->0.295, nadir 0.217->0.229, vfov 0.203->0.271, yawblur 0.366->0.312, jpeg 0.378->0.378, nadir+jpeg 0.284->0.354
+[3/40] panorama_178: clean 0.172->0.172, tilt 0.286->0.191, nadir 0.160->0.170, vfov 0.193->0.170, yawblur 0.193->0.200, jpeg 0.217->0.217, nadir+jpeg 0.189->0.189
+[4/40] panorama_231: clean 0.214->0.214, tilt 0.323->0.228, nadir 0.156->0.182, vfov 0.197->0.201, yawblur 0.267->0.253, jpeg 0.348->0.348, nadir+jpeg 0.325->0.325
+[5/40] panorama_285: clean 0.274->0.274, tilt 0.313->0.273, nadir 0.287->0.456, vfov 0.727->0.908, yawblur 0.268->0.284, jpeg 0.402->0.402, nadir+jpeg 0.509->0.509
+[6/40] panorama_323: clean 0.190->0.190, tilt 0.306->0.195, nadir 0.517->0.445, vfov 0.844->0.332, yawblur 0.186->0.180, jpeg 0.399->0.399, nadir+jpeg 0.707->0.707
+[7/40] panorama_361: clean 0.228->0.228, tilt 0.302->0.233, nadir 0.283->0.184, vfov 0.602->0.187, yawblur 0.238->0.227, jpeg 0.343->0.343, nadir+jpeg 0.594->0.594
+[8/40] panorama_383: clean 0.214->0.214, tilt 0.290->0.230, nadir 0.174->0.191, vfov 0.363->0.438, yawblur 0.243->0.227, jpeg 0.267->0.267, nadir+jpeg 0.272->0.388
+[9/40] panorama_426: clean 0.192->0.192, tilt 0.292->0.228, nadir 0.128->0.176, vfov 0.171->0.160, yawblur 0.148->0.212, jpeg 0.147->0.147, nadir+jpeg 0.125->0.154
+[10/40] panorama_514: clean 0.205->0.205, tilt 0.405->0.210, nadir 0.245->0.205, vfov 0.238->0.194, yawblur 0.230->0.225, jpeg 0.199->0.199, nadir+jpeg 0.167->0.180
+[11/40] panorama_548: clean 0.203->0.203, tilt 0.286->0.228, nadir 0.166->0.188, vfov 0.187->0.175, yawblur 0.251->0.239, jpeg 0.197->0.197, nadir+jpeg 0.150->0.156
+[12/40] panorama_593: clean 0.298->0.298, tilt 0.396->0.395, nadir 0.230->0.285, vfov 0.260->0.383, yawblur 0.383->0.339, jpeg 0.331->0.331, nadir+jpeg 0.241->0.353
+[13/40] panorama_636: clean 0.341->0.341, tilt 0.391->0.352, nadir 0.400->0.384, vfov 0.325->0.377, yawblur 0.385->0.355, jpeg 0.238->0.238, nadir+jpeg 0.251->0.251
+[14/40] panorama_672: clean 0.085->0.085, tilt 0.235->0.101, nadir 0.103->0.074, vfov 0.114->0.079, yawblur 0.065->0.088, jpeg 0.073->0.073, nadir+jpeg 0.113->0.113
+[15/40] panorama_715: clean 0.096->0.096, tilt 0.212->0.083, nadir 0.130->0.087, vfov 0.457->0.403, yawblur 0.046->0.084, jpeg 0.094->0.094, nadir+jpeg 0.110->0.110
+[16/40] panorama_777: clean 0.130->0.130, tilt 0.189->0.145, nadir 0.556->0.708, vfov 0.852->0.372, yawblur 0.135->0.220, jpeg 0.313->0.313, nadir+jpeg 0.630->0.630
+[17/40] panorama_814: clean 0.122->0.122, tilt 0.206->0.144, nadir 0.747->0.890, vfov 1.119->1.201, yawblur 0.162->0.223, jpeg 0.355->0.355, nadir+jpeg 0.743->0.743
+[18/40] panorama_896: clean 0.141->0.141, tilt 0.171->0.160, nadir 0.499->0.672, vfov 0.789->0.764, yawblur 0.182->0.174, jpeg 0.213->0.213, nadir+jpeg 0.730->0.730
+[19/40] panorama_987: clean 0.134->0.134, tilt 0.155->0.151, nadir 0.485->0.601, vfov 0.815->0.870, yawblur 0.155->0.146, jpeg 0.268->0.268, nadir+jpeg 0.560->0.560
+[20/40] panorama_1010: clean 0.160->0.160, tilt 0.231->0.175, nadir 0.402->0.425, vfov 0.656->0.695, yawblur 0.155->0.157, jpeg 0.338->0.338, nadir+jpeg 0.542->0.542
+[21/40] panorama_1051: clean 0.203->0.203, tilt 0.315->0.208, nadir 0.433->0.623, vfov 0.644->0.703, yawblur 0.143->0.166, jpeg 0.267->0.267, nadir+jpeg 0.587->0.587
+[22/40] panorama_1085: clean 0.215->0.215, tilt 0.325->0.224, nadir 0.366->0.409, vfov 0.536->0.582, yawblur 0.191->0.207, jpeg 0.308->0.308, nadir+jpeg 0.530->0.530
+[23/40] panorama_1141: clean 0.240->0.240, tilt 0.332->0.267, nadir 0.254->0.253, vfov 0.294->0.415, yawblur 0.219->0.268, jpeg 0.253->0.253, nadir+jpeg 0.319->0.363
+[24/40] panorama_1192: clean 0.240->0.240, tilt 0.308->0.259, nadir 0.216->0.222, vfov 0.283->0.267, yawblur 0.248->0.265, jpeg 0.268->0.268, nadir+jpeg 0.260->0.287
+[25/40] panorama_1270: clean 0.202->0.202, tilt 0.251->0.249, nadir 0.201->0.191, vfov 0.205->0.296, yawblur 0.284->0.204, jpeg 0.313->0.313, nadir+jpeg 0.253->0.321
+[26/40] panorama_1307: clean 0.192->0.192, tilt 0.275->0.244, nadir 0.209->0.184, vfov 0.177->0.182, yawblur 0.246->0.214, jpeg 0.331->0.331, nadir+jpeg 0.262->0.262
+[27/40] panorama_1348: clean 0.174->0.174, tilt 0.290->0.201, nadir 0.230->0.177, vfov 0.240->0.196, yawblur 0.242->0.209, jpeg 0.448->0.448, nadir+jpeg 0.406->0.528
+[28/40] panorama_1382: clean 0.177->0.177, tilt 0.266->0.193, nadir 0.170->0.169, vfov 0.184->0.164, yawblur 0.233->0.190, jpeg 0.352->0.352, nadir+jpeg 0.290->0.342
+[29/40] panorama_1410: clean 0.222->0.222, tilt 0.291->0.229, nadir 0.221->0.221, vfov 0.231->0.214, yawblur 0.292->0.237, jpeg 0.287->0.287, nadir+jpeg 0.250->0.309
+[30/40] panorama_1444: clean 0.229->0.229, tilt 0.266->0.243, nadir 0.203->0.218, vfov 0.203->0.200, yawblur 0.322->0.256, jpeg 0.314->0.314, nadir+jpeg 0.247->0.301
+[31/40] panorama_1490: clean 0.235->0.235, tilt 0.265->0.256, nadir 0.175->0.215, vfov 0.189->0.178, yawblur 0.511->0.259, jpeg 0.494->0.494, nadir+jpeg 0.406->0.406
+[32/40] panorama_1520: clean 0.162->0.162, tilt 0.211->0.178, nadir 0.118->0.149, vfov 0.158->0.186, yawblur 0.246->0.238, jpeg 0.314->0.314, nadir+jpeg 0.241->0.241
+[33/40] panorama_1575: clean 0.227->0.227, tilt 0.250->0.242, nadir 0.207->0.225, vfov 0.245->0.242, yawblur 0.381->0.251, jpeg 0.509->0.509, nadir+jpeg 0.388->0.388
+[34/40] panorama_1625: clean 0.175->0.175, tilt 0.275->0.185, nadir 0.168->0.168, vfov 0.189->0.170, yawblur 0.213->0.194, jpeg 0.261->0.261, nadir+jpeg 0.207->0.250
+[35/40] panorama_1670: clean 0.201->0.201, tilt 0.173->0.180, nadir 0.251->0.206, vfov 0.243->0.218, yawblur 0.184->0.212, jpeg 0.159->0.159, nadir+jpeg 0.197->0.158
+[36/40] panorama_1738: clean 0.226->0.226, tilt 0.314->0.216, nadir 0.235->0.223, vfov 0.238->0.218, yawblur 0.240->0.282, jpeg 0.186->0.186, nadir+jpeg 0.178->0.178
+[37/40] panorama_1793: clean 0.178->0.178, tilt 0.262->0.186, nadir 0.146->0.153, vfov 0.168->0.252, yawblur 0.195->0.182, jpeg 0.158->0.158, nadir+jpeg 0.189->0.172
+[38/40] panorama_1816: clean 0.217->0.217, tilt 0.269->0.228, nadir 0.217->0.206, vfov 0.230->0.238, yawblur 0.213->0.201, jpeg 0.230->0.230, nadir+jpeg 0.255->0.255
+[39/40] panorama_1851: clean 0.317->0.317, tilt 0.302->0.347, nadir 0.328->0.311, vfov 0.359->0.339, yawblur 0.395->0.346, jpeg 0.408->0.408, nadir+jpeg 0.402->0.418
+[40/40] panorama_1881: clean 0.232->0.232, tilt 0.367->0.236, nadir 0.221->0.220, vfov 0.223->0.237, yawblur 0.275->0.242, jpeg 0.257->0.257, nadir+jpeg 0.235->0.235
+# Capture-aware correction, end to end: da2_nyc_median
+
+model `da2` · 40 frames · policy chosen on holo_in, holo_out, panox, s3 (held out: nyc): `{"tilt": "relevel_known", "nadir": "plane_fill", "vfov": "inpaint_erp", "yawblur": "wiener"}`
+
+Caps are detected from the image; tilt / shake come as IMU / gyro metadata; JPEG as a file flag. Metric: AbsRel on the occluded region for cap faults, else the whole panorama.
+
+| scenario | cap detection correct | clean | uncorrected | corrected | change | frames improved | frames worse >1% | recovery |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|
+| clean | 100% | 0.2029 | 0.2029 | 0.2029 | +0.0% | 0% | 0% | n/a |
+| tilt | 100% | 0.2029 | 0.2861 | 0.2261 | -21.1% | 92% | 8% | 79% |
+| nadir | 100% | 0.0692 | 0.1263 | 0.0708 | -41.7% | 62% | 38% | 86% |
+| vfov | 100% | 0.1282 | 0.2107 | 0.2280 | -10.7% | 60% | 40% | 22% |
+| yawblur | 100% | 0.2029 | 0.2355 | 0.2217 | -4.9% | 65% | 32% | 54% |
+| jpeg | 100% | 0.2029 | 0.2776 | 0.2776 | +0.0% | 0% | 0% | 0% |
+| nadir+jpeg | 45% | 0.0692 | 0.1621 | 0.1666 | +0.0% | 20% | 25% | 0% |
+== 3: DAP, cap fill before smoothing
+held-out policy: {'tilt': 'relevel_known', 'nadir': 'plane_fill', 'vfov': 'inpaint_erp', 'yawblur': 'wiener', 'jpeg': 'bilateral'} chosen on ['holo_in', 'holo_out', 'panox', 's3']
+xFormers not available
+xFormers not available
+[1/40] panorama_21: clean 0.038->0.038, tilt 0.085->0.040, nadir 0.119->0.037, vfov 0.201->0.078, yawblur 0.111->0.039, jpeg 0.129->0.125, nadir+jpeg 0.127->0.131
+[2/40] panorama_120: clean 0.055->0.055, tilt 0.098->0.108, nadir 0.150->0.046, vfov 0.273->0.138, yawblur 0.089->0.091, jpeg 0.117->0.109, nadir+jpeg 0.118->0.116
+[3/40] panorama_178: clean 0.037->0.037, tilt 0.111->0.045, nadir 0.149->0.065, vfov 0.320->0.213, yawblur 0.140->0.047, jpeg 0.145->0.147, nadir+jpeg 0.142->0.156
+[4/40] panorama_231: clean 0.028->0.028, tilt 0.080->0.038, nadir 0.122->0.119, vfov 0.302->0.069, yawblur 0.125->0.039, jpeg 0.115->0.114, nadir+jpeg 0.125->0.122
+[5/40] panorama_285: clean 0.032->0.032, tilt 0.090->0.045, nadir 0.174->0.200, vfov 0.352->0.287, yawblur 0.074->0.043, jpeg 0.149->0.126, nadir+jpeg 0.304->0.317
+[6/40] panorama_323: clean 0.031->0.031, tilt 0.091->0.049, nadir 0.220->0.251, vfov 0.383->0.352, yawblur 0.090->0.046, jpeg 0.199->0.172, nadir+jpeg 0.338->0.380
+[7/40] panorama_361: clean 0.032->0.032, tilt 0.077->0.041, nadir 0.126->0.125, vfov 0.363->0.227, yawblur 0.121->0.040, jpeg 0.202->0.178, nadir+jpeg 0.265->0.173
+[8/40] panorama_383: clean 0.031->0.031, tilt 0.097->0.042, nadir 0.146->0.055, vfov 0.347->0.120, yawblur 0.165->0.036, jpeg 0.297->0.268, nadir+jpeg 0.283->0.251
+[9/40] panorama_426: clean 0.026->0.026, tilt 0.113->0.030, nadir 0.126->0.026, vfov 0.273->0.051, yawblur 0.184->0.041, jpeg 0.300->0.254, nadir+jpeg 0.301->0.259
+[10/40] panorama_514: clean 0.033->0.033, tilt 0.089->0.042, nadir 0.036->0.030, vfov 0.271->0.213, yawblur 0.085->0.054, jpeg 0.137->0.127, nadir+jpeg 0.144->0.133
+[11/40] panorama_548: clean 0.030->0.030, tilt 0.084->0.045, nadir 0.132->0.027, vfov 0.266->0.147, yawblur 0.179->0.034, jpeg 0.238->0.227, nadir+jpeg 0.236->0.257
+[12/40] panorama_593: clean 0.048->0.048, tilt 0.156->0.118, nadir 0.129->0.052, vfov 0.294->0.355, yawblur 0.130->0.059, jpeg 0.145->0.145, nadir+jpeg 0.149->0.150
+[13/40] panorama_636: clean 0.032->0.032, tilt 0.170->0.062, nadir 0.121->0.094, vfov 0.320->0.147, yawblur 0.410->0.082, jpeg 0.320->0.319, nadir+jpeg 0.324->0.321
+[14/40] panorama_672: clean 0.024->0.024, tilt 0.106->0.025, nadir 0.126->0.031, vfov 0.268->0.083, yawblur 0.225->0.034, jpeg 0.296->0.258, nadir+jpeg 0.280->0.236
+[15/40] panorama_715: clean 0.020->0.020, tilt 0.110->0.028, nadir 0.109->0.030, vfov 0.373->0.287, yawblur 0.241->0.041, jpeg 0.393->0.318, nadir+jpeg 0.409->0.343
+[16/40] panorama_777: clean 0.027->0.027, tilt 0.097->0.048, nadir 0.252->0.242, vfov 0.393->0.375, yawblur 0.189->0.057, jpeg 0.422->0.382, nadir+jpeg 0.511->0.548
+[17/40] panorama_814: clean 0.035->0.035, tilt 0.106->0.066, nadir 0.289->0.328, vfov 0.431->0.415, yawblur 0.193->0.064, jpeg 0.581->0.476, nadir+jpeg 0.619->0.597
+[18/40] panorama_896: clean 0.033->0.033, tilt 0.113->0.049, nadir 0.263->0.283, vfov 0.430->0.406, yawblur 0.145->0.043, jpeg 0.350->0.297, nadir+jpeg 0.483->0.529
+[19/40] panorama_987: clean 0.027->0.027, tilt 0.091->0.049, nadir 0.205->0.263, vfov 0.382->0.342, yawblur 0.082->0.034, jpeg 0.226->0.178, nadir+jpeg 0.413->0.413
+[20/40] panorama_1010: clean 0.030->0.030, tilt 0.085->0.045, nadir 0.220->0.242, vfov 0.385->0.340, yawblur 0.094->0.042, jpeg 0.197->0.174, nadir+jpeg 0.370->0.398
+[21/40] panorama_1051: clean 0.028->0.028, tilt 0.087->0.041, nadir 0.170->0.215, vfov 0.374->0.291, yawblur 0.077->0.032, jpeg 0.125->0.108, nadir+jpeg 0.288->0.320
+[22/40] panorama_1085: clean 0.032->0.032, tilt 0.080->0.047, nadir 0.180->0.176, vfov 0.353->0.313, yawblur 0.090->0.042, jpeg 0.126->0.104, nadir+jpeg 0.260->0.266
+[23/40] panorama_1141: clean 0.045->0.045, tilt 0.148->0.054, nadir 0.077->0.071, vfov 0.254->0.134, yawblur 0.182->0.054, jpeg 0.262->0.242, nadir+jpeg 0.257->0.263
+[24/40] panorama_1192: clean 0.039->0.039, tilt 0.080->0.049, nadir 0.108->0.049, vfov 0.358->0.249, yawblur 0.163->0.051, jpeg 0.171->0.158, nadir+jpeg 0.217->0.289
+[25/40] panorama_1270: clean 0.037->0.037, tilt 0.108->0.080, nadir 0.132->0.040, vfov 0.251->0.200, yawblur 0.098->0.056, jpeg 0.171->0.150, nadir+jpeg 0.172->0.155
+[26/40] panorama_1307: clean 0.044->0.044, tilt 0.110->0.072, nadir 0.132->0.046, vfov 0.249->0.161, yawblur 0.086->0.056, jpeg 0.123->0.108, nadir+jpeg 0.125->0.104
+[27/40] panorama_1348: clean 0.049->0.049, tilt 0.083->0.080, nadir 0.134->0.045, vfov 0.253->0.196, yawblur 0.077->0.085, jpeg 0.115->0.116, nadir+jpeg 0.121->0.126
+[28/40] panorama_1382: clean 0.046->0.046, tilt 0.083->0.069, nadir 0.152->0.048, vfov 0.274->0.221, yawblur 0.093->0.079, jpeg 0.134->0.127, nadir+jpeg 0.136->0.129
+[29/40] panorama_1410: clean 0.039->0.039, tilt 0.102->0.069, nadir 0.105->0.040, vfov 0.202->0.125, yawblur 0.055->0.074, jpeg 0.105->0.079, nadir+jpeg 0.105->0.069
+[30/40] panorama_1444: clean 0.039->0.039, tilt 0.083->0.048, nadir 0.150->0.042, vfov 0.272->0.116, yawblur 0.138->0.050, jpeg 0.108->0.114, nadir+jpeg 0.110->0.122
+[31/40] panorama_1490: clean 0.040->0.040, tilt 0.074->0.048, nadir 0.136->0.055, vfov 0.320->0.231, yawblur 0.127->0.043, jpeg 0.136->0.136, nadir+jpeg 0.152->0.158
+[32/40] panorama_1520: clean 0.034->0.034, tilt 0.091->0.039, nadir 0.120->0.042, vfov 0.312->0.169, yawblur 0.105->0.047, jpeg 0.140->0.141, nadir+jpeg 0.199->0.178
+[33/40] panorama_1575: clean 0.033->0.033, tilt 0.098->0.047, nadir 0.127->0.127, vfov 0.303->0.195, yawblur 0.112->0.061, jpeg 0.146->0.140, nadir+jpeg 0.225->0.162
+[34/40] panorama_1625: clean 0.041->0.041, tilt 0.096->0.049, nadir 0.058->0.042, vfov 0.271->0.180, yawblur 0.120->0.064, jpeg 0.109->0.119, nadir+jpeg 0.117->0.130
+[35/40] panorama_1670: clean 0.035->0.035, tilt 0.074->0.048, nadir 0.140->0.037, vfov 0.296->0.103, yawblur 0.100->0.064, jpeg 0.161->0.161, nadir+jpeg 0.157->0.168
+[36/40] panorama_1738: clean 0.035->0.035, tilt 0.125->0.044, nadir 0.136->0.038, vfov 0.298->0.194, yawblur 0.190->0.049, jpeg 0.255->0.230, nadir+jpeg 0.255->0.241
+[37/40] panorama_1793: clean 0.024->0.024, tilt 0.097->0.032, nadir 0.043->0.026, vfov 0.274->0.150, yawblur 0.162->0.041, jpeg 0.194->0.186, nadir+jpeg 0.206->0.196
+[38/40] panorama_1816: clean 0.033->0.033, tilt 0.085->0.046, nadir 0.105->0.041, vfov 0.295->0.168, yawblur 0.140->0.046, jpeg 0.212->0.175, nadir+jpeg 0.248->0.211
+[39/40] panorama_1851: clean 0.052->0.052, tilt 0.103->0.077, nadir 0.152->0.053, vfov 0.260->0.118, yawblur 0.127->0.112, jpeg 0.162->0.150, nadir+jpeg 0.164->0.142
+[40/40] panorama_1881: clean 0.046->0.046, tilt 0.085->0.058, nadir 0.155->0.040, vfov 0.304->0.184, yawblur 0.121->0.065, jpeg 0.191->0.191, nadir+jpeg 0.181->0.185
+# Capture-aware correction, end to end: dap_nyc_capfirst
+
+model `dap` · 40 frames · policy chosen on holo_in, holo_out, panox, s3 (held out: nyc): `{"tilt": "relevel_known", "nadir": "plane_fill", "vfov": "inpaint_erp", "yawblur": "wiener", "jpeg": "bilateral"}`
+
+Caps are detected from the image; tilt / shake come as IMU / gyro metadata; JPEG as a file flag. Metric: AbsRel on the occluded region for cap faults, else the whole panorama.
+
+| scenario | cap detection correct | clean | uncorrected | corrected | change | frames improved | frames worse >1% | recovery |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|
+| clean | 100% | 0.0334 | 0.0334 | 0.0334 | +0.0% | 0% | 0% | n/a |
+| tilt | 100% | 0.0334 | 0.0936 | 0.0478 | -46.9% | 98% | 2% | 78% |
+| nadir | 100% | 0.0169 | 0.5031 | 0.0494 | -85.5% | 78% | 18% | 92% |
+| vfov | 100% | 0.0242 | 0.7170 | 0.4224 | -39.4% | 98% | 2% | 40% |
+| yawblur | 100% | 0.0334 | 0.1234 | 0.0479 | -61.2% | 92% | 8% | 87% |
+| jpeg | 100% | 0.0334 | 0.1664 | 0.1540 | -7.7% | 78% | 8% | 11% |
+| nadir+jpeg | 90% | 0.0169 | 0.3306 | 0.2648 | +0.8% | 48% | 50% | -1% |
+held-out policy: {'tilt': 'relevel_known', 'nadir': 'plane_fill', 'vfov': 'inpaint_erp', 'yawblur': 'wiener', 'jpeg': 'bilateral'} chosen on ['holo_in', 'holo_out', 'panox', 's3']
+xFormers not available
+xFormers not available
+[1/40] area_5a_camera_029bb1440fca47e2886a88559bbf8d00_hallway_1_frame_equirectangular_domain_rgb: clean 0.126->0.062, tilt 0.212->0.124, nadir 0.116->0.064, vfov 0.364->0.114, yawblur 0.162->0.071, jpeg 0.452->0.198, nadir+jpeg 0.402->0.192
+[2/40] area_5a_camera_12a8e5e227b245e79d21e62dec80b6f0_hallway_5_frame_equirectangular_domain_rgb: clean 0.082->0.053, tilt 0.219->0.076, nadir 0.085->0.058, vfov 0.371->0.206, yawblur 0.079->0.063, jpeg 0.103->0.071, nadir+jpeg 0.085->0.072
+[3/40] area_5a_camera_2302cda036444182b441f42566c30cab_hallway_6_frame_equirectangular_domain_rgb: clean 0.077->0.049, tilt 0.194->0.070, nadir 0.066->0.050, vfov 0.362->0.201, yawblur 0.080->0.066, jpeg 0.109->0.069, nadir+jpeg 0.080->0.083
+[4/40] area_5a_camera_3d0ec755a0254dadb84f8d9037adf5b3_hallway_6_frame_equirectangular_domain_rgb: clean 0.111->0.069, tilt 0.214->0.105, nadir 0.111->0.073, vfov 0.384->0.163, yawblur 0.115->0.085, jpeg 0.226->0.100, nadir+jpeg 0.194->0.092
+[5/40] area_5a_camera_4e7d4edf7c2a40ae93437d1fbde22043_office_6_frame_equirectangular_domain_rgb: clean 0.175->0.086, tilt 0.226->0.168, nadir 0.188->0.105, vfov 0.403->0.236, yawblur 0.214->0.103, jpeg 0.204->0.168, nadir+jpeg 0.217->0.133
+[6/40] area_5a_camera_5b1558bf70184b60844d293011eaeb30_office_13_frame_equirectangular_domain_rgb: clean 0.123->0.070, tilt 0.153->0.124, nadir 0.135->0.076, vfov 0.318->0.115, yawblur 0.134->0.076, jpeg 0.168->0.099, nadir+jpeg 0.171->0.101
+[7/40] area_5a_camera_6a82418b24c54b56b7b288f71e350b57_office_18_frame_equirectangular_domain_rgb: clean 0.124->0.054, tilt 0.136->0.115, nadir 0.142->0.080, vfov 0.344->0.210, yawblur 0.135->0.065, jpeg 0.207->0.131, nadir+jpeg 0.202->0.067
+[8/40] area_5a_camera_754f53ea49174e5d9a6a7133baabb43e_office_42_frame_equirectangular_domain_rgb: clean 0.245->0.175, tilt 0.300->0.241, nadir 0.248->0.191, vfov 0.427->0.309, yawblur 0.256->0.183, jpeg 0.536->0.335, nadir+jpeg 0.539->0.342
+[9/40] area_5a_camera_7e50259e1c514b929292254cedde4210_hallway_6_frame_equirectangular_domain_rgb: clean 0.222->0.172, tilt 0.287->0.219, nadir 0.214->0.195, vfov 0.407->0.271, yawblur 0.222->0.182, jpeg 0.539->0.193, nadir+jpeg 0.447->0.188
+[10/40] area_5a_camera_8c2af4c04a524c24a37cd51a4c4f86a6_hallway_6_frame_equirectangular_domain_rgb: clean 0.085->0.059, tilt 0.159->0.080, nadir 0.077->0.062, vfov 0.369->0.146, yawblur 0.075->0.066, jpeg 0.099->0.070, nadir+jpeg 0.081->0.074
+[11/40] area_5a_camera_966ab9d06d2d4a4b8bc9c7241286a190_hallway_8_frame_equirectangular_domain_rgb: clean 0.149->0.095, tilt 0.245->0.143, nadir 0.136->0.099, vfov 0.327->0.096, yawblur 0.168->0.118, jpeg 0.346->0.172, nadir+jpeg 0.304->0.163
+[12/40] area_5a_camera_a7c9f114a66b47e29e8979a5a1db2796_hallway_5_frame_equirectangular_domain_rgb: clean 0.087->0.042, tilt 0.234->0.076, nadir 0.070->0.049, vfov 0.324->0.113, yawblur 0.091->0.055, jpeg 0.153->0.057, nadir+jpeg 0.108->0.059
+[13/40] area_5a_camera_c520a9e9cb4947b7b728a0fbeab19877_office_39_frame_equirectangular_domain_rgb: clean 0.118->0.071, tilt 0.131->0.106, nadir 0.108->0.065, vfov 0.363->0.186, yawblur 0.111->0.081, jpeg 0.080->0.089, nadir+jpeg 0.075->0.112
+[14/40] area_5a_camera_d210459049ad460988c2bd7d1feffbb1_hallway_6_frame_equirectangular_domain_rgb: clean 0.062->0.046, tilt 0.125->0.057, nadir 0.057->0.046, vfov 0.334->0.105, yawblur 0.067->0.059, jpeg 0.117->0.069, nadir+jpeg 0.091->0.072
+[15/40] area_5a_camera_e0b18f005f1849d7a057cf4af2f2366c_hallway_1_frame_equirectangular_domain_rgb: clean 0.138->0.087, tilt 0.242->0.131, nadir 0.117->0.091, vfov 0.353->0.129, yawblur 0.171->0.105, jpeg 0.473->0.213, nadir+jpeg 0.406->0.210
+[16/40] area_5a_camera_fd03a200c52a4659939176a29cb20066_office_39_frame_equirectangular_domain_rgb: clean 0.099->0.080, tilt 0.123->0.098, nadir 0.090->0.079, vfov 0.353->0.116, yawblur 0.084->0.095, jpeg 0.117->0.101, nadir+jpeg 0.109->0.125
+[17/40] area_5b_camera_09d6fdea0db4443a8d81914d856ce82b_office_3_frame_equirectangular_domain_rgb: clean 0.202->0.129, tilt 0.235->0.195, nadir 0.217->0.117, vfov 0.413->0.235, yawblur 0.200->0.137, jpeg 0.208->0.088, nadir+jpeg 0.166->0.096
+[18/40] area_5b_camera_15bdfcd89a68457889dd0bb5ef0baf10_hallway_3_frame_equirectangular_domain_rgb: clean 0.103->0.067, tilt 0.217->0.092, nadir 0.107->0.067, vfov 0.365->0.181, yawblur 0.134->0.088, jpeg 0.299->0.098, nadir+jpeg 0.216->0.101
+[19/40] area_5b_camera_1b42665a061d4b11be75327b5721b651_hallway_2_frame_equirectangular_domain_rgb: clean 0.087->0.057, tilt 0.157->0.077, nadir 0.070->0.058, vfov 0.337->0.159, yawblur 0.096->0.071, jpeg 0.259->0.089, nadir+jpeg 0.206->0.074
+[20/40] area_5b_camera_24e0d1d147cf42c1bd2ccda0f368f33e_office_5_frame_equirectangular_domain_rgb: clean 0.242->0.201, tilt 0.290->0.241, nadir 0.272->0.236, vfov 0.425->0.345, yawblur 0.312->0.222, jpeg 0.618->0.568, nadir+jpeg 0.722->0.574
+[21/40] area_5b_camera_31db68b6feca40218f6c32f5f0a1af0c_hallway_9_frame_equirectangular_domain_rgb: clean 0.272->0.225, tilt 0.336->0.273, nadir 0.283->0.254, vfov 0.442->0.301, yawblur 0.335->0.237, jpeg 0.661->0.534, nadir+jpeg 0.675->0.549
+[22/40] area_5b_camera_4032900109674270a65fb13a5fb41ec4_hallway_2_frame_equirectangular_domain_rgb: clean 0.244->0.196, tilt 0.312->0.245, nadir 0.250->0.203, vfov 0.413->0.286, yawblur 0.264->0.215, jpeg 0.627->0.320, nadir+jpeg 0.532->0.299
+[23/40] area_5b_camera_4ad4a8b557ff4ab8b39222d38c08ff2a_office_40_frame_equirectangular_domain_rgb: clean 0.192->0.105, tilt 0.236->0.199, nadir 0.178->0.094, vfov 0.393->0.122, yawblur 0.204->0.106, jpeg 0.295->0.187, nadir+jpeg 0.258->0.183
+[24/40] area_5b_camera_542f34630f6840e799002f6a223424ec_office_27_frame_equirectangular_domain_rgb: clean 0.205->0.145, tilt 0.245->0.194, nadir 0.214->0.153, vfov 0.384->0.165, yawblur 0.206->0.156, jpeg 0.270->0.113, nadir+jpeg 0.260->0.119
+[25/40] area_5b_camera_5b6a251514814f509d8f479c033d79f2_hallway_7_frame_equirectangular_domain_rgb: clean 0.094->0.057, tilt 0.142->0.081, nadir 0.090->0.055, vfov 0.345->0.122, yawblur 0.120->0.073, jpeg 0.229->0.095, nadir+jpeg 0.192->0.091
+[26/40] area_5b_camera_621eece602414076b8d4ecf354aeec50_office_16_frame_equirectangular_domain_rgb: clean 0.250->0.214, tilt 0.316->0.255, nadir 0.259->0.246, vfov 0.431->0.327, yawblur 0.285->0.212, jpeg 0.673->0.510, nadir+jpeg 0.712->0.610
+[27/40] area_5b_camera_725f05878b89464fbb34f46eb47aa763_hallway_2_frame_equirectangular_domain_rgb: clean 0.230->0.171, tilt 0.333->0.229, nadir 0.251->0.178, vfov 0.428->0.244, yawblur 0.357->0.176, jpeg 0.596->0.384, nadir+jpeg 0.640->0.531
+[28/40] area_5b_camera_7f4e9c74c5ac4c30b75a9fc8394cf90c_office_40_frame_equirectangular_domain_rgb: clean 0.224->0.182, tilt 0.380->0.232, nadir 0.226->0.151, vfov 0.444->0.264, yawblur 0.280->0.218, jpeg 0.365->0.206, nadir+jpeg 0.407->0.251
+[29/40] area_5b_camera_8cbbb3e42c0e4e54b3b523b1fec6b3bc_office_33_frame_equirectangular_domain_rgb: clean 0.170->0.110, tilt 0.207->0.160, nadir 0.175->0.118, vfov 0.387->0.178, yawblur 0.197->0.151, jpeg 0.386->0.187, nadir+jpeg 0.357->0.185
+[30/40] area_5b_camera_9a8b777040024f63ba22c234145f3574_office_36_frame_equirectangular_domain_rgb: clean 0.189->0.131, tilt 0.276->0.180, nadir 0.198->0.133, vfov 0.372->0.190, yawblur 0.217->0.176, jpeg 0.467->0.223, nadir+jpeg 0.449->0.229
+[31/40] area_5b_camera_a4089d47a6eb482cba55b8ad7240c97c_hallway_13_frame_equirectangular_domain_rgb: clean 0.090->0.056, tilt 0.211->0.074, nadir 0.087->0.057, vfov 0.339->0.094, yawblur 0.088->0.059, jpeg 0.201->0.063, nadir+jpeg 0.165->0.063
+[32/40] area_5b_camera_aa5645b71ec6434884dc2dd03ad044cd_hallway_2_frame_equirectangular_domain_rgb: clean 0.215->0.156, tilt 0.317->0.207, nadir 0.255->0.215, vfov 0.424->0.251, yawblur 0.300->0.164, jpeg 0.628->0.419, nadir+jpeg 0.665->0.492
+[33/40] area_5b_camera_afee7d8835f74f4b940ed56f888eac1d_storage_3_frame_equirectangular_domain_rgb: clean 0.171->0.150, tilt 0.270->0.175, nadir 0.188->0.124, vfov 0.355->0.180, yawblur 0.217->0.143, jpeg 0.237->0.146, nadir+jpeg 0.262->0.155
+[34/40] area_5b_camera_b98bf2d88e5f4f34a05222ee51e72ad3_hallway_2_frame_equirectangular_domain_rgb: clean 0.115->0.075, tilt 0.190->0.096, nadir 0.096->0.075, vfov 0.289->0.092, yawblur 0.107->0.095, jpeg 0.141->0.091, nadir+jpeg 0.125->0.078
+[35/40] area_5b_camera_c35ac10b61d840d4adb35892924b7a5c_office_29_frame_equirectangular_domain_rgb: clean 0.172->0.124, tilt 0.204->0.162, nadir 0.190->0.150, vfov 0.392->0.209, yawblur 0.201->0.172, jpeg 0.366->0.164, nadir+jpeg 0.320->0.166
+[36/40] area_5b_camera_d37f444be93a4914b74fe34e35a89c62_conferenceRoom_3_frame_equirectangular_domain_rgb: clean 0.148->0.079, tilt 0.230->0.125, nadir 0.161->0.086, vfov 0.358->0.167, yawblur 0.126->0.107, jpeg 0.106->0.079, nadir+jpeg 0.086->0.081
+[37/40] area_5b_camera_dec1aed07c7c4413abb134aea4939883_office_34_frame_equirectangular_domain_rgb: clean 0.247->0.197, tilt 0.339->0.246, nadir 0.250->0.233, vfov 0.417->0.274, yawblur 0.291->0.203, jpeg 0.569->0.342, nadir+jpeg 0.539->0.343
+[38/40] area_5b_camera_e6db152edbdf46f391f4b6b600688e15_hallway_10_frame_equirectangular_domain_rgb: clean 0.088->0.051, tilt 0.132->0.078, nadir 0.076->0.054, vfov 0.354->0.125, yawblur 0.098->0.052, jpeg 0.258->0.081, nadir+jpeg 0.201->0.083
+[39/40] area_5b_camera_eee317c155b74fd3b67f9bcdbd4e0bf9_hallway_1_frame_equirectangular_domain_rgb: clean 0.179->0.120, tilt 0.225->0.179, nadir 0.179->0.122, vfov 0.384->0.183, yawblur 0.138->0.074, jpeg 0.229->0.116, nadir+jpeg 0.204->0.115
+[40/40] area_5b_camera_f50131ec27cd473f90642f4405a4a524_office_28_frame_equirectangular_domain_rgb: clean 0.199->0.149, tilt 0.241->0.192, nadir 0.217->0.150, vfov 0.406->0.197, yawblur 0.221->0.195, jpeg 0.278->0.126, nadir+jpeg 0.273->0.133
+# Capture-aware correction, end to end: dap_stanford_capfirst
+
+model `dap` · 40 frames · policy chosen on holo_in, holo_out, panox, s3 (held out: stanford): `{"tilt": "relevel_known", "nadir": "plane_fill", "vfov": "inpaint_erp", "yawblur": "wiener", "jpeg": "bilateral"}`
+
+Caps are detected from the image; tilt / shake come as IMU / gyro metadata; JPEG as a file flag. Metric: AbsRel on the occluded region for cap faults, else the whole panorama.
+
+| scenario | cap detection correct | clean | uncorrected | corrected | change | frames improved | frames worse >1% | recovery |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|
+| clean | 0% | 0.1596 | 0.1596 | 0.0912 | -34.6% | 100% | 0% | n/a |
+| tilt | 100% | 0.1596 | 0.2281 | 0.1512 | -32.9% | 100% | 0% | 107% |
+| nadir | 0% | 0.2974 | 0.3716 | 0.1207 | -47.8% | 98% | 2% | 263% |
+| vfov | 100% | 0.2358 | 0.7405 | 0.2931 | -61.0% | 100% | 0% | 91% |
+| yawblur | 0% | 0.1596 | 0.1694 | 0.1055 | -28.7% | 98% | 2% | 178% |
+| jpeg | 0% | 0.1596 | 0.2644 | 0.1286 | -42.4% | 98% | 2% | 102% |
+| nadir+jpeg | 0% | 0.2974 | 0.3352 | 0.0773 | -64.6% | 90% | 10% | 210% |
+== checks finished

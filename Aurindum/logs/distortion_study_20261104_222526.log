@@ -1,0 +1,738 @@
+[2026-11-04 22:25:27] 🚀 Distortion study | models: midas dap da360 da2 | sets: s3 panox holo_in holo_out | N=40
+[2026-11-04 22:25:27] >>> midas s3
+[1/40] scene_03370_994351: clean 0.150
+[2/40] scene_03218_3324: clean 0.318
+[3/40] scene_03350_569176: clean 0.196
+[4/40] scene_03396_289170: clean 0.209
+[5/40] scene_03203_735: clean 0.130
+[6/40] scene_03239_31776: clean 0.181
+[7/40] scene_03245_798000: clean 0.285
+[8/40] scene_03234_616: clean 0.373
+[9/40] scene_03294_863844: clean 0.190
+[10/40] scene_03297_196161: clean 0.177
+[11/40] scene_03262_4295: clean 0.247
+[12/40] scene_03291_38623: clean 0.197
+[13/40] scene_03347_788: clean 0.277
+[14/40] scene_03262_4191: clean 0.159
+[15/40] scene_03308_145: clean 0.515
+[16/40] scene_03202_4203: clean 0.235
+[17/40] scene_03238_554964: clean 0.546
+[18/40] scene_03366_907635: clean 0.353
+[19/40] scene_03314_7183: clean 0.228
+[20/40] scene_03386_674: clean 0.246
+[21/40] scene_03347_790: clean 0.209
+[22/40] scene_03208_459: clean 0.208
+[23/40] scene_03459_451: clean 0.153
+[24/40] scene_03405_852024: clean 0.348
+[25/40] scene_03468_584: clean 0.155
+[26/40] scene_03498_278471: clean 0.178
+[27/40] scene_03428_93896: clean 0.194
+[28/40] scene_03448_3320: clean 0.283
+[29/40] scene_03457_141479: clean 0.183
+[30/40] scene_03492_673777: clean 0.209
+[31/40] scene_03455_741: clean 0.087
+[32/40] scene_03435_395: clean 0.222
+[33/40] scene_03468_635: clean 0.142
+[34/40] scene_03455_1811: clean 0.270
+[35/40] scene_03498_277936: clean 0.261
+[36/40] scene_03498_274746: clean 0.365
+[37/40] scene_03453_579: clean 0.220
+[38/40] scene_03448_1001772: clean 0.296
+[39/40] scene_03427_1003902: clean 0.305
+[40/40] scene_03411_321465: clean 0.326
+wrote results/STUDY_midas_s3.md
+[2026-11-04 22:28:13] ✅ midas s3 (166 s)
+[2026-11-04 22:28:13] >>> midas panox
+[1/40] ClothingStore_0002: clean 0.112
+[2/40] ClothingStore_0082: clean 0.631
+[3/40] ClothingStore_0151: clean 0.527
+[4/40] ClothingStore_0187: clean 0.230
+[5/40] ClothingStore_0223: clean 0.229
+[6/40] Diner50_0002: clean 0.170
+[7/40] Diner50_0084: clean 0.176
+[8/40] Diner50_0164: clean 0.172
+[9/40] Diner50_0194: clean 0.187
+[10/40] Diner50_0241: clean 0.229
+[11/40] FeudalJapan_Meshingun_0000: clean 0.141
+[12/40] FeudalJapan_Meshingun_0050: clean 0.178
+[13/40] FeudalJapan_Meshingun_0066: clean 0.164
+[14/40] FeudalJapan_Meshingun_0135: clean 0.162
+[15/40] FeudalJapan_Meshingun_0165: clean 0.233
+[16/40] ModularBakeryShop_0001: clean 0.163
+[17/40] ModularBakeryShop_0075: clean 0.163
+[18/40] ModularBakeryShop_0101: clean 0.180
+[19/40] ModularBakeryShop_0143: clean 0.200
+[20/40] ModularBakeryShop_0223: clean 0.258
+[21/40] Mountain_Environment_Set_0002: clean 0.319
+[22/40] Mountain_Environment_Set_0082: clean 0.290
+[23/40] Mountain_Environment_Set_0151: clean 0.212
+[24/40] Mountain_Environment_Set_0187: clean 0.169
+[25/40] Mountain_Environment_Set_0223: clean 0.145
+[26/40] SouthOfFrance_0002: clean 0.277
+[27/40] SouthOfFrance_0082: clean 0.282
+[28/40] SouthOfFrance_0151: clean 0.188
+[29/40] SouthOfFrance_0187: clean 0.180
+[30/40] SouthOfFrance_0223: clean 0.193
+[31/40] Warehouse_0002: clean 0.248
+[32/40] Warehouse_0079: clean 0.224
+[33/40] Warehouse_0141: clean 0.171
+[34/40] Warehouse_0186: clean 0.167
+[35/40] Warehouse_0206: clean 0.167
+[36/40] YellowParrot_0002: clean 0.453
+[37/40] YellowParrot_0079: clean 0.852
+[38/40] YellowParrot_0141: clean 0.331
+[39/40] YellowParrot_0186: clean 0.132
+[40/40] YellowParrot_0206: clean 0.137
+wrote results/STUDY_midas_panox.md
+[2026-11-04 22:31:14] ✅ midas panox (181 s)
+[2026-11-04 22:31:14] >>> midas holo_in
+[1/40] Indoor_001_1752141078.842170: clean 0.281
+[2/40] Indoor_001_1752141201.954319: clean 0.241
+[3/40] Indoor_001_1752141321.062822: clean 0.234
+[4/40] Indoor_001_1752141434.165855: clean 0.386
+[5/40] Indoor_002_1752398085.281091: clean 0.276
+[6/40] Indoor_002_1752398172.942116: clean 0.368
+[7/40] Indoor_002_1752398247.937292: clean 0.333
+[8/40] Indoor_007_1752398960.446404: clean 0.662
+[9/40] Indoor_007_1752399075.105651: clean 0.202
+[10/40] Indoor_007_1752399170.432817: clean 0.275
+[11/40] Indoor_008_1752707836.069118: clean 0.201
+[12/40] Indoor_008_1752707966.393944: clean 0.400
+[13/40] Indoor_008_1752708055.388136: clean 0.227
+[14/40] Indoor_008_1752708140.715902: clean 0.209
+[15/40] Indoor_009_1752709960.274145: clean 0.256
+[16/40] Indoor_009_1752710036.602514: clean 0.303
+[17/40] Indoor_009_1752710111.930950: clean 0.301
+[18/40] Indoor_015_1753495663.088117: clean 0.284
+[19/40] Indoor_015_1753495722.084387: clean 0.271
+[20/40] Indoor_015_1753495786.746964: clean 0.193
+[21/40] Indoor_015_1753495835.077242: clean 0.295
+[22/40] Indoor_016_1753495984.510899: clean 0.416
+[23/40] Indoor_016_1753496043.507191: clean 0.261
+[24/40] Indoor_018_1753497315.547126: clean 0.248
+[25/40] Indoor_018_1753497381.876220: clean 0.495
+[26/40] Indoor_018_1753497463.537667: clean 0.268
+[27/40] Indoor_018_1753497530.533383: clean 0.254
+[28/40] Indoor_041_1753521246.150229: clean 0.274
+[29/40] Indoor_041_1753521305.146480: clean 0.293
+[30/40] Indoor_041_1753521367.142540: clean 0.271
+[31/40] Indoor_044_1753604006.951080: clean 0.319
+[32/40] Indoor_044_1753604111.611032: clean 0.276
+[33/40] Indoor_044_1753604216.270986: clean 0.294
+[34/40] Indoor_044_1753604348.262520: clean 0.407
+[35/40] Indoor_048_1753584702.952349: clean 0.295
+[36/40] Indoor_048_1753584806.945658: clean 0.318
+[37/40] Indoor_048_1753584903.606103: clean 0.293
+[38/40] Indoor_053_1753612723.205770: clean 0.260
+[39/40] Indoor_053_1753612802.754664: clean 0.257
+[40/40] Indoor_053_1753612924.747435: clean 0.390
+wrote results/STUDY_midas_holo_in.md
+[2026-11-04 22:34:06] ✅ midas holo_in (172 s)
+[2026-11-04 22:34:06] >>> midas holo_out
+[1/40] Outdoor_001_1752225613.333593: clean 0.302
+[2/40] Outdoor_001_1752225691.995708: clean 0.378
+[3/40] Outdoor_001_1752225804.322541: clean 0.292
+[4/40] Outdoor_001_1752225900.650302: clean 0.382
+[5/40] Outdoor_001_1752225986.978640: clean 0.327
+[6/40] Outdoor_001_1752226037.309060: clean 0.322
+[7/40] Outdoor_001_1752226118.304374: clean 0.345
+[8/40] Outdoor_001_1752226208.965795: clean 0.360
+[9/40] Outdoor_001_1752226281.294943: clean 0.218
+[10/40] Outdoor_001_1752226307.293437: clean 0.276
+[11/40] Outdoor_001_1752226403.621199: clean 0.251
+[12/40] Outdoor_001_1752226478.283545: clean 0.224
+[13/40] Outdoor_001_1752226541.613215: clean 0.357
+[14/40] Outdoor_001_1752226596.943346: clean 0.237
+[15/40] Outdoor_001_1752226629.274810: clean 0.244
+[16/40] Outdoor_004_1752576431.675474: clean 0.373
+[17/40] Outdoor_004_1752576488.672292: clean 0.437
+[18/40] Outdoor_004_1752576553.335351: clean 0.395
+[19/40] Outdoor_004_1752576581.333788: clean 0.424
+[20/40] Outdoor_004_1752576637.997294: clean 0.434
+[21/40] Outdoor_004_1752576710.326591: clean 0.287
+[22/40] Outdoor_004_1752576769.656614: clean 0.335
+[23/40] Outdoor_004_1752576827.986693: clean 0.332
+[24/40] Outdoor_004_1752576852.985298: clean 0.412
+[25/40] Outdoor_004_1752576896.982843: clean 0.341
+[26/40] Outdoor_004_1752576948.646628: clean 0.515
+[27/40] Outdoor_009_1755773630.497723: clean 0.289
+[28/40] Outdoor_009_1755773656.162964: clean 0.203
+[29/40] Outdoor_009_1755773735.491890: clean 0.228
+[30/40] Outdoor_009_1755773796.821817: clean 0.201
+[31/40] Outdoor_009_1755773844.152522: clean 0.434
+[32/40] Outdoor_009_1755773916.148524: clean 0.226
+[33/40] Outdoor_009_1755773934.480838: clean 0.299
+[34/40] Outdoor_009_1755773987.477895: clean 0.309
+[35/40] Outdoor_009_1755774069.140028: clean 0.194
+[36/40] Outdoor_009_1755774116.804044: clean 0.212
+[37/40] Outdoor_009_1755774166.801267: clean 0.318
+[38/40] Outdoor_009_1755774214.131973: clean 0.278
+[39/40] Outdoor_009_1755774262.795936: clean 0.253
+[40/40] Outdoor_009_1755774331.792106: clean 0.407
+wrote results/STUDY_midas_holo_out.md
+[2026-11-04 22:37:04] ✅ midas holo_out (178 s)
+[2026-11-04 22:37:04] >>> dap s3
+xFormers not available
+xFormers not available
+[1/40] scene_03370_994351: clean 0.032
+[2/40] scene_03218_3324: clean 0.038
+[3/40] scene_03350_569176: clean 0.024
+[4/40] scene_03396_289170: clean 0.034
+[5/40] scene_03203_735: clean 0.049
+[6/40] scene_03239_31776: clean 0.099
+[7/40] scene_03245_798000: clean 0.027
+[8/40] scene_03234_616: clean 0.032
+[9/40] scene_03294_863844: clean 0.044
+[10/40] scene_03297_196161: clean 0.009
+[11/40] scene_03262_4295: clean 0.023
+[12/40] scene_03291_38623: clean 0.035
+[13/40] scene_03347_788: clean 0.021
+[14/40] scene_03262_4191: clean 0.010
+[15/40] scene_03308_145: clean 0.047
+[16/40] scene_03202_4203: clean 0.023
+[17/40] scene_03238_554964: clean 0.043
+[18/40] scene_03366_907635: clean 0.044
+[19/40] scene_03314_7183: clean 0.029
+[20/40] scene_03386_674: clean 0.036
+[21/40] scene_03347_790: clean 0.096
+[22/40] scene_03208_459: clean 0.037
+[23/40] scene_03459_451: clean 0.050
+[24/40] scene_03405_852024: clean 0.037
+[25/40] scene_03468_584: clean 0.022
+[26/40] scene_03498_278471: clean 0.014
+[27/40] scene_03428_93896: clean 0.026
+[28/40] scene_03448_3320: clean 0.045
+[29/40] scene_03457_141479: clean 0.025
+[30/40] scene_03492_673777: clean 0.031
+[31/40] scene_03455_741: clean 0.044
+[32/40] scene_03435_395: clean 0.026
+[33/40] scene_03468_635: clean 0.024
+[34/40] scene_03455_1811: clean 0.024
+[35/40] scene_03498_277936: clean 0.032
+[36/40] scene_03498_274746: clean 0.020
+[37/40] scene_03453_579: clean 0.031
+[38/40] scene_03448_1001772: clean 0.047
+[39/40] scene_03427_1003902: clean 0.048
+[40/40] scene_03411_321465: clean 0.065
+wrote results/STUDY_dap_s3.md
+[2026-11-04 22:44:46] ✅ dap s3 (462 s)
+[2026-11-04 22:44:46] >>> dap panox
+xFormers not available
+xFormers not available
+[1/40] ClothingStore_0002: clean 0.175
+[2/40] ClothingStore_0082: clean 0.117
+[3/40] ClothingStore_0151: clean 0.097
+[4/40] ClothingStore_0187: clean 0.105
+[5/40] ClothingStore_0223: clean 0.098
+[6/40] Diner50_0002: clean 0.144
+[7/40] Diner50_0084: clean 0.109
+[8/40] Diner50_0164: clean 0.144
+[9/40] Diner50_0194: clean 0.159
+[10/40] Diner50_0241: clean 0.201
+[11/40] FeudalJapan_Meshingun_0000: clean 0.128
+[12/40] FeudalJapan_Meshingun_0050: clean 0.091
+[13/40] FeudalJapan_Meshingun_0066: clean 0.074
+[14/40] FeudalJapan_Meshingun_0135: clean 0.100
+[15/40] FeudalJapan_Meshingun_0165: clean 0.116
+[16/40] ModularBakeryShop_0001: clean 0.246
+[17/40] ModularBakeryShop_0075: clean 0.071
+[18/40] ModularBakeryShop_0101: clean 0.073
+[19/40] ModularBakeryShop_0143: clean 0.073
+[20/40] ModularBakeryShop_0223: clean 0.059
+[21/40] Mountain_Environment_Set_0002: clean 0.110
+[22/40] Mountain_Environment_Set_0082: clean 0.718
+[23/40] Mountain_Environment_Set_0151: clean 0.133
+[24/40] Mountain_Environment_Set_0187: clean 0.466
+[25/40] Mountain_Environment_Set_0223: clean 0.549
+[26/40] SouthOfFrance_0002: clean 0.526
+[27/40] SouthOfFrance_0082: clean 0.429
+[28/40] SouthOfFrance_0151: clean 0.389
+[29/40] SouthOfFrance_0187: clean 0.412
+[30/40] SouthOfFrance_0223: clean 0.357
+[31/40] Warehouse_0002: clean 0.201
+[32/40] Warehouse_0079: clean 0.339
+[33/40] Warehouse_0141: clean 0.323
+[34/40] Warehouse_0186: clean 0.314
+[35/40] Warehouse_0206: clean 0.307
+[36/40] YellowParrot_0002: clean 0.394
+[37/40] YellowParrot_0079: clean 0.347
+[38/40] YellowParrot_0141: clean 0.309
+[39/40] YellowParrot_0186: clean 0.241
+[40/40] YellowParrot_0206: clean 0.215
+wrote results/STUDY_dap_panox.md
+[2026-11-04 22:53:08] ✅ dap panox (502 s)
+[2026-11-04 22:53:08] >>> dap holo_in
+xFormers not available
+xFormers not available
+[1/40] Indoor_001_1752141078.842170: clean 0.192
+[2/40] Indoor_001_1752141201.954319: clean 0.178
+[3/40] Indoor_001_1752141321.062822: clean 0.220
+[4/40] Indoor_001_1752141434.165855: clean 0.287
+[5/40] Indoor_002_1752398085.281091: clean 0.083
+[6/40] Indoor_002_1752398172.942116: clean 0.134
+[7/40] Indoor_002_1752398247.937292: clean 0.180
+[8/40] Indoor_007_1752398960.446404: clean 0.139
+[9/40] Indoor_007_1752399075.105651: clean 0.080
+[10/40] Indoor_007_1752399170.432817: clean 0.075
+[11/40] Indoor_008_1752707836.069118: clean 0.086
+[12/40] Indoor_008_1752707966.393944: clean 0.192
+[13/40] Indoor_008_1752708055.388136: clean 0.112
+[14/40] Indoor_008_1752708140.715902: clean 0.138
+[15/40] Indoor_009_1752709960.274145: clean 0.070
+[16/40] Indoor_009_1752710036.602514: clean 0.215
+[17/40] Indoor_009_1752710111.930950: clean 0.194
+[18/40] Indoor_015_1753495663.088117: clean 0.183
+[19/40] Indoor_015_1753495722.084387: clean 0.157
+[20/40] Indoor_015_1753495786.746964: clean 0.091
+[21/40] Indoor_015_1753495835.077242: clean 0.069
+[22/40] Indoor_016_1753495984.510899: clean 0.155
+[23/40] Indoor_016_1753496043.507191: clean 0.246
+[24/40] Indoor_018_1753497315.547126: clean 0.094
+[25/40] Indoor_018_1753497381.876220: clean 0.242
+[26/40] Indoor_018_1753497463.537667: clean 0.107
+[27/40] Indoor_018_1753497530.533383: clean 0.271
+[28/40] Indoor_041_1753521246.150229: clean 0.162
+[29/40] Indoor_041_1753521305.146480: clean 0.421
+[30/40] Indoor_041_1753521367.142540: clean 0.054
+[31/40] Indoor_044_1753604006.951080: clean 0.078
+[32/40] Indoor_044_1753604111.611032: clean 0.167
+[33/40] Indoor_044_1753604216.270986: clean 0.175
+[34/40] Indoor_044_1753604348.262520: clean 0.259
+[35/40] Indoor_048_1753584702.952349: clean 0.092
+[36/40] Indoor_048_1753584806.945658: clean 0.097
+[37/40] Indoor_048_1753584903.606103: clean 0.128
+[38/40] Indoor_053_1753612723.205770: clean 0.139
+[39/40] Indoor_053_1753612802.754664: clean 0.138
+[40/40] Indoor_053_1753612924.747435: clean 0.125
+wrote results/STUDY_dap_holo_in.md
+[2026-11-04 23:00:56] ✅ dap holo_in (468 s)
+[2026-11-04 23:00:56] >>> dap holo_out
+xFormers not available
+xFormers not available
+[1/40] Outdoor_001_1752225613.333593: clean 0.215
+[2/40] Outdoor_001_1752225691.995708: clean 0.383
+[3/40] Outdoor_001_1752225804.322541: clean 0.343
+[4/40] Outdoor_001_1752225900.650302: clean 0.463
+[5/40] Outdoor_001_1752225986.978640: clean 0.215
+[6/40] Outdoor_001_1752226037.309060: clean 0.326
+[7/40] Outdoor_001_1752226118.304374: clean 0.179
+[8/40] Outdoor_001_1752226208.965795: clean 0.347
+[9/40] Outdoor_001_1752226281.294943: clean 0.234
+[10/40] Outdoor_001_1752226307.293437: clean 0.292
+[11/40] Outdoor_001_1752226403.621199: clean 0.258
+[12/40] Outdoor_001_1752226478.283545: clean 0.287
+[13/40] Outdoor_001_1752226541.613215: clean 0.263
+[14/40] Outdoor_001_1752226596.943346: clean 0.264
+[15/40] Outdoor_001_1752226629.274810: clean 0.233
+[16/40] Outdoor_004_1752576431.675474: clean 0.827
+[17/40] Outdoor_004_1752576488.672292: clean 2.778
+[18/40] Outdoor_004_1752576553.335351: clean 1.657
+[19/40] Outdoor_004_1752576581.333788: clean 1.155
+[20/40] Outdoor_004_1752576637.997294: clean 0.880
+[21/40] Outdoor_004_1752576710.326591: clean 0.273
+[22/40] Outdoor_004_1752576769.656614: clean 0.224
+[23/40] Outdoor_004_1752576827.986693: clean 0.558
+[24/40] Outdoor_004_1752576852.985298: clean 0.519
+[25/40] Outdoor_004_1752576896.982843: clean 0.860
+[26/40] Outdoor_004_1752576948.646628: clean 6.319
+[27/40] Outdoor_009_1755773630.497723: clean 0.225
+[28/40] Outdoor_009_1755773656.162964: clean 0.322
+[29/40] Outdoor_009_1755773735.491890: clean 0.333
+[30/40] Outdoor_009_1755773796.821817: clean 0.348
+[31/40] Outdoor_009_1755773844.152522: clean 0.220
+[32/40] Outdoor_009_1755773916.148524: clean 0.114
+[33/40] Outdoor_009_1755773934.480838: clean 0.211
+[34/40] Outdoor_009_1755773987.477895: clean 0.265
+[35/40] Outdoor_009_1755774069.140028: clean 0.230
+[36/40] Outdoor_009_1755774116.804044: clean 0.211
+[37/40] Outdoor_009_1755774166.801267: clean 0.206
+[38/40] Outdoor_009_1755774214.131973: clean 0.308
+[39/40] Outdoor_009_1755774262.795936: clean 0.243
+[40/40] Outdoor_009_1755774331.792106: clean 0.203
+wrote results/STUDY_dap_holo_out.md
+[2026-11-04 23:08:58] ✅ dap holo_out (482 s)
+[2026-11-04 23:08:58] >>> da360 s3
+xFormers not available
+xFormers not available
+pretrained model is not available.
+/DATA/Aurindum/Distortion-Aware-Panoramic-Depth-Estimation/Aurindum/third_party/DA360/networks/da360.py:74: FutureWarning: `torch.cuda.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cuda', args...)` instead.
+  with autocast(enabled=self.mixed_precision):
+/DATA/Aurindum/Distortion-Aware-Panoramic-Depth-Estimation/Aurindum/third_party/DA360/networks/da360.py:74: FutureWarning: `torch.cuda.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cuda', args...)` instead.
+  with autocast(enabled=self.mixed_precision):
+[1/40] scene_03370_994351: clean 0.007
+[2/40] scene_03218_3324: clean 0.016
+[3/40] scene_03350_569176: clean 0.008
+[4/40] scene_03396_289170: clean 0.014
+[5/40] scene_03203_735: clean 0.008
+[6/40] scene_03239_31776: clean 0.016
+[7/40] scene_03245_798000: clean 0.013
+[8/40] scene_03234_616: clean 0.025
+[9/40] scene_03294_863844: clean 0.004
+[10/40] scene_03297_196161: clean 0.006
+[11/40] scene_03262_4295: clean 0.006
+[12/40] scene_03291_38623: clean 0.019
+[13/40] scene_03347_788: clean 0.008
+[14/40] scene_03262_4191: clean 0.007
+[15/40] scene_03308_145: clean 0.092
+[16/40] scene_03202_4203: clean 0.015
+[17/40] scene_03238_554964: clean 0.062
+[18/40] scene_03366_907635: clean 0.015
+[19/40] scene_03314_7183: clean 0.013
+[20/40] scene_03386_674: clean 0.086
+[21/40] scene_03347_790: clean 0.007
+[22/40] scene_03208_459: clean 0.014
+[23/40] scene_03459_451: clean 0.013
+[24/40] scene_03405_852024: clean 0.014
+[25/40] scene_03468_584: clean 0.008
+[26/40] scene_03498_278471: clean 0.019
+[27/40] scene_03428_93896: clean 0.014
+[28/40] scene_03448_3320: clean 0.011
+[29/40] scene_03457_141479: clean 0.012
+[30/40] scene_03492_673777: clean 0.012
+[31/40] scene_03455_741: clean 0.018
+[32/40] scene_03435_395: clean 0.018
+[33/40] scene_03468_635: clean 0.017
+[34/40] scene_03455_1811: clean 0.010
+[35/40] scene_03498_277936: clean 0.027
+[36/40] scene_03498_274746: clean 0.016
+[37/40] scene_03453_579: clean 0.012
+[38/40] scene_03448_1001772: clean 0.024
+[39/40] scene_03427_1003902: clean 0.025
+[40/40] scene_03411_321465: clean 0.019
+wrote results/STUDY_da360_s3.md
+[2026-11-04 23:17:36] ✅ da360 s3 (518 s)
+[2026-11-04 23:17:36] >>> da360 panox
+xFormers not available
+xFormers not available
+pretrained model is not available.
+/DATA/Aurindum/Distortion-Aware-Panoramic-Depth-Estimation/Aurindum/third_party/DA360/networks/da360.py:74: FutureWarning: `torch.cuda.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cuda', args...)` instead.
+  with autocast(enabled=self.mixed_precision):
+/DATA/Aurindum/Distortion-Aware-Panoramic-Depth-Estimation/Aurindum/third_party/DA360/networks/da360.py:74: FutureWarning: `torch.cuda.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cuda', args...)` instead.
+  with autocast(enabled=self.mixed_precision):
+[1/40] ClothingStore_0002: clean 0.021
+[2/40] ClothingStore_0082: clean 0.064
+[3/40] ClothingStore_0151: clean 0.103
+[4/40] ClothingStore_0187: clean 0.069
+[5/40] ClothingStore_0223: clean 0.068
+[6/40] Diner50_0002: clean 0.086
+[7/40] Diner50_0084: clean 0.055
+[8/40] Diner50_0164: clean 0.047
+[9/40] Diner50_0194: clean 0.099
+[10/40] Diner50_0241: clean 0.137
+[11/40] FeudalJapan_Meshingun_0000: clean 0.057
+[12/40] FeudalJapan_Meshingun_0050: clean 0.053
+[13/40] FeudalJapan_Meshingun_0066: clean 0.047
+[14/40] FeudalJapan_Meshingun_0135: clean 0.057
+[15/40] FeudalJapan_Meshingun_0165: clean 0.099
+[16/40] ModularBakeryShop_0001: clean 0.072
+[17/40] ModularBakeryShop_0075: clean 0.047
+[18/40] ModularBakeryShop_0101: clean 0.061
+[19/40] ModularBakeryShop_0143: clean 0.053
+[20/40] ModularBakeryShop_0223: clean 0.042
+[21/40] Mountain_Environment_Set_0002: clean 0.119
+[22/40] Mountain_Environment_Set_0082: clean 0.139
+[23/40] Mountain_Environment_Set_0151: clean 0.100
+[24/40] Mountain_Environment_Set_0187: clean 0.073
+[25/40] Mountain_Environment_Set_0223: clean 0.065
+[26/40] SouthOfFrance_0002: clean 0.158
+[27/40] SouthOfFrance_0082: clean 0.154
+[28/40] SouthOfFrance_0151: clean 0.094
+[29/40] SouthOfFrance_0187: clean 0.082
+[30/40] SouthOfFrance_0223: clean 0.116
+[31/40] Warehouse_0002: clean 0.052
+[32/40] Warehouse_0079: clean 0.069
+[33/40] Warehouse_0141: clean 0.054
+[34/40] Warehouse_0186: clean 0.057
+[35/40] Warehouse_0206: clean 0.052
+[36/40] YellowParrot_0002: clean 0.051
+[37/40] YellowParrot_0079: clean 0.088
+[38/40] YellowParrot_0141: clean 0.044
+[39/40] YellowParrot_0186: clean 0.050
+[40/40] YellowParrot_0206: clean 0.054
+wrote results/STUDY_da360_panox.md
+[2026-11-04 23:26:28] ✅ da360 panox (532 s)
+[2026-11-04 23:26:28] >>> da360 holo_in
+xFormers not available
+xFormers not available
+pretrained model is not available.
+/DATA/Aurindum/Distortion-Aware-Panoramic-Depth-Estimation/Aurindum/third_party/DA360/networks/da360.py:74: FutureWarning: `torch.cuda.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cuda', args...)` instead.
+  with autocast(enabled=self.mixed_precision):
+[1/40] Indoor_001_1752141078.842170: clean 0.101
+[2/40] Indoor_001_1752141201.954319: clean 0.055
+[3/40] Indoor_001_1752141321.062822: clean 0.060
+[4/40] Indoor_001_1752141434.165855: clean 0.242
+/DATA/Aurindum/Distortion-Aware-Panoramic-Depth-Estimation/Aurindum/third_party/DA360/networks/da360.py:74: FutureWarning: `torch.cuda.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cuda', args...)` instead.
+  with autocast(enabled=self.mixed_precision):
+[5/40] Indoor_002_1752398085.281091: clean 0.036
+[6/40] Indoor_002_1752398172.942116: clean 0.114
+[7/40] Indoor_002_1752398247.937292: clean 0.104
+[8/40] Indoor_007_1752398960.446404: clean 0.047
+[9/40] Indoor_007_1752399075.105651: clean 0.053
+[10/40] Indoor_007_1752399170.432817: clean 0.050
+[11/40] Indoor_008_1752707836.069118: clean 0.081
+[12/40] Indoor_008_1752707966.393944: clean 0.071
+[13/40] Indoor_008_1752708055.388136: clean 0.087
+[14/40] Indoor_008_1752708140.715902: clean 0.133
+[15/40] Indoor_009_1752709960.274145: clean 0.029
+[16/40] Indoor_009_1752710036.602514: clean 0.053
+[17/40] Indoor_009_1752710111.930950: clean 0.068
+[18/40] Indoor_015_1753495663.088117: clean 0.036
+[19/40] Indoor_015_1753495722.084387: clean 0.181
+[20/40] Indoor_015_1753495786.746964: clean 0.035
+[21/40] Indoor_015_1753495835.077242: clean 0.030
+[22/40] Indoor_016_1753495984.510899: clean 0.055
+[23/40] Indoor_016_1753496043.507191: clean 0.073
+[24/40] Indoor_018_1753497315.547126: clean 0.039
+[25/40] Indoor_018_1753497381.876220: clean 0.155
+[26/40] Indoor_018_1753497463.537667: clean 0.041
+[27/40] Indoor_018_1753497530.533383: clean 0.040
+[28/40] Indoor_041_1753521246.150229: clean 0.056
+[29/40] Indoor_041_1753521305.146480: clean 0.120
+[30/40] Indoor_041_1753521367.142540: clean 0.025
+[31/40] Indoor_044_1753604006.951080: clean 0.056
+[32/40] Indoor_044_1753604111.611032: clean 0.072
+[33/40] Indoor_044_1753604216.270986: clean 0.095
+[34/40] Indoor_044_1753604348.262520: clean 0.336
+[35/40] Indoor_048_1753584702.952349: clean 0.030
+[36/40] Indoor_048_1753584806.945658: clean 0.055
+[37/40] Indoor_048_1753584903.606103: clean 0.068
+[38/40] Indoor_053_1753612723.205770: clean 0.038
+[39/40] Indoor_053_1753612802.754664: clean 0.056
+[40/40] Indoor_053_1753612924.747435: clean 0.105
+wrote results/STUDY_da360_holo_in.md
+[2026-11-04 23:35:06] ✅ da360 holo_in (518 s)
+[2026-11-04 23:35:06] >>> da360 holo_out
+xFormers not available
+xFormers not available
+pretrained model is not available.
+/DATA/Aurindum/Distortion-Aware-Panoramic-Depth-Estimation/Aurindum/third_party/DA360/networks/da360.py:74: FutureWarning: `torch.cuda.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cuda', args...)` instead.
+  with autocast(enabled=self.mixed_precision):
+/DATA/Aurindum/Distortion-Aware-Panoramic-Depth-Estimation/Aurindum/third_party/DA360/networks/da360.py:74: FutureWarning: `torch.cuda.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cuda', args...)` instead.
+  with autocast(enabled=self.mixed_precision):
+[1/40] Outdoor_001_1752225613.333593: clean 0.193
+[2/40] Outdoor_001_1752225691.995708: clean 0.292
+[3/40] Outdoor_001_1752225804.322541: clean 0.236
+[4/40] Outdoor_001_1752225900.650302: clean 0.313
+[5/40] Outdoor_001_1752225986.978640: clean 0.210
+[6/40] Outdoor_001_1752226037.309060: clean 0.184
+[7/40] Outdoor_001_1752226118.304374: clean 0.120
+[8/40] Outdoor_001_1752226208.965795: clean 0.300
+[9/40] Outdoor_001_1752226281.294943: clean 0.125
+[10/40] Outdoor_001_1752226307.293437: clean 0.130
+[11/40] Outdoor_001_1752226403.621199: clean 0.141
+[12/40] Outdoor_001_1752226478.283545: clean 0.201
+[13/40] Outdoor_001_1752226541.613215: clean 0.170
+[14/40] Outdoor_001_1752226596.943346: clean 0.150
+[15/40] Outdoor_001_1752226629.274810: clean 0.133
+[16/40] Outdoor_004_1752576431.675474: clean 0.306
+[17/40] Outdoor_004_1752576488.672292: clean 0.379
+[18/40] Outdoor_004_1752576553.335351: clean 0.380
+[19/40] Outdoor_004_1752576581.333788: clean 0.318
+[20/40] Outdoor_004_1752576637.997294: clean 0.341
+[21/40] Outdoor_004_1752576710.326591: clean 0.145
+[22/40] Outdoor_004_1752576769.656614: clean 0.160
+[23/40] Outdoor_004_1752576827.986693: clean 0.223
+[24/40] Outdoor_004_1752576852.985298: clean 0.271
+[25/40] Outdoor_004_1752576896.982843: clean 0.261
+[26/40] Outdoor_004_1752576948.646628: clean 0.601
+[27/40] Outdoor_009_1755773630.497723: clean 0.158
+[28/40] Outdoor_009_1755773656.162964: clean 0.131
+[29/40] Outdoor_009_1755773735.491890: clean 0.179
+[30/40] Outdoor_009_1755773796.821817: clean 0.163
+[31/40] Outdoor_009_1755773844.152522: clean 0.328
+[32/40] Outdoor_009_1755773916.148524: clean 0.130
+[33/40] Outdoor_009_1755773934.480838: clean 0.129
+[34/40] Outdoor_009_1755773987.477895: clean 0.240
+[35/40] Outdoor_009_1755774069.140028: clean 0.092
+[36/40] Outdoor_009_1755774116.804044: clean 0.243
+[37/40] Outdoor_009_1755774166.801267: clean 0.216
+[38/40] Outdoor_009_1755774214.131973: clean 0.329
+[39/40] Outdoor_009_1755774262.795936: clean 0.231
+[40/40] Outdoor_009_1755774331.792106: clean 0.176
+wrote results/STUDY_da360_holo_out.md
+[2026-11-04 23:43:49] ✅ da360 holo_out (523 s)
+[2026-11-04 23:43:49] >>> da2 s3
+xFormers not available
+xFormers not available
+xFormers not available
+[1/40] scene_03370_994351: clean 0.037
+[2/40] scene_03218_3324: clean 0.068
+[3/40] scene_03350_569176: clean 0.044
+[4/40] scene_03396_289170: clean 0.032
+[5/40] scene_03203_735: clean 0.029
+[6/40] scene_03239_31776: clean 0.102
+[7/40] scene_03245_798000: clean 0.055
+[8/40] scene_03234_616: clean 0.066
+[9/40] scene_03294_863844: clean 0.038
+[10/40] scene_03297_196161: clean 0.031
+[11/40] scene_03262_4295: clean 0.053
+[12/40] scene_03291_38623: clean 0.037
+[13/40] scene_03347_788: clean 0.031
+[14/40] scene_03262_4191: clean 0.032
+[15/40] scene_03308_145: clean 0.199
+[16/40] scene_03202_4203: clean 0.054
+[17/40] scene_03238_554964: clean 0.151
+[18/40] scene_03366_907635: clean 0.045
+[19/40] scene_03314_7183: clean 0.035
+[20/40] scene_03386_674: clean 0.449
+[21/40] scene_03347_790: clean 0.039
+[22/40] scene_03208_459: clean 0.048
+[23/40] scene_03459_451: clean 0.037
+[24/40] scene_03405_852024: clean 0.054
+[25/40] scene_03468_584: clean 0.024
+[26/40] scene_03498_278471: clean 0.042
+[27/40] scene_03428_93896: clean 0.028
+[28/40] scene_03448_3320: clean 0.039
+[29/40] scene_03457_141479: clean 0.034
+[30/40] scene_03492_673777: clean 0.033
+[31/40] scene_03455_741: clean 0.071
+[32/40] scene_03435_395: clean 0.033
+[33/40] scene_03468_635: clean 0.037
+[34/40] scene_03455_1811: clean 0.361
+[35/40] scene_03498_277936: clean 0.055
+[36/40] scene_03498_274746: clean 0.083
+[37/40] scene_03453_579: clean 0.039
+[38/40] scene_03448_1001772: clean 0.082
+[39/40] scene_03427_1003902: clean 0.068
+[40/40] scene_03411_321465: clean 0.067
+wrote results/STUDY_da2_s3.md
+[2026-11-04 23:51:43] ✅ da2 s3 (474 s)
+[2026-11-04 23:51:43] >>> da2 panox
+xFormers not available
+xFormers not available
+xFormers not available
+[1/40] ClothingStore_0002: clean 0.041
+[2/40] ClothingStore_0082: clean 0.059
+[3/40] ClothingStore_0151: clean 0.090
+[4/40] ClothingStore_0187: clean 0.060
+[5/40] ClothingStore_0223: clean 0.094
+[6/40] Diner50_0002: clean 0.169
+[7/40] Diner50_0084: clean 0.102
+[8/40] Diner50_0164: clean 0.169
+[9/40] Diner50_0194: clean 0.207
+[10/40] Diner50_0241: clean 0.198
+[11/40] FeudalJapan_Meshingun_0000: clean 0.628
+[12/40] FeudalJapan_Meshingun_0050: clean 0.567
+[13/40] FeudalJapan_Meshingun_0066: clean 0.644
+[14/40] FeudalJapan_Meshingun_0135: clean 0.659
+[15/40] FeudalJapan_Meshingun_0165: clean 0.611
+[16/40] ModularBakeryShop_0001: clean 0.091
+[17/40] ModularBakeryShop_0075: clean 0.105
+[18/40] ModularBakeryShop_0101: clean 0.097
+[19/40] ModularBakeryShop_0143: clean 0.077
+[20/40] ModularBakeryShop_0223: clean 0.071
+[21/40] Mountain_Environment_Set_0002: clean 0.480
+[22/40] Mountain_Environment_Set_0082: clean 0.292
+[23/40] Mountain_Environment_Set_0151: clean 0.490
+[24/40] Mountain_Environment_Set_0187: clean 0.627
+[25/40] Mountain_Environment_Set_0223: clean 0.679
+[26/40] SouthOfFrance_0002: clean 0.773
+[27/40] SouthOfFrance_0082: clean 0.722
+[28/40] SouthOfFrance_0151: clean 0.593
+[29/40] SouthOfFrance_0187: clean 0.714
+[30/40] SouthOfFrance_0223: clean 0.715
+[31/40] Warehouse_0002: clean 0.097
+[32/40] Warehouse_0079: clean 0.076
+[33/40] Warehouse_0141: clean 0.073
+[34/40] Warehouse_0186: clean 0.065
+[35/40] Warehouse_0206: clean 0.062
+[36/40] YellowParrot_0002: clean 0.155
+[37/40] YellowParrot_0079: clean 0.223
+[38/40] YellowParrot_0141: clean 0.067
+[39/40] YellowParrot_0186: clean 0.033
+[40/40] YellowParrot_0206: clean 0.048
+wrote results/STUDY_da2_panox.md
+[2026-11-04 23:59:50] ✅ da2 panox (487 s)
+[2026-11-04 23:59:50] >>> da2 holo_in
+xFormers not available
+xFormers not available
+xFormers not available
+[1/40] Indoor_001_1752141078.842170: clean 0.084
+[2/40] Indoor_001_1752141201.954319: clean 0.178
+[3/40] Indoor_001_1752141321.062822: clean 0.122
+[4/40] Indoor_001_1752141434.165855: clean 0.257
+[5/40] Indoor_002_1752398085.281091: clean 0.086
+[6/40] Indoor_002_1752398172.942116: clean 0.150
+[7/40] Indoor_002_1752398247.937292: clean 0.116
+[8/40] Indoor_007_1752398960.446404: clean 0.171
+[9/40] Indoor_007_1752399075.105651: clean 0.085
+[10/40] Indoor_007_1752399170.432817: clean 0.099
+[11/40] Indoor_008_1752707836.069118: clean 0.080
+[12/40] Indoor_008_1752707966.393944: clean 0.197
+[13/40] Indoor_008_1752708055.388136: clean 0.074
+[14/40] Indoor_008_1752708140.715902: clean 0.159
+[15/40] Indoor_009_1752709960.274145: clean 0.111
+[16/40] Indoor_009_1752710036.602514: clean 0.107
+[17/40] Indoor_009_1752710111.930950: clean 0.151
+[18/40] Indoor_015_1753495663.088117: clean 0.129
+[19/40] Indoor_015_1753495722.084387: clean 0.153
+[20/40] Indoor_015_1753495786.746964: clean 0.168
+[21/40] Indoor_015_1753495835.077242: clean 0.104
+[22/40] Indoor_016_1753495984.510899: clean 0.099
+[23/40] Indoor_016_1753496043.507191: clean 0.130
+[24/40] Indoor_018_1753497315.547126: clean 0.118
+[25/40] Indoor_018_1753497381.876220: clean 0.201
+[26/40] Indoor_018_1753497463.537667: clean 0.087
+[27/40] Indoor_018_1753497530.533383: clean 0.097
+[28/40] Indoor_041_1753521246.150229: clean 0.078
+[29/40] Indoor_041_1753521305.146480: clean 0.209
+[30/40] Indoor_041_1753521367.142540: clean 0.127
+[31/40] Indoor_044_1753604006.951080: clean 0.126
+[32/40] Indoor_044_1753604111.611032: clean 0.112
+[33/40] Indoor_044_1753604216.270986: clean 0.159
+[34/40] Indoor_044_1753604348.262520: clean 0.487
+[35/40] Indoor_048_1753584702.952349: clean 0.092
+[36/40] Indoor_048_1753584806.945658: clean 0.120
+[37/40] Indoor_048_1753584903.606103: clean 0.102
+[38/40] Indoor_053_1753612723.205770: clean 0.135
+[39/40] Indoor_053_1753612802.754664: clean 0.258
+[40/40] Indoor_053_1753612924.747435: clean 0.157
+wrote results/STUDY_da2_holo_in.md
+[2026-11-05 00:07:49] ✅ da2 holo_in (479 s)
+[2026-11-05 00:07:49] >>> da2 holo_out
+xFormers not available
+xFormers not available
+xFormers not available
+[1/40] Outdoor_001_1752225613.333593: clean 0.174
+[2/40] Outdoor_001_1752225691.995708: clean 0.884
+[3/40] Outdoor_001_1752225804.322541: clean 0.646
+[4/40] Outdoor_001_1752225900.650302: clean 0.896
+[5/40] Outdoor_001_1752225986.978640: clean 0.680
+[6/40] Outdoor_001_1752226037.309060: clean 0.600
+[7/40] Outdoor_001_1752226118.304374: clean 0.503
+[8/40] Outdoor_001_1752226208.965795: clean 0.417
+[9/40] Outdoor_001_1752226281.294943: clean 0.273
+[10/40] Outdoor_001_1752226307.293437: clean 0.330
+[11/40] Outdoor_001_1752226403.621199: clean 0.571
+[12/40] Outdoor_001_1752226478.283545: clean 0.628
+[13/40] Outdoor_001_1752226541.613215: clean 0.710
+[14/40] Outdoor_001_1752226596.943346: clean 0.449
+[15/40] Outdoor_001_1752226629.274810: clean 0.174
+[16/40] Outdoor_004_1752576431.675474: clean 0.698
+[17/40] Outdoor_004_1752576488.672292: clean 1.040
+[18/40] Outdoor_004_1752576553.335351: clean 0.886
+[19/40] Outdoor_004_1752576581.333788: clean 0.846
+[20/40] Outdoor_004_1752576637.997294: clean 0.861
+[21/40] Outdoor_004_1752576710.326591: clean 0.427
+[22/40] Outdoor_004_1752576769.656614: clean 0.326
+[23/40] Outdoor_004_1752576827.986693: clean 0.650
+[24/40] Outdoor_004_1752576852.985298: clean 0.446
+[25/40] Outdoor_004_1752576896.982843: clean 0.987
+[26/40] Outdoor_004_1752576948.646628: clean 1.319
+[27/40] Outdoor_009_1755773630.497723: clean 0.342
+[28/40] Outdoor_009_1755773656.162964: clean 0.427
+[29/40] Outdoor_009_1755773735.491890: clean 0.445
+[30/40] Outdoor_009_1755773796.821817: clean 0.514
+[31/40] Outdoor_009_1755773844.152522: clean 0.492
+[32/40] Outdoor_009_1755773916.148524: clean 0.403
+[33/40] Outdoor_009_1755773934.480838: clean 0.518
+[34/40] Outdoor_009_1755773987.477895: clean 0.543
+[35/40] Outdoor_009_1755774069.140028: clean 0.266
+[36/40] Outdoor_009_1755774116.804044: clean 0.397
+[37/40] Outdoor_009_1755774166.801267: clean 0.545
+[38/40] Outdoor_009_1755774214.131973: clean 0.667
+[39/40] Outdoor_009_1755774262.795936: clean 0.364
+[40/40] Outdoor_009_1755774331.792106: clean 0.489
+wrote results/STUDY_da2_holo_out.md
+[2026-11-05 00:15:53] ✅ da2 holo_out (484 s)
+[2026-11-05 00:15:53] 🎉 Distortion study finished.
