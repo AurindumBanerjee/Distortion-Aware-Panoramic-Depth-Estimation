@@ -130,7 +130,7 @@ Part B must output its baseline (verified as an identity check).
   2. a correction that is driven by that measurement and model-agnostic (same code, any model);
   3. the result that it helps where distortion is measured (MiDaS-class perspective models) and correctly does nothing for
      panoramic foundation models.
-- [ ] Refresh the project breakdown page with round-3 results.
+- [x] Refresh the project breakdown page with round-3 results.
 
 ## How to run (built 4 Nov)
 
@@ -150,7 +150,7 @@ orientation (a pitch rotation tips the scene; floors stop being "below"). Round 
 - [x] uniform-weight ensembles (`mobius_tta.weight_power: 0`): X4 confirmatory 3-pass rotation, X5 5/7-pass dose-response,
       X6 orientation-preserving dilation ensemble, X7 curve correction only for models with an onset in BOTH the dilation
       and the non-planar rotation sweep
-- [ ] run `scripts/run_round3b.sh start` (stages S, B, R), then judge against PREREG_round3b.md
+- [x] run `scripts/run_round3b.sh start` (stages S, B, R), then judge against PREREG_round3b.md
 
 ## Run order
 
@@ -166,7 +166,7 @@ orientation (a pitch rotation tips the scene; floors stop being "below"). Round 
 - [x] cap detection from the image (`detect_caps`): 0 false alarms on 96 clean / photometrically degraded real frames,
       138/144 simulated caps found (with and without JPEG q8), edge within 1.6 deg; misses fall back to no fix
 - [x] end-to-end smoke on CPU (MiDaS, 4 S3 frames): clean images pass through unchanged
-- [ ] server: `scripts/run_correction.sh start` (needs the study JSONs in results/; ~same cost as the study) ->
+- [x] server: `scripts/run_correction.sh start` (needs the study JSONs in results/; ~same cost as the study) ->
       `results/CORRECTION_<model>_<set>.md`: held-out gains of the whole front end per model and dataset
 
 ## Stanford2D3D and NYC are external (independent of the core results)
@@ -193,3 +193,17 @@ Every run produces results AND comparison material, and goes through one driver:
   (degraded input | clean | degraded | fixed | errors), `visual_models/` (all models stacked, same frame) and
   `visual_correction/` (end-to-end before / after)
 - images and PNGs are small; commit `results/figures/` and the `*_img/` folders with the results
+
+## Status, 8 Nov 2026
+
+Done: round 3 and 3b sweeps; capture-fault studies on all four models and six datasets; correction front end with held-out
+policy; external Stanford2D3D and NYC runs; hi-res and median-alignment controls; final ablations
+(`results/FINAL_ablations.md`); policy comparison (core_loo / all_loo / all_in), end-to-end all_loo and same-domain tests
+(`results/policy_comparison/`); report draft with equations, montages and policy results; project breakdown (Part 13).
+
+Open:
+- [ ] DA2 headline protocol: both are reported (report appendix); `scripts/run_submission.sh` stage `da2both` raises the median-fit runs to 100 frames and adds sweeps; then refresh `results/DA2_PROTOCOLS.md`
+- [ ] report: co-author surnames and affiliations, fuller related work, optional extra figures (`fig_fix_*`, do-no-harm)
+- [ ] DAP `nadir+jpeg` on NYC shows no gain although cap detection reaches 88%: `run_submission.sh` stage `diag` isolates the cause
+- [x] do-no-harm holds on training data only: stricter rules tested offline (`results/threshold_sweep/THRESHOLDS.md`), end to end in stage `strict`; framing in the report unchanged
+- [ ] commit the report changes

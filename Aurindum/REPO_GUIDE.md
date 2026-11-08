@@ -47,11 +47,20 @@ DA360 was trained on Structured3D, so its Structured3D numbers are in-domain.
    confounds distortion with **orientation**: tipping the scene by pitch 90 deg makes the floor a wall, and models rely on
    "floor is below". Panoramic models (DAP, DA360, DA^2) show no polar deficit at all. A near-uniformly weighted
    rotation ensemble helped MiDaS on S3 (+15.9%) and PanoX (+21.4%), post hoc.
-3. **Round 3b** (`PREREG_round3b.md`, queued, not yet run): dilation sweep (moves content in latitude without tipping),
-   flip sweep (same latitude upside down = pure orientation penalty), pre-registered uniform ensembles X4-X7.
-4. **Pivot under exploration**: real-world *capture* faults (camera tilt, missing caps, nadir occlusion, lens seams,
-   parallax, vignetting, blur, noise, JPEG, low resolution) with inference-time fixes (`distortions/catalogue.py`,
-   `scripts/distortion_study.py`). First pass: MiDaS on 18 frames only; full run on the server queued.
+3. **Round 3b** (`PREREG_round3b.md`): dilation sweep (moves content in latitude without tipping) and flip sweep (same
+   latitude upside down = pure orientation penalty). Rotation shows no polar rise (exceptions: DA360 on PanoX, global-only
+   onsets on NYC); dilation is model- and data-dependent; flipping costs a lot, so an orientation prior is real.
+4. **Capture-fault study and correction front end (current, 8 Nov 2026)**: four frozen models (midas, dap, da360, da2), core
+   sets s3, panox, holo_in, holo_out and external sets stanford, nyc. Realistic capture faults cost far more than the polar
+   deficit. `distortions/correction.py` `correct(model, rgb, CaptureMeta, policy, order)` detects caps from the image,
+   takes tilt/shake from metadata, and applies a per-model, per-fault fix learned leave-one-dataset-out on the core sets
+   (off unless median change < -2% and >= 60% of frames improve). External: DAP Stanford clean -34.8% (73 rooms), NYC tilt
+   -47%, nadir -89%. Do-no-harm holds on training data only (MiDaS Stanford tilt +0.6%, DA2 Stanford JPEG +8%, DA2 NYC tilt
+   +14%). DA2 clean NYC AbsRel is 0.638 under least squares and 0.205 under a median fit (protocol decision open).
+5. **Policy experiments (finished 8 Nov)**: core_loo (headline), all_loo, all_in compared offline, end to end
+   (`results/policy_comparison/E2E_ALLLOO.md`) and in a same-domain two-fold test (`same_domain/SAME_DOMAIN.md`). Extra training
+   data does not reliably improve the policy; in-domain learning helps the weaker models. Final tables:
+   `results/FINAL_ablations.md`. Report draft: `Report/draft/main.tex`.
 
 ---
 
@@ -123,6 +132,12 @@ DA360 was trained on Structured3D, so its Structured3D numbers are in-domain.
 | `scripts/run_distortion_study.sh` | the study queue (MODELS, SETS, N, ONLY, TAG_PREFIX) |
 | `scripts/calibrate_correction.py` | learns the correction policy from the CORE `study_*.json` only (s3, panox, holo_in, holo_out; stanford / nyc are never used; leave-one-dataset-out; keeps no fix unless one wins) -> `results/correction_policy.json`, `CORRECTION_POLICY.md`; CPU only |
 | `scripts/run_correction.py` | end-to-end held-out test of `correct()` on a real model -> `results/CORRECTION_<tag>.md`; external sets (stanford / nyc) write to `results/external/` and are tested with a policy learned on the four core sets only |
+| `scripts/run_submission.sh` | **last runs before submission** (`start|status|stop|run`, `DRY=1 ... run` prints commands only): stages `da2both`, `diag`, `strict`, `study100`, `analysis`; writes `results/finished_submission.md` |
+| `scripts/nadir_jpeg_diagnosis.py` | one-change-at-a-time ladder for nadir (+ JPEG): oracle / detected mask, margin, deblock order, two protocols -> `results/diag/NADIR_JPEG_<tag>.md` |
+| `scripts/threshold_sweep.py` | stricter do-no-harm rules (gain x share x every-set-better), offline -> `results/threshold_sweep/THRESHOLDS.md` |
+| `scripts/strict_compare.py` | end-to-end stricter rules vs headline on the external sets -> `results/threshold_sweep/E2E_STRICT.md` |
+| `scripts/da2_protocol_report.py` | DA2 least-squares vs median fit side by side (clean error, corrections, policies, sweeps) -> `results/DA2_PROTOCOLS.md` |
+| `scripts/policy_stability.py` | policy from 40-frame vs 100-frame studies -> `results/policy_stability/POLICY_STABILITY.md` |
 | `scripts/run_holistic.sh` | **the one driver for a full pass** over every model x dataset: study -> external sweeps -> correction -> report + figures. Skips what already exists (FORCE=1 reruns). Env: MODELS, SETS (default all six), N, N_SWEEP |
 | `scripts/make_figures.py` | every comparison figure from `results/` (CPU, seconds): clean error, fault cost, per-fault technique heatmaps, do-no-harm, correction gain, sweep curves, and image montages (degraded vs clean vs fixed, all models stacked, end-to-end before/after) -> `results/figures/` + `INDEX.md` |
 | `scripts/external_report.py` | separate report for Stanford2D3D + NYC -> `results/EXTERNAL_stanford_nyc.md` (fault costs from the study files, end-to-end results from `results/external/`) |
@@ -142,7 +157,7 @@ DA360 was trained on Structured3D, so its Structured3D numbers are in-domain.
 | `old_experiments/v2_20261104/` | everything before 4 Nov, incl. `results/WRITEUP_20261104.md` (round-2 conclusions) |
 | `best_model/` | tracker records written by the runners (not results) |
 
-### Tests (`tests/`, 93 tests, `python -m pytest tests -q`)
+### Tests (`tests/`, 131 collected, `python -m pytest tests -q`)
 
 | file | covers |
 |---|---|
@@ -152,6 +167,8 @@ DA360 was trained on Structured3D, so its Structured3D numbers are in-domain.
 | `test_figures.py` | every figure type is drawn from a synthetic results folder with core and external sets |
 | `test_correction.py` | cap detection (simulated masks reproduced, rendered flat pole rows ignored), routing in `correct()`, policy selection |
 | `test_distortions.py` | catalogue geometry: tilt round trip and re-levelling, occlusion fixes, gain matching, Wiener, parallax, vignetting, flat-field |
+| `test_final_summary.py`, `test_policy_comparison.py`, `test_policy_experiments.py` | bootstrap summary tables, offline policy comparison, `--policy_mode`/`--out_dir` guards, same-domain folds |
+| `test_final_experiments.py` | threshold sweep rules, `run_correction.py` rule options, nadir + JPEG ladder and summaries, DA2 protocol report, strict comparison, policy stability |
 | `test_pipeline.py`, `test_dap_wrapper.py` | end-to-end oracle pipeline, DAP wrapper plumbing (fake repo) |
 
 ---
@@ -231,7 +248,7 @@ Statistics / claims
 9. Capped runs must use `data.subset=spread` (the first N lines of a list cover only the first scenes).
 10. The rotation sweep's negative excess errors are attributed to orientation; round 3b's flip and dilation sweeps are
     the test of that explanation.
-11. The capture-fault findings (`STUDY_*`) so far rest on 18 frames with MiDaS only; nothing is claimed yet for DAP.
+11. The capture-fault studies use 40 frames per cell for all four models; end-to-end runs use 100 frames per cell. Stanford's real black caps overlap the simulated nadir/vfov faults, so those two are weakly informative there; NYC clusters are an assumed grouping of 20 consecutive ids.
 
 Known limitations
 * DAP / DA360 / DA^2 cannot run without their weights; all their results come from the GPU server.
