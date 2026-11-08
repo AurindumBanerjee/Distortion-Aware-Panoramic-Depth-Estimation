@@ -71,6 +71,7 @@ def main():
     add_common_args(ap)
     ap.add_argument("--only", default=None, help="comma list of distortion keys (default: all)")
     ap.add_argument("--examples", type=int, default=3, help="frames for which images are saved")
+    ap.add_argument("--out_dir", default=None, help="output folder (default results/); used by the separate policy experiments")
     ap.set_defaults(split="all", max_scenes=40)
     a = ap.parse_args()
     cfg = load_config(a.config, a.overrides)
@@ -78,7 +79,7 @@ def main():
     ds = load_dataset(cfg, a.split, a.max_scenes)
     min_d, max_d = depth_range(cfg)
     dists = [d for d in CATALOGUE if not a.only or d.key in a.only.split(",")]
-    out_dir = ROOT / "results"
+    out_dir = Path(a.out_dir) if a.out_dir else ROOT / "results"
     img_dir = out_dir / f"study_{a.tag}_img"
     rows, examples = [], {}
     for i in range(len(ds)):
@@ -159,11 +160,11 @@ def main():
                 extra = f" (residual tilt median {np.median([r[k]['tilt_residual_deg'] for r in rows]):.1f} deg)"
             reg = f"{med(k, 'region'):.4f}" if f == "region" else ""
             lines.append(f"| {name}{extra} | {med(k, 'all'):.4f} | {med(k, 'polar'):.4f} | {reg} | {rec_s} | {win} |")
-    out_dir.mkdir(exist_ok=True)
+    out_dir.mkdir(parents=True, exist_ok=True)
     (out_dir / f"study_{a.tag}.json").write_text(json.dumps({"tag": a.tag, "model": getattr(model, "name", "?"), "rows": rows,
                                                               "examples": examples}), encoding="utf-8")
     (out_dir / f"STUDY_{a.tag}.md").write_text("\n".join(lines) + "\n", encoding="utf-8")
-    print(f"wrote results/STUDY_{a.tag}.md")
+    print(f"wrote {out_dir / f'STUDY_{a.tag}.md'}")
 
 
 if __name__ == "__main__":

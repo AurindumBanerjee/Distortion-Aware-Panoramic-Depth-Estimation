@@ -1,15 +1,15 @@
 # Capture-aware correction, end to end: dap_holo_in
 
-model `dap` · 40 frames · policy chosen on holo_out, panox, s3 (held out: holo_in): `{"tilt": "relevel_known", "nadir": "plane_fill", "vfov": "inpaint_erp", "yawblur": "wiener", "jpeg": "bilateral"}`
+model `dap` · 100 frames · policy chosen on holo_out, panox, s3 (held out: holo_in): `{"tilt": "relevel_known", "nadir": "plane_fill", "vfov": "inpaint_erp", "yawblur": "wiener", "jpeg": "bilateral"}`
 
 Caps are detected from the image; tilt / shake come as IMU / gyro metadata; JPEG as a file flag. Metric: AbsRel on the occluded region for cap faults, else the whole panorama.
 
 | scenario | cap detection correct | clean | uncorrected | corrected | change | frames improved | frames worse >1% | recovery |
 |---|---:|---:|---:|---:|---:|---:|---:|---:|
-| clean | 100% | 0.1387 | 0.1387 | 0.1387 | +0.0% | 0% | 0% | n/a |
-| tilt | 100% | 0.1387 | 0.2018 | 0.1480 | -23.9% | 88% | 12% | 92% |
-| nadir | 100% | 0.1296 | 0.7101 | 0.5667 | -23.5% | 90% | 8% | 32% |
-| vfov | 100% | 0.1180 | 0.7850 | 0.3066 | -59.2% | 98% | 2% | 72% |
-| yawblur | 100% | 0.1387 | 0.2240 | 0.1785 | -28.5% | 80% | 20% | 85% |
-| jpeg | 100% | 0.1387 | 0.4744 | 0.4156 | -8.6% | 85% | 12% | 12% |
-| nadir+jpeg | 90% | 0.1296 | 0.6289 | 0.4421 | -28.8% | 92% | 2% | 38% |
+| clean | 100% | 0.1289 | 0.1289 | 0.1289 | +0.0% | 0% | 0% | n/a |
+| tilt | 100% | 0.1289 | 0.1824 | 0.1387 | -22.0% | 87% | 13% | 91% |
+| nadir | 100% | 0.1205 | 0.6926 | 0.5669 | -22.5% | 92% | 8% | 28% |
+| vfov | 100% | 0.1179 | 0.7888 | 0.3158 | -57.7% | 99% | 1% | 68% |
+| yawblur | 100% | 0.1289 | 0.2383 | 0.1414 | -30.3% | 89% | 10% | 84% |
+| jpeg | 100% | 0.1289 | 0.4832 | 0.4231 | -9.6% | 92% | 7% | 13% |
+| nadir+jpeg | 92% | 0.1205 | 0.6354 | 0.4563 | -23.0% | 94% | 4% | 29% |

@@ -27,15 +27,16 @@ from distortions.catalogue import CATALOGUE, jpeg_apply  # noqa: E402
 from distortions.correction import CaptureMeta, cap_fault, correct, detect_caps  # noqa: E402
 from distortion_study import save_examples, score  # noqa: E402
 
+EXTERNAL_SETS = ("stanford", "nyc")
 FAULT = {d.key: d for d in CATALOGUE}
 SCENARIOS = ["clean", "tilt", "nadir", "vfov", "yawblur", "jpeg", "nadir+jpeg"]
 
 
-def heldout_policy(model_key: str, dataset_key: str, res: Path, min_gain=0.02, min_win=0.6):
+def heldout_policy(model_key: str, dataset_key: str, res: Path, min_gain=0.02, min_win=0.6, sets=CORE_SETS):
     """Policy chosen on the core datasets other than dataset_key. External sets (stanford / nyc) are never training
     data, so an external run is a pure test of the policy learned on the core sets."""
     train = {}
-    for ds in CORE_SETS:
+    for ds in sets:
         p = res / f"study_{model_key}_{ds}.json"
         if ds != dataset_key and p.is_file():
             train[ds] = json.loads(p.read_text())["rows"]
@@ -79,13 +80,19 @@ def main():
     ap.add_argument("--examples", type=int, default=3, help="frames for which before / after images are saved")
     ap.add_argument("--order", default="photometric_first", choices=["photometric_first", "cap_first"],
                     help="with a photometric fix AND a cap fix: smooth first (default) or fill the caps first")
+    ap.add_argument("--policy_mode", default="core", choices=["core", "all_loo"],
+                    help="core (headline): fixes chosen on the other CORE sets only. all_loo: on every other set incl. stanford / nyc "
+                         "(separate experiment, needs --out_dir)")
+    ap.add_argument("--out_dir", default=None, help="output folder (default results/ or results/external/)")
     ap.set_defaults(split="all", max_scenes=40)
     a = ap.parse_args()
     res = ROOT / "results"
     # core datasets keep their results in results/; external ones (stanford / nyc) are kept apart in results/external/
-    out = res if a.dataset_key in CORE_SETS else res / "external"
+    out = Path(a.out_dir) if a.out_dir else (res if a.dataset_key in CORE_SETS else res / "external")
+    if a.policy_mode != "core" and not a.out_dir:
+        sys.exit("--policy_mode all_loo writes a separate experiment: give --out_dir so the headline results are not overwritten")
     out.mkdir(parents=True, exist_ok=True)
-    policy, trained_on = heldout_policy(a.model_key, a.dataset_key, res)
+    policy, trained_on = heldout_policy(a.model_key, a.dataset_key, res, sets=CORE_SETS if a.policy_mode == "core" else CORE_SETS + EXTERNAL_SETS)
     print("held-out policy:", policy, "chosen on", trained_on, flush=True)
     cfg = load_config(a.config, a.overrides)
     model = load_model(cfg)
