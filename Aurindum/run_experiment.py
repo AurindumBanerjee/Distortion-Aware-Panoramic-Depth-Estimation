@@ -24,7 +24,7 @@ sys.path.insert(0, ROOT)
 
 from experiments import ablation, rotation_ensemble, tangent_plane  # noqa: E402
 from experiments import baseline as exp_baseline  # noqa: E402
-from experiments.common import (BANDS, build_plan, environment_info, load_config, make_dataset, make_model,  # noqa: E402
+from experiments.common import (build_plan, environment_info, load_config, make_dataset, make_model,  # noqa: E402
                                 method_table, resolve_eval_align, run_plan, seed_everything, write_markdown_table)
 
 ALL_STAGES = ["geometry", "main", "reports", "control", "resolution", "timing", "qualitative"]

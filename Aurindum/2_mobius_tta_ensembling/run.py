@@ -14,18 +14,15 @@ import logging
 import os
 import sys
 from pathlib import Path
-from typing import Dict, List, Tuple
+from typing import Dict, Tuple
 
 if hasattr(sys.stdout, "reconfigure"):
     sys.stdout.reconfigure(encoding="utf-8")
 
-import cv2
-import matplotlib.pyplot as plt
 import numpy as np
 import torch
 import yaml
 
-# Add Aurindum root to sys.path
 SCRIPT_DIR = Path(__file__).resolve().parent
 AURINDUM_DIR = SCRIPT_DIR.parent
 if str(AURINDUM_DIR) not in sys.path:
@@ -34,13 +31,10 @@ if str(AURINDUM_DIR) not in sys.path:
 from best_model.tracker import BestModelTracker
 from datasets.synthetic import _texture_bank, random_scene, render_erp
 from evaluation.latitude_analysis import per_band_metrics
-from evaluation.metrics import compute_metrics, to_metric_depth
-from evaluation.protocol import BANDS, align_to_gt, default_protocols, format_band_table, summarize_methods
+from evaluation.metrics import to_metric_depth
+from evaluation.protocol import align_to_gt, default_protocols, format_band_table, summarize_methods
 from geometry.spherical import latitude_map
 from models.depth_model import EncodedDepthOracle, MiDaSWrapper
-
-# Local modules
-from mobius_transform import unwarp_depth_mobius, warp_erp_mobius
 from tta_ensemble import MobiusTTAEnsemble
 
 
@@ -52,14 +46,12 @@ def setup_logger(log_dir: Path) -> logging.Logger:
     logger.setLevel(logging.INFO)
     logger.handlers.clear()
 
-    # Console Handler
     ch = logging.StreamHandler(sys.stdout)
     ch.setLevel(logging.INFO)
     formatter = logging.Formatter("[%(asctime)s][%(name)s][%(levelname)s] %(message)s", datefmt="%H:%M:%S")
     ch.setFormatter(formatter)
     logger.addHandler(ch)
 
-    # File Handler
     fh = logging.FileHandler(str(log_file), mode="w", encoding="utf-8")
     fh.setLevel(logging.DEBUG)
     fh.setFormatter(formatter)
@@ -80,7 +72,6 @@ def load_model(cfg_model: Dict, logger: logging.Logger):
         logger.info(f"Loaded panoramic model {pano.name} ({pano.device}).")
         return pano
 
-    # Check for DAP on GPU server
     if "dap" in model_name:
         try:
             from models.depth_model import DAPWrapper
@@ -103,7 +94,7 @@ def load_model(cfg_model: Dict, logger: logging.Logger):
             weights=str(AURINDUM_DIR / cfg_model.get("weights", f"weights/{cfg_model.get('name', 'dpt_hybrid_384')}.pt")),
             device=cfg_model.get("device", "cuda" if torch.cuda.is_available() else "cpu")
         )
-        logger.info(f"Loaded MiDaS wrapper successfully.")
+        logger.info("Loaded MiDaS wrapper successfully.")
         return wrapper
     except Exception as e:
         if not cfg_model.get("allow_oracle_fallback", False):
@@ -135,7 +126,7 @@ def evaluate_scene(
 ) -> Tuple[Dict, Dict, np.ndarray, np.ndarray]:
     """Runs baseline and Method 2 on a single scene, returning metrics and depth maps."""
     H, W = gt_range.shape
-    phi_deg_map = np.abs(latitude_map(H, W))
+    np.abs(latitude_map(H, W))
 
     # --- 1. Baseline ERP Pass ---
     pred_erp = ensemble.model.predict(rgb, kind="erp")
@@ -178,7 +169,6 @@ def main():
                         help="Suffix appended to the output folder and tracker benchmark name (keeps earlier results)")
     args = parser.parse_args()
 
-    # Load configuration
     cfg_path = SCRIPT_DIR / args.config
     if not cfg_path.exists():  # never fall back silently: a typo would run a different model/dataset
         raise FileNotFoundError(f"Config not found: {cfg_path}")
@@ -213,7 +203,6 @@ def main():
     logger.info(f"Passes: {cfg['mobius_tta'].get('passes', cfg['mobius_tta'].get('scales'))}, Fusion: {cfg['mobius_tta']['fusion_mode']}")
     logger.info("=" * 70)
 
-    # Initialize model and ensemble
     model = load_model(cfg.get("model", {}), logger)
     ensemble = MobiusTTAEnsemble(
         model=model,
@@ -230,7 +219,6 @@ def main():
         consensus=cfg["mobius_tta"].get("consensus", False),
     )
 
-    # Run over test scenes
     num_scenes = cfg["evaluation"].get("num_scenes", 6)
     H = cfg["evaluation"].get("height", 256)
     W = cfg["evaluation"].get("width", 512)

@@ -26,10 +26,10 @@ data_ok() { case "$1" in s3) [ -f data/structured3d/test.txt ];; panox) [ -f dat
     stanford) [ -f data/stanford2d3d/test.txt ] || { say "skip stanford: build data/stanford2d3d/test.txt (scripts/make_stanford_list.py --out test.txt)"; false; };;
     nyc) [ -f data/nyc_dap/test.txt ] || { say "skip nyc: build data/nyc_dap/test.txt (scripts/make_nyc_list.py, or scripts/run_tasks.sh setup with NYC_RGB / NYC_DEPTH)"; false; };; esac; }
 do_run() {
-    CONDA_SH="${CONDA_SH:-/DATA/Aurindum/conda/etc/profile.d/conda.sh}"
+    CONDA_SH="${CONDA_SH:-$(conda info --base 2>/dev/null)/etc/profile.d/conda.sh}"
     if [ -f "$CONDA_SH" ]; then set +u; source "$CONDA_SH"; conda activate "${CONDA_ENV:-RL}"; set -u; fi
     export PYTHONUNBUFFERED=1 OPENCV_IO_ENABLE_OPENEXR=1 CUDA_VISIBLE_DEVICES="${CUDA_VISIBLE_DEVICES:-0}" MPLCONFIGDIR="/tmp/matplotlib_$$"
-    export HF_HOME="${HF_HOME:-/DATA/Aurindum/hf_home}" HF_HUB_OFFLINE=1
+    export HF_HOME="${HF_HOME:-$HOME/.cache/huggingface}" HF_HUB_OFFLINE=1
     say "🚀 Capture-aware correction | models: $MODELS | sets: $SETS | N=$N"
     if python scripts/calibrate_correction.py > /dev/null; then say "✅ policy -> results/CORRECTION_POLICY.md"; else say "❌ calibration FAILED"; exit 1; fi
     for m in $MODELS; do for d in $SETS; do

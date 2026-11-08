@@ -930,7 +930,7 @@ wrote results/PROFILE_da2_holo_out_all.md
 [17:48:32][Method3_Structured3DBenchmark][INFO] ===========================================================================
 [17:48:32][Method3_Structured3DBenchmark][INFO] 🚀 Starting Method 3: Comparative Benchmark on structured3d panoramas
 [17:48:32][Method3_Structured3DBenchmark][INFO] ===========================================================================
-[17:48:32][Method3_Structured3DBenchmark][INFO] Loaded 143 structured3d panoramas from /DATA/Aurindum/Distortion-Aware-Panoramic-Depth-Estimation/Aurindum/data/structured3d/test.txt
+[17:48:32][Method3_Structured3DBenchmark][INFO] Loaded 143 structured3d panoramas from ./data/structured3d/test.txt
 [17:48:32][Method3_Structured3DBenchmark][INFO] Initializing model wrapper: da2...
 xFormers not available
 xFormers not available
@@ -1309,14 +1309,14 @@ xFormers not available
 [17:51:17][Method3_Structured3DBenchmark][INFO] 60-75    |    0.0472 |       0.0460 |   71% |      +5.5% [ +3.5, +7.3] |  <0.001
 [17:51:17][Method3_Structured3DBenchmark][INFO] 75-90    |    0.0435 |       0.0422 |   70% |      +5.3% [ +3.4, +9.0] |  <0.001
 [17:51:17][Method3_Structured3DBenchmark][INFO] ===============================================================================================
-[17:51:17][Method3_Structured3DBenchmark][INFO] Saved benchmark results to /DATA/Aurindum/Distortion-Aware-Panoramic-Depth-Estimation/Aurindum/3_structured3d_benchmark/outputs_r3_da2/benchmark_summary.json
+[17:51:17][Method3_Structured3DBenchmark][INFO] Saved benchmark results to ./3_structured3d_benchmark/outputs_r3_da2/benchmark_summary.json
 [17:51:17][Method3_Structured3DBenchmark][INFO] 🏆 Best polar (75-90°) method on this benchmark [align-all, median]: Control_YawEnsemble
 [2026-11-04 17:51:19] ✅ B r3 da2 s3 (170 s)
 [2026-11-04 17:51:19] >>> B r3wonly da2 s3
 [17:51:22][Method3_Structured3DBenchmark][INFO] ===========================================================================
 [17:51:22][Method3_Structured3DBenchmark][INFO] 🚀 Starting Method 3: Comparative Benchmark on structured3d panoramas
 [17:51:22][Method3_Structured3DBenchmark][INFO] ===========================================================================
-[17:51:22][Method3_Structured3DBenchmark][INFO] Loaded 143 structured3d panoramas from /DATA/Aurindum/Distortion-Aware-Panoramic-Depth-Estimation/Aurindum/data/structured3d/test.txt
+[17:51:22][Method3_Structured3DBenchmark][INFO] Loaded 143 structured3d panoramas from ./data/structured3d/test.txt
 [17:51:22][Method3_Structured3DBenchmark][INFO] Initializing model wrapper: da2...
 xFormers not available
 xFormers not available
@@ -1650,14 +1650,14 @@ xFormers not available
 [17:54:17][Method3_Structured3DBenchmark][INFO] 60-75    |    0.0472 |       0.0444 |   57% |      +2.6% [ -9.8,+10.1] |   0.662
 [17:54:17][Method3_Structured3DBenchmark][INFO] 75-90    |    0.0435 |       0.0351 |   61% |      +9.6% [ -0.9,+28.1] |   0.124
 [17:54:17][Method3_Structured3DBenchmark][INFO] ===============================================================================================
-[17:54:17][Method3_Structured3DBenchmark][INFO] Saved benchmark results to /DATA/Aurindum/Distortion-Aware-Panoramic-Depth-Estimation/Aurindum/3_structured3d_benchmark/outputs_r3wonly_da2/benchmark_summary.json
+[17:54:17][Method3_Structured3DBenchmark][INFO] Saved benchmark results to ./3_structured3d_benchmark/outputs_r3wonly_da2/benchmark_summary.json
 [17:54:17][Method3_Structured3DBenchmark][INFO] 🏆 Best polar (75-90°) method on this benchmark [align-all, median]: Method2_MobiusTTA
 [2026-11-04 17:54:19] ✅ B r3wonly da2 s3 (180 s)
 [2026-11-04 17:54:19] >>> B r3gonly da2 s3
 [17:54:21][Method3_Structured3DBenchmark][INFO] ===========================================================================
 [17:54:21][Method3_Structured3DBenchmark][INFO] 🚀 Starting Method 3: Comparative Benchmark on structured3d panoramas
 [17:54:21][Method3_Structured3DBenchmark][INFO] ===========================================================================
-[17:54:21][Method3_Structured3DBenchmark][INFO] Loaded 143 structured3d panoramas from /DATA/Aurindum/Distortion-Aware-Panoramic-Depth-Estimation/Aurindum/data/structured3d/test.txt
+[17:54:21][Method3_Structured3DBenchmark][INFO] Loaded 143 structured3d panoramas from ./data/structured3d/test.txt
 [17:54:21][Method3_Structured3DBenchmark][INFO] Initializing model wrapper: da2...
 xFormers not available
 xFormers not available
@@ -1991,14 +1991,14 @@ xFormers not available
 [17:55:26][Method3_Structured3DBenchmark][INFO] 60-75    |    0.0472 |       0.0472 |    0% |      +0.0% [ +0.0, +0.0] |     n/a
 [17:55:26][Method3_Structured3DBenchmark][INFO] 75-90    |    0.0435 |       0.0435 |    0% |      +0.0% [ +0.0, +0.0] |     n/a
 [17:55:26][Method3_Structured3DBenchmark][INFO] ===============================================================================================
-[17:55:26][Method3_Structured3DBenchmark][INFO] Saved benchmark results to /DATA/Aurindum/Distortion-Aware-Panoramic-Depth-Estimation/Aurindum/3_structured3d_benchmark/outputs_r3gonly_da2/benchmark_summary.json
+[17:55:26][Method3_Structured3DBenchmark][INFO] Saved benchmark results to ./3_structured3d_benchmark/outputs_r3gonly_da2/benchmark_summary.json
 [17:55:26][Method3_Structured3DBenchmark][INFO] 🏆 Best polar (75-90°) method on this benchmark [align-all, median]: Baseline
 [2026-11-04 17:55:27] ✅ B r3gonly da2 s3 (68 s)
 [2026-11-04 17:55:27] >>> B r3 da2 panox
 [17:55:30][Method3_Structured3DBenchmark][INFO] ===========================================================================
 [17:55:30][Method3_Structured3DBenchmark][INFO] 🚀 Starting Method 3: Comparative Benchmark on panox panoramas
 [17:55:30][Method3_Structured3DBenchmark][INFO] ===========================================================================
-[17:55:30][Method3_Structured3DBenchmark][INFO] Loaded 200 panox panoramas from /DATA/Aurindum/Distortion-Aware-Panoramic-Depth-Estimation/Aurindum/data/panox/test.txt
+[17:55:30][Method3_Structured3DBenchmark][INFO] Loaded 200 panox panoramas from ./data/panox/test.txt
 [17:55:30][Method3_Structured3DBenchmark][INFO] Initializing model wrapper: da2...
 xFormers not available
 xFormers not available
@@ -2491,14 +2491,14 @@ xFormers not available
 [17:59:34][Method3_Structured3DBenchmark][INFO] 60-75    |    0.1120 |       0.1133 |   57% |      +1.9% [ -8.1, +5.9] |   0.461
 [17:59:34][Method3_Structured3DBenchmark][INFO] 75-90    |    0.1209 |       0.1184 |   59% |      +2.7% [ -6.4, +5.6] |   0.383
 [17:59:34][Method3_Structured3DBenchmark][INFO] ===============================================================================================
-[17:59:34][Method3_Structured3DBenchmark][INFO] Saved benchmark results to /DATA/Aurindum/Distortion-Aware-Panoramic-Depth-Estimation/Aurindum/3_structured3d_benchmark/outputs_panox_r3_da2/benchmark_summary.json
+[17:59:34][Method3_Structured3DBenchmark][INFO] Saved benchmark results to ./3_structured3d_benchmark/outputs_panox_r3_da2/benchmark_summary.json
 [17:59:34][Method3_Structured3DBenchmark][INFO] 🏆 Best polar (75-90°) method on this benchmark [align-all, median]: Control_YawEnsemble
 [2026-11-04 17:59:36] ✅ B r3 da2 panox (249 s)
 [2026-11-04 17:59:36] >>> B r3wonly da2 panox
 [17:59:39][Method3_Structured3DBenchmark][INFO] ===========================================================================
 [17:59:39][Method3_Structured3DBenchmark][INFO] 🚀 Starting Method 3: Comparative Benchmark on panox panoramas
 [17:59:39][Method3_Structured3DBenchmark][INFO] ===========================================================================
-[17:59:39][Method3_Structured3DBenchmark][INFO] Loaded 200 panox panoramas from /DATA/Aurindum/Distortion-Aware-Panoramic-Depth-Estimation/Aurindum/data/panox/test.txt
+[17:59:39][Method3_Structured3DBenchmark][INFO] Loaded 200 panox panoramas from ./data/panox/test.txt
 [17:59:39][Method3_Structured3DBenchmark][INFO] Initializing model wrapper: da2...
 xFormers not available
 xFormers not available
@@ -2946,14 +2946,14 @@ xFormers not available
 [18:04:03][Method3_Structured3DBenchmark][INFO] 60-75    |    0.1120 |       0.3031 |   19% |   -149.3% [-619.6,-21.8] |   0.039
 [18:04:03][Method3_Structured3DBenchmark][INFO] 75-90    |    0.1209 |       0.3344 |   20% |   -142.2% [-512.8,-26.2] |   0.023
 [18:04:03][Method3_Structured3DBenchmark][INFO] ===============================================================================================
-[18:04:03][Method3_Structured3DBenchmark][INFO] Saved benchmark results to /DATA/Aurindum/Distortion-Aware-Panoramic-Depth-Estimation/Aurindum/3_structured3d_benchmark/outputs_panox_r3wonly_da2/benchmark_summary.json
+[18:04:03][Method3_Structured3DBenchmark][INFO] Saved benchmark results to ./3_structured3d_benchmark/outputs_panox_r3wonly_da2/benchmark_summary.json
 [18:04:03][Method3_Structured3DBenchmark][INFO] 🏆 Best polar (75-90°) method on this benchmark [align-all, median]: Baseline
 [2026-11-04 18:04:05] ✅ B r3wonly da2 panox (269 s)
 [2026-11-04 18:04:05] >>> B r3gonly da2 panox
 [18:04:08][Method3_Structured3DBenchmark][INFO] ===========================================================================
 [18:04:08][Method3_Structured3DBenchmark][INFO] 🚀 Starting Method 3: Comparative Benchmark on panox panoramas
 [18:04:08][Method3_Structured3DBenchmark][INFO] ===========================================================================
-[18:04:08][Method3_Structured3DBenchmark][INFO] Loaded 200 panox panoramas from /DATA/Aurindum/Distortion-Aware-Panoramic-Depth-Estimation/Aurindum/data/panox/test.txt
+[18:04:08][Method3_Structured3DBenchmark][INFO] Loaded 200 panox panoramas from ./data/panox/test.txt
 [18:04:08][Method3_Structured3DBenchmark][INFO] Initializing model wrapper: da2...
 xFormers not available
 xFormers not available
@@ -3401,14 +3401,14 @@ xFormers not available
 [18:05:52][Method3_Structured3DBenchmark][INFO] 60-75    |    0.1120 |       0.1120 |    0% |      +0.0% [ +0.0, +0.0] |     n/a
 [18:05:52][Method3_Structured3DBenchmark][INFO] 75-90    |    0.1209 |       0.1209 |    0% |      +0.0% [ +0.0, +0.0] |     n/a
 [18:05:52][Method3_Structured3DBenchmark][INFO] ===============================================================================================
-[18:05:53][Method3_Structured3DBenchmark][INFO] Saved benchmark results to /DATA/Aurindum/Distortion-Aware-Panoramic-Depth-Estimation/Aurindum/3_structured3d_benchmark/outputs_panox_r3gonly_da2/benchmark_summary.json
+[18:05:53][Method3_Structured3DBenchmark][INFO] Saved benchmark results to ./3_structured3d_benchmark/outputs_panox_r3gonly_da2/benchmark_summary.json
 [18:05:53][Method3_Structured3DBenchmark][INFO] 🏆 Best polar (75-90°) method on this benchmark [align-all, median]: Baseline
 [2026-11-04 18:05:54] ✅ B r3gonly da2 panox (109 s)
 [2026-11-04 18:05:54] >>> B r3 da2 holo_in
 [18:05:57][Method3_Structured3DBenchmark][INFO] ===========================================================================
 [18:05:57][Method3_Structured3DBenchmark][INFO] 🚀 Starting Method 3: Comparative Benchmark on holo360d panoramas
 [18:05:57][Method3_Structured3DBenchmark][INFO] ===========================================================================
-[18:05:57][Method3_Structured3DBenchmark][INFO] Loaded 291 holo360d panoramas from /DATA/Aurindum/Distortion-Aware-Panoramic-Depth-Estimation/Aurindum/data/holo360d/indoor.txt
+[18:05:57][Method3_Structured3DBenchmark][INFO] Loaded 291 holo360d panoramas from ./data/holo360d/indoor.txt
 [18:05:57][Method3_Structured3DBenchmark][INFO] Initializing model wrapper: da2...
 xFormers not available
 xFormers not available
@@ -4083,14 +4083,14 @@ xFormers not available
 [18:11:49][Method3_Structured3DBenchmark][INFO] 60-75    |    0.1318 |       0.1240 |   56% |      +5.5% [ -0.2,+10.9] |   0.092
 [18:11:49][Method3_Structured3DBenchmark][INFO] 75-90    |    0.1662 |       0.1630 |   53% |      +5.8% [ -4.2,+10.7] |   0.233
 [18:11:49][Method3_Structured3DBenchmark][INFO] ===============================================================================================
-[18:11:50][Method3_Structured3DBenchmark][INFO] Saved benchmark results to /DATA/Aurindum/Distortion-Aware-Panoramic-Depth-Estimation/Aurindum/3_structured3d_benchmark/outputs_holo360d_indoor_r3_da2/benchmark_summary.json
+[18:11:50][Method3_Structured3DBenchmark][INFO] Saved benchmark results to ./3_structured3d_benchmark/outputs_holo360d_indoor_r3_da2/benchmark_summary.json
 [18:11:50][Method3_Structured3DBenchmark][INFO] 🏆 Best polar (75-90°) method on this benchmark [align-all, median]: Control_YawEnsemble
 [2026-11-04 18:11:51] ✅ B r3 da2 holo_in (357 s)
 [2026-11-04 18:11:51] >>> B r3wonly da2 holo_in
 [18:11:54][Method3_Structured3DBenchmark][INFO] ===========================================================================
 [18:11:54][Method3_Structured3DBenchmark][INFO] 🚀 Starting Method 3: Comparative Benchmark on holo360d panoramas
 [18:11:54][Method3_Structured3DBenchmark][INFO] ===========================================================================
-[18:11:54][Method3_Structured3DBenchmark][INFO] Loaded 291 holo360d panoramas from /DATA/Aurindum/Distortion-Aware-Panoramic-Depth-Estimation/Aurindum/data/holo360d/indoor.txt
+[18:11:54][Method3_Structured3DBenchmark][INFO] Loaded 291 holo360d panoramas from ./data/holo360d/indoor.txt
 [18:11:54][Method3_Structured3DBenchmark][INFO] Initializing model wrapper: da2...
 xFormers not available
 xFormers not available
@@ -4720,14 +4720,14 @@ xFormers not available
 [18:18:16][Method3_Structured3DBenchmark][INFO] 60-75    |    0.1318 |       0.1771 |   36% |     -19.6% [-75.5, +0.7] |   0.021
 [18:18:16][Method3_Structured3DBenchmark][INFO] 75-90    |    0.1662 |       0.1789 |   48% |      -4.6% [-16.7,+10.1] |   0.791
 [18:18:16][Method3_Structured3DBenchmark][INFO] ===============================================================================================
-[18:18:16][Method3_Structured3DBenchmark][INFO] Saved benchmark results to /DATA/Aurindum/Distortion-Aware-Panoramic-Depth-Estimation/Aurindum/3_structured3d_benchmark/outputs_holo360d_indoor_r3wonly_da2/benchmark_summary.json
+[18:18:16][Method3_Structured3DBenchmark][INFO] Saved benchmark results to ./3_structured3d_benchmark/outputs_holo360d_indoor_r3wonly_da2/benchmark_summary.json
 [18:18:16][Method3_Structured3DBenchmark][INFO] 🏆 Best polar (75-90°) method on this benchmark [align-all, median]: Baseline
 [2026-11-04 18:18:18] ✅ B r3wonly da2 holo_in (387 s)
 [2026-11-04 18:18:18] >>> B r3gonly da2 holo_in
 [18:18:21][Method3_Structured3DBenchmark][INFO] ===========================================================================
 [18:18:21][Method3_Structured3DBenchmark][INFO] 🚀 Starting Method 3: Comparative Benchmark on holo360d panoramas
 [18:18:21][Method3_Structured3DBenchmark][INFO] ===========================================================================
-[18:18:21][Method3_Structured3DBenchmark][INFO] Loaded 291 holo360d panoramas from /DATA/Aurindum/Distortion-Aware-Panoramic-Depth-Estimation/Aurindum/data/holo360d/indoor.txt
+[18:18:21][Method3_Structured3DBenchmark][INFO] Loaded 291 holo360d panoramas from ./data/holo360d/indoor.txt
 [18:18:21][Method3_Structured3DBenchmark][INFO] Initializing model wrapper: da2...
 xFormers not available
 xFormers not available
@@ -5357,14 +5357,14 @@ xFormers not available
 [18:20:49][Method3_Structured3DBenchmark][INFO] 60-75    |    0.1318 |       0.1318 |    0% |      +0.0% [ +0.0, +0.0] |     n/a
 [18:20:49][Method3_Structured3DBenchmark][INFO] 75-90    |    0.1662 |       0.1662 |    0% |      +0.0% [ +0.0, +0.0] |     n/a
 [18:20:49][Method3_Structured3DBenchmark][INFO] ===============================================================================================
-[18:20:49][Method3_Structured3DBenchmark][INFO] Saved benchmark results to /DATA/Aurindum/Distortion-Aware-Panoramic-Depth-Estimation/Aurindum/3_structured3d_benchmark/outputs_holo360d_indoor_r3gonly_da2/benchmark_summary.json
+[18:20:49][Method3_Structured3DBenchmark][INFO] Saved benchmark results to ./3_structured3d_benchmark/outputs_holo360d_indoor_r3gonly_da2/benchmark_summary.json
 [18:20:49][Method3_Structured3DBenchmark][INFO] 🏆 Best polar (75-90°) method on this benchmark [align-all, median]: Baseline
 [2026-11-04 18:20:51] ✅ B r3gonly da2 holo_in (153 s)
 [2026-11-04 18:20:51] >>> B r3 da2 holo_out
 [18:20:54][Method3_Structured3DBenchmark][INFO] ===========================================================================
 [18:20:54][Method3_Structured3DBenchmark][INFO] 🚀 Starting Method 3: Comparative Benchmark on holo360d panoramas
 [18:20:54][Method3_Structured3DBenchmark][INFO] ===========================================================================
-[18:20:54][Method3_Structured3DBenchmark][INFO] Loaded 71 holo360d panoramas from /DATA/Aurindum/Distortion-Aware-Panoramic-Depth-Estimation/Aurindum/data/holo360d/outdoor.txt
+[18:20:54][Method3_Structured3DBenchmark][INFO] Loaded 71 holo360d panoramas from ./data/holo360d/outdoor.txt
 [18:20:54][Method3_Structured3DBenchmark][INFO] Initializing model wrapper: da2...
 xFormers not available
 xFormers not available
@@ -5599,14 +5599,14 @@ xFormers not available
 [18:22:23][Method3_Structured3DBenchmark][INFO] 60-75    |    0.5511 |       0.5608 |   41% |      -2.4% [ -2.5, +4.0] |   0.750
 [18:22:23][Method3_Structured3DBenchmark][INFO] 75-90    |    0.5993 |       0.5963 |   44% |      -1.4% [ -1.9, +2.5] |   1.000
 [18:22:23][Method3_Structured3DBenchmark][INFO] ===============================================================================================
-[18:22:23][Method3_Structured3DBenchmark][INFO] Saved benchmark results to /DATA/Aurindum/Distortion-Aware-Panoramic-Depth-Estimation/Aurindum/3_structured3d_benchmark/outputs_holo360d_outdoor_r3_da2/benchmark_summary.json
+[18:22:23][Method3_Structured3DBenchmark][INFO] Saved benchmark results to ./3_structured3d_benchmark/outputs_holo360d_outdoor_r3_da2/benchmark_summary.json
 [18:22:23][Method3_Structured3DBenchmark][INFO] 🏆 Best polar (75-90°) method on this benchmark [align-all, median]: Control_YawEnsemble
 [2026-11-04 18:22:25] ✅ B r3 da2 holo_out (94 s)
 [2026-11-04 18:22:25] >>> B r3wonly da2 holo_out
 [18:22:28][Method3_Structured3DBenchmark][INFO] ===========================================================================
 [18:22:28][Method3_Structured3DBenchmark][INFO] 🚀 Starting Method 3: Comparative Benchmark on holo360d panoramas
 [18:22:28][Method3_Structured3DBenchmark][INFO] ===========================================================================
-[18:22:28][Method3_Structured3DBenchmark][INFO] Loaded 71 holo360d panoramas from /DATA/Aurindum/Distortion-Aware-Panoramic-Depth-Estimation/Aurindum/data/holo360d/outdoor.txt
+[18:22:28][Method3_Structured3DBenchmark][INFO] Loaded 71 holo360d panoramas from ./data/holo360d/outdoor.txt
 [18:22:28][Method3_Structured3DBenchmark][INFO] Initializing model wrapper: da2...
 xFormers not available
 xFormers not available
@@ -5796,14 +5796,14 @@ xFormers not available
 [18:24:05][Method3_Structured3DBenchmark][INFO] 60-75    |    0.5511 |       0.7452 |   38% |      -9.4% [-94.7, +5.5] |   0.500
 [18:24:05][Method3_Structured3DBenchmark][INFO] 75-90    |    0.5993 |       0.5471 |   51% |     +12.1% [-56.0,+15.1] |   1.000
 [18:24:05][Method3_Structured3DBenchmark][INFO] ===============================================================================================
-[18:24:05][Method3_Structured3DBenchmark][INFO] Saved benchmark results to /DATA/Aurindum/Distortion-Aware-Panoramic-Depth-Estimation/Aurindum/3_structured3d_benchmark/outputs_holo360d_outdoor_r3wonly_da2/benchmark_summary.json
+[18:24:05][Method3_Structured3DBenchmark][INFO] Saved benchmark results to ./3_structured3d_benchmark/outputs_holo360d_outdoor_r3wonly_da2/benchmark_summary.json
 [18:24:05][Method3_Structured3DBenchmark][INFO] 🏆 Best polar (75-90°) method on this benchmark [align-all, median]: Method2_MobiusTTA
 [2026-11-04 18:24:07] ✅ B r3wonly da2 holo_out (102 s)
 [2026-11-04 18:24:07] >>> B r3gonly da2 holo_out
 [18:24:10][Method3_Structured3DBenchmark][INFO] ===========================================================================
 [18:24:10][Method3_Structured3DBenchmark][INFO] 🚀 Starting Method 3: Comparative Benchmark on holo360d panoramas
 [18:24:10][Method3_Structured3DBenchmark][INFO] ===========================================================================
-[18:24:10][Method3_Structured3DBenchmark][INFO] Loaded 71 holo360d panoramas from /DATA/Aurindum/Distortion-Aware-Panoramic-Depth-Estimation/Aurindum/data/holo360d/outdoor.txt
+[18:24:10][Method3_Structured3DBenchmark][INFO] Loaded 71 holo360d panoramas from ./data/holo360d/outdoor.txt
 [18:24:10][Method3_Structured3DBenchmark][INFO] Initializing model wrapper: da2...
 xFormers not available
 xFormers not available
@@ -5993,15 +5993,15 @@ xFormers not available
 [18:24:49][Method3_Structured3DBenchmark][INFO] 60-75    |    0.5511 |       0.5511 |    0% |      +0.0% [ +0.0, +0.0] |     n/a
 [18:24:49][Method3_Structured3DBenchmark][INFO] 75-90    |    0.5993 |       0.5993 |    0% |      +0.0% [ +0.0, +0.0] |     n/a
 [18:24:49][Method3_Structured3DBenchmark][INFO] ===============================================================================================
-[18:24:50][Method3_Structured3DBenchmark][INFO] Saved benchmark results to /DATA/Aurindum/Distortion-Aware-Panoramic-Depth-Estimation/Aurindum/3_structured3d_benchmark/outputs_holo360d_outdoor_r3gonly_da2/benchmark_summary.json
+[18:24:50][Method3_Structured3DBenchmark][INFO] Saved benchmark results to ./3_structured3d_benchmark/outputs_holo360d_outdoor_r3gonly_da2/benchmark_summary.json
 [18:24:50][Method3_Structured3DBenchmark][INFO] 🏆 Best polar (75-90°) method on this benchmark [align-all, median]: Baseline
 [2026-11-04 18:24:51] ✅ B r3gonly da2 holo_out (44 s)
 [2026-11-04 18:24:51] =============== D: reports ===============
 [2026-11-04 18:24:51] >>> D Part A table
-wrote /DATA/Aurindum/Distortion-Aware-Panoramic-Depth-Estimation/Aurindum/results/ROUND3_ANALYSIS.md
+wrote ./results/ROUND3_ANALYSIS.md
 [2026-11-04 18:24:51] ✅ D Part A table (0 s)
 [2026-11-04 18:24:51] >>> D Part B summary
-Wrote /DATA/Aurindum/Distortion-Aware-Panoramic-Depth-Estimation/Aurindum/results/SUMMARY_20261104_182454.md (48 result files)
+Wrote ./results/SUMMARY_20261104_182454.md (48 result files)
 [2026-11-04 18:25:02] ✅ D Part B summary (11 s)
 [2026-11-04 18:25:02] 🎉 Round 3 finished.
 [2026-11-04 18:25:02] finished (exit 0)

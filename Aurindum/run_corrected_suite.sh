@@ -78,7 +78,7 @@ do_archive() {
 
 do_preflight() {
     local ok=1
-    CONDA_SH="${CONDA_SH:-/DATA/Aurindum/conda/etc/profile.d/conda.sh}"
+    CONDA_SH="${CONDA_SH:-$(conda info --base 2>/dev/null)/etc/profile.d/conda.sh}"
     if [ -f "$CONDA_SH" ]; then set +u; source "$CONDA_SH"; conda activate "${CONDA_ENV:-RL}"; set -u; fi
     say "Code: $(git -C "$AURINDUM_DIR" log -1 --format='%h %s' 2>/dev/null)"
     [ -n "$(git -C "$AURINDUM_DIR" status --porcelain -- '*.py' '*.yaml' '*.sh' 2>/dev/null)" ] && \

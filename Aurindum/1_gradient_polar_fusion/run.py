@@ -19,13 +19,10 @@ from typing import Dict, List, Tuple
 if hasattr(sys.stdout, "reconfigure"):
     sys.stdout.reconfigure(encoding="utf-8")
 
-import cv2
-import matplotlib.pyplot as plt
 import numpy as np
 import torch
 import yaml
 
-# Add Aurindum root to sys.path
 SCRIPT_DIR = Path(__file__).resolve().parent
 AURINDUM_DIR = SCRIPT_DIR.parent
 if str(AURINDUM_DIR) not in sys.path:
@@ -34,20 +31,15 @@ if str(AURINDUM_DIR) not in sys.path:
 from best_model.tracker import BestModelTracker
 from datasets.synthetic import _texture_bank, random_scene, render_erp
 from evaluation.latitude_analysis import per_band_metrics
-from evaluation.metrics import compute_metrics, to_metric_depth
-from evaluation.protocol import BANDS, align_to_gt, default_protocols, format_band_table, summarize_methods
-from geometry.erp_projection import sample_erp
-from geometry.spherical import erp_lonlat_grid, latitude_map, lonlat_to_xyz
+from evaluation.metrics import to_metric_depth
+from evaluation.protocol import align_to_gt, default_protocols, format_band_table, summarize_methods
+from geometry.spherical import latitude_map
 from geometry.tangent_plane import (
     generate_tangent_plane,
     erp_to_tangent,
     tangent_to_erp,
 )
 from models.depth_model import EncodedDepthOracle, MiDaSWrapper
-
-# Local modules
-from gradient_blending import gradient_domain_polar_fuse
-from shift_alignment import align_tangent_disparity_to_erp
 from polar_views import fuse_polar, polar_predictions
 
 
@@ -59,14 +51,12 @@ def setup_logger(log_dir: Path) -> logging.Logger:
     logger.setLevel(logging.INFO)
     logger.handlers.clear()
 
-    # Console Handler
     ch = logging.StreamHandler(sys.stdout)
     ch.setLevel(logging.INFO)
     formatter = logging.Formatter("[%(asctime)s][%(name)s][%(levelname)s] %(message)s", datefmt="%H:%M:%S")
     ch.setFormatter(formatter)
     logger.addHandler(ch)
 
-    # File Handler
     fh = logging.FileHandler(str(log_file), mode="w", encoding="utf-8")
     fh.setLevel(logging.DEBUG)
     fh.setFormatter(formatter)
@@ -87,7 +77,6 @@ def load_model(cfg_model: Dict, logger: logging.Logger):
         logger.info(f"Loaded panoramic model {pano.name} ({pano.device}).")
         return pano
 
-    # Check for DAP on GPU server
     if "dap" in model_name:
         try:
             from models.depth_model import DAPWrapper
@@ -110,7 +99,7 @@ def load_model(cfg_model: Dict, logger: logging.Logger):
             weights=str(AURINDUM_DIR / cfg_model.get("weights", f"weights/{cfg_model.get('name', 'dpt_hybrid_384')}.pt")),
             device=cfg_model.get("device", "cuda" if torch.cuda.is_available() else "cpu")
         )
-        logger.info(f"Loaded MiDaS wrapper successfully.")
+        logger.info("Loaded MiDaS wrapper successfully.")
         return wrapper
     except Exception as e:
         if not cfg_model.get("allow_oracle_fallback", False):
@@ -132,13 +121,8 @@ def run_tangent_pass(
 
     for theta_c, phi_c in tangent_centers:
         plane = generate_tangent_plane(lon_deg=theta_c, lat_deg=phi_c, fov_deg=fov_deg, size=resolution)
-        # 1. Project ERP RGB to tangent plane
         rgb_tan = erp_to_tangent(rgb_erp, plane)
-
-        # 2. Predict with model (in perspective mode)
         pred_tan = model.predict(rgb_tan, kind="perspective")
-
-        # 3. Project back to ERP grid
         warp_res = tangent_to_erp(pred_tan, plane, height=H, width=W)
         pred_on_erp = warp_res.values
         cos_ray = warp_res.cos_axis
@@ -219,7 +203,6 @@ def main():
     parser.add_argument("--blend_mode", type=str, default=None, choices=["gradient_poisson", "cosine_ramp"])
     args = parser.parse_args()
 
-    # Load configuration
     cfg_path = SCRIPT_DIR / args.config
     if not cfg_path.exists():  # never fall back silently: a typo would run a different model/dataset
         raise FileNotFoundError(f"Config not found: {cfg_path}")
@@ -243,10 +226,8 @@ def main():
     logger.info(f"Config: Blend Mode={cfg['blending']['mode']}, Phi Threshold={cfg['tangent']['phi_threshold']}°")
     logger.info("=" * 70)
 
-    # Initialize model
     model = load_model(cfg.get("model", {}), logger)
 
-    # Run over test scenes
     num_scenes = cfg["evaluation"].get("num_scenes", 6)
     H = cfg["evaluation"].get("height", 256)
     W = cfg["evaluation"].get("width", 512)

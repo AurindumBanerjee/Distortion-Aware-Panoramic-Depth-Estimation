@@ -126,10 +126,10 @@ _MIDAS_CFG = {
 class MiDaSWrapper(DepthModelWrapper):
     """MiDaS v2.1 / v3 / v3.1 (Ranftl et al.). Output: relative inverse depth (affine-invariant disparity).
 
-    Used here (a) as a model we can actually run in this environment and (b) as a second,
-    architecturally different model for the generalisation question. It is a *perspective*
-    model, so running it on a full ERP is itself out of distribution; that is a property of
-    the baseline we measure, not something we hide.
+    Included (a) as a lightweight local baseline and (b) as an architecturally distinct
+    perspective model for the generalisation study. Because it is a *perspective*
+    model, running it on a full ERP is itself out of distribution; that is an explicit property
+    of the evaluated baseline.
     """
 
     def __init__(self, model_type: str = "dpt_hybrid_384", weights: str = "weights/dpt_hybrid_384.pt",
@@ -201,7 +201,7 @@ class DAPWrapper(DepthModelWrapper):
         [0, max_depth=1], and 'pred_mask' (sky / beyond-100 m logits). Pixels with
         (1 - pred_mask) <= 0.5 are invalid (set to 1 = 100 m by the official code).
       * the model is ERP-native (trained on ERP); no arbitrary-rotation handling is built in.
-    We return metres (x100). Invalid (mask) pixels are returned as NaN.
+    Returns metres (x100). Invalid (mask) pixels are returned as NaN.
 
     Setup:
         git clone https://github.com/Insta360-Research-Team/DAP third_party/DAP
@@ -285,7 +285,7 @@ class DA360Wrapper(DepthModelWrapper):
       * checkpoint dict carries net / dinov2_encoder / height (518) / width (1036) next to the tensors;
       * input: RGB resized (cubic) to 518 x 1036, /255, ImageNet mean/std;
       * output: outputs['pred_disp'] = scale-invariant disparity (inverse range up to one global scale).
-    NOTE: DA360 was trained on Structured3D, so our Structured3D evaluation is IN-DOMAIN for it.
+    NOTE: DA360 was trained on Structured3D, so the Structured3D evaluation is IN-DOMAIN for it.
     Setup: git clone https://github.com/Insta360-Research-Team/DA360 third_party/DA360
            hf download hljiang/DA360 DA360_large.pth --local-dir weights/da360
     """
@@ -294,8 +294,8 @@ class DA360Wrapper(DepthModelWrapper):
                  device: str = "auto"):
         super().__init__(device)
         self.name = "da360"
-        # scale-invariant disparity: our protocol fits an affine map for every disparity model (as for MiDaS),
-        # which is at least as lenient as DA360's own median-scale protocol
+        # scale-invariant disparity: the evaluation protocol fits an affine map for every disparity model (as for MiDaS),
+        # which is at least as lenient as DA360's native median-scale protocol
         self.spec = OutputSpec(space="disparity", scale="affine", geometry_erp="range", geometry_perspective="range")
         repo = os.path.abspath(repo)
         if not os.path.isdir(repo):

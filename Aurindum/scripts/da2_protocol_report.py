@@ -17,7 +17,7 @@ import numpy as np
 
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from final_summary import CORE, EXT, REGION, SCEN, cell, fmt, load  # noqa: E402
+from final_summary import CORE, EXT, SCEN, cell, fmt  # noqa: E402
 
 RES = ROOT / "results"
 PAIRS = (("lsq", "da2"), ("median", "da2m"))

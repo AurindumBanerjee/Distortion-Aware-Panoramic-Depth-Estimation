@@ -13,7 +13,7 @@ from distortions.catalogue import CATALOGUE, MITIGATIONS, occlusion_mask  # noqa
 from distortions.correction import (JPEG_EDGE_MARGIN_DEG, CaptureMeta, _image_after, cap_fault, correct, detect_caps,  # noqa: E402
                                     grow_caps,
                                     load_policy)
-from models.depth_model import EncodedDepthOracle, encode_depth_as_image  # noqa: E402
+from models.depth_model import EncodedDepthOracle  # noqa: E402
 from tests.test_distortions import GT, RGB, _rel  # noqa: E402
 
 D = {d.key: d for d in CATALOGUE}

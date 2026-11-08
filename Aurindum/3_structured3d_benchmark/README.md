@@ -21,7 +21,7 @@ It conducts an apples-to-apples comparison of four paradigms on identical real s
 
 To run the comparative benchmark:
 ```bash
-cd d:\MyStuff\College\.7thSemester\CV\Project\Distortion-Aware-Panoramic-Depth-Estimation\Aurindum\3_structured3d_benchmark
+cd Aurindum/3_structured3d_benchmark
 
 # Run benchmark on 5 real Structured3D scenes
 python run.py --max_scenes 5

@@ -6,7 +6,7 @@ Bands are configurable, e.g. the 6 equal bands of |phi| used in the result table
 """
 from __future__ import annotations
 
-from typing import Dict, List, Optional, Sequence, Tuple
+from typing import Dict, Optional, Sequence, Tuple
 
 import numpy as np
 

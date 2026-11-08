@@ -35,6 +35,15 @@ matplotlib.use("Agg")
 import matplotlib.image as mpimg  # noqa: E402
 import matplotlib.pyplot as plt  # noqa: E402
 
+plt.rcParams.update({
+    "font.family": "serif",
+    "axes.titlesize": 9,
+    "axes.labelsize": 8,
+    "xtick.labelsize": 7,
+    "ytick.labelsize": 7,
+    "legend.fontsize": 7,
+})
+
 from distortions.catalogue import CATALOGUE, MITIGATIONS  # noqa: E402
 
 MODELS = ("midas", "dap", "da360", "da2")
@@ -43,6 +52,9 @@ EXTERNAL = ("stanford", "nyc")
 SETS = CORE + EXTERNAL
 SET_NAME = {"s3": "Structured3D", "panox": "PanoX", "holo_in": "Holo indoor", "holo_out": "Holo outdoor",
             "stanford": "Stanford2D3D (ext.)", "nyc": "NYC (ext.)"}
+MODEL_COLOR = {"midas": "#0072B2", "dap": "#D55E00", "da360": "#009E73", "da2": "#CC79A7"}
+SET_COLOR = {"s3": "#0072B2", "panox": "#E69F00", "holo_in": "#009E73", "holo_out": "#D55E00",
+             "stanford": "#56B4E9", "nyc": "#CC79A7"}
 BLIND = ("relevel_self", "gain_match", "flatfield", "denoise", "bilateral")
 RES = ROOT / "results"
 FIG = RES / "figures"
@@ -79,7 +91,7 @@ def metric(d):
 def save(fig, name, sub=""):
     out = FIG / sub if sub else FIG
     out.mkdir(parents=True, exist_ok=True)
-    fig.savefig(out / name, dpi=130, bbox_inches="tight")
+    fig.savefig(out / name, dpi=200, bbox_inches="tight")
     plt.close(fig)
     made.append(f"{sub + '/' if sub else ''}{name}")
 
@@ -122,11 +134,14 @@ def plot_clean_error():
         w = 0.8 / len(MODELS)
         for k, m in enumerate(MODELS):
             vals = [med([r["clean"][key] for r in study(m, d)["rows"]]) if study(m, d) else np.nan for d in sets]
-            ax.bar(np.arange(len(sets)) + k * w, vals, w, label=m)
+            ax.bar(np.arange(len(sets)) + k * w, vals, w, label=m, color=MODEL_COLOR[m])
         ax.set_xticks(np.arange(len(sets)) + 0.4 - w / 2)
         ax.set_xticklabels([SET_NAME[d] for d in sets], rotation=20, ha="right", fontsize=8)
+        ax.set_xlabel("Dataset", fontsize=8)
+        ax.set_ylabel("Median AbsRel (dimensionless, log scale)", fontsize=8)
         ax.set_title(f"Clean-image AbsRel, {ttl} (median over frames)", fontsize=9)
         ax.set_yscale("log")
+        ax.grid(axis="y", ls=":", alpha=0.5)
         if "stanford" in sets or "nyc" in sets:
             ax.axvline(len([d for d in sets if d in CORE]) - 0.5 + 0.0, color="k", lw=1, ls="--")
     axs[0].legend(fontsize=8)
@@ -159,8 +174,8 @@ def plot_fault_cost():
                 x = med([r[f"{f.key}|none"].get(metric(f)) for r in s["rows"] if f"{f.key}|none" in r])
                 if c > 0 and np.isfinite(x):
                     M[i, j] = x / c
-        im = heat(ax, np.log2(np.clip(M, 0.25, 64)), list(MODELS), [f.key for f in fz],
-                  SET_NAME[d] + ("  [external]" if d in EXTERNAL else ""), "magma_r", 0, 6, fmt="{:.1f}")
+        heat(ax, np.log2(np.clip(M, 0.25, 64)), list(MODELS), [f.key for f in fz],
+             SET_NAME[d] + ("  [external]" if d in EXTERNAL else ""), "magma_r", 0, 6, fmt="{:.1f}")
         for i in range(M.shape[0]):
             for j in range(M.shape[1]):
                 if np.isfinite(M[i, j]):
@@ -266,11 +281,13 @@ def plot_sweeps():
             for d in SETS:
                 s = data.get((m, d))
                 if s:
-                    ax.plot(s["centres"], s["ratio_global"], marker="o", ms=3, ls="--" if d in EXTERNAL else "-", label=SET_NAME[d])
+                    ax.plot(s["centres"], s["ratio_global"], marker="o", ms=3.5, lw=1.4,
+                            color=SET_COLOR[d], ls="--" if d in EXTERNAL else "-", label=SET_NAME[d])
             ax.axhline(1.0, color="k", lw=0.8)
+            ax.grid(True, ls=":", alpha=0.5)
             ax.set_title(m, fontsize=9)
-            ax.set_xlabel("latitude the content is seen at (deg)", fontsize=8)
-        axs[0][0].set_ylabel("E(L) / E at the equator (global fit)", fontsize=8)
+            ax.set_xlabel("Seen latitude |phi| (deg)", fontsize=8)
+        axs[0][0].set_ylabel("Error ratio E(L) / E_ref(L) (dimensionless)", fontsize=8)
         axs[0][0].legend(fontsize=6)
         fig.suptitle(f"{mode} sweep: error ratio vs latitude (dashed = external datasets; dilation for metric DAP also moves scale, "
                      "see the local estimator in SWEEP_*.md)", fontsize=8)

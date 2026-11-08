@@ -1,9 +1,9 @@
-[2026-11-04 23:00:17] waiting for the GPU to be idle for 3 min, then running: bash /DATA/Aurindum/queue_tasks.sh
+[2026-11-04 23:00:17] waiting for the GPU to be idle for 3 min, then running: bash <server>/queue_tasks.sh
 [2026-11-05 00:18:52] GPU idle: starting
 [2026-11-05 00:18:53] 🚀 tasks: distortion study, round 3b, summaries
 [2026-11-05 00:18:53] == 1. tests
                     )
-E                   OSError: The temporary directory /DATA/Aurindum/tmp/pytest-of-Aurindum is not owned by the current user. Fix this and try again.
+E                   OSError: The temporary directory <server>/tmp/pytest-of-user is not owned by the current user. Fix this and try again.
 
 ../../conda/envs/RL/lib/python3.10/site-packages/_pytest/tmpdir.py:178: OSError
 =========================== short test summary info ============================

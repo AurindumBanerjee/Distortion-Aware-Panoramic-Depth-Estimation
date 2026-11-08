@@ -7,7 +7,7 @@ this module fuses the depth gradient fields and solves the Poisson equation:
     div(grad D) = div(G)
 
 where G(u, v) = (1 - w) * grad D_ERP + w * grad D_tangent.
-The solution maintains high-frequency structural edges from the tangent view while seamlessly
+The solution maintains high-frequency structural edges from the tangent view while continuously
 matching the low-frequency scale and continuity of the equatorial ERP baseline.
 """
 from __future__ import annotations

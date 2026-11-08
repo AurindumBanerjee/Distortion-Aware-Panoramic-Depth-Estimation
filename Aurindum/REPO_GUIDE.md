@@ -1,6 +1,6 @@
 # Repository guide (for review): Distortion-Aware Panoramic Depth Estimation
 
-State on 4 Nov 2026, commit `27340cd` (folder `Aurindum/`). Written so that a reviewer with no prior context can
+State on 8 Nov 2026, commit `ef1892f` (folder `Aurindum/`). Written so that a reviewer with no prior context can
 check the code and the claims. Sibling folders `Harshita/` and `Lokesh/` are co-authors' independent copies of an
 older version of this code base and are not covered here.
 
@@ -213,7 +213,7 @@ fixes (re-levelling, gain matching, flat-field, denoising, deblocking) also appl
 
 ```bash
 cd Aurindum
-python -m pytest tests -q                                   # 93 passed expected
+python -m pytest tests -q                                   # 131 passed expected
 bash scripts/run_tasks.sh setup                             # checks GPU, weights, data lists
 bash scripts/run_tasks.sh smoke                             # 2 frames per model x dataset (outputs removed)
 bash scripts/run_tasks.sh start                             # full queue, detached; status / stop
@@ -248,7 +248,7 @@ Statistics / claims
 9. Capped runs must use `data.subset=spread` (the first N lines of a list cover only the first scenes).
 10. The rotation sweep's negative excess errors are attributed to orientation; round 3b's flip and dilation sweeps are
     the test of that explanation.
-11. The capture-fault studies use 40 frames per cell for all four models; end-to-end runs use 100 frames per cell. Stanford's real black caps overlap the simulated nadir/vfov faults, so those two are weakly informative there; NYC clusters are an assumed grouping of 20 consecutive ids.
+11. The capture-fault studies use 40 frames per cell for all four models (100-frame core stability check in `results/policy_stability/`); end-to-end runs use 100 frames per core cell (71 for Holo360D outdoor), all 373 Stanford2D3D frames, and all 147 NYC frames. Stanford's real black caps overlap the simulated nadir/vfov faults, so those two are weakly informative there; NYC clusters are an assumed grouping of 20 consecutive ids.
 
 Known limitations
 * DAP / DA360 / DA^2 cannot run without their weights; all their results come from the GPU server.

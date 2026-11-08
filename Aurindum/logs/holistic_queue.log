@@ -536,7 +536,7 @@ onset (global) = 15.0  ->  results/SWEEP_flip_dap_nyc_all.md
 xFormers not available
 xFormers not available
 pretrained model is not available.
-/DATA/Aurindum/Distortion-Aware-Panoramic-Depth-Estimation/Aurindum/third_party/DA360/networks/da360.py:74: FutureWarning: `torch.cuda.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cuda', args...)` instead.
+./third_party/DA360/networks/da360.py:74: FutureWarning: `torch.cuda.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cuda', args...)` instead.
   with autocast(enabled=self.mixed_precision):
 [1/80] panorama_21
 [2/80] panorama_66
@@ -624,7 +624,7 @@ onset (global) = None  ->  results/SWEEP_rotation_da360_nyc_all.md
 xFormers not available
 xFormers not available
 pretrained model is not available.
-/DATA/Aurindum/Distortion-Aware-Panoramic-Depth-Estimation/Aurindum/third_party/DA360/networks/da360.py:74: FutureWarning: `torch.cuda.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cuda', args...)` instead.
+./third_party/DA360/networks/da360.py:74: FutureWarning: `torch.cuda.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cuda', args...)` instead.
   with autocast(enabled=self.mixed_precision):
 [1/80] panorama_21
 [2/80] panorama_66
@@ -712,7 +712,7 @@ onset (global) = 30.0  ->  results/SWEEP_dilation_da360_nyc_all.md
 xFormers not available
 xFormers not available
 pretrained model is not available.
-/DATA/Aurindum/Distortion-Aware-Panoramic-Depth-Estimation/Aurindum/third_party/DA360/networks/da360.py:74: FutureWarning: `torch.cuda.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cuda', args...)` instead.
+./third_party/DA360/networks/da360.py:74: FutureWarning: `torch.cuda.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cuda', args...)` instead.
   with autocast(enabled=self.mixed_precision):
 [1/80] panorama_21
 [2/80] panorama_66
@@ -1807,7 +1807,7 @@ held-out policy: {'yawblur': 'wiener'} chosen on ['holo_in', 'holo_out', 'panox'
 xFormers not available
 xFormers not available
 pretrained model is not available.
-/DATA/Aurindum/Distortion-Aware-Panoramic-Depth-Estimation/Aurindum/third_party/DA360/networks/da360.py:74: FutureWarning: `torch.cuda.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cuda', args...)` instead.
+./third_party/DA360/networks/da360.py:74: FutureWarning: `torch.cuda.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cuda', args...)` instead.
   with autocast(enabled=self.mixed_precision):
 [1/40] scene_03370_994351: clean 0.007->0.007, tilt 0.011->0.011, nadir 0.007->0.007, vfov 0.015->0.015, yawblur 0.010->0.009, jpeg 0.045->0.045, nadir+jpeg 0.044->0.044
 [2/40] scene_03218_3324: clean 0.016->0.016, tilt 0.019->0.019, nadir 0.020->0.020, vfov 0.114->0.114, yawblur 0.030->0.019, jpeg 0.091->0.091, nadir+jpeg 0.137->0.137
@@ -1873,7 +1873,7 @@ held-out policy: {'tilt': 'relevel_known', 'yawblur': 'wiener', 'jpeg': 'bilater
 xFormers not available
 xFormers not available
 pretrained model is not available.
-/DATA/Aurindum/Distortion-Aware-Panoramic-Depth-Estimation/Aurindum/third_party/DA360/networks/da360.py:74: FutureWarning: `torch.cuda.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cuda', args...)` instead.
+./third_party/DA360/networks/da360.py:74: FutureWarning: `torch.cuda.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cuda', args...)` instead.
   with autocast(enabled=self.mixed_precision):
 [1/40] ClothingStore_0002: clean 0.021->0.021, tilt 0.015->0.017, nadir 0.021->0.021, vfov 0.021->0.021, yawblur 0.025->0.032, jpeg 0.048->0.044, nadir+jpeg 0.049->0.043
 [2/40] ClothingStore_0082: clean 0.064->0.064, tilt 0.063->0.069, nadir 0.068->0.068, vfov 0.080->0.080, yawblur 0.124->0.103, jpeg 0.172->0.199, nadir+jpeg 0.171->0.196
@@ -1939,7 +1939,7 @@ held-out policy: {'yawblur': 'wiener'} chosen on ['holo_out', 'panox', 's3']
 xFormers not available
 xFormers not available
 pretrained model is not available.
-/DATA/Aurindum/Distortion-Aware-Panoramic-Depth-Estimation/Aurindum/third_party/DA360/networks/da360.py:74: FutureWarning: `torch.cuda.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cuda', args...)` instead.
+./third_party/DA360/networks/da360.py:74: FutureWarning: `torch.cuda.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cuda', args...)` instead.
   with autocast(enabled=self.mixed_precision):
 [1/40] Indoor_001_1752141078.842170: clean 0.101->0.101, tilt 0.106->0.106, nadir 0.105->0.105, vfov 0.118->0.118, yawblur 0.108->0.105, jpeg 0.214->0.214, nadir+jpeg 0.215->0.215
 [2/40] Indoor_001_1752141201.954319: clean 0.055->0.055, tilt 0.058->0.058, nadir 0.060->0.060, vfov 0.046->0.046, yawblur 0.051->0.061, jpeg 0.162->0.162, nadir+jpeg 0.138->0.138
@@ -2005,7 +2005,7 @@ held-out policy: {'yawblur': 'wiener'} chosen on ['holo_in', 'panox', 's3']
 xFormers not available
 xFormers not available
 pretrained model is not available.
-/DATA/Aurindum/Distortion-Aware-Panoramic-Depth-Estimation/Aurindum/third_party/DA360/networks/da360.py:74: FutureWarning: `torch.cuda.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cuda', args...)` instead.
+./third_party/DA360/networks/da360.py:74: FutureWarning: `torch.cuda.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cuda', args...)` instead.
   with autocast(enabled=self.mixed_precision):
 [1/40] Outdoor_001_1752225613.333593: clean 0.193->0.193, tilt 0.191->0.191, nadir 0.134->0.134, vfov 0.154->0.154, yawblur 0.222->0.186, jpeg 0.244->0.244, nadir+jpeg 0.131->0.131
 [2/40] Outdoor_001_1752225691.995708: clean 0.292->0.292, tilt 0.270->0.270, nadir 0.263->0.263, vfov 0.316->0.316, yawblur 0.276->0.258, jpeg 0.360->0.360, nadir+jpeg 0.462->0.462
@@ -2071,7 +2071,7 @@ held-out policy: {'yawblur': 'wiener'} chosen on ['holo_in', 'holo_out', 'panox'
 xFormers not available
 xFormers not available
 pretrained model is not available.
-/DATA/Aurindum/Distortion-Aware-Panoramic-Depth-Estimation/Aurindum/third_party/DA360/networks/da360.py:74: FutureWarning: `torch.cuda.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cuda', args...)` instead.
+./third_party/DA360/networks/da360.py:74: FutureWarning: `torch.cuda.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cuda', args...)` instead.
   with autocast(enabled=self.mixed_precision):
 [1/40] area_5a_camera_029bb1440fca47e2886a88559bbf8d00_hallway_1_frame_equirectangular_domain_rgb: clean 0.213->0.213, tilt 0.182->0.182, nadir 0.203->0.203, vfov 0.098->0.098, yawblur 0.194->0.197, jpeg 0.111->0.111, nadir+jpeg 0.120->0.120
 [2/40] area_5a_camera_12a8e5e227b245e79d21e62dec80b6f0_hallway_5_frame_equirectangular_domain_rgb: clean 0.093->0.093, tilt 0.099->0.099, nadir 0.102->0.102, vfov 0.053->0.053, yawblur 0.137->0.123, jpeg 0.061->0.061, nadir+jpeg 0.053->0.053
@@ -2137,7 +2137,7 @@ held-out policy: {'yawblur': 'wiener'} chosen on ['holo_in', 'holo_out', 'panox'
 xFormers not available
 xFormers not available
 pretrained model is not available.
-/DATA/Aurindum/Distortion-Aware-Panoramic-Depth-Estimation/Aurindum/third_party/DA360/networks/da360.py:74: FutureWarning: `torch.cuda.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cuda', args...)` instead.
+./third_party/DA360/networks/da360.py:74: FutureWarning: `torch.cuda.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cuda', args...)` instead.
   with autocast(enabled=self.mixed_precision):
 [1/40] panorama_21: clean 0.038->0.038, tilt 0.044->0.044, nadir 0.038->0.038, vfov 0.068->0.068, yawblur 0.050->0.045, jpeg 0.066->0.066, nadir+jpeg 0.064->0.064
 [2/40] panorama_120: clean 0.061->0.061, tilt 0.072->0.072, nadir 0.061->0.061, vfov 0.194->0.194, yawblur 0.096->0.067, jpeg 0.129->0.129, nadir+jpeg 0.126->0.126
@@ -2582,6 +2582,6 @@ Caps are detected from the image; tilt / shake come as IMU / gyro metadata; JPEG
 [2026-11-07 00:56:40] 🎉 Correction runs finished.
 [2026-11-07 00:56:40] =============== report and figures ===============
 [2026-11-07 00:56:40] ✅ results/EXTERNAL_stanford_nyc.md
-wrote 484 figures to /DATA/Aurindum/Distortion-Aware-Panoramic-Depth-Estimation/Aurindum/results/figures
+wrote 484 figures to ./results/figures
 [2026-11-07 01:00:51] ✅ results/figures/INDEX.md
 [2026-11-07 01:00:51] 🎉 Holistic run finished. Commit results/ (figures included).

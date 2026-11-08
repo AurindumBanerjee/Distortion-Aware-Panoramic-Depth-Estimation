@@ -12,8 +12,6 @@ from __future__ import annotations
 import datetime
 import json
 import logging
-import os
-import shutil
 from pathlib import Path
 from typing import Any, Dict, Optional
 
@@ -136,19 +134,15 @@ class BestModelTracker:
             "metrics": metrics,
         }
 
-        # 1. Save JSON
         with open(self.metrics_file, "w", encoding="utf-8") as f:
             json.dump(record, f, indent=2)
 
-        # 2. Save YAML Config
         with open(self.config_file, "w", encoding="utf-8") as f:
             yaml.dump(config, f, default_flow_style=False)
 
-        # 3. Save Sample Visualizations if provided
         if pred_depth is not None and gt_depth is not None:
             self._save_visualizations(rgb, gt_depth, pred_depth, method_name)
 
-        # 4. Generate Markdown Report
         self._generate_report(record, config)
 
         self.best_record = record
@@ -208,7 +202,7 @@ class BestModelTracker:
         axes[2].set_title(f"Best Prediction: {method_name}")
         axes[2].axis("off")
 
-        im = axes[3].imshow(err_colored)
+        axes[3].imshow(err_colored)
         axes[3].set_title("AbsRel Error Map (turbo: dark blue = 0%, bright red >= 50%)")
         axes[3].axis("off")
 

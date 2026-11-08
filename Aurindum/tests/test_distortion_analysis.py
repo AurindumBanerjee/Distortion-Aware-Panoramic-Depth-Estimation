@@ -1,6 +1,5 @@
 """Round-3 Part A / B: distortion sweep, latitude profile, calibration split, curve-driven correction (do no harm)."""
 import json
-import os
 import sys
 from pathlib import Path
 

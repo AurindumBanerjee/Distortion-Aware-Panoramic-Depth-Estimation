@@ -11,10 +11,10 @@
 Rigid $SO(3)$ pitch rotation ($\pm 90^\circ$) places poles on the equator, but creates artificial boundaries and completely disrupts standard horizontal orientation priors (causing sky/floor misclassification).
 
 ### The Solution: Conformal Möbius Transformations
-We treat the unit sphere $S^2$ as the extended complex Riemann sphere $\bar{\mathbb{C}}$. Points $(\theta, \phi)$ map via stereographic projection:
+The unit sphere $S^2$ is parameterized as the extended complex Riemann sphere $\bar{\mathbb{C}}$. Points $(\theta, \phi)$ map via stereographic projection:
 $$\zeta = e^{i\theta} \tan\left(\frac{\pi}{4} + \frac{\phi}{2}\right)$$
 
-We apply conformal dilation:
+Conformal dilation is applied as:
 $$f(\zeta) = \lambda \cdot \zeta \quad (\lambda > 0)$$
 - When $\lambda = 1.6$, the southern high-distortion polar cap is smoothly pulled up into the equatorial band.
 - When $\lambda = 0.625$, the northern high-distortion polar cap is pulled down into the equatorial band.
@@ -35,7 +35,7 @@ $$w_i(u, v) = \cos(\phi_{\text{effective}}(u, v))^2$$
 
 To execute this method independently:
 ```bash
-cd d:\MyStuff\College\.7thSemester\CV\Project\Distortion-Aware-Panoramic-Depth-Estimation\Aurindum\2_mobius_tta_ensembling
+cd Aurindum/2_mobius_tta_ensembling
 
 # Run with default config
 python run.py

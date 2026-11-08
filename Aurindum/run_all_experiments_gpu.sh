@@ -40,14 +40,14 @@ log() {
 }
 
 # Conda env (override with CONDA_ENV / CONDA_SH). Done here so a detached run needs no active shell env.
-CONDA_SH="${CONDA_SH:-/DATA/Aurindum/conda/etc/profile.d/conda.sh}"
+CONDA_SH="${CONDA_SH:-$(conda info --base 2>/dev/null)/etc/profile.d/conda.sh}"
 if [ -f "$CONDA_SH" ]; then
     set +u; source "$CONDA_SH"; conda activate "${CONDA_ENV:-RL}"; set -u
 fi
 
 log "=========================================================================="
 log "🚀 Starting Master GPU Experiment Suite"
-log "Host: $(hostname) | CUDA Device: $CUDA_VISIBLE_DEVICES"
+log "CUDA Device: $CUDA_VISIBLE_DEVICES"
 log "Configs (in order): $CONFIGS"
 log "Log File: $MASTER_LOG"
 log "=========================================================================="

@@ -15,11 +15,11 @@ mkdir -p logs
 TS=$(date +%Y%m%d_%H%M%S)
 LOG="$(pwd)/logs/followup_${TS}.log"
 
-CONDA_SH="${CONDA_SH:-/DATA/Aurindum/conda/etc/profile.d/conda.sh}"
+CONDA_SH="${CONDA_SH:-$(conda info --base 2>/dev/null)/etc/profile.d/conda.sh}"
 if [ -f "$CONDA_SH" ]; then set +u; source "$CONDA_SH"; conda activate "${CONDA_ENV:-RL}"; set -u; fi
 export PYTHONUNBUFFERED=1 OPENCV_IO_ENABLE_OPENEXR=1 CUDA_VISIBLE_DEVICES="${CUDA_VISIBLE_DEVICES:-0}"
 # DA^2 loads its weights through the Hugging Face cache; the server has no internet, so use the staged local copy.
-export HF_HOME="${HF_HOME:-/DATA/Aurindum/hf_home}" HF_HUB_OFFLINE=1
+export HF_HOME="${HF_HOME:-$HOME/.cache/huggingface}" HF_HUB_OFFLINE=1
 export MPLCONFIGDIR="/tmp/matplotlib_followup_${TS}"
 
 log() { local m="[$(date +'%F %T')] $1"; echo "$m"; echo "$m" >> "$LOG"; }
@@ -30,7 +30,7 @@ step() {  # step <title> <command...>
     if "$@" >> "$LOG" 2>&1; then log "✅ $title ($(( $(date +%s) - t0 )) s)"; else log "❌ $title FAILED ($(( $(date +%s) - t0 )) s)"; fi
 }
 
-log "== follow-up sequence | host $(hostname) | python $(command -v python) | env ${CONDA_DEFAULT_ENV:-none} | log $LOG"
+log "== follow-up sequence | python $(command -v python) | env ${CONDA_DEFAULT_ENV:-none} | log $LOG"
 python -c "import torch,sys; sys.exit(0 if torch.cuda.is_available() else 1)" || { log "❌ CUDA not available; aborting"; exit 1; }
 for f in data/holo360d/indoor.txt data/holo360d/outdoor.txt weights/dpt_hybrid_384.pt; do
     [ -f "$f" ] || { log "❌ missing $f; aborting"; exit 1; }

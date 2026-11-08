@@ -5,7 +5,6 @@ excess dE at 75-90 deg and the error ratio there. Part B statistics come from sc
 import glob
 import json
 import os
-import sys
 import warnings
 
 import numpy as np

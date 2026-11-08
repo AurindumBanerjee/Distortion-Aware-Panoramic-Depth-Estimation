@@ -78,7 +78,7 @@ im = ax[1].imshow(err, cmap='Reds', vmin=0, vmax=0.5); ax[1].set_title('AbsRel')
 def nb02():
     write("02_latitude_analysis.ipynb", [
         md("# 02 - ERP distortion as a function of latitude\n\n"
-           "Observation first, interpretation second: we measure how error varies with latitude, then use a "
+           "Observation first, interpretation second: this notebook measures how error varies with latitude, then uses a "
            "rotation control to separate *distortion in the model input* from *scene content* (floors/ceilings "
            "always sit at the poles of upright indoor panoramas)."),
         code(SETUP),

@@ -16,7 +16,7 @@ mkdir -p logs
 TS=$(date +%Y%m%d_%H%M%S)
 LOG="$AURINDUM_DIR/logs/pending_tasks_${TS}.log"
 
-CONDA_SH="${CONDA_SH:-/DATA/Aurindum/conda/etc/profile.d/conda.sh}"
+CONDA_SH="${CONDA_SH:-$(conda info --base 2>/dev/null)/etc/profile.d/conda.sh}"
 if [ -f "$CONDA_SH" ]; then set +u; source "$CONDA_SH"; conda activate "${CONDA_ENV:-RL}"; set -u; fi
 export PYTHONUNBUFFERED=1 CUDA_VISIBLE_DEVICES=${CUDA_VISIBLE_DEVICES:-0} OPENCV_IO_ENABLE_OPENEXR=1
 export MPLCONFIGDIR="/tmp/matplotlib_pending_${TS}"
@@ -31,7 +31,7 @@ step() {  # step <title> <command...>
 series3() { ( cd "$AURINDUM_DIR/3_structured3d_benchmark" && CONFIG="$1" bash run_gpu.sh ); }
 series2() { ( cd "$AURINDUM_DIR/2_mobius_tta_ensembling" && CONFIG="$1" bash run_gpu.sh ); }
 
-log "== pending experiments | host $(hostname) | python $(command -v python) | env ${CONDA_DEFAULT_ENV:-none} | log $LOG"
+log "== pending experiments | python $(command -v python) | env ${CONDA_DEFAULT_ENV:-none} | log $LOG"
 python -c "import torch,sys; sys.exit(0 if torch.cuda.is_available() else 1)" || { log "❌ CUDA not available; aborting"; exit 1; }
 
 archive_prepatch_dap() {

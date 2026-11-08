@@ -14,10 +14,10 @@ $$D_{\text{fused}}(u, v) = (1 - w(\phi)) D_{\text{ERP}}(u, v) + w(\phi) D_{\text
 causes blurring, double-edge ghosting, and step-discontinuities across high-contrast edges (such as ceiling lights, corners, or floor objects) at the latitude boundary $|\phi| \approx 45^\circ$.
 
 ### The Solution: Gradient-Domain (Poisson) Blending
-Instead of blending values, we fuse the **spatial depth gradient fields**:
+Instead of blending values directly, this method fuses the **spatial depth gradient fields**:
 $$\mathbf{G}(u, v) = (1 - w(\phi)) \nabla D_{\text{ERP}}(u, v) + w(\phi) \nabla D_{\text{tangent}}(u, v)$$
 
-We then solve the Poisson equation for the reconstructed depth map $D^*$:
+The reconstructed depth map $D^*$ is obtained by solving the Poisson equation:
 $$\Delta D^* = \text{div}(\mathbf{G})$$
 subject to Dirichlet boundary conditions on the equatorial baseline ($D^*(u, v) = D_{\text{ERP}}(u, v)$ for $|\phi| < \phi_{\text{threshold}} - \Delta$).
 
@@ -25,7 +25,7 @@ subject to Dirichlet boundary conditions on the equatorial baseline ($D^*(u, v) 
 Perspective foundation models output affine disparity:
 $$d = s \cdot \frac{1}{z} + t$$
 where $t$ is an unknown per-view additive shift. Converting directly to Euclidean range $r = \frac{1}{\cos(\text{ray}) \cdot d}$ causes severe non-linear scale drift when $t \neq 0$.
-We solve for $(s, t)$ exclusively on high-confidence equatorial anchor pixels ($|\phi| < 35^\circ$) using iteratively reweighted least squares with MAD outlier rejection before backprojection.
+The parameters $(s, t)$ are fitted exclusively on high-confidence equatorial anchor pixels ($|\phi| < 35^\circ$) using iteratively reweighted least squares with MAD outlier rejection before backprojection.
 
 ---
 
@@ -33,7 +33,7 @@ We solve for $(s, t)$ exclusively on high-confidence equatorial anchor pixels ($
 
 To execute this method independently:
 ```bash
-cd d:\MyStuff\College\.7thSemester\CV\Project\Distortion-Aware-Panoramic-Depth-Estimation\Aurindum\1_gradient_polar_fusion
+cd Aurindum/1_gradient_polar_fusion
 
 # Run with default config
 python run.py

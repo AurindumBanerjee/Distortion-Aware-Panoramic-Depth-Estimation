@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # ==============================================================================
-# Helper Script to Launch the Full Experiment Suite via nohup on GPU Server
+# Launches the full experiment suite detached (nohup) on the GPU server.
 #
 # Usage:
 #   chmod +x start_nohup_experiments.sh run_all_experiments_gpu.sh

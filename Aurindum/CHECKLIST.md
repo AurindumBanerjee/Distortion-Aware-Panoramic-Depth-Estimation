@@ -10,7 +10,7 @@ This round re-does the work in the order the statement asks for: **measure first
 
 ---
 
-## What the previous rounds taught us (design constraints for this round)
+## Design constraints from previous rounds
 
 - [ ] **Polar error mixes three things.** Distortion, content (the caps are mostly floor and ceiling), and the alignment protocol.
       The old benchmark never separated them, and that is why "polar gains" did not transfer. Part A must separate them.
@@ -203,7 +203,7 @@ policy; external Stanford2D3D and NYC runs; hi-res and median-alignment controls
 
 Open:
 - [ ] DA2 headline protocol: both are reported (report appendix); `scripts/run_submission.sh` stage `da2both` raises the median-fit runs to 100 frames and adds sweeps; then refresh `results/DA2_PROTOCOLS.md`
-- [ ] report: co-author surnames and affiliations, fuller related work, optional extra figures (`fig_fix_*`, do-no-harm)
+- [ ] report: full contributor names and affiliations, fuller related work, optional extra figures (`fig_fix_*`, do-no-harm)
 - [ ] DAP `nadir+jpeg` on NYC shows no gain although cap detection reaches 88%: `run_submission.sh` stage `diag` isolates the cause
 - [x] do-no-harm holds on training data only: stricter rules tested offline (`results/threshold_sweep/THRESHOLDS.md`), end to end in stage `strict`; framing in the report unchanged
 - [ ] commit the report changes

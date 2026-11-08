@@ -24,7 +24,7 @@ import numpy as np
 
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
-from distortions.catalogue import CATALOGUE, MITIGATIONS  # noqa: E402
+from distortions.catalogue import CATALOGUE  # noqa: E402
 
 FAULTS = {d.key: d for d in CATALOGUE}
 # The fix choices are learned from these datasets ONLY. Stanford2D3D and NYC are external: never used to choose or

@@ -52,8 +52,6 @@ def _corr(ids, pol, change):
 
 
 def test_end_to_end_comparison_matches_frames_by_id():
-    from final_summary import SCEN
-    SCEN_ = SCEN  # noqa: F841
     head = _corr(["a", "b", "c"], {"tilt": "relevel_known"}, -0.4)
     alt = _corr(["b", "c", "d"], {}, 0.0)
     for c in (head, alt):                          # the other scenarios are not under test

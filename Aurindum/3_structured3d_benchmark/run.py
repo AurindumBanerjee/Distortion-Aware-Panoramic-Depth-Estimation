@@ -20,13 +20,10 @@ if hasattr(sys.stdout, "reconfigure"):
     sys.stdout.reconfigure(encoding="utf-8")
 
 os.environ.setdefault("OPENCV_IO_ENABLE_OPENEXR", "1")  # PanoX distance maps are EXR; must precede `import cv2`
-import cv2
-import matplotlib.pyplot as plt
 import numpy as np
 import torch
 import yaml
 
-# Add paths
 SCRIPT_DIR = Path(__file__).resolve().parent
 AURINDUM_DIR = SCRIPT_DIR.parent
 METHOD1_DIR = AURINDUM_DIR / "1_gradient_polar_fusion"
@@ -41,8 +38,6 @@ from datasets.synthetic import _texture_bank, random_scene, render_erp
 from models.depth_model import EncodedDepthOracle, MiDaSWrapper
 from tta_ensemble import MobiusTTAEnsemble
 from evaluation.protocol import group_of, default_protocols, format_band_table, format_table, summarize_methods
-
-# Local modules
 from benchmark_evaluator import run_single_benchmark_scene
 from prepare_data import find_structured3d_data, load_structured3d_pair
 
@@ -55,14 +50,12 @@ def setup_logger(log_dir: Path) -> logging.Logger:
     logger.setLevel(logging.INFO)
     logger.handlers.clear()
 
-    # Console Handler
     ch = logging.StreamHandler(sys.stdout)
     ch.setLevel(logging.INFO)
     formatter = logging.Formatter("[%(asctime)s][%(name)s][%(levelname)s] %(message)s", datefmt="%H:%M:%S")
     ch.setFormatter(formatter)
     logger.addHandler(ch)
 
-    # File Handler
     fh = logging.FileHandler(str(log_file), mode="w", encoding="utf-8")
     fh.setLevel(logging.DEBUG)
     fh.setFormatter(formatter)
@@ -83,7 +76,6 @@ def load_model(cfg_model: Dict, logger: logging.Logger):
         logger.info(f"Loaded panoramic model {pano.name} ({pano.device}).")
         return pano
 
-    # Check for DAP on GPU server
     if "dap" in model_name:
         try:
             from models.depth_model import DAPWrapper
@@ -106,7 +98,7 @@ def load_model(cfg_model: Dict, logger: logging.Logger):
             weights=str(AURINDUM_DIR / cfg_model.get("weights", f"weights/{cfg_model.get('name', 'dpt_hybrid_384')}.pt")),
             device=cfg_model.get("device", "cuda" if torch.cuda.is_available() else "cpu")
         )
-        logger.info(f"Loaded MiDaS wrapper successfully.")
+        logger.info("Loaded MiDaS wrapper successfully.")
         return wrapper
     except Exception as e:
         if not cfg_model.get("allow_oracle_fallback", False):
@@ -159,7 +151,7 @@ def main():
 
     out_dir = SCRIPT_DIR / cfg["evaluation"].get("output_dir", "outputs")
     log_dir = SCRIPT_DIR / cfg["evaluation"].get("log_dir", "logs")
-    curated_dir = SCRIPT_DIR / cfg["data"].get("curated_dir", "data/curated_scenes")
+    SCRIPT_DIR / cfg["data"].get("curated_dir", "data/curated_scenes")
     out_dir.mkdir(parents=True, exist_ok=True)
     log_dir.mkdir(parents=True, exist_ok=True)
 
