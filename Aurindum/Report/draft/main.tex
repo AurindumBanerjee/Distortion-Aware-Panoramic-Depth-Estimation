@@ -1,6 +1,6 @@
 \documentclass{article}
 \PassOptionsToPackage{numbers,sort&compress}{natbib}
-\usepackage{neurips_2025}
+\usepackage[final]{neurips_2025}
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
 \usepackage{hyperref}
@@ -15,7 +15,7 @@
 \title{Where Does Equirectangular Distortion Really Hurt Panoramic Depth? \\
 A Measurement Study and Inference-Time Corrections for Frozen Models}
 
-\author{Aurindum Banerjee \\ IIT Jodhpur \\ \texttt{b23cs1006@iitj.ac.in} \And Harshita \And Lokesh}
+\author{Aurindum Banerjee \\ IIT Jodhpur \\ \texttt{b23cs1006@iitj.ac.in} \And Harshita \\ IIT Jodhpur \And Lokesh \\ IIT Jodhpur}
 
 \begin{document}
 \maketitle
@@ -142,10 +142,10 @@ NYC & blocked bottom + JPEG & $+1.3\%$ & $[-3.1,3.5]$ & $[-4.2,3.8]$ & 47 / 52\%
 
 \paragraph{Resolution control.} DAP runs at $512\times1024$ and the other models at $256\times512$, which could explain why the cap is detected on 88\% of DAP's NYC blocked-bottom-plus-JPEG frames but on only 37\% of the other models' frames. Running MiDaS, DA360 and DA$^2$ at $512\times1024$ on the same 100 frames per external set raises that detection rate on NYC from 37\% to 88\% for all three, so the difference is resolution, not model. Clean \absrel{} changes by at most 14\% (NYC: MiDaS $0.224\to0.227$, DA360 $0.063\to0.061$, DA$^2$ $0.634\to0.589$; Stanford2D3D: MiDaS $0.256\to0.255$, DA360 $0.146\to0.166$, DA$^2$ $0.069\to0.062$). For MiDaS and DA360 no cap fix is in the policy, so detection changes nothing; for DA$^2$ on NYC the blocked-bottom-plus-JPEG change moves from $+0.0\%$ to $+1.1\%$ with the least-squares fit, and on Stanford2D3D from $+2.9\%$ to $-83.0\%$. For DAP the cap is detected on 88\% of NYC frames, yet the median does not improve ($+1.3\%$). Filling the cap before smoothing does not change this (40 frames): DAP on NYC moves from $+2.5\%$ to $+0.8\%$ (48\% of frames better, 50\% worse), on Stanford2D3D from $-63.6\%$ to $-64.6\%$.
 
-\paragraph{Training the policy on more data.} Choosing the fix with the external sets included in the training pool changes 19 of 216 (model, fault, dataset) choices relative to the core-only policy (216 cells: 4 models, 9 faults, 6 datasets; study files, 40 frames). The mean change per cell is $-6.16\%$ for the core-only leave-one-out policy, $-6.03\%$ with all other sets and $-7.09\%$ for the in-sample policy, which is optimistic and not held out; the counts of applied, improved and worsened cells are 76/57/13, 78/63/11 and 78/66/8. The largest changes concern DAP's cap fixes: the blocked-bottom fix on Holo outdoor changes from plane fill ($-70.0\%$) to ERP inpainting ($-21.5\%$) and the top/bottom-missing fix on Stanford2D3D from ERP inpainting ($-61.0\%$) to plane fill ($-26.6\%$).
+\paragraph{Training the policy on more data.} Choosing the fix with the external sets included in the training pool changes 19 of 216 (model, fault, dataset) choices relative to the core-only policy (216 cells: 4 models, 9 faults, 6 datasets; study files, 40 frames). The mean change per cell is $-6.16\%$ for the core-only leave-one-out policy, $-6.03\%$ with all other sets and $-7.09\%$ for the in-sample policy, which is optimistic and not held out; the counts of applied, improved and worsened cells are 76/57/13, 78/63/11 and 78/66/8. The largest changes concern DAP's cap fixes: the blocked-bottom fix on Holo outdoor changes from plane fill ($-70.0\%$) to ERP inpainting ($-21.5\%$) and the top/bottom-missing fix on Stanford2D3D from ERP inpainting ($-61.0\%$) to plane fill ($-26.6\%$). Rerunning the full pipeline with the all-other-sets policy on the same frames leaves DAP unchanged on Structured3D, PanoX, Holo indoor and NYC. On Stanford2D3D it improves the blocked-bottom fix ($-41.6\%$ to $-69.2\%$) but weakens the top/bottom-missing fix ($-59.1\%$ to $-22.1\%$), and on Holo outdoor it weakens the blocked-bottom fix ($-70.0\%$ to $-23.0\%$). DA360 gains a few points from tilt re-levelling on five of six sets ($-1.9$ to $-8.1$ points). MiDaS gains on PanoX and Holo outdoor top/bottom-missing ($0\%$ to $-38.8\%$ and $-9.4\%$) but a real-cap Stanford2D3D case selects a fix that worsens the blocked-bottom error ($0\%$ to $+55.2\%$). DA$^2$ loses its Stanford2D3D tilt gain ($-27.9\%$ to $0\%$) and the harm on NYC tilt ($+13.7\%$) persists under both policies. A same-domain test splits Stanford2D3D (150 frames, 63 rooms) and NYC (147 frames, 82 blocks) into two folds and learns the policy on one fold to score the other. The mean change per cell for the core policy versus the in-domain policy is $+0.05\%$ versus $-1.30\%$ (MiDaS), $-18.66\%$ versus $-18.66\%$ (DAP), $-0.66\%$ versus $-1.99\%$ (DA360) and $-14.78\%$ versus $-15.01\%$ (DA$^2$) on Stanford2D3D, and $-1.12\%$ versus $-6.27\%$, $-26.89\%$ versus $-29.08\%$, $-1.83\%$ versus $-1.89\%$ and $+2.29\%$ versus $-0.51\%$ on NYC. In-domain learning helps the weaker models and removes harmful fixes for DA$^2$ on NYC (the core policy applies 8 cells, 6 of them worse; the in-domain policy applies 3, none worse), and makes no difference for DAP on Stanford2D3D. More training data therefore does not reliably improve the policy, and a policy learned on mismatched real caps can select a harmful fix.
 
 \section{Limitations}
-Forty frames per fault cell in the policy studies and three clusters in Holo outdoor give wide intervals, and the NYC clusters are an assumed grouping of 20 consecutive ids. Faults are simulated, except the real caps of Stanford2D3D. Tilt and shake fixes assume IMU or gyro data. DA$^2$ is scored with a least-squares scale fit in the core protocol, which inflates its outdoor error (the median fit gives $0.205$ instead of $0.638$ on NYC), and the headline correction policy was learned under it; the median-fit policy was learned from 40-frame core studies and evaluated on 40 core frames per dataset. DAP is measured in raw metres while the other models use alignment, so absolute comparisons across models need care. Sweeps use 80 frames per dataset and the NYC and Stanford2D3D policy studies 40. On one clean Structured3D frame a false cap is detected. The policy comparison scores faults one at a time and does not rerun the combined pipeline.
+Forty frames per fault cell in the policy studies and three clusters in Holo outdoor give wide intervals, and the NYC clusters are an assumed grouping of 20 consecutive ids. Faults are simulated, except the real caps of Stanford2D3D. Tilt and shake fixes assume IMU or gyro data. DA$^2$ is scored with a least-squares scale fit in the core protocol, which inflates its outdoor error (the median fit gives $0.205$ instead of $0.638$ on NYC; Appendix~\ref{app:da2} reports both protocols), and the headline correction policy was learned under it; the median-fit policy was learned from 40-frame core studies and evaluated on 40 core frames per dataset. DAP is measured in raw metres while the other models use alignment, so absolute comparisons across models need care. Sweeps use 80 frames per dataset and the NYC and Stanford2D3D policy studies 40. On one clean Structured3D frame a false cap is detected. The offline policy comparison scores faults one at a time; the end-to-end and same-domain checks above use the full pipeline on 100 frames per cell for the former and about 150 frames per external set for the latter.
 
 \section{Conclusion}
 For current models the polar error is largely a content, scale and orientation effect, not a projection effect, so a universal polar correction has little to fix; sensitivity to magnified content depends on the model and the data, and rotation sweeps show a polar rise for only one core model--dataset pair. Rotation ensembles remain useful for perspective-trained models. The practical gains come from handling ordinary capture faults, where a small learned policy of model-agnostic fixes recovers most of the damage for the strongest model, on held-out core data as well as on Stanford2D3D and NYC, and leaves the others alone when it cannot help.
@@ -158,4 +158,64 @@ For current models the polar error is largely a content, scale and orientation e
 \bibitem{lin2025dap} X.~Lin, M.~Song, D.~Zhang, W.~Lu, H.~Li, B.~Du, M.-H.~Yang, T.~Nguyen, L.~Qi. Depth Any Panoramas: A foundation model for panoramic depth estimation. 2025 (arXiv:2512.16913).
 \bibitem{jiang2025da360} H.~Jiang, Z.~Song, Z.~Lou, R.~Xu, M.~Tan. Depth Anything in 360$^\circ$: Towards scale invariance in the wild. 2025 (arXiv:2512.22819).
 \end{thebibliography}
+
+\appendix
+\section{Additional figures}\label{app:figs}
+\begin{figure}[h]\centering
+\includegraphics[width=\linewidth]{figs/fig_clean_error.png}
+\caption{Clean-image \absrel{} per model and dataset (median over frames), whole panorama (left) and polar region $|\mathrm{lat}|\ge60^\circ$ (right). The dashed line separates the core datasets from the external ones. DAP is scored in raw metres and the other models after a scale (and shift) fit, so absolute levels are not comparable across models.}
+\end{figure}
+\begin{figure}[h]\centering
+\includegraphics[width=\linewidth]{figs/fig_do_no_harm.png}
+\caption{Blind fixes applied to clean images: median change in error (red is harm), per model and dataset. Non-local-means denoising raises the error of DAP, DA360 and DA$^2$ on most datasets, estimating the tilt from the predicted floor and ceiling raises DAP's error on NYC by $74\%$, and bilateral smoothing raises DAP's error by $5$--$31\%$ on most datasets; flat-field correction and gain matching are close to neutral. Fixes are therefore applied only when a cue (IMU, gyro, a cap detected in the image, a file flag) says that the fault is present.}
+\end{figure}
+\begin{figure}[h]\centering
+\includegraphics[width=\linewidth]{figs/fig_fix_nadir.png}\\[2pt]
+\includegraphics[width=\linewidth]{figs/fig_fix_vfov.png}
+\caption{Cap fixes per technique, model and dataset: median change in error on the affected region against no fix, with the share of frames improved. Top: tripod patch below $-62^\circ$. Bottom: limited vertical field of view. The best technique depends on the model and on the dataset (top panel: for DA360 inpainting raises the error on Structured3D; for DAP plane fill is the best on Holo outdoor, Stanford2D3D and NYC); the policy chooses it per model from the other core datasets. The black line separates the core from the external datasets.}
+\end{figure}
+\begin{figure}[h]\centering
+\includegraphics[width=\linewidth]{figs/fig_fix_tilt.png}\\[2pt]
+\includegraphics[width=\linewidth]{figs/fig_fix_jpeg.png}\\[2pt]
+\includegraphics[width=\linewidth]{figs/fig_fix_yawblur.png}
+\caption{The same view for tilt (re-levelling), JPEG (deblocking) and camera shake (Wiener deconvolution).}
+\end{figure}
+\begin{figure}[h]\centering
+\includegraphics[width=\linewidth]{figs/fig_sweeps_flip.png}
+\caption{Flip sweep: error ratio against latitude when the content is seen upside down at the same latitude (dashed: external datasets). The ratio is well above one for DAP on every dataset (up to $27$ on NYC) and for DA360 on Structured3D, PanoX and NYC, which is the orientation prior; MiDaS and DA$^2$ stay below about $3$.}
+\end{figure}
+
+\section{Stricter selection rules}\label{app:thresholds}
+The headline rule keeps a fix if its median change on the training datasets is below $-2\%$ and at least $60\%$ of training frames improve. Stricter rules were scanned offline on the study files: a larger required gain, a larger share of improved frames, and the additional requirement that the median change is negative in every training dataset. The choice is always made on the core datasets only; the policy is scored on the held-out core dataset (leave-one-dataset-out) and, trained on the four core datasets, on Stanford2D3D and NYC. A cell is (model, fault, dataset); an applied fix is harmful if its median change is above $+1\%$; DA$^2$ is pooled once (least-squares protocol).
+
+\begin{table}[h]\centering\small
+\caption{Selection rules. Core: leave-one-dataset-out on the core datasets. External: policy from the four core datasets. Mean change counts a cell without fix as $0$.}
+\begin{tabular}{lrrrrrr}\toprule
+Rule (gain / share) & \multicolumn{3}{c}{Core} & \multicolumn{3}{c}{External}\\
+ & applied & harmful & mean & applied & harmful & mean\\\midrule
+$2\%$ / $60\%$ (headline) & 52 & 8 & $-5.22\%$ & 24 & 5 & $-8.03\%$\\
+$5\%$ / $60\%$ & 46 & 5 & $-5.07\%$ & 24 & 5 & $-8.03\%$\\
+$5\%$ / $70\%$ & 31 & 2 & $-3.56\%$ & 18 & 2 & $-7.90\%$\\
+$5\%$ / $80\%$ & 12 & 1 & $-2.25\%$ & 6 & 0 & $-4.61\%$\\
+$5\%$ / $60\%$, every set better & 38 & 2 & $-4.43\%$ & 20 & 4 & $-6.82\%$\\
+$10\%$ / $80\%$, every set better & 12 & 1 & $-2.25\%$ & 6 & 0 & $-4.61\%$\\
+\bottomrule\end{tabular}
+\end{table}
+Stricter rules remove harmful cells, but every one of them also removes gains: a $5\%$ gain with $70\%$ of frames improved cuts the harmful core cells from 8 to 2 and the harmful external cells from 5 to 2, at a cost of $1.7$ points of mean change on the core datasets, and the $80\%$ rules leave no harmful external cell but give up about half of the gain (more than half on the core datasets). The five externally harmful cells of the headline rule (DA$^2$ on NYC: tilt $+15.3\%$, blocked bottom $+6.5\%$, limited field of view $+5.1\%$; DA$^2$ on Stanford2D3D: shake $+2.8\%$; MiDaS on Stanford2D3D: tilt $+2.0\%$) are all switched off by the $5\%$ / $80\%$ rule.
+
+\section{DA$^2$ under two alignment protocols}\label{app:da2}
+DA$^2$ predicts relative depth, so a scale fit is needed. The core protocol uses a least-squares fit; the alternative is a median fit of the ratio, which is less sensitive to a few far pixels. The policy for the median protocol is learned from capture-fault studies run under the same protocol.
+
+\begin{table}[h]\centering\footnotesize\setlength{\tabcolsep}{3pt}
+\caption{DA$^2$ on the external datasets, median \absrel{} on the clean image and median change after correction (affected region for the cap scenarios), under the two protocols (lsq: least squares; bottom: blocked bottom; FOV: limited vertical field of view). All frames of both sets (Stanford2D3D 373, NYC 147).}
+\begin{tabular}{llrrrrrrr}\toprule
+Set & Protocol & clean & tilt & bottom & FOV & shake & JPEG & bot.+JPEG\\\midrule
+Stanford2D3D & lsq & $0.068$ & $-27.9\%$ & $-78.1\%$ & $-23.3\%$ & $-6.5\%$ & $+8.0\%$ & $-2.2\%$\\
+Stanford2D3D & median & $0.067$ & $-26.7\%$ & $-71.2\%$ & $-23.7\%$ & $-6.1\%$ & $+19.5\%$ & $-0.1\%$\\
+NYC & lsq & $0.638$ & $+13.7\%$ & $+6.3\%$ & $+6.1\%$ & $-4.5\%$ & $0.0\%$ & $0.0\%$\\
+NYC & median & $0.205$ & $-22.8\%$ & $-26.0\%$ & $-1.8\%$ & $-6.7\%$ & $0.0\%$ & $0.0\%$\\
+\bottomrule\end{tabular}
+\end{table}
+On Stanford2D3D the protocols agree except for the JPEG scenario. Neither policy contains a JPEG fix there, so the increase ($+8.0\%$ and $+19.5\%$) comes from the cap fix applied to the real caps of the compressed image. On the outdoor NYC panoramas the least-squares fit inflates the clean error three-fold and makes the tilt and blocked-bottom fixes look harmful, whereas under the median fit they help and the limited-field-of-view fix is neutral; the choice of protocol therefore changes the conclusion for DA$^2$ outdoors.
+
 \end{document}
