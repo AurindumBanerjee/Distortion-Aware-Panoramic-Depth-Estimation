@@ -49,3 +49,8 @@ logs_*/
 **/logs_*/
 third_party/DA2/
 third_party/DA360/
+
+# LaTeX build files
+*.aux
+*.log
+*.out
