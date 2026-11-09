@@ -167,7 +167,7 @@ For current models the polar error is largely a content, scale and orientation e
 \end{figure}
 \begin{figure}[ht]\centering
 \includegraphics[width=\linewidth]{figs/fig_do_no_harm.png}
-\caption{Do-no-harm evaluation of blind image-restoration filters applied directly to unmodified clean panoramas across all model--dataset pairs (\texttt{s3}, \texttt{panox}, \texttt{holo\_in}, \texttt{holo\_out}, \texttt{stanford}, \texttt{nyc}; $N=40$ frames per cell). Cell values report the median percentage change in whole-panorama \absrel{} relative to the unmodified clean image (red denotes error increase/harm; green denotes error reduction). Non-local-means denoising, self-estimated floor/ceiling tilt re-levelling, and bilateraling degrade clean predictions across multiple models (up to $+74\%$ on NYC for DAP under self-estimated tilt), motivating metadata- and detector-gated activation rather than blind preprocessing.}
+\caption{Do-no-harm evaluation of blind image-restoration filters applied directly to unmodified clean panoramas across all model--dataset pairs (\texttt{s3}, \texttt{panox}, \texttt{holo\_in}, \texttt{holo\_out}, \texttt{stanford}, \texttt{nyc}; $N=40$ frames per cell). Cell values report the median percentage change in whole-panorama \absrel{} relative to the unmodified clean image (red denotes error increase/harm; green denotes error reduction). Non-local-means denoising, self-estimated floor/ceiling tilt re-levelling, and bilateral filtering degrade clean predictions across multiple models (up to $+74\%$ on NYC for DAP under self-estimated tilt), motivating metadata- and detector-gated activation rather than blind preprocessing.}
 \end{figure}
 \begin{figure}[ht]\centering
 \includegraphics[width=\linewidth]{figs/fig_fix_nadir.png}\\[2pt]
@@ -211,7 +211,7 @@ Stricter rules remove harmful cells, but every one of them also removes gains: a
 \paragraph{End-to-end check.} The $5\%$ / $70\%$ rule was run through the full pipeline on Stanford2D3D (100 frames) and NYC (147 frames) for all four models, with the policy chosen on the four core datasets only, and compared with the headline policy on the same frame ids. A scenario is harmful if its median change is above $+1\%$; each set has 24 (model, scenario) cells.
 
 \begin{table}[ht]\centering\small
-\caption{End-to-end comparison of the headline rule ($2\%$ / $60\%$) and the stricter rule ($5\%$ / $70\%$) on the external datasets (frames matched by id). \emph{Harmful}: number of the 24 (model, scenario) cells per set with a median \absrel{} change above $+1\%$; \emph{mean}: mean over the 24 cells of the median percentage change.}
+\caption{End-to-end comparison of the headline policy-selection rule ($2\%$ required gain / $60\%$ frame win rate) and the stricter rule ($5\%$ required gain / $70\%$ frame win rate) on the held-out external datasets Stanford2D3D ($N=100$ frames) and NYC ($N=147$ frames), with policies learned solely on the four core datasets and evaluated on identical frame identifiers across all four models (MiDaS DPT-Hybrid, DAP, DA360, DA$^2$) and six fault scenarios ($4\text{ models}\times6\text{ scenarios}=24$ cells per dataset). \emph{Harmful cells}: count of the 24 (model, scenario) cells per dataset whose median \absrel{} change exceeds $+1\%$. \emph{Mean change}: arithmetic mean across the 24 cells of the median percentage change in \absrel{} (dimensionless; negative values indicate error reduction).}
 \begin{tabular}{lrrrr}\toprule
  & \multicolumn{2}{c}{Harmful cells} & \multicolumn{2}{c}{Mean change}\\
 Set & headline & strict & headline & strict\\\midrule
@@ -224,7 +224,7 @@ The offline prediction (harmful external cells from 5 to 2, mean change from $-8
 
 \begin{figure}[ht]\centering
 \includegraphics[width=\linewidth]{figs/fig_strict_rules.png}
-\caption{Selection rules scanned offline (40-frame study files): number of harmful applied cells against the mean percentage change of \absrel{} over all cells, for leave-one-dataset-out on the four core datasets (left) and for the external datasets with the policy trained on the core datasets (right). Filled circles: rules without the every-set requirement; open squares: with it. The headline rule ($2\%$ gain, $60\%$ of frames) and the $5\%$ / $70\%$ rule are circled.}
+\caption{Offline pareto trade-off of policy-selection rules across $N=40$-frame study files: count of harmful applied cells (median \absrel{} change $>+1\%$) versus mean percentage change in \absrel{} across all cells (counting abstentions as $0\%$), evaluated under leave-one-dataset-out cross-validation on the four core datasets ($144$ cells, left panel) and on the external datasets Stanford2D3D and NYC using policies trained on the four core datasets ($72$ cells, right panel). Filled grey circles denote rules without the per-dataset sign constraint; open grey squares denote rules requiring a negative median \absrel{} change on every core training dataset. The red circle highlights the headline rule ($2\%$ gain, $60\%$ win rate) and the green circle highlights the stricter rule ($5\%$ gain, $70\%$ win rate).}
 \end{figure}
 
 
@@ -258,13 +258,13 @@ NYC (147) & median & $0.205$ & $-22.8\%$ & $-26.0\%$ & $-1.8\%$ & $-6.7\%$ & $+0
 
 \begin{figure}[ht]\centering
 \includegraphics[width=\linewidth]{figs/fig_da2_protocols.png}
-\caption{DA$^2$ under least-squares and median scale alignment on the frames both runs contain. Top: clean \absrel{} per dataset (logarithmic axis; the dashed line separates the core datasets from Stanford2D3D and NYC). Bottom: median percentage change of \absrel{} per scenario after end-to-end correction on Holo360D outdoor, Stanford2D3D and NYC (negative values: error falls).}
+\caption{Comparison of DA$^2$ under least-squares scale alignment (\texttt{lsq}, light grey bars) and median ratio scale alignment (\texttt{median}, dark grey bars) on matched frame identifiers across all six datasets (\texttt{s3}: Structured3D, $N=100$; \texttt{panox}: PanoX, $N=100$; \texttt{holo\_in}: Holo360D indoor, $N=100$; \texttt{holo\_out}: Holo360D outdoor, $N=71$; \texttt{stanford}: Stanford2D3D, $N=373$; \texttt{nyc}: NYC, $N=147$). Top panel: median whole-panorama \absrel{} (dimensionless, logarithmic axis; lower is better) on unmodified clean panoramas; the vertical dashed line separates the four core datasets from the two external datasets. Bottom panels: median percentage change in \absrel{} per fault scenario (\texttt{tilt}, \texttt{bottom}: blocked nadir cap, \texttt{FOV}: limited vertical field of view, \texttt{shake}: yaw motion blur, \texttt{JPEG}, \texttt{bot.+JPEG}) after end-to-end correction on Holo360D outdoor, Stanford2D3D, and NYC (negative values denote error reduction).}
 \end{figure}
 
 \paragraph{Sweeps.} Table~\ref{tab:da2sweep} compares the rotation and dilation sweeps (80 frames per dataset, 71 for Holo360D outdoor; global estimator). Under least squares, rotation on NYC has an onset at $50^\circ$ (mean excess error over $75^\circ$ to $90^\circ$ of $+0.194$) and dilation on Holo360D outdoor an onset at $80^\circ$ ($+0.570$). Under the median fit neither remains ($-0.063$ and $+0.128$), and a dilation onset at $55^\circ$ appears on NYC with a negative mean excess error ($-0.040$). The other eight sweeps have no onset under either protocol, and the sign of the mean excess error changes in two of the ten sweeps (rotation on Holo360D outdoor and on NYC). The conclusion that rotation produces a polar rise for DA$^2$ on NYC therefore depends on the scale fit.
 
-\begin{table}[ht]\centering\footnotesize
-\caption{Onset (first latitude whose excess error is significant by the cluster interval and at least $10\%$ of the equatorial error; \emph{none}: no onset) and mean excess error $\Delta E$ over $75^\circ$ to $90^\circ$ (\absrel{}, global estimator) of DA$^2$ under the two scale-alignment protocols.}\label{tab:da2sweep}
+\begin{table}[htbp]\centering\footnotesize
+\caption{Distortion-sweep onset latitude (first of two consecutive $5^\circ$ bins whose cluster-bootstrap $95\%$ lower confidence bound exceeds $10\%$ of the equator-seen error; \emph{none} indicates no measurable onset) and mean excess error $\Delta E(L)=E(L)-E_{\mathrm{ref}}(L)$ over polar latitudes $75^\circ\le|\phi|\le90^\circ$ (dimensionless \absrel{}, global alignment estimator) for DA$^2$ under least-squares (\texttt{lsq}) and median ratio (\texttt{median}) scale alignment across five datasets ($N=80$ frames per dataset, $N=71$ for Holo360D outdoor).}\label{tab:da2sweep}
 \begin{tabular}{llrrrrr}\toprule
  & & \multicolumn{2}{c}{lsq} & \multicolumn{2}{c}{median} & frames\\
 Sweep & Dataset & onset & $\Delta E$ & onset & $\Delta E$ & (lsq/median)\\\midrule
@@ -281,15 +281,15 @@ dilation & NYC & none & $-0.263$ & $55^\circ$ & $-0.040$ & 80/80\\
 \bottomrule\end{tabular}
 \end{table}
 
-\begin{figure}[ht]\centering
+\begin{figure}[htbp]\centering
 \includegraphics[width=\linewidth]{figs/fig_da2_sweeps_protocols.png}
-\caption{Excess error $\Delta E(L)$ (\absrel{}, global estimator) of DA$^2$ against seen latitude in degrees for rotation (top) and dilation (bottom) sweeps under least-squares and median scale alignment; one column per dataset.}
+\caption{Excess depth error $\Delta E(L)=E(L)-E_{\mathrm{ref}}(L)$ (dimensionless \absrel{}, global alignment estimator; $0$ indicates no excess error relative to the equatorial reference pass) of DA$^2$ versus seen latitude $|\phi|$ in degrees for pitch-rotation sweeps (top row) and stereographic-dilation sweeps (bottom row) under least-squares scale alignment (light grey lines) and median ratio scale alignment (dark grey lines) across five datasets (\texttt{s3}: Structured3D, \texttt{panox}: PanoX, \texttt{holo\_in}: Holo360D indoor, \texttt{holo\_out}: Holo360D outdoor, \texttt{nyc}: NYC; $N=80$ frames per dataset, $N=71$ for \texttt{holo\_out}).}
 \end{figure}
 
 \section{Nadir and JPEG diagnosis}\label{app:diag}
 DAP gains little from the cap fix for a blocked bottom plus JPEG on NYC (headline $+1.3\%$, Table~\ref{tab:ext}), although the cap is detected in $88\%$ of the frames. The diagnosis changes one factor at a time on 147 NYC frames (cap below $-62^\circ$, JPEG quality 8): the cap mask (true, or detected from the image), a margin of $1.5^\circ$ on it, the fill (plane fill, ERP inpainting, tangent inpainting), deblocking the whole frame before filling with the true mask, and the order of the photometric step and the fill. Every variant is scored inside the cap (region), in a ring of $12^\circ$ above it, outside both, and on the whole panorama, in raw metres and after a global median scale fit, so that a metric scale offset can be separated from the effect of the fill. Values are median changes relative to the unfixed input with $95\%$ bootstrap intervals over frames.
 
-\begin{table}[!ht]\centering\small
+\begin{table}[!htbp]\centering\small
 \caption{DAP on NYC, blocked bottom plus JPEG: median change of region \absrel{} for plane fill (the headline fix of DAP) relative to the unfixed input, $N=147$ frames, $95\%$ bootstrap interval in brackets. For comparison, blocked bottom without JPEG with the true mask: $-89.6\%$ [$-91.3$, $-82.1$] in raw metres and $-88.8\%$ [$-92.4$, $-85.9$] after the median scale fit.}\label{tab:diag}
 \begin{tabular}{lrr}\toprule
 Variant & raw metres & median scale fit\\\midrule
@@ -318,8 +318,8 @@ fill, then photometric & $+0.5\%$ [$-2.5$, $+2.5$] & $-5.7\%$ [$-14.4$, $-0.5$]\
 \section{Stability of the learned policy}\label{app:stability}
 The policy is learned from capture-fault studies of 40 frames per cell. To see whether this number of frames decides the choice of fix, the studies were repeated with 100 frames (71 for Holo360D outdoor, which has no more) for the four models on the four core datasets, and the leave-one-dataset-out choice of the headline rule ($2\%$ gain, $60\%$ of frames) was compared cell by cell. A cell is one model, one held-out core dataset and one fault (36 per model).
 
-\begin{table}[!ht]\centering\small
-\caption{Leave-one-dataset-out choice of fix learned from 40-frame and from 100-frame studies. Applied: cells in which a fix other than no fix is chosen.}\label{tab:stability}
+\begin{table}[!htbp]\centering\small
+\caption{Leave-one-dataset-out policy-selection stability between $N=40$-frame and $N=100$-frame core capture-fault studies ($N=71$ for Holo360D outdoor) under the headline selection rule ($2\%$ required median \absrel{} gain and $60\%$ frame win rate) across all four models (MiDaS DPT-Hybrid, DAP, DA360, DA$^2$). Each model is evaluated across $36$ cells ($4\text{ held-out core datasets}\times9\text{ fixable faults}=36$ cells per model, $144$ cells total). Columns report the number of cells where both sample sizes select the \emph{same choice}, the number where the choice is \emph{different}, and the number of cells where a non-identity fix is \emph{applied} under the $40$-frame and $100$-frame studies.}\label{tab:stability}
 \begin{tabular}{lrrrrr}\toprule
 Model & cells & same choice & different & applied (40) & applied (100)\\\midrule
 MiDaS & 36 & 35 & 1 & 12 & 11\\
@@ -332,8 +332,8 @@ all & 144 & 137 & 7 & 52 & 52\\
 
 The choice is the same in 137 of 144 cells ($95\%$). The seven cells that differ are listed in Table~\ref{tab:stabilitydiff}; in three of them the 100-frame studies choose no fix where the 40-frame studies chose one, in three the reverse, and in one (DAP) a different fix. The number of applied cells is 52 in both cases. The headline results were produced with the 40-frame policy and were not rerun with the 100-frame choices, so the table shows how often the choice would change, not what the change would do to the error. The policy for the median-fit protocol (Appendix~\ref{app:da2}) is not covered by this comparison.
 
-\begin{table}[!ht]\centering\small
-\caption{Cells in which the choice differs between 40-frame and 100-frame studies.}\label{tab:stabilitydiff}
+\begin{table}[!htbp]\centering\small
+\caption{The $7$ of $144$ (model, held-out core dataset, fault) cells where the leave-one-dataset-out fix selected under the headline rule ($2\%$ required median \absrel{} reduction, $60\%$ frame win rate) differs between $N=40$-frame and $N=100$-frame core capture-fault studies ($N=71$ for Holo360D outdoor). \emph{no fix} indicates that no candidate mitigation meets the selection threshold on the three training core datasets.}\label{tab:stabilitydiff}
 \begin{tabular}{llll}\toprule
 Model, held out & fault & 40 frames & 100 frames\\\midrule
 MiDaS, Struct.3D & missing top/bottom & tangent inpaint. & no fix\\

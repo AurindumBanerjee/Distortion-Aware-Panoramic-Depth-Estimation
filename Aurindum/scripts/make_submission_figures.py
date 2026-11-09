@@ -187,7 +187,9 @@ def fig_da2_sweeps(curves, out):
                 ax.set_ylabel(f"{mode}: $\\Delta E$ (AbsRel)")
             if r == 1:
                 ax.set_xlabel("latitude (deg)")
-    axes[0][4].legend(frameon=False, loc="upper left")
+    h, l = axes[0][4].get_legend_handles_labels()
+    if h:
+        axes[0][4].legend(frameon=False, loc="upper left")
     fig.tight_layout()
     fig.savefig(out, dpi=200)
     plt.close(fig)
