@@ -21,7 +21,7 @@ All models are used as released; nothing is trained.
 | External datasets (never used for any choice) | Stanford2D3D, NYC street panoramas |
 | Metrics | AbsRel (whole, polar, affected region), median relative change, share of frames improved or worse, recovery, cluster-robust bootstrap intervals |
 
-Datasets and model weights are not in the repository (`data/`, `weights/`, `third_party/` are git-ignored). Alignment: DAP in raw metres; MiDaS and DA360 with an affine fit; DA2 with least squares (headline) and a median fit (reported alongside).
+Datasets and model weights are not in the repository (`data/` and `weights/` are git-ignored, as are the third-party model repositories `third_party/DAP`, `third_party/DA2` and `third_party/DA360`; only the vendored `third_party/midas_repo` is tracked). Alignment: DAP in raw metres; MiDaS and DA360 with an affine fit; DA2 with least squares (headline) and a median fit (reported alongside).
 
 ## Layout
 
@@ -44,6 +44,20 @@ results/                      result tables, JSON, figures
 logs/                         submission run logs
 ```
 
+## Data preparation
+
+Each dataset is placed under `data/<name>/` and gets a split list (`test.txt`) from a script in `scripts/`. The datasets themselves must be obtained from their owners; Stanford2D3D, Structured3D and Holo360D need a licence form.
+
+| dataset | folder | how the list is built |
+|---|---|---|
+| Structured3D | `data/structured3d/` | `python scripts/make_structured3d_subset.py` reads the panorama zips directly and writes the subset (`rgb/`, `depth/`, `test.txt`) |
+| PanoX | `data/panox/` | `python scripts/download_panox.py --split test --out data/panox`, then `python scripts/make_panox_list.py --root data/panox` (prints the depth unit of the first file; the `panox` preset converts centimetres to metres) |
+| Holo360D | `data/holo360d/` | `python scripts/make_holo360d_list.py --root data/holo360d` writes `test.txt`, `indoor.txt` and `outdoor.txt` (mesh depth only) |
+| Stanford2D3D | `data/stanford2d3d/` | `python scripts/make_stanford_list.py --root data/stanford2d3d --areas area_5a area_5b --out test_area5.txt` |
+| NYC street panoramas | `data/nyc_dap/` | copy or link the RGB folder to `rgb/` and the distance folder to `depth/`, then `python scripts/make_nyc_list.py --root data/nyc_dap` |
+
+The configs in `configs/` name the preset and list file used for each dataset. The core sets (Structured3D, PanoX, Holo360D indoor, Holo360D outdoor) are the first four rows; Stanford2D3D and NYC are external and never used to choose anything.
+
 ## Running
 
 ```bash
@@ -55,7 +69,7 @@ bash scripts/run_submission.sh run       # foreground; DRY=1 prints the commands
 
 Default stages (`STAGES="da2both diag strict analysis"`): DA2 median-fit runs, nadir+JPEG diagnosis, stricter selection rules on the external sets, and CPU analysis and figure generation. The optional `study100` stage repeats the capture-fault studies with 100 frames.
 
-Main entry points in `scripts/`: `distortion_sweep.py` (sweeps), `distortion_study.py` (fault studies), `calibrate_correction.py` and `run_correction.py` (policy learning and end-to-end correction), `threshold_sweep.py`, `nadir_jpeg_diagnosis.py`, `da2_protocol_report.py`, `policy_stability.py`, `make_figures.py`, `make_submission_figures.py`, `check_submission.py`.
+Main entry points in `scripts/`: `distortion_sweep.py` (sweeps), `distortion_study.py` (fault studies), `calibrate_correction.py` and `run_correction.py` (policy learning and end-to-end correction), `threshold_sweep.py`, `nadir_jpeg_diagnosis.py`, `da2_protocol_report.py`, `policy_stability.py`, `make_figures.py`, `make_submission_figures.py`, `check_submission.py`. The `make_*_list.py` scripts and `download_panox.py` prepare the data (see above).
 
 ## Tests
 
