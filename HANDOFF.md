@@ -225,8 +225,8 @@ parallel validation.
   capture artifact might be present -- 01 already shows affine's intercept
   term is what rescues artifact-contaminated scenes from scale-only's
   catastrophic failures.
-- Harshita's folder is not in this clone (`Aurindum/REPO_GUIDE.md` notes
-  `Harshita/` and `Lokesh/` are sibling co-author copies) -- her fix work
+- Harshita's folder is not in this clone
+ (`Harshita/` and `Lokesh/` are sibling co-author copies) -- her fix work
   and the NYC/Stanford validation plan she described are now partially
   superseded/absorbed by Aurindum's capture-fault study, which already
   uses real NYC/Stanford data. Check with her directly on how her track
