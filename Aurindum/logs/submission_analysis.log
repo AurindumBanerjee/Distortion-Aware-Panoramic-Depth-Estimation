@@ -369,6 +369,6 @@ Run, analysed and reported independently of the core datasets (Structured3D, Pan
 
 [2026-11-09 04:10:34] ✅ external report (1 s)
 [2026-11-09 04:10:34] >>> figures
-wrote 484 figures to /DATA/Aurindum/Distortion-Aware-Panoramic-Depth-Estimation/Aurindum/results/figures
+wrote 484 figures to Aurindum/results/figures
 [2026-11-09 04:14:49] ✅ figures (255 s)
 [2026-11-09 04:14:49] 🎉 Submission runs finished (results/finished_submission_analysis.md). Commit results/.

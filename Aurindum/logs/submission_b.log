@@ -3234,9 +3234,9 @@ model `midas_dpt_hybrid_384` · 40 frames · nadir cap below -62 deg · JPEG q8.
 xFormers not available
 xFormers not available
 pretrained model is not available.
-/DATA/Aurindum/Distortion-Aware-Panoramic-Depth-Estimation/Aurindum/third_party/DA360/networks/da360.py:74: FutureWarning: `torch.cuda.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cuda', args...)` instead.
+Aurindum/third_party/DA360/networks/da360.py:74: FutureWarning: `torch.cuda.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cuda', args...)` instead.
   with autocast(enabled=self.mixed_precision):
-/DATA/Aurindum/Distortion-Aware-Panoramic-Depth-Estimation/Aurindum/third_party/DA360/networks/da360.py:74: FutureWarning: `torch.cuda.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cuda', args...)` instead.
+Aurindum/third_party/DA360/networks/da360.py:74: FutureWarning: `torch.cuda.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cuda', args...)` instead.
   with autocast(enabled=self.mixed_precision):
 [1/40] panorama_21: nadir+jpeg region raw 0.003 -> oracle plane_fill 0.003, detected+1.5 0.002
 [2/40] panorama_120: nadir+jpeg region raw 0.007 -> oracle plane_fill 0.006, detected+1.5 0.007
@@ -3485,13 +3485,13 @@ model `da360` · 40 frames · nadir cap below -62 deg · JPEG q8. Protocols: `al
 xFormers not available
 xFormers not available
 pretrained model is not available.
-/DATA/Aurindum/Distortion-Aware-Panoramic-Depth-Estimation/Aurindum/third_party/DA360/networks/da360.py:74: FutureWarning: `torch.cuda.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cuda', args...)` instead.
+Aurindum/third_party/DA360/networks/da360.py:74: FutureWarning: `torch.cuda.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cuda', args...)` instead.
   with autocast(enabled=self.mixed_precision):
 [1/40] scene_03370_994351: nadir+jpeg region raw 0.044 -> oracle plane_fill 0.056, detected+1.5 0.044
 [2/40] scene_03218_3324: nadir+jpeg region raw 0.181 -> oracle plane_fill 0.153, detected+1.5 0.181
 [3/40] scene_03350_569176: nadir+jpeg region raw 0.010 -> oracle plane_fill 0.020, detected+1.5 0.016
 [4/40] scene_03396_289170: nadir+jpeg region raw 0.019 -> oracle plane_fill 0.021, detected+1.5 0.019
-/DATA/Aurindum/Distortion-Aware-Panoramic-Depth-Estimation/Aurindum/third_party/DA360/networks/da360.py:74: FutureWarning: `torch.cuda.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cuda', args...)` instead.
+Aurindum/third_party/DA360/networks/da360.py:74: FutureWarning: `torch.cuda.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cuda', args...)` instead.
   with autocast(enabled=self.mixed_precision):
 [5/40] scene_03203_735: nadir+jpeg region raw 0.012 -> oracle plane_fill 0.003, detected+1.5 0.012
 [6/40] scene_03239_31776: nadir+jpeg region raw 0.073 -> oracle plane_fill 0.075, detected+1.5 0.075
@@ -4717,7 +4717,7 @@ held-out policy: {'yawblur': 'wiener'} chosen on ['holo_in', 'holo_out', 'panox'
 xFormers not available
 xFormers not available
 pretrained model is not available.
-/DATA/Aurindum/Distortion-Aware-Panoramic-Depth-Estimation/Aurindum/third_party/DA360/networks/da360.py:74: FutureWarning: `torch.cuda.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cuda', args...)` instead.
+Aurindum/third_party/DA360/networks/da360.py:74: FutureWarning: `torch.cuda.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cuda', args...)` instead.
   with autocast(enabled=self.mixed_precision):
 [1/100] area_5a_camera_029bb1440fca47e2886a88559bbf8d00_hallway_1_frame_equirectangular_domain_rgb: clean 0.213->0.213, tilt 0.182->0.182, nadir 0.203->0.203, vfov 0.098->0.098, yawblur 0.194->0.197, jpeg 0.111->0.111, nadir+jpeg 0.120->0.120
 [2/100] area_5a_camera_06889202154944f9b574e9396c6b8b10_hallway_6_frame_equirectangular_domain_rgb: clean 0.145->0.145, tilt 0.139->0.139, nadir 0.145->0.145, vfov 0.043->0.043, yawblur 0.139->0.102, jpeg 0.089->0.089, nadir+jpeg 0.078->0.078
@@ -5293,7 +5293,7 @@ held-out policy: {'yawblur': 'wiener'} chosen on ['holo_in', 'holo_out', 'panox'
 xFormers not available
 xFormers not available
 pretrained model is not available.
-/DATA/Aurindum/Distortion-Aware-Panoramic-Depth-Estimation/Aurindum/third_party/DA360/networks/da360.py:74: FutureWarning: `torch.cuda.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cuda', args...)` instead.
+Aurindum/third_party/DA360/networks/da360.py:74: FutureWarning: `torch.cuda.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cuda', args...)` instead.
   with autocast(enabled=self.mixed_precision):
 [1/147] panorama_21: clean 0.038->0.038, tilt 0.044->0.044, nadir 0.038->0.038, vfov 0.068->0.068, yawblur 0.050->0.045, jpeg 0.066->0.066, nadir+jpeg 0.064->0.064
 [2/147] panorama_66: clean 0.063->0.063, tilt 0.067->0.067, nadir 0.062->0.062, vfov 0.110->0.110, yawblur 0.071->0.063, jpeg 0.156->0.156, nadir+jpeg 0.144->0.144

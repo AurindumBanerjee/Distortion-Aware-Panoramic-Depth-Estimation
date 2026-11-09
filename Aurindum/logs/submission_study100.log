@@ -1,0 +1,1965 @@
+[2026-11-09 09:09:05] 🚀 Submission runs | stages: study100 analysis | models: midas dap da360 da2
+[2026-11-09 09:09:05] =============== study100 (policy stability, 100-frame studies on the core sets) ===============
+[2026-11-09 09:09:05] >>> study s100_midas_s3 (N=100)
+[1/100] scene_03370_994351: clean 0.150
+[2/100] scene_03366_919746: clean 0.202
+[3/100] scene_03308_1034: clean 0.355
+[4/100] scene_03219_778603: clean 0.424
+[5/100] scene_03383_159: clean 0.231
+[6/100] scene_03350_569176: clean 0.196
+[7/100] scene_03290_203: clean 0.180
+[8/100] scene_03396_289170: clean 0.209
+[9/100] scene_03373_668201: clean 0.330
+[10/100] scene_03296_2190: clean 0.244
+[11/100] scene_03203_735: clean 0.130
+[12/100] scene_03260_200: clean 0.192
+[13/100] scene_03239_31776: clean 0.181
+[14/100] scene_03370_926137: clean 0.495
+[15/100] scene_03208_165: clean 0.212
+[16/100] scene_03245_798000: clean 0.285
+[17/100] scene_03296_5767: clean 0.314
+[18/100] scene_03239_32024: clean 0.174
+[19/100] scene_03234_616: clean 0.373
+[20/100] scene_03202_767: clean 0.258
+[21/100] scene_03294_863844: clean 0.190
+[22/100] scene_03210_127932: clean 0.294
+[23/100] scene_03337_962: clean 0.328
+[24/100] scene_03297_196161: clean 0.177
+[25/100] scene_03379_35921: clean 0.775
+[26/100] scene_03262_4295: clean 0.247
+[27/100] scene_03234_1687: clean 0.081
+[28/100] scene_03313_10363: clean 0.233
+[29/100] scene_03208_394: clean 0.261
+[30/100] scene_03227_1382: clean 0.201
+[31/100] scene_03347_788: clean 0.277
+[32/100] scene_03370_927719: clean 0.291
+[33/100] scene_03337_2413: clean 0.253
+[34/100] scene_03238_554966: clean 0.280
+[35/100] scene_03374_699260: clean 0.266
+[36/100] scene_03308_145: clean 0.515
+[37/100] scene_03321_451: clean 0.182
+[38/100] scene_03256_352325: clean 0.186
+[39/100] scene_03211_946966: clean 0.316
+[40/100] scene_03303_45: clean 0.199
+[41/100] scene_03238_554964: clean 0.546
+[42/100] scene_03388_921: clean 0.195
+[43/100] scene_03366_907635: clean 0.353
+[44/100] scene_03296_1575: clean 0.255
+[45/100] scene_03206_295: clean 0.168
+[46/100] scene_03314_7183: clean 0.228
+[47/100] scene_03227_822: clean 0.357
+[48/100] scene_03386_674: clean 0.246
+[49/100] scene_03326_754: clean 0.218
+[50/100] scene_03354_384082: clean 0.298
+[51/100] scene_03347_790: clean 0.209
+[52/100] scene_03257_988910: clean 0.240
+[53/100] scene_03337_677214: clean 0.315
+[54/100] scene_03208_459: clean 0.208
+[55/100] scene_03404_266: clean 0.165
+[56/100] scene_03459_451: clean 0.153
+[57/100] scene_03420_747351: clean 0.181
+[58/100] scene_03435_472: clean 0.261
+[59/100] scene_03405_852024: clean 0.348
+[60/100] scene_03447_639217: clean 0.293
+[61/100] scene_03468_584: clean 0.155
+[62/100] scene_03490_1018645: clean 0.216
+[63/100] scene_03455_1966: clean 0.219
+[64/100] scene_03405_371: clean 0.183
+[65/100] scene_03497_966196: clean 0.270
+[66/100] scene_03428_93896: clean 0.194
+[67/100] scene_03497_966199: clean 0.276
+[68/100] scene_03498_279102: clean 0.223
+[69/100] scene_03451_240: clean 0.256
+[70/100] scene_03446_872364: clean 0.149
+[71/100] scene_03457_141479: clean 0.183
+[72/100] scene_03407_590626: clean 0.119
+[73/100] scene_03413_830: clean 0.249
+[74/100] scene_03480_735: clean 0.202
+[75/100] scene_03417_522: clean 0.256
+[76/100] scene_03455_741: clean 0.087
+[77/100] scene_03470_830225: clean 0.268
+[78/100] scene_03435_395: clean 0.222
+[79/100] scene_03484_3223: clean 0.192
+[80/100] scene_03480_584: clean 0.275
+[81/100] scene_03468_635: clean 0.142
+[82/100] scene_03457_141477: clean 0.301
+[83/100] scene_03455_1811: clean 0.270
+[84/100] scene_03428_93901: clean 0.282
+[85/100] scene_03468_602: clean 0.354
+[86/100] scene_03498_277936: clean 0.261
+[87/100] scene_03417_1383: clean 0.423
+[88/100] scene_03470_830219: clean 0.250
+[89/100] scene_03498_274746: clean 0.365
+[90/100] scene_03451_2965: clean 0.964
+[91/100] scene_03453_579: clean 0.220
+[92/100] scene_03452_1483: clean 0.257
+[93/100] scene_03435_372: clean 0.269
+[94/100] scene_03448_1001772: clean 0.296
+[95/100] scene_03425_159: clean 0.215
+[96/100] scene_03427_1003902: clean 0.305
+[97/100] scene_03415_1056: clean 0.258
+[98/100] scene_03420_747353: clean 0.083
+[99/100] scene_03407_287514: clean 0.163
+[100/100] scene_03457_141482: clean 0.226
+wrote results/policy_stability/STUDY_s100_midas_s3.md
+[2026-11-09 09:16:53] ✅ study s100_midas_s3 (N=100) (468 s)
+[2026-11-09 09:16:53] >>> study s100_midas_panox (N=100)
+[1/100] ClothingStore_0002: clean 0.112
+[2/100] ClothingStore_0033: clean 0.104
+[3/100] ClothingStore_0079: clean 0.901
+[4/100] ClothingStore_0092: clean 0.338
+[5/100] ClothingStore_0128: clean 0.580
+[6/100] ClothingStore_0151: clean 0.527
+[7/100] ClothingStore_0168: clean 0.538
+[8/100] ClothingStore_0186: clean 0.231
+[9/100] ClothingStore_0191: clean 0.221
+[10/100] ClothingStore_0202: clean 0.211
+[11/100] ClothingStore_0223: clean 0.229
+[12/100] ClothingStore_0239: clean 0.196
+[13/100] ClothingStore_0266: clean 0.152
+[14/100] Diner50_0028: clean 0.167
+[15/100] Diner50_0079: clean 0.187
+[16/100] Diner50_0084: clean 0.176
+[17/100] Diner50_0128: clean 0.203
+[18/100] Diner50_0151: clean 0.187
+[19/100] Diner50_0183: clean 0.179
+[20/100] Diner50_0187: clean 0.184
+[21/100] Diner50_0194: clean 0.187
+[22/100] Diner50_0206: clean 0.189
+[23/100] Diner50_0223: clean 0.204
+[24/100] Diner50_0255: clean 0.245
+[25/100] Diner50_0281: clean 0.224
+[26/100] FeudalJapan_Meshingun_0000: clean 0.141
+[27/100] FeudalJapan_Meshingun_0006: clean 0.152
+[28/100] FeudalJapan_Meshingun_0013: clean 0.159
+[29/100] FeudalJapan_Meshingun_0054: clean 0.172
+[30/100] FeudalJapan_Meshingun_0058: clean 0.159
+[31/100] FeudalJapan_Meshingun_0066: clean 0.164
+[32/100] FeudalJapan_Meshingun_0093: clean 0.171
+[33/100] FeudalJapan_Meshingun_0129: clean 0.173
+[34/100] FeudalJapan_Meshingun_0149: clean 0.173
+[35/100] FeudalJapan_Meshingun_0159: clean 0.180
+[36/100] FeudalJapan_Meshingun_0165: clean 0.233
+[37/100] FeudalJapan_Meshingun_0187: clean 0.565
+[38/100] FeudalJapan_Meshingun_0204: clean 0.189
+[39/100] ModularBakeryShop_0014: clean 0.230
+[40/100] ModularBakeryShop_0063: clean 0.143
+[41/100] ModularBakeryShop_0075: clean 0.163
+[42/100] ModularBakeryShop_0093: clean 0.183
+[43/100] ModularBakeryShop_0097: clean 0.176
+[44/100] ModularBakeryShop_0103: clean 0.169
+[45/100] ModularBakeryShop_0127: clean 0.173
+[46/100] ModularBakeryShop_0143: clean 0.200
+[47/100] ModularBakeryShop_0150: clean 0.195
+[48/100] ModularBakeryShop_0209: clean 0.256
+[49/100] ModularBakeryShop_0227: clean 0.249
+[50/100] ModularBakeryShop_0249: clean 0.238
+[51/100] Mountain_Environment_Set_0002: clean 0.319
+[52/100] Mountain_Environment_Set_0033: clean 0.267
+[53/100] Mountain_Environment_Set_0079: clean 0.224
+[54/100] Mountain_Environment_Set_0092: clean 0.228
+[55/100] Mountain_Environment_Set_0128: clean 0.263
+[56/100] Mountain_Environment_Set_0151: clean 0.212
+[57/100] Mountain_Environment_Set_0168: clean 0.206
+[58/100] Mountain_Environment_Set_0186: clean 0.169
+[59/100] Mountain_Environment_Set_0191: clean 0.170
+[60/100] Mountain_Environment_Set_0202: clean 0.156
+[61/100] Mountain_Environment_Set_0223: clean 0.145
+[62/100] Mountain_Environment_Set_0239: clean 0.157
+[63/100] Mountain_Environment_Set_0266: clean 0.168
+[64/100] SouthOfFrance_0028: clean 0.270
+[65/100] SouthOfFrance_0067: clean 0.331
+[66/100] SouthOfFrance_0082: clean 0.282
+[67/100] SouthOfFrance_0127: clean 0.253
+[68/100] SouthOfFrance_0141: clean 0.222
+[69/100] SouthOfFrance_0164: clean 0.172
+[70/100] SouthOfFrance_0183: clean 0.174
+[71/100] SouthOfFrance_0187: clean 0.180
+[72/100] SouthOfFrance_0194: clean 0.181
+[73/100] SouthOfFrance_0206: clean 0.185
+[74/100] SouthOfFrance_0236: clean 0.194
+[75/100] SouthOfFrance_0255: clean 0.192
+[76/100] Warehouse_0002: clean 0.248
+[77/100] Warehouse_0033: clean 0.260
+[78/100] Warehouse_0067: clean 0.256
+[79/100] Warehouse_0082: clean 0.220
+[80/100] Warehouse_0127: clean 0.194
+[81/100] Warehouse_0141: clean 0.171
+[82/100] Warehouse_0164: clean 0.154
+[83/100] Warehouse_0183: clean 0.169
+[84/100] Warehouse_0187: clean 0.174
+[85/100] Warehouse_0194: clean 0.162
+[86/100] Warehouse_0206: clean 0.167
+[87/100] Warehouse_0236: clean 0.159
+[88/100] Warehouse_0245: clean 0.165
+[89/100] YellowParrot_0028: clean 0.434
+[90/100] YellowParrot_0054: clean 0.849
+[91/100] YellowParrot_0079: clean 0.852
+[92/100] YellowParrot_0092: clean 0.862
+[93/100] YellowParrot_0128: clean 0.444
+[94/100] YellowParrot_0151: clean 0.252
+[95/100] YellowParrot_0168: clean 0.155
+[96/100] YellowParrot_0186: clean 0.132
+[97/100] YellowParrot_0191: clean 0.151
+[98/100] YellowParrot_0202: clean 0.130
+[99/100] YellowParrot_0223: clean 0.188
+[100/100] YellowParrot_0239: clean 0.970
+wrote results/policy_stability/STUDY_s100_midas_panox.md
+[2026-11-09 09:25:19] ✅ study s100_midas_panox (N=100) (506 s)
+[2026-11-09 09:25:19] >>> study s100_midas_holo_in (N=100)
+[1/100] Indoor_001_1752141078.842170: clean 0.281
+[2/100] Indoor_001_1752141117.877729: clean 0.306
+[3/100] Indoor_001_1752141169.925142: clean 0.330
+[4/100] Indoor_001_1752141218.969820: clean 0.243
+[5/100] Indoor_001_1752141272.018145: clean 0.245
+[6/100] Indoor_001_1752141321.062822: clean 0.234
+[7/100] Indoor_001_1752141369.106587: clean 0.290
+[8/100] Indoor_001_1752141417.150354: clean 0.210
+[9/100] Indoor_002_1752398025.284952: clean 0.213
+[10/100] Indoor_002_1752398056.949583: clean 0.362
+[11/100] Indoor_002_1752398085.281091: clean 0.276
+[12/100] Indoor_002_1752398124.278581: clean 0.339
+[13/100] Indoor_002_1752398144.277292: clean 0.378
+[14/100] Indoor_002_1752398181.608225: clean 0.343
+[15/100] Indoor_002_1752398218.272533: clean 0.182
+[16/100] Indoor_002_1752398247.937292: clean 0.333
+[17/100] Indoor_002_1752398287.934715: clean 0.298
+[18/100] Indoor_007_1752398942.114256: clean 0.476
+[19/100] Indoor_007_1752398984.444850: clean 0.184
+[20/100] Indoor_007_1752399047.440773: clean 0.453
+[21/100] Indoor_007_1752399075.105651: clean 0.202
+[22/100] Indoor_007_1752399116.102999: clean 0.243
+[23/100] Indoor_007_1752399158.766904: clean 0.215
+[24/100] Indoor_007_1752399187.765027: clean 0.333
+[25/100] Indoor_007_1752399233.428740: clean 0.208
+[26/100] Indoor_008_1752707836.069118: clean 0.201
+[27/100] Indoor_008_1752707885.399230: clean 0.283
+[28/100] Indoor_008_1752707927.729801: clean 0.260
+[29/100] Indoor_008_1752707976.059980: clean 0.331
+[30/100] Indoor_008_1752708011.724320: clean 0.372
+[31/100] Indoor_008_1752708055.388136: clean 0.227
+[32/100] Indoor_008_1752708090.385852: clean 0.273
+[33/100] Indoor_008_1752708119.383960: clean 0.242
+[34/100] Indoor_008_1752708157.714792: clean 0.263
+[35/100] Indoor_009_1752709922.609930: clean 0.380
+[36/100] Indoor_009_1752709960.274145: clean 0.256
+[37/100] Indoor_009_1752709984.605898: clean 0.261
+[38/100] Indoor_009_1752710014.270634: clean 0.360
+[39/100] Indoor_009_1752710054.268032: clean 0.310
+[40/100] Indoor_009_1752710079.266408: clean 0.238
+[41/100] Indoor_009_1752710111.930950: clean 0.301
+[42/100] Indoor_009_1752710145.262114: clean 0.424
+[43/100] Indoor_015_1753495653.088750: clean 0.313
+[44/100] Indoor_015_1753495679.753732: clean 0.224
+[45/100] Indoor_015_1753495707.085335: clean 0.347
+[46/100] Indoor_015_1753495722.084387: clean 0.271
+[47/100] Indoor_015_1753495744.082996: clean 0.227
+[48/100] Indoor_015_1753495771.414601: clean 0.270
+[49/100] Indoor_015_1753495795.079770: clean 0.301
+[50/100] Indoor_015_1753495815.745131: clean 0.267
+[51/100] Indoor_015_1753495835.077242: clean 0.295
+[52/100] Indoor_016_1753495952.179599: clean 0.334
+[53/100] Indoor_016_1753495976.511401: clean 0.259
+[54/100] Indoor_016_1753495997.510082: clean 0.461
+[55/100] Indoor_016_1753496020.508635: clean 0.319
+[56/100] Indoor_016_1753496043.507191: clean 0.261
+[57/100] Indoor_016_1753496060.839433: clean 0.274
+[58/100] Indoor_016_1753496079.171613: clean 0.356
+[59/100] Indoor_018_1753497324.213240: clean 0.279
+[60/100] Indoor_018_1753497357.544442: clean 0.275
+[61/100] Indoor_018_1753497381.876220: clean 0.495
+[62/100] Indoor_018_1753497410.874366: clean 0.449
+[63/100] Indoor_018_1753497443.205632: clean 0.249
+[64/100] Indoor_018_1753497478.536708: clean 0.369
+[65/100] Indoor_018_1753497504.201733: clean 0.466
+[66/100] Indoor_018_1753497530.533383: clean 0.254
+[67/100] Indoor_041_1753521207.152706: clean 0.242
+[68/100] Indoor_041_1753521232.151117: clean 0.313
+[69/100] Indoor_041_1753521253.816408: clean 0.354
+[70/100] Indoor_041_1753521283.147877: clean 0.272
+[71/100] Indoor_041_1753521305.146480: clean 0.293
+[72/100] Indoor_041_1753521334.144636: clean 0.230
+[73/100] Indoor_041_1753521360.142984: clean 0.247
+[74/100] Indoor_041_1753521383.808148: clean 0.256
+[75/100] Indoor_041_1753521418.805924: clean 0.200
+[76/100] Indoor_044_1753604006.951080: clean 0.319
+[77/100] Indoor_044_1753604045.948579: clean 0.487
+[78/100] Indoor_044_1753604093.612187: clean 0.361
+[79/100] Indoor_044_1753604126.610070: clean 0.425
+[80/100] Indoor_044_1753604166.940816: clean 0.338
+[81/100] Indoor_044_1753604216.270986: clean 0.294
+[82/100] Indoor_044_1753604279.933567: clean 0.229
+[83/100] Indoor_044_1753604318.597754: clean 0.292
+[84/100] Indoor_048_1753584627.957172: clean 0.225
+[85/100] Indoor_048_1753584676.954019: clean 0.233
+[86/100] Indoor_048_1753584702.952349: clean 0.295
+[87/100] Indoor_048_1753584751.615883: clean 0.217
+[88/100] Indoor_048_1753584782.280575: clean 0.254
+[89/100] Indoor_048_1753584835.277168: clean 0.287
+[90/100] Indoor_048_1753584870.608226: clean 0.313
+[91/100] Indoor_048_1753584903.606103: clean 0.293
+[92/100] Indoor_048_1753584946.603337: clean 0.307
+[93/100] Indoor_053_1753612662.342858: clean 0.187
+[94/100] Indoor_053_1753612734.684300: clean 0.181
+[95/100] Indoor_053_1753612763.781044: clean 0.345
+[96/100] Indoor_053_1753612802.754664: clean 0.257
+[97/100] Indoor_053_1753612857.744839: clean 0.217
+[98/100] Indoor_053_1753612902.591197: clean 0.308
+[99/100] Indoor_053_1753612937.293734: clean 0.409
+[100/100] Indoor_053_1753612987.212002: clean 0.353
+wrote results/policy_stability/STUDY_s100_midas_holo_in.md
+[2026-11-09 09:33:19] ✅ study s100_midas_holo_in (N=100) (480 s)
+[2026-11-09 09:33:19] >>> study s100_midas_holo_out (N=71)
+[1/71] Outdoor_001_1752225613.333593: clean 0.302
+[2/71] Outdoor_001_1752225691.995708: clean 0.378
+[3/71] Outdoor_001_1752225730.993451: clean 0.293
+[4/71] Outdoor_001_1752225804.322541: clean 0.292
+[5/71] Outdoor_001_1752225836.654004: clean 0.384
+[6/71] Outdoor_001_1752225900.650302: clean 0.382
+[7/71] Outdoor_001_1752225961.646771: clean 0.253
+[8/71] Outdoor_001_1752225986.978640: clean 0.327
+[9/71] Outdoor_001_1752226037.309060: clean 0.322
+[10/71] Outdoor_001_1752226088.972738: clean 0.319
+[11/71] Outdoor_001_1752226118.304374: clean 0.345
+[12/71] Outdoor_001_1752226164.968340: clean 0.284
+[13/71] Outdoor_001_1752226208.965795: clean 0.360
+[14/71] Outdoor_001_1752226234.297664: clean 0.245
+[15/71] Outdoor_001_1752226281.294943: clean 0.218
+[16/71] Outdoor_001_1752226307.293437: clean 0.276
+[17/71] Outdoor_001_1752226356.957232: clean 0.236
+[18/71] Outdoor_001_1752226403.621199: clean 0.251
+[19/71] Outdoor_001_1752226429.286380: clean 0.441
+[20/71] Outdoor_001_1752226478.283545: clean 0.224
+[21/71] Outdoor_001_1752226500.948900: clean 0.289
+[22/71] Outdoor_001_1752226541.613215: clean 0.357
+[23/71] Outdoor_001_1752226579.944329: clean 0.391
+[24/71] Outdoor_001_1752226596.943346: clean 0.237
+[25/71] Outdoor_001_1752226629.274810: clean 0.244
+[26/71] Outdoor_004_1752576400.343889: clean 0.424
+[27/71] Outdoor_004_1752576431.675474: clean 0.373
+[28/71] Outdoor_004_1752576456.340764: clean 0.371
+[29/71] Outdoor_004_1752576488.672292: clean 0.437
+[30/71] Outdoor_004_1752576521.003821: clean 0.530
+[31/71] Outdoor_004_1752576553.335351: clean 0.395
+[32/71] Outdoor_004_1752576581.333788: clean 0.424
+[33/71] Outdoor_004_1752576611.998749: clean 0.412
+[34/71] Outdoor_004_1752576637.997294: clean 0.434
+[35/71] Outdoor_004_1752576675.995173: clean 0.375
+[36/71] Outdoor_004_1752576710.326591: clean 0.287
+[37/71] Outdoor_004_1752576738.325028: clean 0.412
+[38/71] Outdoor_004_1752576769.656614: clean 0.335
+[39/71] Outdoor_004_1752576800.988199: clean 0.222
+[40/71] Outdoor_004_1752576827.986693: clean 0.332
+[41/71] Outdoor_004_1752576852.985298: clean 0.412
+[42/71] Outdoor_004_1752576875.650699: clean 0.376
+[43/71] Outdoor_004_1752576896.982843: clean 0.341
+[44/71] Outdoor_004_1752576920.648190: clean 0.382
+[45/71] Outdoor_004_1752576948.646628: clean 0.515
+[46/71] Outdoor_004_1752576971.978660: clean 0.491
+[47/71] Outdoor_009_1755773630.497723: clean 0.289
+[48/71] Outdoor_009_1755773656.162964: clean 0.203
+[49/71] Outdoor_009_1755773685.161352: clean 0.270
+[50/71] Outdoor_009_1755773735.491890: clean 0.228
+[51/71] Outdoor_009_1755773768.823372: clean 0.250
+[52/71] Outdoor_009_1755773796.821817: clean 0.201
+[53/71] Outdoor_009_1755773820.487169: clean 0.291
+[54/71] Outdoor_009_1755773844.152522: clean 0.434
+[55/71] Outdoor_009_1755773889.150023: clean 0.164
+[56/71] Outdoor_009_1755773916.148524: clean 0.226
+[57/71] Outdoor_009_1755773934.480838: clean 0.299
+[58/71] Outdoor_009_1755773959.812763: clean 0.252
+[59/71] Outdoor_009_1755773987.477895: clean 0.309
+[60/71] Outdoor_009_1755774040.141636: clean 0.236
+[61/71] Outdoor_009_1755774069.140028: clean 0.194
+[62/71] Outdoor_009_1755774089.805544: clean 0.243
+[63/71] Outdoor_009_1755774116.804044: clean 0.212
+[64/71] Outdoor_009_1755774166.801267: clean 0.318
+[65/71] Outdoor_009_1755774192.133193: clean 0.170
+[66/71] Outdoor_009_1755774214.131973: clean 0.278
+[67/71] Outdoor_009_1755774237.464011: clean 0.239
+[68/71] Outdoor_009_1755774262.795936: clean 0.253
+[69/71] Outdoor_009_1755774310.126640: clean 0.221
+[70/71] Outdoor_009_1755774331.792106: clean 0.407
+[71/71] Outdoor_009_1755774357.124030: clean 0.458
+wrote results/policy_stability/STUDY_s100_midas_holo_out.md
+[2026-11-09 09:39:04] ✅ study s100_midas_holo_out (N=71) (345 s)
+[2026-11-09 09:39:04] >>> study s100_dap_s3 (N=100)
+xFormers not available
+xFormers not available
+[1/100] scene_03370_994351: clean 0.032
+[2/100] scene_03366_919746: clean 0.016
+[3/100] scene_03308_1034: clean 0.063
+[4/100] scene_03219_778603: clean 0.042
+[5/100] scene_03383_159: clean 0.032
+[6/100] scene_03350_569176: clean 0.024
+[7/100] scene_03290_203: clean 0.062
+[8/100] scene_03396_289170: clean 0.034
+[9/100] scene_03373_668201: clean 0.018
+[10/100] scene_03296_2190: clean 0.055
+[11/100] scene_03203_735: clean 0.049
+[12/100] scene_03260_200: clean 0.046
+[13/100] scene_03239_31776: clean 0.099
+[14/100] scene_03370_926137: clean 0.053
+[15/100] scene_03208_165: clean 0.016
+[16/100] scene_03245_798000: clean 0.027
+[17/100] scene_03296_5767: clean 0.026
+[18/100] scene_03239_32024: clean 0.098
+[19/100] scene_03234_616: clean 0.032
+[20/100] scene_03202_767: clean 0.031
+[21/100] scene_03294_863844: clean 0.044
+[22/100] scene_03210_127932: clean 0.017
+[23/100] scene_03337_962: clean 0.037
+[24/100] scene_03297_196161: clean 0.009
+[25/100] scene_03379_35921: clean 0.035
+[26/100] scene_03262_4295: clean 0.023
+[27/100] scene_03234_1687: clean 0.019
+[28/100] scene_03313_10363: clean 0.011
+[29/100] scene_03208_394: clean 0.021
+[30/100] scene_03227_1382: clean 0.034
+[31/100] scene_03347_788: clean 0.021
+[32/100] scene_03370_927719: clean 0.041
+[33/100] scene_03337_2413: clean 0.037
+[34/100] scene_03238_554966: clean 0.062
+[35/100] scene_03374_699260: clean 0.020
+[36/100] scene_03308_145: clean 0.047
+[37/100] scene_03321_451: clean 0.068
+[38/100] scene_03256_352325: clean 0.015
+[39/100] scene_03211_946966: clean 0.044
+[40/100] scene_03303_45: clean 0.040
+[41/100] scene_03238_554964: clean 0.043
+[42/100] scene_03388_921: clean 0.063
+[43/100] scene_03366_907635: clean 0.044
+[44/100] scene_03296_1575: clean 0.037
+[45/100] scene_03206_295: clean 0.055
+[46/100] scene_03314_7183: clean 0.029
+[47/100] scene_03227_822: clean 0.045
+[48/100] scene_03386_674: clean 0.036
+[49/100] scene_03326_754: clean 0.041
+[50/100] scene_03354_384082: clean 0.085
+[51/100] scene_03347_790: clean 0.096
+[52/100] scene_03257_988910: clean 0.017
+[53/100] scene_03337_677214: clean 0.046
+[54/100] scene_03208_459: clean 0.037
+[55/100] scene_03404_266: clean 0.029
+[56/100] scene_03459_451: clean 0.050
+[57/100] scene_03420_747351: clean 0.047
+[58/100] scene_03435_472: clean 0.019
+[59/100] scene_03405_852024: clean 0.037
+[60/100] scene_03447_639217: clean 0.038
+[61/100] scene_03468_584: clean 0.022
+[62/100] scene_03490_1018645: clean 0.027
+[63/100] scene_03455_1966: clean 0.030
+[64/100] scene_03405_371: clean 0.046
+[65/100] scene_03497_966196: clean 0.071
+[66/100] scene_03428_93896: clean 0.026
+[67/100] scene_03497_966199: clean 0.035
+[68/100] scene_03498_279102: clean 0.019
+[69/100] scene_03451_240: clean 0.027
+[70/100] scene_03446_872364: clean 0.050
+[71/100] scene_03457_141479: clean 0.025
+[72/100] scene_03407_590626: clean 0.028
+[73/100] scene_03413_830: clean 0.026
+[74/100] scene_03480_735: clean 0.034
+[75/100] scene_03417_522: clean 0.060
+[76/100] scene_03455_741: clean 0.044
+[77/100] scene_03470_830225: clean 0.033
+[78/100] scene_03435_395: clean 0.026
+[79/100] scene_03484_3223: clean 0.017
+[80/100] scene_03480_584: clean 0.058
+[81/100] scene_03468_635: clean 0.024
+[82/100] scene_03457_141477: clean 0.029
+[83/100] scene_03455_1811: clean 0.024
+[84/100] scene_03428_93901: clean 0.028
+[85/100] scene_03468_602: clean 0.037
+[86/100] scene_03498_277936: clean 0.032
+[87/100] scene_03417_1383: clean 0.102
+[88/100] scene_03470_830219: clean 0.031
+[89/100] scene_03498_274746: clean 0.020
+[90/100] scene_03451_2965: clean 0.089
+[91/100] scene_03453_579: clean 0.031
+[92/100] scene_03452_1483: clean 0.041
+[93/100] scene_03435_372: clean 0.035
+[94/100] scene_03448_1001772: clean 0.047
+[95/100] scene_03425_159: clean 0.102
+[96/100] scene_03427_1003902: clean 0.048
+[97/100] scene_03415_1056: clean 0.046
+[98/100] scene_03420_747353: clean 0.018
+[99/100] scene_03407_287514: clean 0.014
+[100/100] scene_03457_141482: clean 0.029
+wrote results/policy_stability/STUDY_s100_dap_s3.md
+[2026-11-09 10:01:45] ✅ study s100_dap_s3 (N=100) (1361 s)
+[2026-11-09 10:01:45] >>> study s100_dap_panox (N=100)
+xFormers not available
+xFormers not available
+[1/100] ClothingStore_0002: clean 0.175
+[2/100] ClothingStore_0033: clean 0.121
+[3/100] ClothingStore_0079: clean 0.131
+[4/100] ClothingStore_0092: clean 0.150
+[5/100] ClothingStore_0128: clean 0.095
+[6/100] ClothingStore_0151: clean 0.097
+[7/100] ClothingStore_0168: clean 0.074
+[8/100] ClothingStore_0186: clean 0.113
+[9/100] ClothingStore_0191: clean 0.114
+[10/100] ClothingStore_0202: clean 0.108
+[11/100] ClothingStore_0223: clean 0.098
+[12/100] ClothingStore_0239: clean 0.199
+[13/100] ClothingStore_0266: clean 0.195
+[14/100] Diner50_0028: clean 0.162
+[15/100] Diner50_0079: clean 0.120
+[16/100] Diner50_0084: clean 0.109
+[17/100] Diner50_0128: clean 0.093
+[18/100] Diner50_0151: clean 0.156
+[19/100] Diner50_0183: clean 0.160
+[20/100] Diner50_0187: clean 0.162
+[21/100] Diner50_0194: clean 0.159
+[22/100] Diner50_0206: clean 0.171
+[23/100] Diner50_0223: clean 0.203
+[24/100] Diner50_0255: clean 0.205
+[25/100] Diner50_0281: clean 0.098
+[26/100] FeudalJapan_Meshingun_0000: clean 0.128
+[27/100] FeudalJapan_Meshingun_0006: clean 0.138
+[28/100] FeudalJapan_Meshingun_0013: clean 0.153
+[29/100] FeudalJapan_Meshingun_0054: clean 0.068
+[30/100] FeudalJapan_Meshingun_0058: clean 0.069
+[31/100] FeudalJapan_Meshingun_0066: clean 0.074
+[32/100] FeudalJapan_Meshingun_0093: clean 0.077
+[33/100] FeudalJapan_Meshingun_0129: clean 0.103
+[34/100] FeudalJapan_Meshingun_0149: clean 0.125
+[35/100] FeudalJapan_Meshingun_0159: clean 0.105
+[36/100] FeudalJapan_Meshingun_0165: clean 0.116
+[37/100] FeudalJapan_Meshingun_0187: clean 0.158
+[38/100] FeudalJapan_Meshingun_0204: clean 0.136
+[39/100] ModularBakeryShop_0014: clean 0.328
+[40/100] ModularBakeryShop_0063: clean 0.067
+[41/100] ModularBakeryShop_0075: clean 0.071
+[42/100] ModularBakeryShop_0093: clean 0.071
+[43/100] ModularBakeryShop_0097: clean 0.074
+[44/100] ModularBakeryShop_0103: clean 0.072
+[45/100] ModularBakeryShop_0127: clean 0.078
+[46/100] ModularBakeryShop_0143: clean 0.073
+[47/100] ModularBakeryShop_0150: clean 0.067
+[48/100] ModularBakeryShop_0209: clean 0.056
+[49/100] ModularBakeryShop_0227: clean 0.060
+[50/100] ModularBakeryShop_0249: clean 0.036
+[51/100] Mountain_Environment_Set_0002: clean 0.110
+[52/100] Mountain_Environment_Set_0033: clean 0.200
+[53/100] Mountain_Environment_Set_0079: clean 0.535
+[54/100] Mountain_Environment_Set_0092: clean 0.918
+[55/100] Mountain_Environment_Set_0128: clean 0.634
+[56/100] Mountain_Environment_Set_0151: clean 0.133
+[57/100] Mountain_Environment_Set_0168: clean 0.339
+[58/100] Mountain_Environment_Set_0186: clean 0.460
+[59/100] Mountain_Environment_Set_0191: clean 0.488
+[60/100] Mountain_Environment_Set_0202: clean 0.500
+[61/100] Mountain_Environment_Set_0223: clean 0.549
+[62/100] Mountain_Environment_Set_0239: clean 0.557
+[63/100] Mountain_Environment_Set_0266: clean 0.580
+[64/100] SouthOfFrance_0028: clean 0.380
+[65/100] SouthOfFrance_0067: clean 0.454
+[66/100] SouthOfFrance_0082: clean 0.429
+[67/100] SouthOfFrance_0127: clean 0.425
+[68/100] SouthOfFrance_0141: clean 0.385
+[69/100] SouthOfFrance_0164: clean 0.370
+[70/100] SouthOfFrance_0183: clean 0.392
+[71/100] SouthOfFrance_0187: clean 0.412
+[72/100] SouthOfFrance_0194: clean 0.409
+[73/100] SouthOfFrance_0206: clean 0.433
+[74/100] SouthOfFrance_0236: clean 0.347
+[75/100] SouthOfFrance_0255: clean 0.339
+[76/100] Warehouse_0002: clean 0.201
+[77/100] Warehouse_0033: clean 0.227
+[78/100] Warehouse_0067: clean 0.299
+[79/100] Warehouse_0082: clean 0.321
+[80/100] Warehouse_0127: clean 0.338
+[81/100] Warehouse_0141: clean 0.323
+[82/100] Warehouse_0164: clean 0.330
+[83/100] Warehouse_0183: clean 0.311
+[84/100] Warehouse_0187: clean 0.313
+[85/100] Warehouse_0194: clean 0.312
+[86/100] Warehouse_0206: clean 0.307
+[87/100] Warehouse_0236: clean 0.296
+[88/100] Warehouse_0245: clean 0.303
+[89/100] YellowParrot_0028: clean 0.376
+[90/100] YellowParrot_0054: clean 0.361
+[91/100] YellowParrot_0079: clean 0.347
+[92/100] YellowParrot_0092: clean 0.344
+[93/100] YellowParrot_0128: clean 0.335
+[94/100] YellowParrot_0151: clean 0.316
+[95/100] YellowParrot_0168: clean 0.284
+[96/100] YellowParrot_0186: clean 0.241
+[97/100] YellowParrot_0191: clean 0.244
+[98/100] YellowParrot_0202: clean 0.225
+[99/100] YellowParrot_0223: clean 0.218
+[100/100] YellowParrot_0239: clean 0.244
+wrote results/policy_stability/STUDY_s100_dap_panox.md
+[2026-11-09 10:26:53] ✅ study s100_dap_panox (N=100) (1508 s)
+[2026-11-09 10:26:53] >>> study s100_dap_holo_in (N=100)
+xFormers not available
+xFormers not available
+[1/100] Indoor_001_1752141078.842170: clean 0.192
+[2/100] Indoor_001_1752141117.877729: clean 0.277
+[3/100] Indoor_001_1752141169.925142: clean 0.230
+[4/100] Indoor_001_1752141218.969820: clean 0.134
+[5/100] Indoor_001_1752141272.018145: clean 0.264
+[6/100] Indoor_001_1752141321.062822: clean 0.220
+[7/100] Indoor_001_1752141369.106587: clean 0.154
+[8/100] Indoor_001_1752141417.150354: clean 0.146
+[9/100] Indoor_002_1752398025.284952: clean 0.175
+[10/100] Indoor_002_1752398056.949583: clean 0.110
+[11/100] Indoor_002_1752398085.281091: clean 0.083
+[12/100] Indoor_002_1752398124.278581: clean 0.101
+[13/100] Indoor_002_1752398144.277292: clean 0.127
+[14/100] Indoor_002_1752398181.608225: clean 0.118
+[15/100] Indoor_002_1752398218.272533: clean 0.060
+[16/100] Indoor_002_1752398247.937292: clean 0.180
+[17/100] Indoor_002_1752398287.934715: clean 0.110
+[18/100] Indoor_007_1752398942.114256: clean 0.114
+[19/100] Indoor_007_1752398984.444850: clean 0.068
+[20/100] Indoor_007_1752399047.440773: clean 0.218
+[21/100] Indoor_007_1752399075.105651: clean 0.080
+[22/100] Indoor_007_1752399116.102999: clean 0.136
+[23/100] Indoor_007_1752399158.766904: clean 0.098
+[24/100] Indoor_007_1752399187.765027: clean 0.077
+[25/100] Indoor_007_1752399233.428740: clean 0.061
+[26/100] Indoor_008_1752707836.069118: clean 0.086
+[27/100] Indoor_008_1752707885.399230: clean 0.083
+[28/100] Indoor_008_1752707927.729801: clean 0.161
+[29/100] Indoor_008_1752707976.059980: clean 0.222
+[30/100] Indoor_008_1752708011.724320: clean 0.235
+[31/100] Indoor_008_1752708055.388136: clean 0.112
+[32/100] Indoor_008_1752708090.385852: clean 0.071
+[33/100] Indoor_008_1752708119.383960: clean 0.192
+[34/100] Indoor_008_1752708157.714792: clean 0.087
+[35/100] Indoor_009_1752709922.609930: clean 0.065
+[36/100] Indoor_009_1752709960.274145: clean 0.070
+[37/100] Indoor_009_1752709984.605898: clean 0.124
+[38/100] Indoor_009_1752710014.270634: clean 0.202
+[39/100] Indoor_009_1752710054.268032: clean 0.213
+[40/100] Indoor_009_1752710079.266408: clean 0.163
+[41/100] Indoor_009_1752710111.930950: clean 0.194
+[42/100] Indoor_009_1752710145.262114: clean 0.197
+[43/100] Indoor_015_1753495653.088750: clean 0.324
+[44/100] Indoor_015_1753495679.753732: clean 0.107
+[45/100] Indoor_015_1753495707.085335: clean 0.127
+[46/100] Indoor_015_1753495722.084387: clean 0.157
+[47/100] Indoor_015_1753495744.082996: clean 0.159
+[48/100] Indoor_015_1753495771.414601: clean 0.070
+[49/100] Indoor_015_1753495795.079770: clean 0.190
+[50/100] Indoor_015_1753495815.745131: clean 0.188
+[51/100] Indoor_015_1753495835.077242: clean 0.069
+[52/100] Indoor_016_1753495952.179599: clean 0.205
+[53/100] Indoor_016_1753495976.511401: clean 0.129
+[54/100] Indoor_016_1753495997.510082: clean 0.497
+[55/100] Indoor_016_1753496020.508635: clean 0.129
+[56/100] Indoor_016_1753496043.507191: clean 0.246
+[57/100] Indoor_016_1753496060.839433: clean 0.136
+[58/100] Indoor_016_1753496079.171613: clean 0.102
+[59/100] Indoor_018_1753497324.213240: clean 0.097
+[60/100] Indoor_018_1753497357.544442: clean 0.239
+[61/100] Indoor_018_1753497381.876220: clean 0.242
+[62/100] Indoor_018_1753497410.874366: clean 0.144
+[63/100] Indoor_018_1753497443.205632: clean 0.082
+[64/100] Indoor_018_1753497478.536708: clean 0.243
+[65/100] Indoor_018_1753497504.201733: clean 0.128
+[66/100] Indoor_018_1753497530.533383: clean 0.271
+[67/100] Indoor_041_1753521207.152706: clean 0.086
+[68/100] Indoor_041_1753521232.151117: clean 0.129
+[69/100] Indoor_041_1753521253.816408: clean 0.080
+[70/100] Indoor_041_1753521283.147877: clean 0.153
+[71/100] Indoor_041_1753521305.146480: clean 0.421
+[72/100] Indoor_041_1753521334.144636: clean 0.056
+[73/100] Indoor_041_1753521360.142984: clean 0.098
+[74/100] Indoor_041_1753521383.808148: clean 0.083
+[75/100] Indoor_041_1753521418.805924: clean 0.086
+[76/100] Indoor_044_1753604006.951080: clean 0.078
+[77/100] Indoor_044_1753604045.948579: clean 0.391
+[78/100] Indoor_044_1753604093.612187: clean 0.108
+[79/100] Indoor_044_1753604126.610070: clean 0.134
+[80/100] Indoor_044_1753604166.940816: clean 0.176
+[81/100] Indoor_044_1753604216.270986: clean 0.175
+[82/100] Indoor_044_1753604279.933567: clean 0.121
+[83/100] Indoor_044_1753604318.597754: clean 0.114
+[84/100] Indoor_048_1753584627.957172: clean 0.161
+[85/100] Indoor_048_1753584676.954019: clean 0.065
+[86/100] Indoor_048_1753584702.952349: clean 0.092
+[87/100] Indoor_048_1753584751.615883: clean 0.041
+[88/100] Indoor_048_1753584782.280575: clean 0.053
+[89/100] Indoor_048_1753584835.277168: clean 0.056
+[90/100] Indoor_048_1753584870.608226: clean 0.098
+[91/100] Indoor_048_1753584903.606103: clean 0.128
+[92/100] Indoor_048_1753584946.603337: clean 0.052
+[93/100] Indoor_053_1753612662.342858: clean 0.064
+[94/100] Indoor_053_1753612734.684300: clean 0.133
+[95/100] Indoor_053_1753612763.781044: clean 0.187
+[96/100] Indoor_053_1753612802.754664: clean 0.138
+[97/100] Indoor_053_1753612857.744839: clean 0.149
+[98/100] Indoor_053_1753612902.591197: clean 0.273
+[99/100] Indoor_053_1753612937.293734: clean 0.279
+[100/100] Indoor_053_1753612987.212002: clean 0.240
+wrote results/policy_stability/STUDY_s100_dap_holo_in.md
+[2026-11-09 10:50:17] ✅ study s100_dap_holo_in (N=100) (1404 s)
+[2026-11-09 10:50:17] >>> study s100_dap_holo_out (N=71)
+xFormers not available
+xFormers not available
+[1/71] Outdoor_001_1752225613.333593: clean 0.215
+[2/71] Outdoor_001_1752225691.995708: clean 0.383
+[3/71] Outdoor_001_1752225730.993451: clean 0.551
+[4/71] Outdoor_001_1752225804.322541: clean 0.343
+[5/71] Outdoor_001_1752225836.654004: clean 0.563
+[6/71] Outdoor_001_1752225900.650302: clean 0.463
+[7/71] Outdoor_001_1752225961.646771: clean 0.316
+[8/71] Outdoor_001_1752225986.978640: clean 0.215
+[9/71] Outdoor_001_1752226037.309060: clean 0.326
+[10/71] Outdoor_001_1752226088.972738: clean 0.213
+[11/71] Outdoor_001_1752226118.304374: clean 0.179
+[12/71] Outdoor_001_1752226164.968340: clean 0.161
+[13/71] Outdoor_001_1752226208.965795: clean 0.347
+[14/71] Outdoor_001_1752226234.297664: clean 0.124
+[15/71] Outdoor_001_1752226281.294943: clean 0.234
+[16/71] Outdoor_001_1752226307.293437: clean 0.292
+[17/71] Outdoor_001_1752226356.957232: clean 0.304
+[18/71] Outdoor_001_1752226403.621199: clean 0.258
+[19/71] Outdoor_001_1752226429.286380: clean 0.259
+[20/71] Outdoor_001_1752226478.283545: clean 0.287
+[21/71] Outdoor_001_1752226500.948900: clean 0.262
+[22/71] Outdoor_001_1752226541.613215: clean 0.263
+[23/71] Outdoor_001_1752226579.944329: clean 0.233
+[24/71] Outdoor_001_1752226596.943346: clean 0.264
+[25/71] Outdoor_001_1752226629.274810: clean 0.233
+[26/71] Outdoor_004_1752576400.343889: clean 0.485
+[27/71] Outdoor_004_1752576431.675474: clean 0.827
+[28/71] Outdoor_004_1752576456.340764: clean 0.805
+[29/71] Outdoor_004_1752576488.672292: clean 2.778
+[30/71] Outdoor_004_1752576521.003821: clean 8.517
+[31/71] Outdoor_004_1752576553.335351: clean 1.657
+[32/71] Outdoor_004_1752576581.333788: clean 1.155
+[33/71] Outdoor_004_1752576611.998749: clean 0.856
+[34/71] Outdoor_004_1752576637.997294: clean 0.880
+[35/71] Outdoor_004_1752576675.995173: clean 1.227
+[36/71] Outdoor_004_1752576710.326591: clean 0.273
+[37/71] Outdoor_004_1752576738.325028: clean 0.199
+[38/71] Outdoor_004_1752576769.656614: clean 0.224
+[39/71] Outdoor_004_1752576800.988199: clean 0.174
+[40/71] Outdoor_004_1752576827.986693: clean 0.558
+[41/71] Outdoor_004_1752576852.985298: clean 0.519
+[42/71] Outdoor_004_1752576875.650699: clean 1.312
+[43/71] Outdoor_004_1752576896.982843: clean 0.860
+[44/71] Outdoor_004_1752576920.648190: clean 0.886
+[45/71] Outdoor_004_1752576948.646628: clean 6.319
+[46/71] Outdoor_004_1752576971.978660: clean 0.976
+[47/71] Outdoor_009_1755773630.497723: clean 0.225
+[48/71] Outdoor_009_1755773656.162964: clean 0.322
+[49/71] Outdoor_009_1755773685.161352: clean 0.384
+[50/71] Outdoor_009_1755773735.491890: clean 0.333
+[51/71] Outdoor_009_1755773768.823372: clean 0.400
+[52/71] Outdoor_009_1755773796.821817: clean 0.348
+[53/71] Outdoor_009_1755773820.487169: clean 0.541
+[54/71] Outdoor_009_1755773844.152522: clean 0.220
+[55/71] Outdoor_009_1755773889.150023: clean 0.227
+[56/71] Outdoor_009_1755773916.148524: clean 0.114
+[57/71] Outdoor_009_1755773934.480838: clean 0.211
+[58/71] Outdoor_009_1755773959.812763: clean 0.172
+[59/71] Outdoor_009_1755773987.477895: clean 0.265
+[60/71] Outdoor_009_1755774040.141636: clean 0.172
+[61/71] Outdoor_009_1755774069.140028: clean 0.230
+[62/71] Outdoor_009_1755774089.805544: clean 0.241
+[63/71] Outdoor_009_1755774116.804044: clean 0.211
+[64/71] Outdoor_009_1755774166.801267: clean 0.206
+[65/71] Outdoor_009_1755774192.133193: clean 0.202
+[66/71] Outdoor_009_1755774214.131973: clean 0.308
+[67/71] Outdoor_009_1755774237.464011: clean 0.250
+[68/71] Outdoor_009_1755774262.795936: clean 0.243
+[69/71] Outdoor_009_1755774310.126640: clean 0.142
+[70/71] Outdoor_009_1755774331.792106: clean 0.203
+[71/71] Outdoor_009_1755774357.124030: clean 0.251
+wrote results/policy_stability/STUDY_s100_dap_holo_out.md
+[2026-11-09 11:07:08] ✅ study s100_dap_holo_out (N=71) (1011 s)
+[2026-11-09 11:07:08] >>> study s100_da360_s3 (N=100)
+xFormers not available
+xFormers not available
+pretrained model is not available.
+Aurindum/third_party/DA360/networks/da360.py:74: FutureWarning: `torch.cuda.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cuda', args...)` instead.
+  with autocast(enabled=self.mixed_precision):
+Aurindum/third_party/DA360/networks/da360.py:74: FutureWarning: `torch.cuda.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cuda', args...)` instead.
+  with autocast(enabled=self.mixed_precision):
+[1/100] scene_03370_994351: clean 0.007
+[2/100] scene_03366_919746: clean 0.010
+[3/100] scene_03308_1034: clean 0.024
+[4/100] scene_03219_778603: clean 0.019
+[5/100] scene_03383_159: clean 0.016
+[6/100] scene_03350_569176: clean 0.008
+[7/100] scene_03290_203: clean 0.013
+[8/100] scene_03396_289170: clean 0.014
+[9/100] scene_03373_668201: clean 0.007
+[10/100] scene_03296_2190: clean 0.020
+[11/100] scene_03203_735: clean 0.008
+[12/100] scene_03260_200: clean 0.017
+[13/100] scene_03239_31776: clean 0.016
+[14/100] scene_03370_926137: clean 0.081
+[15/100] scene_03208_165: clean 0.007
+[16/100] scene_03245_798000: clean 0.013
+[17/100] scene_03296_5767: clean 0.027
+[18/100] scene_03239_32024: clean 0.018
+[19/100] scene_03234_616: clean 0.025
+[20/100] scene_03202_767: clean 0.007
+[21/100] scene_03294_863844: clean 0.004
+[22/100] scene_03210_127932: clean 0.012
+[23/100] scene_03337_962: clean 0.014
+[24/100] scene_03297_196161: clean 0.006
+[25/100] scene_03379_35921: clean 0.286
+[26/100] scene_03262_4295: clean 0.006
+[27/100] scene_03234_1687: clean 0.010
+[28/100] scene_03313_10363: clean 0.005
+[29/100] scene_03208_394: clean 0.014
+[30/100] scene_03227_1382: clean 0.010
+[31/100] scene_03347_788: clean 0.008
+[32/100] scene_03370_927719: clean 0.021
+[33/100] scene_03337_2413: clean 0.024
+[34/100] scene_03238_554966: clean 0.060
+[35/100] scene_03374_699260: clean 0.015
+[36/100] scene_03308_145: clean 0.092
+[37/100] scene_03321_451: clean 0.016
+[38/100] scene_03256_352325: clean 0.005
+[39/100] scene_03211_946966: clean 0.016
+[40/100] scene_03303_45: clean 0.013
+[41/100] scene_03238_554964: clean 0.062
+[42/100] scene_03388_921: clean 0.021
+[43/100] scene_03366_907635: clean 0.015
+[44/100] scene_03296_1575: clean 0.029
+[45/100] scene_03206_295: clean 0.023
+[46/100] scene_03314_7183: clean 0.013
+[47/100] scene_03227_822: clean 0.016
+[48/100] scene_03386_674: clean 0.086
+[49/100] scene_03326_754: clean 0.009
+[50/100] scene_03354_384082: clean 0.268
+[51/100] scene_03347_790: clean 0.007
+[52/100] scene_03257_988910: clean 0.014
+[53/100] scene_03337_677214: clean 0.021
+[54/100] scene_03208_459: clean 0.014
+[55/100] scene_03404_266: clean 0.016
+[56/100] scene_03459_451: clean 0.013
+[57/100] scene_03420_747351: clean 0.075
+[58/100] scene_03435_472: clean 0.008
+[59/100] scene_03405_852024: clean 0.014
+[60/100] scene_03447_639217: clean 0.021
+[61/100] scene_03468_584: clean 0.008
+[62/100] scene_03490_1018645: clean 0.049
+[63/100] scene_03455_1966: clean 0.009
+[64/100] scene_03405_371: clean 0.007
+[65/100] scene_03497_966196: clean 0.074
+[66/100] scene_03428_93896: clean 0.014
+[67/100] scene_03497_966199: clean 0.008
+[68/100] scene_03498_279102: clean 0.014
+[69/100] scene_03451_240: clean 0.015
+[70/100] scene_03446_872364: clean 0.031
+[71/100] scene_03457_141479: clean 0.012
+[72/100] scene_03407_590626: clean 0.007
+[73/100] scene_03413_830: clean 0.014
+[74/100] scene_03480_735: clean 0.014
+[75/100] scene_03417_522: clean 0.025
+[76/100] scene_03455_741: clean 0.018
+[77/100] scene_03470_830225: clean 0.014
+[78/100] scene_03435_395: clean 0.018
+[79/100] scene_03484_3223: clean 0.015
+[80/100] scene_03480_584: clean 0.061
+[81/100] scene_03468_635: clean 0.017
+[82/100] scene_03457_141477: clean 0.015
+[83/100] scene_03455_1811: clean 0.010
+[84/100] scene_03428_93901: clean 0.013
+[85/100] scene_03468_602: clean 0.013
+[86/100] scene_03498_277936: clean 0.027
+[87/100] scene_03417_1383: clean 0.090
+[88/100] scene_03470_830219: clean 0.012
+[89/100] scene_03498_274746: clean 0.016
+[90/100] scene_03451_2965: clean 0.481
+[91/100] scene_03453_579: clean 0.012
+[92/100] scene_03452_1483: clean 0.018
+[93/100] scene_03435_372: clean 0.021
+[94/100] scene_03448_1001772: clean 0.024
+[95/100] scene_03425_159: clean 0.020
+[96/100] scene_03427_1003902: clean 0.025
+[97/100] scene_03415_1056: clean 0.027
+[98/100] scene_03420_747353: clean 0.010
+[99/100] scene_03407_287514: clean 0.007
+[100/100] scene_03457_141482: clean 0.009
+wrote results/policy_stability/STUDY_s100_da360_s3.md
+[2026-11-09 11:30:54] ✅ study s100_da360_s3 (N=100) (1426 s)
+[2026-11-09 11:30:54] >>> study s100_da360_panox (N=100)
+xFormers not available
+xFormers not available
+pretrained model is not available.
+Aurindum/third_party/DA360/networks/da360.py:74: FutureWarning: `torch.cuda.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cuda', args...)` instead.
+  with autocast(enabled=self.mixed_precision):
+Aurindum/third_party/DA360/networks/da360.py:74: FutureWarning: `torch.cuda.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cuda', args...)` instead.
+  with autocast(enabled=self.mixed_precision):
+[1/100] ClothingStore_0002: clean 0.021
+[2/100] ClothingStore_0033: clean 0.020
+[3/100] ClothingStore_0079: clean 0.044
+[4/100] ClothingStore_0092: clean 0.055
+[5/100] ClothingStore_0128: clean 0.091
+[6/100] ClothingStore_0151: clean 0.103
+[7/100] ClothingStore_0168: clean 0.074
+[8/100] ClothingStore_0186: clean 0.079
+[9/100] ClothingStore_0191: clean 0.063
+[10/100] ClothingStore_0202: clean 0.066
+[11/100] ClothingStore_0223: clean 0.068
+[12/100] ClothingStore_0239: clean 0.071
+[13/100] ClothingStore_0266: clean 0.131
+[14/100] Diner50_0028: clean 0.083
+[15/100] Diner50_0079: clean 0.068
+[16/100] Diner50_0084: clean 0.055
+[17/100] Diner50_0128: clean 0.044
+[18/100] Diner50_0151: clean 0.108
+[19/100] Diner50_0183: clean 0.059
+[20/100] Diner50_0187: clean 0.065
+[21/100] Diner50_0194: clean 0.099
+[22/100] Diner50_0206: clean 0.065
+[23/100] Diner50_0223: clean 0.116
+[24/100] Diner50_0255: clean 0.142
+[25/100] Diner50_0281: clean 0.088
+[26/100] FeudalJapan_Meshingun_0000: clean 0.057
+[27/100] FeudalJapan_Meshingun_0006: clean 0.059
+[28/100] FeudalJapan_Meshingun_0013: clean 0.064
+[29/100] FeudalJapan_Meshingun_0054: clean 0.050
+[30/100] FeudalJapan_Meshingun_0058: clean 0.052
+[31/100] FeudalJapan_Meshingun_0066: clean 0.047
+[32/100] FeudalJapan_Meshingun_0093: clean 0.046
+[33/100] FeudalJapan_Meshingun_0129: clean 0.050
+[34/100] FeudalJapan_Meshingun_0149: clean 0.067
+[35/100] FeudalJapan_Meshingun_0159: clean 0.053
+[36/100] FeudalJapan_Meshingun_0165: clean 0.099
+[37/100] FeudalJapan_Meshingun_0187: clean 0.119
+[38/100] FeudalJapan_Meshingun_0204: clean 0.086
+[39/100] ModularBakeryShop_0014: clean 0.057
+[40/100] ModularBakeryShop_0063: clean 0.063
+[41/100] ModularBakeryShop_0075: clean 0.047
+[42/100] ModularBakeryShop_0093: clean 0.058
+[43/100] ModularBakeryShop_0097: clean 0.057
+[44/100] ModularBakeryShop_0103: clean 0.056
+[45/100] ModularBakeryShop_0127: clean 0.057
+[46/100] ModularBakeryShop_0143: clean 0.053
+[47/100] ModularBakeryShop_0150: clean 0.041
+[48/100] ModularBakeryShop_0209: clean 0.035
+[49/100] ModularBakeryShop_0227: clean 0.056
+[50/100] ModularBakeryShop_0249: clean 0.055
+[51/100] Mountain_Environment_Set_0002: clean 0.119
+[52/100] Mountain_Environment_Set_0033: clean 0.109
+[53/100] Mountain_Environment_Set_0079: clean 0.136
+[54/100] Mountain_Environment_Set_0092: clean 0.198
+[55/100] Mountain_Environment_Set_0128: clean 0.146
+[56/100] Mountain_Environment_Set_0151: clean 0.100
+[57/100] Mountain_Environment_Set_0168: clean 0.084
+[58/100] Mountain_Environment_Set_0186: clean 0.075
+[59/100] Mountain_Environment_Set_0191: clean 0.070
+[60/100] Mountain_Environment_Set_0202: clean 0.070
+[61/100] Mountain_Environment_Set_0223: clean 0.065
+[62/100] Mountain_Environment_Set_0239: clean 0.069
+[63/100] Mountain_Environment_Set_0266: clean 0.076
+[64/100] SouthOfFrance_0028: clean 0.167
+[65/100] SouthOfFrance_0067: clean 0.153
+[66/100] SouthOfFrance_0082: clean 0.154
+[67/100] SouthOfFrance_0127: clean 0.156
+[68/100] SouthOfFrance_0141: clean 0.123
+[69/100] SouthOfFrance_0164: clean 0.082
+[70/100] SouthOfFrance_0183: clean 0.083
+[71/100] SouthOfFrance_0187: clean 0.082
+[72/100] SouthOfFrance_0194: clean 0.091
+[73/100] SouthOfFrance_0206: clean 0.101
+[74/100] SouthOfFrance_0236: clean 0.121
+[75/100] SouthOfFrance_0255: clean 0.119
+[76/100] Warehouse_0002: clean 0.052
+[77/100] Warehouse_0033: clean 0.056
+[78/100] Warehouse_0067: clean 0.071
+[79/100] Warehouse_0082: clean 0.071
+[80/100] Warehouse_0127: clean 0.058
+[81/100] Warehouse_0141: clean 0.054
+[82/100] Warehouse_0164: clean 0.059
+[83/100] Warehouse_0183: clean 0.061
+[84/100] Warehouse_0187: clean 0.058
+[85/100] Warehouse_0194: clean 0.055
+[86/100] Warehouse_0206: clean 0.052
+[87/100] Warehouse_0236: clean 0.065
+[88/100] Warehouse_0245: clean 0.068
+[89/100] YellowParrot_0028: clean 0.049
+[90/100] YellowParrot_0054: clean 0.104
+[91/100] YellowParrot_0079: clean 0.088
+[92/100] YellowParrot_0092: clean 0.089
+[93/100] YellowParrot_0128: clean 0.045
+[94/100] YellowParrot_0151: clean 0.037
+[95/100] YellowParrot_0168: clean 0.039
+[96/100] YellowParrot_0186: clean 0.050
+[97/100] YellowParrot_0191: clean 0.071
+[98/100] YellowParrot_0202: clean 0.069
+[99/100] YellowParrot_0223: clean 0.048
+[100/100] YellowParrot_0239: clean 0.058
+wrote results/policy_stability/STUDY_s100_da360_panox.md
+[2026-11-09 11:56:00] ✅ study s100_da360_panox (N=100) (1506 s)
+[2026-11-09 11:56:00] >>> study s100_da360_holo_in (N=100)
+xFormers not available
+xFormers not available
+pretrained model is not available.
+Aurindum/third_party/DA360/networks/da360.py:74: FutureWarning: `torch.cuda.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cuda', args...)` instead.
+  with autocast(enabled=self.mixed_precision):
+[1/100] Indoor_001_1752141078.842170: clean 0.101
+[2/100] Indoor_001_1752141117.877729: clean 0.061
+[3/100] Indoor_001_1752141169.925142: clean 0.065
+Aurindum/third_party/DA360/networks/da360.py:74: FutureWarning: `torch.cuda.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cuda', args...)` instead.
+  with autocast(enabled=self.mixed_precision):
+[4/100] Indoor_001_1752141218.969820: clean 0.055
+[5/100] Indoor_001_1752141272.018145: clean 0.039
+[6/100] Indoor_001_1752141321.062822: clean 0.060
+[7/100] Indoor_001_1752141369.106587: clean 0.165
+[8/100] Indoor_001_1752141417.150354: clean 0.122
+[9/100] Indoor_002_1752398025.284952: clean 0.081
+[10/100] Indoor_002_1752398056.949583: clean 0.053
+[11/100] Indoor_002_1752398085.281091: clean 0.036
+[12/100] Indoor_002_1752398124.278581: clean 0.093
+[13/100] Indoor_002_1752398144.277292: clean 0.092
+[14/100] Indoor_002_1752398181.608225: clean 0.119
+[15/100] Indoor_002_1752398218.272533: clean 0.070
+[16/100] Indoor_002_1752398247.937292: clean 0.104
+[17/100] Indoor_002_1752398287.934715: clean 0.084
+[18/100] Indoor_007_1752398942.114256: clean 0.060
+[19/100] Indoor_007_1752398984.444850: clean 0.058
+[20/100] Indoor_007_1752399047.440773: clean 0.066
+[21/100] Indoor_007_1752399075.105651: clean 0.053
+[22/100] Indoor_007_1752399116.102999: clean 0.044
+[23/100] Indoor_007_1752399158.766904: clean 0.059
+[24/100] Indoor_007_1752399187.765027: clean 0.058
+[25/100] Indoor_007_1752399233.428740: clean 0.049
+[26/100] Indoor_008_1752707836.069118: clean 0.081
+[27/100] Indoor_008_1752707885.399230: clean 0.081
+[28/100] Indoor_008_1752707927.729801: clean 0.139
+[29/100] Indoor_008_1752707976.059980: clean 0.203
+[30/100] Indoor_008_1752708011.724320: clean 0.055
+[31/100] Indoor_008_1752708055.388136: clean 0.087
+[32/100] Indoor_008_1752708090.385852: clean 0.106
+[33/100] Indoor_008_1752708119.383960: clean 0.275
+[34/100] Indoor_008_1752708157.714792: clean 0.126
+[35/100] Indoor_009_1752709922.609930: clean 0.033
+[36/100] Indoor_009_1752709960.274145: clean 0.029
+[37/100] Indoor_009_1752709984.605898: clean 0.077
+[38/100] Indoor_009_1752710014.270634: clean 0.048
+[39/100] Indoor_009_1752710054.268032: clean 0.062
+[40/100] Indoor_009_1752710079.266408: clean 0.036
+[41/100] Indoor_009_1752710111.930950: clean 0.068
+[42/100] Indoor_009_1752710145.262114: clean 0.050
+[43/100] Indoor_015_1753495653.088750: clean 0.075
+[44/100] Indoor_015_1753495679.753732: clean 0.035
+[45/100] Indoor_015_1753495707.085335: clean 0.095
+[46/100] Indoor_015_1753495722.084387: clean 0.181
+[47/100] Indoor_015_1753495744.082996: clean 0.030
+[48/100] Indoor_015_1753495771.414601: clean 0.030
+[49/100] Indoor_015_1753495795.079770: clean 0.071
+[50/100] Indoor_015_1753495815.745131: clean 0.110
+[51/100] Indoor_015_1753495835.077242: clean 0.030
+[52/100] Indoor_016_1753495952.179599: clean 0.034
+[53/100] Indoor_016_1753495976.511401: clean 0.052
+[54/100] Indoor_016_1753495997.510082: clean 0.066
+[55/100] Indoor_016_1753496020.508635: clean 0.038
+[56/100] Indoor_016_1753496043.507191: clean 0.073
+[57/100] Indoor_016_1753496060.839433: clean 0.072
+[58/100] Indoor_016_1753496079.171613: clean 0.040
+[59/100] Indoor_018_1753497324.213240: clean 0.051
+[60/100] Indoor_018_1753497357.544442: clean 0.044
+[61/100] Indoor_018_1753497381.876220: clean 0.155
+[62/100] Indoor_018_1753497410.874366: clean 0.225
+[63/100] Indoor_018_1753497443.205632: clean 0.019
+[64/100] Indoor_018_1753497478.536708: clean 0.062
+[65/100] Indoor_018_1753497504.201733: clean 0.099
+[66/100] Indoor_018_1753497530.533383: clean 0.040
+[67/100] Indoor_041_1753521207.152706: clean 0.046
+[68/100] Indoor_041_1753521232.151117: clean 0.059
+[69/100] Indoor_041_1753521253.816408: clean 0.039
+[70/100] Indoor_041_1753521283.147877: clean 0.070
+[71/100] Indoor_041_1753521305.146480: clean 0.120
+[72/100] Indoor_041_1753521334.144636: clean 0.036
+[73/100] Indoor_041_1753521360.142984: clean 0.058
+[74/100] Indoor_041_1753521383.808148: clean 0.048
+[75/100] Indoor_041_1753521418.805924: clean 0.041
+[76/100] Indoor_044_1753604006.951080: clean 0.056
+[77/100] Indoor_044_1753604045.948579: clean 0.093
+[78/100] Indoor_044_1753604093.612187: clean 0.045
+[79/100] Indoor_044_1753604126.610070: clean 0.059
+[80/100] Indoor_044_1753604166.940816: clean 0.131
+[81/100] Indoor_044_1753604216.270986: clean 0.095
+[82/100] Indoor_044_1753604279.933567: clean 0.058
+[83/100] Indoor_044_1753604318.597754: clean 0.041
+[84/100] Indoor_048_1753584627.957172: clean 0.060
+[85/100] Indoor_048_1753584676.954019: clean 0.033
+[86/100] Indoor_048_1753584702.952349: clean 0.030
+[87/100] Indoor_048_1753584751.615883: clean 0.034
+[88/100] Indoor_048_1753584782.280575: clean 0.052
+[89/100] Indoor_048_1753584835.277168: clean 0.038
+[90/100] Indoor_048_1753584870.608226: clean 0.047
+[91/100] Indoor_048_1753584903.606103: clean 0.068
+[92/100] Indoor_048_1753584946.603337: clean 0.039
+[93/100] Indoor_053_1753612662.342858: clean 0.034
+[94/100] Indoor_053_1753612734.684300: clean 0.022
+[95/100] Indoor_053_1753612763.781044: clean 0.061
+[96/100] Indoor_053_1753612802.754664: clean 0.056
+[97/100] Indoor_053_1753612857.744839: clean 0.019
+[98/100] Indoor_053_1753612902.591197: clean 0.059
+[99/100] Indoor_053_1753612937.293734: clean 0.080
+[100/100] Indoor_053_1753612987.212002: clean 0.083
+wrote results/policy_stability/STUDY_s100_da360_holo_in.md
+[2026-11-09 12:20:23] ✅ study s100_da360_holo_in (N=100) (1463 s)
+[2026-11-09 12:20:23] >>> study s100_da360_holo_out (N=71)
+xFormers not available
+xFormers not available
+pretrained model is not available.
+Aurindum/third_party/DA360/networks/da360.py:74: FutureWarning: `torch.cuda.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cuda', args...)` instead.
+  with autocast(enabled=self.mixed_precision):
+Aurindum/third_party/DA360/networks/da360.py:74: FutureWarning: `torch.cuda.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cuda', args...)` instead.
+  with autocast(enabled=self.mixed_precision):
+[1/71] Outdoor_001_1752225613.333593: clean 0.193
+[2/71] Outdoor_001_1752225691.995708: clean 0.292
+[3/71] Outdoor_001_1752225730.993451: clean 0.325
+[4/71] Outdoor_001_1752225804.322541: clean 0.236
+[5/71] Outdoor_001_1752225836.654004: clean 0.279
+[6/71] Outdoor_001_1752225900.650302: clean 0.313
+[7/71] Outdoor_001_1752225961.646771: clean 0.144
+[8/71] Outdoor_001_1752225986.978640: clean 0.210
+[9/71] Outdoor_001_1752226037.309060: clean 0.184
+[10/71] Outdoor_001_1752226088.972738: clean 0.137
+[11/71] Outdoor_001_1752226118.304374: clean 0.120
+[12/71] Outdoor_001_1752226164.968340: clean 0.161
+[13/71] Outdoor_001_1752226208.965795: clean 0.300
+[14/71] Outdoor_001_1752226234.297664: clean 0.085
+[15/71] Outdoor_001_1752226281.294943: clean 0.125
+[16/71] Outdoor_001_1752226307.293437: clean 0.130
+[17/71] Outdoor_001_1752226356.957232: clean 0.097
+[18/71] Outdoor_001_1752226403.621199: clean 0.141
+[19/71] Outdoor_001_1752226429.286380: clean 0.196
+[20/71] Outdoor_001_1752226478.283545: clean 0.201
+[21/71] Outdoor_001_1752226500.948900: clean 0.177
+[22/71] Outdoor_001_1752226541.613215: clean 0.170
+[23/71] Outdoor_001_1752226579.944329: clean 0.237
+[24/71] Outdoor_001_1752226596.943346: clean 0.150
+[25/71] Outdoor_001_1752226629.274810: clean 0.133
+[26/71] Outdoor_004_1752576400.343889: clean 0.222
+[27/71] Outdoor_004_1752576431.675474: clean 0.306
+[28/71] Outdoor_004_1752576456.340764: clean 0.265
+[29/71] Outdoor_004_1752576488.672292: clean 0.379
+[30/71] Outdoor_004_1752576521.003821: clean 0.563
+[31/71] Outdoor_004_1752576553.335351: clean 0.380
+[32/71] Outdoor_004_1752576581.333788: clean 0.318
+[33/71] Outdoor_004_1752576611.998749: clean 0.331
+[34/71] Outdoor_004_1752576637.997294: clean 0.341
+[35/71] Outdoor_004_1752576675.995173: clean 0.257
+[36/71] Outdoor_004_1752576710.326591: clean 0.145
+[37/71] Outdoor_004_1752576738.325028: clean 0.178
+[38/71] Outdoor_004_1752576769.656614: clean 0.160
+[39/71] Outdoor_004_1752576800.988199: clean 0.087
+[40/71] Outdoor_004_1752576827.986693: clean 0.223
+[41/71] Outdoor_004_1752576852.985298: clean 0.271
+[42/71] Outdoor_004_1752576875.650699: clean 0.291
+[43/71] Outdoor_004_1752576896.982843: clean 0.261
+[44/71] Outdoor_004_1752576920.648190: clean 0.301
+[45/71] Outdoor_004_1752576948.646628: clean 0.601
+[46/71] Outdoor_004_1752576971.978660: clean 0.306
+[47/71] Outdoor_009_1755773630.497723: clean 0.158
+[48/71] Outdoor_009_1755773656.162964: clean 0.131
+[49/71] Outdoor_009_1755773685.161352: clean 0.096
+[50/71] Outdoor_009_1755773735.491890: clean 0.179
+[51/71] Outdoor_009_1755773768.823372: clean 0.140
+[52/71] Outdoor_009_1755773796.821817: clean 0.163
+[53/71] Outdoor_009_1755773820.487169: clean 0.193
+[54/71] Outdoor_009_1755773844.152522: clean 0.328
+[55/71] Outdoor_009_1755773889.150023: clean 0.160
+[56/71] Outdoor_009_1755773916.148524: clean 0.130
+[57/71] Outdoor_009_1755773934.480838: clean 0.129
+[58/71] Outdoor_009_1755773959.812763: clean 0.234
+[59/71] Outdoor_009_1755773987.477895: clean 0.240
+[60/71] Outdoor_009_1755774040.141636: clean 0.200
+[61/71] Outdoor_009_1755774069.140028: clean 0.092
+[62/71] Outdoor_009_1755774089.805544: clean 0.218
+[63/71] Outdoor_009_1755774116.804044: clean 0.243
+[64/71] Outdoor_009_1755774166.801267: clean 0.216
+[65/71] Outdoor_009_1755774192.133193: clean 0.229
+[66/71] Outdoor_009_1755774214.131973: clean 0.329
+[67/71] Outdoor_009_1755774237.464011: clean 0.126
+[68/71] Outdoor_009_1755774262.795936: clean 0.231
+[69/71] Outdoor_009_1755774310.126640: clean 0.180
+[70/71] Outdoor_009_1755774331.792106: clean 0.176
+[71/71] Outdoor_009_1755774357.124030: clean 0.250
+wrote results/policy_stability/STUDY_s100_da360_holo_out.md
+[2026-11-09 12:37:57] ✅ study s100_da360_holo_out (N=71) (1054 s)
+[2026-11-09 12:37:57] >>> study s100_da2_s3 (N=100)
+xFormers not available
+xFormers not available
+xFormers not available
+[1/100] scene_03370_994351: clean 0.037
+[2/100] scene_03366_919746: clean 0.016
+[3/100] scene_03308_1034: clean 0.068
+[4/100] scene_03219_778603: clean 0.387
+[5/100] scene_03383_159: clean 0.043
+[6/100] scene_03350_569176: clean 0.044
+[7/100] scene_03290_203: clean 0.043
+[8/100] scene_03396_289170: clean 0.032
+[9/100] scene_03373_668201: clean 0.053
+[10/100] scene_03296_2190: clean 0.101
+[11/100] scene_03203_735: clean 0.029
+[12/100] scene_03260_200: clean 0.037
+[13/100] scene_03239_31776: clean 0.102
+[14/100] scene_03370_926137: clean 0.122
+[15/100] scene_03208_165: clean 0.053
+[16/100] scene_03245_798000: clean 0.055
+[17/100] scene_03296_5767: clean 0.065
+[18/100] scene_03239_32024: clean 0.051
+[19/100] scene_03234_616: clean 0.066
+[20/100] scene_03202_767: clean 0.047
+[21/100] scene_03294_863844: clean 0.038
+[22/100] scene_03210_127932: clean 0.102
+[23/100] scene_03337_962: clean 0.059
+[24/100] scene_03297_196161: clean 0.031
+[25/100] scene_03379_35921: clean 0.265
+[26/100] scene_03262_4295: clean 0.053
+[27/100] scene_03234_1687: clean 0.036
+[28/100] scene_03313_10363: clean 0.037
+[29/100] scene_03208_394: clean 0.205
+[30/100] scene_03227_1382: clean 0.044
+[31/100] scene_03347_788: clean 0.031
+[32/100] scene_03370_927719: clean 0.054
+[33/100] scene_03337_2413: clean 0.046
+[34/100] scene_03238_554966: clean 0.083
+[35/100] scene_03374_699260: clean 0.418
+[36/100] scene_03308_145: clean 0.199
+[37/100] scene_03321_451: clean 0.067
+[38/100] scene_03256_352325: clean 0.048
+[39/100] scene_03211_946966: clean 0.044
+[40/100] scene_03303_45: clean 0.029
+[41/100] scene_03238_554964: clean 0.151
+[42/100] scene_03388_921: clean 0.089
+[43/100] scene_03366_907635: clean 0.045
+[44/100] scene_03296_1575: clean 0.066
+[45/100] scene_03206_295: clean 0.046
+[46/100] scene_03314_7183: clean 0.035
+[47/100] scene_03227_822: clean 0.079
+[48/100] scene_03386_674: clean 0.449
+[49/100] scene_03326_754: clean 0.098
+[50/100] scene_03354_384082: clean 0.319
+[51/100] scene_03347_790: clean 0.039
+[52/100] scene_03257_988910: clean 0.261
+[53/100] scene_03337_677214: clean 0.086
+[54/100] scene_03208_459: clean 0.048
+[55/100] scene_03404_266: clean 0.038
+[56/100] scene_03459_451: clean 0.037
+[57/100] scene_03420_747351: clean 0.133
+[58/100] scene_03435_472: clean 0.061
+[59/100] scene_03405_852024: clean 0.054
+[60/100] scene_03447_639217: clean 0.218
+[61/100] scene_03468_584: clean 0.024
+[62/100] scene_03490_1018645: clean 0.078
+[63/100] scene_03455_1966: clean 0.399
+[64/100] scene_03405_371: clean 0.023
+[65/100] scene_03497_966196: clean 0.160
+[66/100] scene_03428_93896: clean 0.028
+[67/100] scene_03497_966199: clean 0.177
+[68/100] scene_03498_279102: clean 0.035
+[69/100] scene_03451_240: clean 0.037
+[70/100] scene_03446_872364: clean 0.107
+[71/100] scene_03457_141479: clean 0.034
+[72/100] scene_03407_590626: clean 0.031
+[73/100] scene_03413_830: clean 0.045
+[74/100] scene_03480_735: clean 0.045
+[75/100] scene_03417_522: clean 0.063
+[76/100] scene_03455_741: clean 0.071
+[77/100] scene_03470_830225: clean 0.140
+[78/100] scene_03435_395: clean 0.033
+[79/100] scene_03484_3223: clean 0.043
+[80/100] scene_03480_584: clean 0.074
+[81/100] scene_03468_635: clean 0.037
+[82/100] scene_03457_141477: clean 0.042
+[83/100] scene_03455_1811: clean 0.361
+[84/100] scene_03428_93901: clean 0.051
+[85/100] scene_03468_602: clean 0.051
+[86/100] scene_03498_277936: clean 0.055
+[87/100] scene_03417_1383: clean 0.166
+[88/100] scene_03470_830219: clean 0.052
+[89/100] scene_03498_274746: clean 0.083
+[90/100] scene_03451_2965: clean 0.284
+[91/100] scene_03453_579: clean 0.039
+[92/100] scene_03452_1483: clean 0.047
+[93/100] scene_03435_372: clean 0.065
+[94/100] scene_03448_1001772: clean 0.082
+[95/100] scene_03425_159: clean 0.033
+[96/100] scene_03427_1003902: clean 0.068
+[97/100] scene_03415_1056: clean 0.045
+[98/100] scene_03420_747353: clean 0.022
+[99/100] scene_03407_287514: clean 0.020
+[100/100] scene_03457_141482: clean 0.036
+wrote results/policy_stability/STUDY_s100_da2_s3.md
+[2026-11-09 13:00:32] ✅ study s100_da2_s3 (N=100) (1355 s)
+[2026-11-09 13:00:32] >>> study s100_da2_panox (N=100)
+xFormers not available
+xFormers not available
+xFormers not available
+[1/100] ClothingStore_0002: clean 0.041
+[2/100] ClothingStore_0033: clean 0.043
+[3/100] ClothingStore_0079: clean 0.059
+[4/100] ClothingStore_0092: clean 0.053
+[5/100] ClothingStore_0128: clean 0.072
+[6/100] ClothingStore_0151: clean 0.090
+[7/100] ClothingStore_0168: clean 0.074
+[8/100] ClothingStore_0186: clean 0.065
+[9/100] ClothingStore_0191: clean 0.069
+[10/100] ClothingStore_0202: clean 0.081
+[11/100] ClothingStore_0223: clean 0.094
+[12/100] ClothingStore_0239: clean 0.100
+[13/100] ClothingStore_0266: clean 0.050
+[14/100] Diner50_0028: clean 0.189
+[15/100] Diner50_0079: clean 0.108
+[16/100] Diner50_0084: clean 0.102
+[17/100] Diner50_0128: clean 0.102
+[18/100] Diner50_0151: clean 0.164
+[19/100] Diner50_0183: clean 0.189
+[20/100] Diner50_0187: clean 0.189
+[21/100] Diner50_0194: clean 0.207
+[22/100] Diner50_0206: clean 0.192
+[23/100] Diner50_0223: clean 0.221
+[24/100] Diner50_0255: clean 0.210
+[25/100] Diner50_0281: clean 0.143
+[26/100] FeudalJapan_Meshingun_0000: clean 0.628
+[27/100] FeudalJapan_Meshingun_0006: clean 0.709
+[28/100] FeudalJapan_Meshingun_0013: clean 0.676
+[29/100] FeudalJapan_Meshingun_0054: clean 0.618
+[30/100] FeudalJapan_Meshingun_0058: clean 0.545
+[31/100] FeudalJapan_Meshingun_0066: clean 0.644
+[32/100] FeudalJapan_Meshingun_0093: clean 0.665
+[33/100] FeudalJapan_Meshingun_0129: clean 0.705
+[34/100] FeudalJapan_Meshingun_0149: clean 0.671
+[35/100] FeudalJapan_Meshingun_0159: clean 0.660
+[36/100] FeudalJapan_Meshingun_0165: clean 0.611
+[37/100] FeudalJapan_Meshingun_0187: clean 0.371
+[38/100] FeudalJapan_Meshingun_0204: clean 0.693
+[39/100] ModularBakeryShop_0014: clean 0.082
+[40/100] ModularBakeryShop_0063: clean 0.109
+[41/100] ModularBakeryShop_0075: clean 0.105
+[42/100] ModularBakeryShop_0093: clean 0.105
+[43/100] ModularBakeryShop_0097: clean 0.098
+[44/100] ModularBakeryShop_0103: clean 0.092
+[45/100] ModularBakeryShop_0127: clean 0.092
+[46/100] ModularBakeryShop_0143: clean 0.077
+[47/100] ModularBakeryShop_0150: clean 0.079
+[48/100] ModularBakeryShop_0209: clean 0.069
+[49/100] ModularBakeryShop_0227: clean 0.072
+[50/100] ModularBakeryShop_0249: clean 0.075
+[51/100] Mountain_Environment_Set_0002: clean 0.480
+[52/100] Mountain_Environment_Set_0033: clean 0.556
+[53/100] Mountain_Environment_Set_0079: clean 0.452
+[54/100] Mountain_Environment_Set_0092: clean 0.305
+[55/100] Mountain_Environment_Set_0128: clean 0.213
+[56/100] Mountain_Environment_Set_0151: clean 0.490
+[57/100] Mountain_Environment_Set_0168: clean 0.602
+[58/100] Mountain_Environment_Set_0186: clean 0.643
+[59/100] Mountain_Environment_Set_0191: clean 0.627
+[60/100] Mountain_Environment_Set_0202: clean 0.684
+[61/100] Mountain_Environment_Set_0223: clean 0.679
+[62/100] Mountain_Environment_Set_0239: clean 0.683
+[63/100] Mountain_Environment_Set_0266: clean 0.689
+[64/100] SouthOfFrance_0028: clean 0.821
+[65/100] SouthOfFrance_0067: clean 0.794
+[66/100] SouthOfFrance_0082: clean 0.722
+[67/100] SouthOfFrance_0127: clean 0.767
+[68/100] SouthOfFrance_0141: clean 0.547
+[69/100] SouthOfFrance_0164: clean 0.634
+[70/100] SouthOfFrance_0183: clean 0.698
+[71/100] SouthOfFrance_0187: clean 0.714
+[72/100] SouthOfFrance_0194: clean 0.722
+[73/100] SouthOfFrance_0206: clean 0.763
+[74/100] SouthOfFrance_0236: clean 0.739
+[75/100] SouthOfFrance_0255: clean 0.751
+[76/100] Warehouse_0002: clean 0.097
+[77/100] Warehouse_0033: clean 0.108
+[78/100] Warehouse_0067: clean 0.079
+[79/100] Warehouse_0082: clean 0.073
+[80/100] Warehouse_0127: clean 0.077
+[81/100] Warehouse_0141: clean 0.073
+[82/100] Warehouse_0164: clean 0.072
+[83/100] Warehouse_0183: clean 0.065
+[84/100] Warehouse_0187: clean 0.065
+[85/100] Warehouse_0194: clean 0.067
+[86/100] Warehouse_0206: clean 0.062
+[87/100] Warehouse_0236: clean 0.079
+[88/100] Warehouse_0245: clean 0.078
+[89/100] YellowParrot_0028: clean 0.135
+[90/100] YellowParrot_0054: clean 0.221
+[91/100] YellowParrot_0079: clean 0.223
+[92/100] YellowParrot_0092: clean 0.224
+[93/100] YellowParrot_0128: clean 0.122
+[94/100] YellowParrot_0151: clean 0.056
+[95/100] YellowParrot_0168: clean 0.035
+[96/100] YellowParrot_0186: clean 0.033
+[97/100] YellowParrot_0191: clean 0.053
+[98/100] YellowParrot_0202: clean 0.060
+[99/100] YellowParrot_0223: clean 0.057
+[100/100] YellowParrot_0239: clean 0.083
+wrote results/policy_stability/STUDY_s100_da2_panox.md
+[2026-11-09 13:23:56] ✅ study s100_da2_panox (N=100) (1404 s)
+[2026-11-09 13:23:56] >>> study s100_da2_holo_in (N=100)
+xFormers not available
+xFormers not available
+xFormers not available
+[1/100] Indoor_001_1752141078.842170: clean 0.084
+[2/100] Indoor_001_1752141117.877729: clean 0.091
+[3/100] Indoor_001_1752141169.925142: clean 0.129
+[4/100] Indoor_001_1752141218.969820: clean 0.121
+[5/100] Indoor_001_1752141272.018145: clean 0.081
+[6/100] Indoor_001_1752141321.062822: clean 0.122
+[7/100] Indoor_001_1752141369.106587: clean 0.149
+[8/100] Indoor_001_1752141417.150354: clean 0.085
+[9/100] Indoor_002_1752398025.284952: clean 0.114
+[10/100] Indoor_002_1752398056.949583: clean 0.069
+[11/100] Indoor_002_1752398085.281091: clean 0.086
+[12/100] Indoor_002_1752398124.278581: clean 0.075
+[13/100] Indoor_002_1752398144.277292: clean 0.104
+[14/100] Indoor_002_1752398181.608225: clean 0.079
+[15/100] Indoor_002_1752398218.272533: clean 0.063
+[16/100] Indoor_002_1752398247.937292: clean 0.116
+[17/100] Indoor_002_1752398287.934715: clean 0.091
+[18/100] Indoor_007_1752398942.114256: clean 0.085
+[19/100] Indoor_007_1752398984.444850: clean 0.055
+[20/100] Indoor_007_1752399047.440773: clean 0.175
+[21/100] Indoor_007_1752399075.105651: clean 0.085
+[22/100] Indoor_007_1752399116.102999: clean 0.099
+[23/100] Indoor_007_1752399158.766904: clean 0.062
+[24/100] Indoor_007_1752399187.765027: clean 0.105
+[25/100] Indoor_007_1752399233.428740: clean 0.045
+[26/100] Indoor_008_1752707836.069118: clean 0.080
+[27/100] Indoor_008_1752707885.399230: clean 0.114
+[28/100] Indoor_008_1752707927.729801: clean 0.336
+[29/100] Indoor_008_1752707976.059980: clean 0.252
+[30/100] Indoor_008_1752708011.724320: clean 0.136
+[31/100] Indoor_008_1752708055.388136: clean 0.074
+[32/100] Indoor_008_1752708090.385852: clean 0.069
+[33/100] Indoor_008_1752708119.383960: clean 0.102
+[34/100] Indoor_008_1752708157.714792: clean 0.099
+[35/100] Indoor_009_1752709922.609930: clean 0.078
+[36/100] Indoor_009_1752709960.274145: clean 0.111
+[37/100] Indoor_009_1752709984.605898: clean 0.096
+[38/100] Indoor_009_1752710014.270634: clean 0.091
+[39/100] Indoor_009_1752710054.268032: clean 0.186
+[40/100] Indoor_009_1752710079.266408: clean 0.080
+[41/100] Indoor_009_1752710111.930950: clean 0.151
+[42/100] Indoor_009_1752710145.262114: clean 0.130
+[43/100] Indoor_015_1753495653.088750: clean 0.106
+[44/100] Indoor_015_1753495679.753732: clean 0.188
+[45/100] Indoor_015_1753495707.085335: clean 0.204
+[46/100] Indoor_015_1753495722.084387: clean 0.153
+[47/100] Indoor_015_1753495744.082996: clean 0.085
+[48/100] Indoor_015_1753495771.414601: clean 0.148
+[49/100] Indoor_015_1753495795.079770: clean 0.161
+[50/100] Indoor_015_1753495815.745131: clean 0.256
+[51/100] Indoor_015_1753495835.077242: clean 0.104
+[52/100] Indoor_016_1753495952.179599: clean 0.139
+[53/100] Indoor_016_1753495976.511401: clean 0.119
+[54/100] Indoor_016_1753495997.510082: clean 0.118
+[55/100] Indoor_016_1753496020.508635: clean 0.113
+[56/100] Indoor_016_1753496043.507191: clean 0.130
+[57/100] Indoor_016_1753496060.839433: clean 0.314
+[58/100] Indoor_016_1753496079.171613: clean 0.319
+[59/100] Indoor_018_1753497324.213240: clean 0.094
+[60/100] Indoor_018_1753497357.544442: clean 0.154
+[61/100] Indoor_018_1753497381.876220: clean 0.201
+[62/100] Indoor_018_1753497410.874366: clean 0.258
+[63/100] Indoor_018_1753497443.205632: clean 0.133
+[64/100] Indoor_018_1753497478.536708: clean 0.162
+[65/100] Indoor_018_1753497504.201733: clean 0.085
+[66/100] Indoor_018_1753497530.533383: clean 0.097
+[67/100] Indoor_041_1753521207.152706: clean 0.072
+[68/100] Indoor_041_1753521232.151117: clean 0.188
+[69/100] Indoor_041_1753521253.816408: clean 0.144
+[70/100] Indoor_041_1753521283.147877: clean 0.189
+[71/100] Indoor_041_1753521305.146480: clean 0.209
+[72/100] Indoor_041_1753521334.144636: clean 0.195
+[73/100] Indoor_041_1753521360.142984: clean 0.084
+[74/100] Indoor_041_1753521383.808148: clean 0.172
+[75/100] Indoor_041_1753521418.805924: clean 0.136
+[76/100] Indoor_044_1753604006.951080: clean 0.126
+[77/100] Indoor_044_1753604045.948579: clean 0.171
+[78/100] Indoor_044_1753604093.612187: clean 0.081
+[79/100] Indoor_044_1753604126.610070: clean 0.175
+[80/100] Indoor_044_1753604166.940816: clean 0.265
+[81/100] Indoor_044_1753604216.270986: clean 0.159
+[82/100] Indoor_044_1753604279.933567: clean 0.094
+[83/100] Indoor_044_1753604318.597754: clean 0.195
+[84/100] Indoor_048_1753584627.957172: clean 0.065
+[85/100] Indoor_048_1753584676.954019: clean 0.069
+[86/100] Indoor_048_1753584702.952349: clean 0.092
+[87/100] Indoor_048_1753584751.615883: clean 0.161
+[88/100] Indoor_048_1753584782.280575: clean 0.184
+[89/100] Indoor_048_1753584835.277168: clean 0.083
+[90/100] Indoor_048_1753584870.608226: clean 0.194
+[91/100] Indoor_048_1753584903.606103: clean 0.102
+[92/100] Indoor_048_1753584946.603337: clean 0.095
+[93/100] Indoor_053_1753612662.342858: clean 0.051
+[94/100] Indoor_053_1753612734.684300: clean 0.053
+[95/100] Indoor_053_1753612763.781044: clean 0.103
+[96/100] Indoor_053_1753612802.754664: clean 0.258
+[97/100] Indoor_053_1753612857.744839: clean 0.140
+[98/100] Indoor_053_1753612902.591197: clean 0.407
+[99/100] Indoor_053_1753612937.293734: clean 0.152
+[100/100] Indoor_053_1753612987.212002: clean 0.142
+wrote results/policy_stability/STUDY_s100_da2_holo_in.md
+[2026-11-09 13:46:57] ✅ study s100_da2_holo_in (N=100) (1381 s)
+[2026-11-09 13:46:57] >>> study s100_da2_holo_out (N=71)
+xFormers not available
+xFormers not available
+xFormers not available
+[1/71] Outdoor_001_1752225613.333593: clean 0.174
+[2/71] Outdoor_001_1752225691.995708: clean 0.884
+[3/71] Outdoor_001_1752225730.993451: clean 1.031
+[4/71] Outdoor_001_1752225804.322541: clean 0.646
+[5/71] Outdoor_001_1752225836.654004: clean 1.007
+[6/71] Outdoor_001_1752225900.650302: clean 0.896
+[7/71] Outdoor_001_1752225961.646771: clean 0.710
+[8/71] Outdoor_001_1752225986.978640: clean 0.680
+[9/71] Outdoor_001_1752226037.309060: clean 0.600
+[10/71] Outdoor_001_1752226088.972738: clean 0.163
+[11/71] Outdoor_001_1752226118.304374: clean 0.503
+[12/71] Outdoor_001_1752226164.968340: clean 0.515
+[13/71] Outdoor_001_1752226208.965795: clean 0.417
+[14/71] Outdoor_001_1752226234.297664: clean 0.378
+[15/71] Outdoor_001_1752226281.294943: clean 0.273
+[16/71] Outdoor_001_1752226307.293437: clean 0.330
+[17/71] Outdoor_001_1752226356.957232: clean 0.375
+[18/71] Outdoor_001_1752226403.621199: clean 0.571
+[19/71] Outdoor_001_1752226429.286380: clean 0.576
+[20/71] Outdoor_001_1752226478.283545: clean 0.628
+[21/71] Outdoor_001_1752226500.948900: clean 0.520
+[22/71] Outdoor_001_1752226541.613215: clean 0.710
+[23/71] Outdoor_001_1752226579.944329: clean 0.319
+[24/71] Outdoor_001_1752226596.943346: clean 0.449
+[25/71] Outdoor_001_1752226629.274810: clean 0.174
+[26/71] Outdoor_004_1752576400.343889: clean 0.798
+[27/71] Outdoor_004_1752576431.675474: clean 0.698
+[28/71] Outdoor_004_1752576456.340764: clean 0.731
+[29/71] Outdoor_004_1752576488.672292: clean 1.040
+[30/71] Outdoor_004_1752576521.003821: clean 1.249
+[31/71] Outdoor_004_1752576553.335351: clean 0.886
+[32/71] Outdoor_004_1752576581.333788: clean 0.846
+[33/71] Outdoor_004_1752576611.998749: clean 0.638
+[34/71] Outdoor_004_1752576637.997294: clean 0.861
+[35/71] Outdoor_004_1752576675.995173: clean 0.919
+[36/71] Outdoor_004_1752576710.326591: clean 0.427
+[37/71] Outdoor_004_1752576738.325028: clean 0.568
+[38/71] Outdoor_004_1752576769.656614: clean 0.326
+[39/71] Outdoor_004_1752576800.988199: clean 0.298
+[40/71] Outdoor_004_1752576827.986693: clean 0.650
+[41/71] Outdoor_004_1752576852.985298: clean 0.446
+[42/71] Outdoor_004_1752576875.650699: clean 0.831
+[43/71] Outdoor_004_1752576896.982843: clean 0.987
+[44/71] Outdoor_004_1752576920.648190: clean 0.764
+[45/71] Outdoor_004_1752576948.646628: clean 1.319
+[46/71] Outdoor_004_1752576971.978660: clean 0.668
+[47/71] Outdoor_009_1755773630.497723: clean 0.342
+[48/71] Outdoor_009_1755773656.162964: clean 0.427
+[49/71] Outdoor_009_1755773685.161352: clean 0.380
+[50/71] Outdoor_009_1755773735.491890: clean 0.445
+[51/71] Outdoor_009_1755773768.823372: clean 0.549
+[52/71] Outdoor_009_1755773796.821817: clean 0.514
+[53/71] Outdoor_009_1755773820.487169: clean 0.727
+[54/71] Outdoor_009_1755773844.152522: clean 0.492
+[55/71] Outdoor_009_1755773889.150023: clean 0.585
+[56/71] Outdoor_009_1755773916.148524: clean 0.403
+[57/71] Outdoor_009_1755773934.480838: clean 0.518
+[58/71] Outdoor_009_1755773959.812763: clean 0.437
+[59/71] Outdoor_009_1755773987.477895: clean 0.543
+[60/71] Outdoor_009_1755774040.141636: clean 0.384
+[61/71] Outdoor_009_1755774069.140028: clean 0.266
+[62/71] Outdoor_009_1755774089.805544: clean 0.364
+[63/71] Outdoor_009_1755774116.804044: clean 0.397
+[64/71] Outdoor_009_1755774166.801267: clean 0.545
+[65/71] Outdoor_009_1755774192.133193: clean 0.557
+[66/71] Outdoor_009_1755774214.131973: clean 0.667
+[67/71] Outdoor_009_1755774237.464011: clean 0.531
+[68/71] Outdoor_009_1755774262.795936: clean 0.364
+[69/71] Outdoor_009_1755774310.126640: clean 0.477
+[70/71] Outdoor_009_1755774331.792106: clean 0.489
+[71/71] Outdoor_009_1755774357.124030: clean 0.260
+wrote results/policy_stability/STUDY_s100_da2_holo_out.md
+[2026-11-09 14:03:29] ✅ study s100_da2_holo_out (N=71) (992 s)
+[2026-11-09 14:03:29] =============== analysis (CPU) ===============
+[2026-11-09 14:03:29] >>> threshold sweep
+# Stricter do-no-harm rules: offline threshold test
+
+Choice always made on core datasets only. 'core LOO' = policy learned on the other three core sets, scored on the held-out core set; 'external' = policy learned on all four core sets, scored on Stanford2D3D and NYC (40-frame study files). Cells are (model, fault, dataset); a cell counts as harmful if an applied fix has median change above +1%. Mean change counts 'no fix' as 0. Models: da2, da2m, da360, dap, midas; pooled totals leave out da2m (DA2 under the median fit, core sets only) so that DA2 is not counted twice. Headline rule: min_gain 2%, min_win 60%, no per-dataset consistency requirement.
+
+| min_gain | min_win | every set better | core: applied | core: harmful | core: mean change | external: applied | external: harmful | external: mean change | core mean change minus headline (+ = less gain) |
+|---:|---:|:---:|---:|---:|---:|---:|---:|---:|---:|
+| 0% | 50% | no | 87 | 14 | -5.24% | 46 | 9 | -8.59% | -0.02 pts |
+| 0% | 50% | yes | 52 | 6 | -4.68% | 22 | 4 | -6.83% | +0.54 pts |
+| 0% | 60% | no | 59 | 10 | -5.19% | 26 | 5 | -8.03% | +0.03 pts |
+| 0% | 60% | yes | 49 | 6 | -4.56% | 20 | 4 | -6.82% | +0.66 pts |
+| 0% | 70% | no | 32 | 2 | -3.61% | 18 | 2 | -7.90% | +1.61 pts |
+| 0% | 70% | yes | 31 | 2 | -3.44% | 16 | 2 | -6.79% | +1.78 pts |
+| 0% | 80% | no | 12 | 1 | -2.25% | 6 | 0 | -4.61% | +2.98 pts |
+| 0% | 80% | yes | 12 | 1 | -2.25% | 6 | 0 | -4.61% | +2.98 pts |
+| 0% | 90% | no | 5 | 0 | -1.15% | 2 | 0 | -1.39% | +4.07 pts |
+| 0% | 90% | yes | 5 | 0 | -1.15% | 2 | 0 | -1.39% | +4.07 pts |
+| 2% | 50% | no | 60 | 9 | -4.82% | 32 | 6 | -8.65% | +0.41 pts |
+| 2% | 50% | yes | 45 | 5 | -4.68% | 20 | 4 | -6.82% | +0.54 pts |
+| 2% (headline) | 60% | no | 52 | 8 | -5.22% | 24 | 5 | -8.03% | +0.00 pts |
+| 2% | 60% | yes | 44 | 5 | -4.58% | 20 | 4 | -6.82% | +0.64 pts |
+| 2% | 70% | no | 32 | 2 | -3.61% | 18 | 2 | -7.90% | +1.61 pts |
+| 2% | 70% | yes | 31 | 2 | -3.44% | 16 | 2 | -6.79% | +1.78 pts |
+| 2% | 80% | no | 12 | 1 | -2.25% | 6 | 0 | -4.61% | +2.98 pts |
+| 2% | 80% | yes | 12 | 1 | -2.25% | 6 | 0 | -4.61% | +2.98 pts |
+| 2% | 90% | no | 5 | 0 | -1.15% | 2 | 0 | -1.39% | +4.07 pts |
+| 2% | 90% | yes | 5 | 0 | -1.15% | 2 | 0 | -1.39% | +4.07 pts |
+| 5% | 50% | no | 46 | 5 | -4.96% | 26 | 6 | -8.02% | +0.26 pts |
+| 5% | 50% | yes | 38 | 2 | -4.43% | 20 | 4 | -6.82% | +0.79 pts |
+| 5% | 60% | no | 46 | 5 | -5.07% | 24 | 5 | -8.03% | +0.15 pts |
+| 5% | 60% | yes | 38 | 2 | -4.43% | 20 | 4 | -6.82% | +0.79 pts |
+| 5% | 70% | no | 31 | 2 | -3.56% | 18 | 2 | -7.90% | +1.66 pts |
+| 5% | 70% | yes | 30 | 2 | -3.40% | 16 | 2 | -6.79% | +1.83 pts |
+| 5% | 80% | no | 12 | 1 | -2.25% | 6 | 0 | -4.61% | +2.98 pts |
+| 5% | 80% | yes | 12 | 1 | -2.25% | 6 | 0 | -4.61% | +2.98 pts |
+| 5% | 90% | no | 5 | 0 | -1.15% | 2 | 0 | -1.39% | +4.07 pts |
+| 5% | 90% | yes | 5 | 0 | -1.15% | 2 | 0 | -1.39% | +4.07 pts |
+| 10% | 50% | no | 30 | 5 | -3.82% | 14 | 2 | -7.44% | +1.40 pts |
+| 10% | 50% | yes | 22 | 2 | -3.29% | 12 | 2 | -6.40% | +1.94 pts |
+| 10% | 60% | no | 30 | 5 | -3.93% | 14 | 2 | -7.44% | +1.30 pts |
+| 10% | 60% | yes | 22 | 2 | -3.29% | 12 | 2 | -6.40% | +1.94 pts |
+| 10% | 70% | no | 22 | 2 | -3.06% | 14 | 2 | -7.50% | +2.16 pts |
+| 10% | 70% | yes | 21 | 2 | -2.89% | 12 | 2 | -6.40% | +2.33 pts |
+| 10% | 80% | no | 12 | 1 | -2.25% | 6 | 0 | -4.61% | +2.98 pts |
+| 10% | 80% | yes | 12 | 1 | -2.25% | 6 | 0 | -4.61% | +2.98 pts |
+| 10% | 90% | no | 5 | 0 | -1.15% | 2 | 0 | -1.39% | +4.07 pts |
+| 10% | 90% | yes | 5 | 0 | -1.15% | 2 | 0 | -1.39% | +4.07 pts |
+
+## Pareto front on core LOO only (harmful cells against mean change; no rule beats these on both)
+
+| min_gain | min_win | every set better | core harmful | core mean change | external harmful | external mean change |
+|---:|---:|:---:|---:|---:|---:|---:|
+| 10% | 90% | yes | 0 | -1.15% | 0 | -1.39% |
+| 10% | 80% | yes | 1 | -2.25% | 0 | -4.61% |
+| 5% | 60% | yes | 2 | -4.43% | 4 | -6.82% |
+| 5% | 60% | no | 5 | -5.07% | 5 | -8.03% |
+| 2% | 60% | no | 8 | -5.22% | 5 | -8.03% |
+| 0% | 50% | no | 14 | -5.24% | 9 | -8.59% |
+
+## External cells that are harmful under the headline rule
+
+| model | dataset | fault | headline fix | change | 5/80 | 10/80 | 2/90 | 2/60+all | 5/70+all |
+|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| da2 | stanford | yawblur | wiener | +2.8% | none | none | none | wiener +2.8% | none |
+| da2 | nyc | tilt | relevel_known | +15.3% | none | none | none | none | none |
+| da2 | nyc | nadir | plane_fill | +6.5% | none | none | none | inpaint_erp +2.9% | inpaint_erp +2.9% |
+| da2 | nyc | vfov | inpaint_erp | +5.1% | none | none | none | inpaint_erp +5.1% | inpaint_erp +5.1% |
+| midas | stanford | tilt | relevel_known | +2.0% | none | none | none | relevel_known +2.0% | none |
+
+## Per model, headline
+
+| model | core applied | core harmful | core mean | external applied | external harmful | external mean |
+|---|---:|---:|---:|---:|---:|---:|
+| da2 | 14 | 2 | -4.99% | 8 | 4 | -6.18% |
+| da2m | 14 | 3 | -10.31% | 0 | 0 | n/a |
+| da360 | 6 | 2 | -1.37% | 2 | 0 | -1.42% |
+| dap | 20 | 1 | -13.81% | 10 | 0 | -24.01% |
+| midas | 12 | 3 | -0.72% | 4 | 1 | -0.50% |
+
+## Per model, 5% / 80% / every set better
+
+| model | core applied | core harmful | core mean | external applied | external harmful | external mean |
+|---|---:|---:|---:|---:|---:|---:|
+| da2 | 1 | 0 | -0.07% | 0 | 0 | +0.00% |
+| da2m | 4 | 2 | -1.92% | 0 | 0 | n/a |
+| da360 | 0 | 0 | +0.00% | 0 | 0 | +0.00% |
+| dap | 11 | 1 | -8.91% | 6 | 0 | -18.46% |
+| midas | 0 | 0 | +0.00% | 0 | 0 | +0.00% |
+[2026-11-09 14:03:39] ✅ threshold sweep (10 s)
+[2026-11-09 14:03:39] >>> DA2 protocols
+# DA2 under both alignment protocols
+
+`lsq`: least-squares scale fit (core protocol, tag `da2`). `median`: median scale fit (tag `da2m`; the policy is learned from `study_da2m_<core>.json` under the same protocol). All comparisons use the frame ids both runs contain.
+
+## 1. Clean AbsRel (median over frames)
+
+| dataset | frames | lsq | median |
+|---|---:|---:|---:|
+| s3 | 100 | 0.053 | 0.051 |
+| panox | 100 | 0.139 | 0.101 |
+| holo_in | 100 | 0.115 | 0.108 |
+| holo_out | 71 | 0.543 | 0.214 |
+| stanford | 373 | 0.068 | 0.067 |
+| nyc | 147 | 0.638 | 0.205 |
+
+## 2. Correction per scenario: median change [95% CI] (% improved / % worse)
+
+### s3
+
+| protocol | tilt | nadir | vfov | yawblur | jpeg | nadir+jpeg |
+|---|---|---|---|---|---|---|
+| lsq | +0.0% [+0.0, +0.0] (0/0) | -58.5% [-62.2, -52.4] (84/16) | -37.4% [-45.5, -30.2] (92/7) | -4.6% [-7.9, -1.5] (64/32) | +0.0% [+0.0, +0.0] (0/0) | +0.0% [+0.0, +0.0] (24/39) |
+| median | -38.4% [-43.4, -32.0] (88/12) | -63.7% [-68.1, -56.9] (89/11) | -42.8% [-55.2, -35.9] (90/9) | +0.0% [+0.0, +0.0] (1/0) | +0.0% [+0.0, +0.0] (0/0) | +0.0% [+0.0, +0.0] (36/24) |
+
+### panox
+
+| protocol | tilt | nadir | vfov | yawblur | jpeg | nadir+jpeg |
+|---|---|---|---|---|---|---|
+| lsq | -4.3% [-23.2, +6.5] (52/47) | -47.3% [-54.3, -36.4] (74/23) | -3.4% [-7.8, +12.3] (52/47) | +0.0% [+0.0, +0.0] (0/0) | +5.0% [+1.4, +8.7] (37/61) | -0.9% [-11.0, +4.7] (52/47) |
+| median | -23.8% [-31.3, -20.0] (90/10) | -66.2% [-70.5, -61.4] (87/13) | -3.1% [-25.5, +13.0] (53/47) | +0.0% [+0.0, +0.0] (0/0) | +0.0% [+0.0, +0.0] (0/0) | -5.6% [-36.9, +0.0] (51/9) |
+
+### holo_in
+
+| protocol | tilt | nadir | vfov | yawblur | jpeg | nadir+jpeg |
+|---|---|---|---|---|---|---|
+| lsq | +0.0% [+0.0, +0.0] (0/0) | -9.7% [-31.9, +18.1] (52/48) | -23.9% [-28.1, -14.7] (79/20) | -2.0% [-4.1, +2.3] (54/44) | +0.0% [+0.0, +0.0] (0/0) | +0.0% [+0.0, +0.0] (11/14) |
+| median | -19.6% [-27.3, -11.4] (78/19) | -4.0% [-19.3, +18.4] (53/45) | -29.4% [-34.8, -20.6] (84/16) | +0.6% [-2.3, +6.4] (48/48) | +0.0% [+0.0, +0.0] (0/0) | +0.0% [+0.0, +0.0] (8/17) |
+
+### holo_out
+
+| protocol | tilt | nadir | vfov | yawblur | jpeg | nadir+jpeg |
+|---|---|---|---|---|---|---|
+| lsq | +19.4% [+13.3, +30.3] (21/73) | +0.5% [-0.6, +4.6] (44/48) | -6.7% [-10.1, -0.6] (62/35) | -6.2% [-11.0, +0.9] (61/38) | +0.0% [+0.0, +0.0] (0/0) | +0.0% [+0.0, +0.0] (38/27) |
+| median | +5.8% [-0.2, +9.5] (39/61) | -51.6% [-64.0, -21.2] (69/31) | -16.3% [-27.5, +14.5] (56/44) | -1.6% [-9.0, +3.5] (55/44) | +0.0% [+0.0, +0.0] (0/0) | +0.0% [+0.0, +0.0] (30/35) |
+
+### stanford
+
+| protocol | tilt | nadir | vfov | yawblur | jpeg | nadir+jpeg |
+|---|---|---|---|---|---|---|
+| lsq | -27.9% [-30.0, -25.1] (92/8) | -78.1% [-80.2, -75.2] (99/1) | -23.3% [-28.2, -21.5] (87/13) | -6.5% [-7.8, -5.2] (68/28) | +8.0% [+5.0, +11.1] (35/64) | -2.2% [-6.1, +2.7] (52/47) |
+| median | -26.7% [-28.2, -24.5] (91/8) | -71.2% [-72.6, -68.6] (99/1) | -23.7% [-27.2, -19.8] (79/20) | -6.1% [-7.4, -4.6] (65/31) | +19.5% [+16.6, +23.4] (27/72) | -0.1% [-2.2, +0.8] (50/45) |
+
+### nyc
+
+| protocol | tilt | nadir | vfov | yawblur | jpeg | nadir+jpeg |
+|---|---|---|---|---|---|---|
+| lsq | +13.7% [+11.9, +16.2] (14/84) | +6.3% [+5.3, +7.0] (12/86) | +6.1% [+4.6, +8.2] (20/74) | -4.5% [-6.3, -2.8] (72/24) | +0.0% [+0.0, +0.0] (0/0) | +0.0% [+0.0, +0.0] (1/31) |
+| median | -22.8% [-26.5, -20.1] (92/7) | -26.0% [-38.9, +5.4] (56/44) | -1.8% [-14.3, +5.1] (52/47) | -6.7% [-9.8, -4.7] (65/31) | +0.0% [+0.0, +0.0] (0/0) | +0.0% [+0.0, +0.0] (15/22) |
+
+## 3. Policy chosen per fault (held-out) and harmful cells
+
+| dataset | lsq policy | median policy | harmful under lsq | harmful under median |
+|---|---|---|---|---|
+| s3 | `{"nadir": "inpaint_erp", "vfov": "inpaint_erp", "yawblur": "wiener"}` | `{"tilt": "relevel_known", "nadir": "inpaint_tangent", "vfov": "inpaint_erp"}` | none | none |
+| panox | `{"tilt": "relevel_known", "nadir": "inpaint_erp", "vfov": "inpaint_erp", "jpeg": "bilateral"}` | `{"tilt": "relevel_known", "nadir": "inpaint_tangent", "vfov": "inpaint_erp"}` | jpeg +5.0% | none |
+| holo_in | `{"nadir": "plane_fill", "vfov": "inpaint_erp", "yawblur": "wiener"}` | `{"tilt": "relevel_known", "nadir": "plane_fill", "vfov": "inpaint_erp", "yawblur": "wiener"}` | none | none |
+| holo_out | `{"tilt": "relevel_known", "nadir": "plane_fill", "vfov": "inpaint_erp", "yawblur": "wiener"}` | `{"tilt": "relevel_known", "nadir": "plane_fill", "vfov": "inpaint_erp", "yawblur": "wiener"}` | tilt +19.4% | tilt +5.8% |
+| stanford | `{"tilt": "relevel_known", "nadir": "plane_fill", "vfov": "inpaint_erp", "yawblur": "wiener"}` | `{"tilt": "relevel_known", "nadir": "inpaint_tangent", "vfov": "inpaint_erp", "yawblur": "wiener"}` | jpeg +8.0% | jpeg +19.5% |
+| nyc | `{"tilt": "relevel_known", "nadir": "plane_fill", "vfov": "inpaint_erp", "yawblur": "wiener"}` | `{"tilt": "relevel_known", "nadir": "inpaint_tangent", "vfov": "inpaint_erp", "yawblur": "wiener"}` | tilt +13.7%, nadir +6.3%, vfov +6.1% | none |
+
+## 4. Sweeps (global estimator): onset, mean excess error 75-90 deg, ratio
+
+| mode | dataset | lsq onset | lsq dE | lsq ratio | median onset | median dE | median ratio |
+|---|---|---:|---:|---:|---:|---:|---:|
+| rotation | s3_eval | None | 0.010 | 1.08 | None | 0.015 | 1.13 |
+| rotation | panox_all | None | -0.534 | 0.42 | None | -0.052 | 0.79 |
+| rotation | holo_in_all | None | 0.001 | 1.01 | None | 0.016 | 1.08 |
+| rotation | holo_out_all | None | -0.122 | 0.81 | None | 0.092 | 1.26 |
+| rotation | nyc_all | 50.0 | 0.194 | 1.45 | None | -0.063 | 0.74 |
+| dilation | s3_eval | None | -0.164 | 0.64 | None | -0.133 | 0.72 |
+| dilation | panox_all | None | 0.294 | 1.49 | None | 0.015 | 1.06 |
+| dilation | holo_in_all | None | 0.117 | 1.34 | None | 0.037 | 1.12 |
+| dilation | holo_out_all | 80.0 | 0.570 | 1.88 | None | 0.128 | 1.28 |
+| dilation | nyc_all | None | -0.263 | 0.63 | 55.0 | -0.040 | 0.94 |
+[2026-11-09 14:03:40] ✅ DA2 protocols (1 s)
+[2026-11-09 14:03:40] >>> strict end to end
+# End-to-end: stricter do-no-harm rules on the external sets
+
+Same frames (matched by id), same code; only the policy rule differs. Rule `s<G>w<W>`: a fix needs a median gain of G% and W% of training frames improved, chosen on the four core sets (Stanford2D3D and NYC never train). Cells: median per-frame change of AbsRel (headline / strict).
+
+## Rule s5w70
+
+| set | model | frames | policy differs in | tilt | nadir | vfov | yawblur | jpeg | nadir+jpeg |
+|---|---|---:|---|---|---|---|---|---|---|
+| stanford | midas | 100 | tilt: relevel_known->none | +1.3% / +0.0% | +0.0% / +0.0% | +0.0% / +0.0% | +0.4% / +0.4% | +0.0% / +0.0% | +0.0% / +0.0% |
+| stanford | dap | 100 | - | -32.0% / -32.0% | -40.9% / -40.9% | -59.7% / -59.7% | -33.6% / -33.6% | -49.2% / -49.2% | -69.0% / -69.0% |
+| stanford | da360 | 100 | - | +0.0% / +0.0% | +0.0% / +0.0% | +0.0% / +0.0% | -7.2% / -7.2% | +0.0% / +0.0% | +0.0% / +0.0% |
+| stanford | da2 | 100 | nadir: plane_fill->inpaint_erp, tilt: relevel_known->none, yawblur: wiener->none | -29.1% / +0.0% | -78.8% / -78.8% | -25.9% / -25.9% | -3.6% / -2.3% | +8.7% / +8.7% | +2.9% / +2.9% |
+| nyc | midas | 147 | tilt: relevel_known->none | -2.8% / +0.0% | +0.0% / +0.0% | +0.0% / +0.0% | -7.6% / -7.6% | +0.0% / +0.0% | +0.0% / +0.0% |
+| nyc | dap | 147 | - | -47.4% / -47.4% | -89.3% / -89.3% | -36.4% / -36.4% | -60.4% / -60.4% | -7.9% / -7.9% | +1.3% / +1.3% |
+| nyc | da360 | 147 | - | +0.0% / +0.0% | +0.0% / +0.0% | +0.0% / +0.0% | -17.5% / -17.5% | +0.0% / +0.0% | +0.0% / +0.0% |
+| nyc | da2 | 147 | nadir: plane_fill->inpaint_erp, tilt: relevel_known->none, yawblur: wiener->none | +13.7% / +0.0% | +6.3% / +3.0% | +6.1% / +6.1% | -4.5% / +0.0% | +0.0% / +0.0% | +0.0% / +0.0% |
+
+Over 48 (model, set, scenario) cells: harmful scenarios 7 (headline) vs 5 (strict); mean change -13.79% vs -13.39%.
+
+[2026-11-09 14:03:41] ✅ strict end to end (1 s)
+[2026-11-09 14:03:41] >>> policy stability
+# Policy stability: 40-frame vs 100-frame studies
+
+Leave-one-dataset-out choice (headline rule) per model, held-out core set and fault.
+
+| model | cells | same choice | different | 40-frame applies | 100-frame applies |
+|---|---:|---:|---:|---:|---:|
+| midas | 36 | 35 | 1 | 12 | 11 |
+| dap | 36 | 35 | 1 | 20 | 20 |
+| da360 | 36 | 33 | 3 | 6 | 7 |
+| da2 | 36 | 34 | 2 | 14 | 14 |
+
+## Cells where the choice differs
+
+| model | held out | fault | 40 frames | 100 frames |
+|---|---|---|---|---|
+| midas | s3 | vfov | inpaint_tangent | none |
+| dap | holo_in | vfov | inpaint_erp | plane_fill |
+| da360 | panox | jpeg | bilateral | none |
+| da360 | holo_in | tilt | none | relevel_known |
+| da360 | holo_out | tilt | none | relevel_known |
+| da2 | panox | yawblur | none | wiener |
+| da2 | panox | jpeg | bilateral | none |
+[2026-11-09 14:03:43] ✅ policy stability (2 s)
+[2026-11-09 14:03:44] >>> final summary
+# Final experiments
+
+Cells: median per-frame change of AbsRel after correction [bootstrap 95% CI over frames] (% frames improved / % worse >1%).
+Cap scenarios are scored on the occluded region, the others on the whole panorama.
+
+## 1. Corrections per model and external set
+
+### stanford
+
+| model | frames | tilt | nadir | vfov | yawblur | jpeg | nadir+jpeg |
+|---|---:|---|---|---|---|---|---|
+| midas | 373 | +0.6% [+0.1, +1.1] (42/46) | +0.0% [+0.0, +0.0] (0/0) | +0.0% [+0.0, +0.0] (0/0) | +0.6% [+0.3, +1.2] (38/46) | +0.0% [+0.0, +0.0] (0/0) | +0.0% [+0.0, +0.0] (0/0) |
+| dap | 373 | -32.0% [-35.1, -27.9] (99/1) | -41.6% [-47.3, -36.3] (97/3) | -59.1% [-60.8, -57.4] (100/0) | -32.9% [-34.3, -31.1] (97/2) | -47.1% [-49.8, -44.7] (98/2) | -71.7% [-73.5, -68.2] (94/6) |
+| da360 | 373 | +0.0% [+0.0, +0.0] (0/0) | +0.0% [+0.0, +0.0] (0/0) | +0.0% [+0.0, +0.0] (0/0) | -6.2% [-7.4, -4.3] (73/24) | +0.0% [+0.0, +0.0] (0/0) | +0.0% [+0.0, +0.0] (0/0) |
+| da2 | 373 | -27.9% [-30.0, -25.1] (92/8) | -78.1% [-80.2, -75.2] (99/1) | -23.3% [-28.2, -21.5] (87/13) | -6.5% [-7.8, -5.2] (68/28) | +8.0% [+5.0, +11.1] (35/64) | -2.2% [-6.1, +2.7] (52/47) |
+
+### nyc
+
+| model | frames | tilt | nadir | vfov | yawblur | jpeg | nadir+jpeg |
+|---|---:|---|---|---|---|---|---|
+| midas | 147 | -2.8% [-5.1, -1.7] (67/27) | +0.0% [+0.0, +0.0] (0/0) | +0.0% [+0.0, +0.0] (0/0) | -7.6% [-8.3, -6.2] (82/12) | +0.0% [+0.0, +0.0] (0/0) | +0.0% [+0.0, +0.0] (0/0) |
+| dap | 147 | -47.4% [-50.2, -45.5] (98/2) | -89.3% [-91.4, -80.4] (79/20) | -36.4% [-40.6, -32.7] (99/1) | -60.4% [-66.2, -55.2] (92/7) | -7.9% [-9.8, -6.2] (82/12) | +1.3% [-2.7, +3.5] (47/52) |
+| da360 | 147 | +0.0% [+0.0, +0.0] (0/0) | +0.0% [+0.0, +0.0] (0/0) | +0.0% [+0.0, +0.0] (0/0) | -17.5% [-20.1, -14.9] (91/7) | +0.0% [+0.0, +0.0] (0/0) | +0.0% [+0.0, +0.0] (0/0) |
+| da2 | 147 | +13.7% [+11.9, +16.2] (14/84) | +6.3% [+5.3, +7.0] (12/86) | +6.1% [+4.6, +8.2] (20/74) | -4.5% [-6.3, -2.8] (72/24) | +0.0% [+0.0, +0.0] (0/0) | +0.0% [+0.0, +0.0] (1/31) |
+
+## 2. DA2: least-squares vs median scale alignment
+
+| set | protocol | frames | clean AbsRel | tilt | nadir | vfov | yawblur | jpeg | nadir+jpeg |
+|---|---|---:|---:|---|---|---|---|---|---|
+| s3 | lsq | 100 | 0.053 | +0.0% [+0.0, +0.0] (0/0) | -58.5% [-62.2, -52.4] (84/16) | -37.4% [-45.5, -30.2] (92/7) | -4.6% [-7.9, -1.5] (64/32) | +0.0% [+0.0, +0.0] (0/0) | +0.0% [+0.0, +0.0] (24/39) |
+| s3 | median | 100 | 0.051 | -38.4% [-43.4, -32.0] (88/12) | -63.7% [-68.1, -56.9] (89/11) | -42.8% [-55.2, -35.9] (90/9) | +0.0% [+0.0, +0.0] (1/0) | +0.0% [+0.0, +0.0] (0/0) | +0.0% [+0.0, +0.0] (36/24) |
+| panox | lsq | 100 | 0.139 | -4.3% [-23.2, +6.5] (52/47) | -47.3% [-54.3, -36.4] (74/23) | -3.4% [-7.8, +12.3] (52/47) | +0.0% [+0.0, +0.0] (0/0) | +5.0% [+1.4, +8.7] (37/61) | -0.9% [-11.0, +4.7] (52/47) |
+| panox | median | 100 | 0.101 | -23.8% [-31.3, -20.0] (90/10) | -66.2% [-70.5, -61.4] (87/13) | -3.1% [-25.5, +13.0] (53/47) | +0.0% [+0.0, +0.0] (0/0) | +0.0% [+0.0, +0.0] (0/0) | -5.6% [-36.9, +0.0] (51/9) |
+| holo_in | lsq | 100 | 0.115 | +0.0% [+0.0, +0.0] (0/0) | -9.7% [-31.9, +18.1] (52/48) | -23.9% [-28.1, -14.7] (79/20) | -2.0% [-4.1, +2.3] (54/44) | +0.0% [+0.0, +0.0] (0/0) | +0.0% [+0.0, +0.0] (11/14) |
+| holo_in | median | 100 | 0.108 | -19.6% [-27.3, -11.4] (78/19) | -4.0% [-19.3, +18.4] (53/45) | -29.4% [-34.8, -20.6] (84/16) | +0.6% [-2.3, +6.4] (48/48) | +0.0% [+0.0, +0.0] (0/0) | +0.0% [+0.0, +0.0] (8/17) |
+| holo_out | lsq | 71 | 0.543 | +19.4% [+13.3, +30.3] (21/73) | +0.5% [-0.6, +4.6] (44/48) | -6.7% [-10.1, -0.6] (62/35) | -6.2% [-11.0, +0.9] (61/38) | +0.0% [+0.0, +0.0] (0/0) | +0.0% [+0.0, +0.0] (38/27) |
+| holo_out | median | 71 | 0.214 | +5.8% [-0.2, +9.5] (39/61) | -51.6% [-64.0, -21.2] (69/31) | -16.3% [-27.5, +14.5] (56/44) | -1.6% [-9.0, +3.5] (55/44) | +0.0% [+0.0, +0.0] (0/0) | +0.0% [+0.0, +0.0] (30/35) |
+| stanford | lsq | 373 | 0.068 | -27.9% [-30.0, -25.1] (92/8) | -78.1% [-80.2, -75.2] (99/1) | -23.3% [-28.2, -21.5] (87/13) | -6.5% [-7.8, -5.2] (68/28) | +8.0% [+5.0, +11.1] (35/64) | -2.2% [-6.1, +2.7] (52/47) |
+| stanford | median | 373 | 0.067 | -26.7% [-28.2, -24.5] (91/8) | -71.2% [-72.6, -68.6] (99/1) | -23.7% [-27.2, -19.8] (79/20) | -6.1% [-7.4, -4.6] (65/31) | +19.5% [+16.6, +23.4] (27/72) | -0.1% [-2.2, +0.8] (50/45) |
+| nyc | lsq | 147 | 0.638 | +13.7% [+11.9, +16.2] (14/84) | +6.3% [+5.3, +7.0] (12/86) | +6.1% [+4.6, +8.2] (20/74) | -4.5% [-6.3, -2.8] (72/24) | +0.0% [+0.0, +0.0] (0/0) | +0.0% [+0.0, +0.0] (1/31) |
+| nyc | median | 40 | 0.203 | -21.1% [-28.2, -15.0] (92/8) | -41.7% [-58.0, +4.2] (62/38) | -10.7% [-20.3, +7.2] (60/40) | -4.9% [-7.0, -2.0] (65/32) | +0.0% [+0.0, +0.0] (0/0) | +0.0% [+0.0, +0.0] (20/25) |
+
+## 3. Input resolution: 256x512 vs 512x1024 (cap detection and fixes)
+
+| model | set | input | frames | cap detected (nadir / vfov / nadir+jpeg) | nadir | vfov | nadir+jpeg |
+|---|---|---|---:|---|---|---|---|
+| midas | stanford | 256x512 | 373 | 0% / 100% / 0% | +0.0% [+0.0, +0.0] (0/0) | +0.0% [+0.0, +0.0] (0/0) | +0.0% [+0.0, +0.0] (0/0) |
+| midas | stanford | 512x1024 | 100 | 0% / 100% / 0% | +0.0% [+0.0, +0.0] (0/0) | +0.0% [+0.0, +0.0] (0/0) | +0.0% [+0.0, +0.0] (0/0) |
+| midas | nyc | 256x512 | 147 | 100% / 100% / 37% | +0.0% [+0.0, +0.0] (0/0) | +0.0% [+0.0, +0.0] (0/0) | +0.0% [+0.0, +0.0] (0/0) |
+| midas | nyc | 512x1024 | 100 | 100% / 100% / 88% | +0.0% [+0.0, +0.0] (0/0) | +0.0% [+0.0, +0.0] (0/0) | +0.0% [+0.0, +0.0] (0/0) |
+| da360 | stanford | 256x512 | 373 | 0% / 100% / 0% | +0.0% [+0.0, +0.0] (0/0) | +0.0% [+0.0, +0.0] (0/0) | +0.0% [+0.0, +0.0] (0/0) |
+| da360 | stanford | 512x1024 | 100 | 0% / 100% / 0% | +0.0% [+0.0, +0.0] (0/0) | +0.0% [+0.0, +0.0] (0/0) | +0.0% [+0.0, +0.0] (0/0) |
+| da360 | nyc | 256x512 | 147 | 100% / 100% / 37% | +0.0% [+0.0, +0.0] (0/0) | +0.0% [+0.0, +0.0] (0/0) | +0.0% [+0.0, +0.0] (0/0) |
+| da360 | nyc | 512x1024 | 100 | 100% / 100% / 88% | +0.0% [+0.0, +0.0] (0/0) | +0.0% [+0.0, +0.0] (0/0) | +0.0% [+0.0, +0.0] (0/0) |
+| da2 | stanford | 256x512 | 373 | 0% / 100% / 0% | -78.1% [-80.2, -75.2] (99/1) | -23.3% [-28.2, -21.5] (87/13) | -2.2% [-6.1, +2.7] (52/47) |
+| da2 | stanford | 512x1024 | 100 | 0% / 100% / 0% | -73.6% [-76.3, -69.5] (98/2) | -26.6% [-36.6, -22.3] (89/11) | -83.0% [-87.2, -78.7] (94/6) |
+| da2 | nyc | 256x512 | 147 | 100% / 100% / 37% | +6.3% [+5.3, +7.0] (12/86) | +6.1% [+4.6, +8.2] (20/74) | +0.0% [+0.0, +0.0] (1/31) |
+| da2 | nyc | 512x1024 | 100 | 100% / 100% / 88% | +6.6% [+5.6, +8.4] (8/92) | -3.8% [-6.6, -0.8] (63/33) | +1.1% [+0.0, +2.3] (30/50) |
+[2026-11-09 14:03:45] ✅ final summary (1 s)
+[2026-11-09 14:03:45] >>> external report
+# External datasets: Stanford2D3D and NYC
+
+Run, analysed and reported independently of the core datasets (Structured3D, PanoX, Holo360D). Nothing here was used to choose or tune a fix: the policy comes from the four core datasets only.
+
+## stanford
+
+**What each fault costs** (median AbsRel on the whole panorama, clean -> faulty; 40 frames)
+
+| model | clean | tilt | nadir | vfov | yawblur | jpeg | noise | lowres |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|
+| midas | 0.2420 | 0.242 -> 0.234 | 0.242 -> 0.246 | 0.242 -> 0.245 | 0.242 -> 0.230 | 0.242 -> 0.258 | 0.242 -> 0.251 | 0.242 -> 0.247 |
+| dap | 0.1596 | 0.160 -> 0.228 | 0.160 -> 0.168 | 0.160 -> 0.371 | 0.160 -> 0.169 | 0.160 -> 0.264 | 0.160 -> 0.149 | 0.160 -> 0.152 |
+| da360 | 0.1448 | 0.145 -> 0.164 | 0.145 -> 0.122 | 0.145 -> 0.064 | 0.145 -> 0.168 | 0.145 -> 0.112 | 0.145 -> 0.173 | 0.145 -> 0.081 |
+| da2 | 0.0738 | 0.074 -> 0.100 | 0.074 -> 0.108 | 0.074 -> 0.104 | 0.074 -> 0.077 | 0.074 -> 0.078 | 0.074 -> 0.081 | 0.074 -> 0.072 |
+
+*Stanford frames are already black above |lat| 65 deg (limited vertical FOV), so the simulated `nadir` / `vfov` faults mostly fall inside real occlusion and are not a meaningful fault test here.*
+
+**End-to-end correction** (fixes detected and chosen as in deployment; policy learned on the core sets). Metric: affected region for cap faults, whole panorama otherwise. change = median per-frame change in error vs uncorrected; better / worse = share of frames improved / worse by >1%.
+
+| model | scenario | uncorrected | corrected | change | better | worse | policy |
+|---|---|---:|---:|---:|---:|---:|---|
+| midas | clean | 0.2515 | 0.2515 | +0.0% | 0% | 0% | tilt:relevel_known, yawblur:wiener |
+| midas | tilt | 0.2482 | 0.2500 | +0.6% | 42% | 46% | tilt:relevel_known, yawblur:wiener |
+| midas | nadir | 0.0939 | 0.0939 | +0.0% | 0% | 0% | tilt:relevel_known, yawblur:wiener |
+| midas | vfov | 0.1359 | 0.1359 | +0.0% | 0% | 0% | tilt:relevel_known, yawblur:wiener |
+| midas | yawblur | 0.2455 | 0.2492 | +0.6% | 38% | 46% | tilt:relevel_known, yawblur:wiener |
+| midas | jpeg | 0.2505 | 0.2505 | +0.0% | 0% | 0% | tilt:relevel_known, yawblur:wiener |
+| midas | nadir+jpeg | 0.0886 | 0.0886 | +0.0% | 0% | 0% | tilt:relevel_known, yawblur:wiener |
+| dap | clean | 0.1500 | 0.0927 | -34.8% | 99% | 1% | tilt:relevel_known, nadir:plane_fill, vfov:inpaint_erp, yawblur:wiener, jpeg:bilateral |
+| dap | tilt | 0.2194 | 0.1462 | -32.0% | 99% | 1% | tilt:relevel_known, nadir:plane_fill, vfov:inpaint_erp, yawblur:wiener, jpeg:bilateral |
+| dap | nadir | 0.3483 | 0.1520 | -41.6% | 97% | 3% | tilt:relevel_known, nadir:plane_fill, vfov:inpaint_erp, yawblur:wiener, jpeg:bilateral |
+| dap | vfov | 0.7598 | 0.3065 | -59.1% | 100% | 0% | tilt:relevel_known, nadir:plane_fill, vfov:inpaint_erp, yawblur:wiener, jpeg:bilateral |
+| dap | yawblur | 0.1665 | 0.1047 | -32.9% | 97% | 2% | tilt:relevel_known, nadir:plane_fill, vfov:inpaint_erp, yawblur:wiener, jpeg:bilateral |
+| dap | jpeg | 0.2739 | 0.1403 | -47.1% | 98% | 2% | tilt:relevel_known, nadir:plane_fill, vfov:inpaint_erp, yawblur:wiener, jpeg:bilateral |
+| dap | nadir+jpeg | 0.2689 | 0.0655 | -71.7% | 94% | 6% | tilt:relevel_known, nadir:plane_fill, vfov:inpaint_erp, yawblur:wiener, jpeg:bilateral |
+| da360 | clean | 0.1509 | 0.1509 | +0.0% | 0% | 0% | yawblur:wiener |
+| da360 | tilt | 0.1662 | 0.1662 | +0.0% | 0% | 0% | yawblur:wiener |
+| da360 | nadir | 0.0770 | 0.0770 | +0.0% | 0% | 0% | yawblur:wiener |
+| da360 | vfov | 0.0629 | 0.0629 | +0.0% | 0% | 0% | yawblur:wiener |
+| da360 | yawblur | 0.1731 | 0.1565 | -6.2% | 73% | 24% | yawblur:wiener |
+| da360 | jpeg | 0.1184 | 0.1184 | +0.0% | 0% | 0% | yawblur:wiener |
+| da360 | nadir+jpeg | 0.0453 | 0.0453 | +0.0% | 0% | 0% | yawblur:wiener |
+| da2 | clean | 0.0678 | 0.0629 | -6.6% | 77% | 21% | tilt:relevel_known, nadir:plane_fill, vfov:inpaint_erp, yawblur:wiener |
+| da2 | tilt | 0.0962 | 0.0663 | -27.9% | 92% | 8% | tilt:relevel_known, nadir:plane_fill, vfov:inpaint_erp, yawblur:wiener |
+| da2 | nadir | 0.1741 | 0.0380 | -78.1% | 99% | 1% | tilt:relevel_known, nadir:plane_fill, vfov:inpaint_erp, yawblur:wiener |
+| da2 | vfov | 0.0982 | 0.0672 | -23.3% | 87% | 13% | tilt:relevel_known, nadir:plane_fill, vfov:inpaint_erp, yawblur:wiener |
+| da2 | yawblur | 0.0713 | 0.0698 | -6.5% | 68% | 28% | tilt:relevel_known, nadir:plane_fill, vfov:inpaint_erp, yawblur:wiener |
+| da2 | jpeg | 0.0757 | 0.0894 | +8.0% | 35% | 64% | tilt:relevel_known, nadir:plane_fill, vfov:inpaint_erp, yawblur:wiener |
+| da2 | nadir+jpeg | 0.1602 | 0.1375 | -2.2% | 52% | 47% | tilt:relevel_known, nadir:plane_fill, vfov:inpaint_erp, yawblur:wiener |
+
+*The `clean` row is the real-occlusion test: Stanford's own black caps are detected and filled (whole-panorama error; detection rate is not meaningful there because every frame has caps).*
+
+## nyc
+
+**What each fault costs** (median AbsRel on the whole panorama, clean -> faulty; 40 frames)
+
+| model | clean | tilt | nadir | vfov | yawblur | jpeg | noise | lowres |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|
+| midas | 0.2214 | 0.221 -> 0.257 | 0.221 -> 0.209 | 0.221 -> 0.350 | 0.221 -> 0.268 | 0.221 -> 0.324 | 0.221 -> 0.241 | 0.221 -> 0.325 |
+| dap | 0.0334 | 0.033 -> 0.094 | 0.033 -> 0.133 | 0.033 -> 0.300 | 0.033 -> 0.123 | 0.033 -> 0.166 | 0.033 -> 0.057 | 0.033 -> 0.098 |
+| da360 | 0.0643 | 0.064 -> 0.069 | 0.064 -> 0.067 | 0.064 -> 0.133 | 0.064 -> 0.091 | 0.064 -> 0.129 | 0.064 -> 0.079 | 0.064 -> 0.090 |
+| da2 | 0.6345 | 0.635 -> 0.559 | 0.635 -> 0.633 | 0.635 -> 0.663 | 0.635 -> 0.692 | 0.635 -> 0.680 | 0.635 -> 0.671 | 0.635 -> 0.672 |
+
+**End-to-end correction** (fixes detected and chosen as in deployment; policy learned on the core sets). Metric: affected region for cap faults, whole panorama otherwise. change = median per-frame change in error vs uncorrected; better / worse = share of frames improved / worse by >1%.
+
+| model | scenario | uncorrected | corrected | change | better | worse | policy |
+|---|---|---:|---:|---:|---:|---:|---|
+| midas | clean | 0.2198 | 0.2198 | +0.0% | 0% | 0% | tilt:relevel_known, yawblur:wiener |
+| midas | tilt | 0.2433 | 0.2177 | -2.8% | 67% | 27% | tilt:relevel_known, yawblur:wiener |
+| midas | nadir | 0.0608 | 0.0608 | +0.0% | 0% | 0% | tilt:relevel_known, yawblur:wiener |
+| midas | vfov | 0.3230 | 0.3230 | +0.0% | 0% | 0% | tilt:relevel_known, yawblur:wiener |
+| midas | yawblur | 0.2574 | 0.2190 | -7.6% | 82% | 12% | tilt:relevel_known, yawblur:wiener |
+| midas | jpeg | 0.3225 | 0.3225 | +0.0% | 0% | 0% | tilt:relevel_known, yawblur:wiener |
+| midas | nadir+jpeg | 0.1144 | 0.1144 | +0.0% | 0% | 0% | tilt:relevel_known, yawblur:wiener |
+| dap | clean | 0.0352 | 0.0352 | +0.0% | 0% | 0% | tilt:relevel_known, nadir:plane_fill, vfov:inpaint_erp, yawblur:wiener, jpeg:bilateral |
+| dap | tilt | 0.0915 | 0.0477 | -47.4% | 98% | 2% | tilt:relevel_known, nadir:plane_fill, vfov:inpaint_erp, yawblur:wiener, jpeg:bilateral |
+| dap | nadir | 0.5238 | 0.0426 | -89.3% | 79% | 20% | tilt:relevel_known, nadir:plane_fill, vfov:inpaint_erp, yawblur:wiener, jpeg:bilateral |
+| dap | vfov | 0.7129 | 0.4396 | -36.4% | 99% | 1% | tilt:relevel_known, nadir:plane_fill, vfov:inpaint_erp, yawblur:wiener, jpeg:bilateral |
+| dap | yawblur | 0.1272 | 0.0487 | -60.4% | 92% | 7% | tilt:relevel_known, nadir:plane_fill, vfov:inpaint_erp, yawblur:wiener, jpeg:bilateral |
+| dap | jpeg | 0.1764 | 0.1638 | -7.9% | 82% | 12% | tilt:relevel_known, nadir:plane_fill, vfov:inpaint_erp, yawblur:wiener, jpeg:bilateral |
+| dap | nadir+jpeg | 0.3219 | 0.2688 | +1.3% | 47% | 52% | tilt:relevel_known, nadir:plane_fill, vfov:inpaint_erp, yawblur:wiener, jpeg:bilateral |
+| da360 | clean | 0.0629 | 0.0629 | +0.0% | 0% | 0% | yawblur:wiener |
+| da360 | tilt | 0.0690 | 0.0690 | +0.0% | 0% | 0% | yawblur:wiener |
+| da360 | nadir | 0.0157 | 0.0157 | +0.0% | 0% | 0% | yawblur:wiener |
+| da360 | vfov | 0.1964 | 0.1964 | +0.0% | 0% | 0% | yawblur:wiener |
+| da360 | yawblur | 0.0909 | 0.0703 | -17.5% | 91% | 7% | yawblur:wiener |
+| da360 | jpeg | 0.1299 | 0.1299 | +0.0% | 0% | 0% | yawblur:wiener |
+| da360 | nadir+jpeg | 0.0495 | 0.0495 | +0.0% | 0% | 0% | yawblur:wiener |
+| da2 | clean | 0.6378 | 0.6378 | +0.0% | 0% | 0% | tilt:relevel_known, nadir:plane_fill, vfov:inpaint_erp, yawblur:wiener |
+| da2 | tilt | 0.5629 | 0.6507 | +13.7% | 14% | 84% | tilt:relevel_known, nadir:plane_fill, vfov:inpaint_erp, yawblur:wiener |
+| da2 | nadir | 0.7210 | 0.7549 | +6.3% | 12% | 86% | tilt:relevel_known, nadir:plane_fill, vfov:inpaint_erp, yawblur:wiener |
+| da2 | vfov | 0.7784 | 0.8290 | +6.1% | 20% | 74% | tilt:relevel_known, nadir:plane_fill, vfov:inpaint_erp, yawblur:wiener |
+| da2 | yawblur | 0.6972 | 0.6553 | -4.5% | 72% | 24% | tilt:relevel_known, nadir:plane_fill, vfov:inpaint_erp, yawblur:wiener |
+| da2 | jpeg | 0.6750 | 0.6750 | +0.0% | 0% | 0% | tilt:relevel_known, nadir:plane_fill, vfov:inpaint_erp, yawblur:wiener |
+| da2 | nadir+jpeg | 0.8072 | 0.8158 | +0.0% | 1% | 31% | tilt:relevel_known, nadir:plane_fill, vfov:inpaint_erp, yawblur:wiener |
+
+[2026-11-09 14:03:45] ✅ external report (0 s)
+[2026-11-09 14:03:45] >>> figures
+wrote 484 figures to Aurindum/results/figures
+[2026-11-09 14:07:58] ✅ figures (253 s)
+[2026-11-09 14:07:58] 🎉 Submission runs finished (results/finished_submission_study100_analysis.md). Commit results/.
