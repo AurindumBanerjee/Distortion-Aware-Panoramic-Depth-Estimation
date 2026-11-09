@@ -116,3 +116,85 @@ def mono360_fuse(raw: List[np.ndarray], planes: List[TangentPlane], H: int, W: i
     den = wts.sum(0)
     out = np.where(den > 0, (wts * cur).sum(0) / np.maximum(den, 1e-12), np.nan)
     return out, info
+
+
+def anchored_grid_align(Xs: List[np.ndarray], anchors: List[np.ndarray], planes: List[TangentPlane], base: np.ndarray,
+                        grids: Tuple[Tuple[int, int], ...] = ((4, 3), (8, 7)), lam_smooth: float = 40.0,
+                        lam_scale: float = 0.007, iters: int = 50, max_samples: int = 4000,
+                        min_samples: int = 200) -> Tuple[List[np.ndarray], Dict]:
+    """acgf|ico-grid: the deformable per-view (scale, offset) grids of mono360_fuse, fitted to the ERP BASELINE on
+    each view's anchor pixels instead of to the other views (no mutual-consistency term):
+
+        E = mean_v mean_{p in A_v} (s_v(p) X_v(p) + o_v(p) - b(p))^2 + lam_smooth E_smooth + lam_scale sum 1/s
+
+    with E_smooth as in mono360_fuse and the no-collapse term averaged per cell (mono360 sums it: harmless when
+    only mutual consistency matters, but against the baseline it biases every scale upwards), coarse to fine over
+    `grids`. X_v (already on
+    the ERP grid, in baseline units) and b are standardised by the baseline's median / mean absolute deviation so
+    that the weights mean what they mean in mono360. Views with fewer than `min_samples` anchors are left as they are.
+    """
+    H, W = base.shape
+    fb = np.isfinite(base)
+    med = float(np.median(base[fb]))
+    sc = float(np.mean(np.abs(base[fb] - med))) + 1e-12
+    b = ((base - med) / sc).ravel()
+    cur = [((X - med) / sc).ravel() for X in Xs]
+    pix, gcoord, samp = [], [], []
+    for X, A, pl in zip(cur, anchors, planes):
+        j, i, _, _, _ = tangent_geometry_on_erp(pl, H, W)
+        idx = np.flatnonzero(np.isfinite(X))
+        g = np.stack([((j.numpy().ravel()[idx] + 0.5) / pl.size * 2 - 1),
+                      ((i.numpy().ravel()[idx] + 0.5) / pl.size * 2 - 1)], -1)
+        a = np.flatnonzero(A.ravel()[idx] & np.isfinite(b[idx]))
+        if len(a) > max_samples:  # deterministic subsample
+            a = a[np.linspace(0, len(a) - 1, max_samples).astype(int)]
+        pix.append(idx); gcoord.append(g); samp.append(a)
+    fit = [k for k in range(len(Xs)) if len(samp[k]) >= min_samples]
+    info: Dict = {"n_refined": len(fit), "energy": []}
+    if not fit:
+        return [np.array(X, copy=True) for X in Xs], info
+    S = max(len(samp[k]) for k in fit)
+    V = len(fit)
+    G = np.zeros((V, 1, S, 2)); M = np.zeros((V, S)); Y = np.zeros((V, S)); idx_s = []
+    for r, k in enumerate(fit):
+        a = samp[k]
+        G[r, 0, :len(a)] = gcoord[k][a]
+        M[r, :len(a)] = 1.0
+        Y[r, :len(a)] = b[pix[k][a]]
+        idx_s.append(a)
+    G, M, Y = (torch.from_numpy(x) for x in (G, M, Y))
+    for cols, rows in grids:
+        Xt = np.zeros((V, S))
+        for r, k in enumerate(fit):
+            Xt[r, :len(idx_s[r])] = cur[k][pix[k][idx_s[r]]]
+        Xt = torch.from_numpy(Xt)
+        s = torch.ones(V, 1, rows, cols, dtype=torch.float64, requires_grad=True)
+        o = torch.zeros(V, 1, rows, cols, dtype=torch.float64, requires_grad=True)
+        opt = torch.optim.LBFGS([s, o], max_iter=iters, line_search_fn="strong_wolfe")
+
+        def energy():
+            ss = F.grid_sample(s, G, mode="bilinear", align_corners=True, padding_mode="border")[:, 0, 0]
+            oo = F.grid_sample(o, G, mode="bilinear", align_corners=True, padding_mode="border")[:, 0, 0]
+            res = (ss * Xt + oo - Y) * M
+            e_data = ((res * res).sum(1) / M.sum(1).clamp_min(1)).mean()
+            e_smooth = sum(((p[..., 1:, :] - p[..., :-1, :]) ** 2).sum() + ((p[..., :, 1:] - p[..., :, :-1]) ** 2).sum()
+                           for p in (s, o)) / (V * rows * cols)
+            # per-cell mean, not mono360's sum: against a fixed target the summed term inflates every scale (it is
+            # as large as the data term); averaged, it only guards against s -> 0
+            e_scale = (1.0 / s.clamp_min(1e-3)).sum() / (V * rows * cols)
+            return e_data + lam_smooth * e_smooth + lam_scale * e_scale
+
+        def closure():
+            opt.zero_grad()
+            e = energy()
+            e.backward()
+            return e
+        opt.step(closure)
+        info["energy"].append(float(energy().detach()))
+        with torch.no_grad():
+            for r, k in enumerate(fit):
+                g = torch.from_numpy(gcoord[k])[None, None]  # (1, 1, N, 2)
+                sf = F.grid_sample(s[r:r + 1].detach(), g, mode="bilinear", align_corners=True, padding_mode="border")
+                of = F.grid_sample(o[r:r + 1].detach(), g, mode="bilinear", align_corners=True, padding_mode="border")
+                cur[k][pix[k]] = sf[0, 0, 0].numpy() * cur[k][pix[k]] + of[0, 0, 0].numpy()
+    return [(c * sc + med).reshape(H, W) for c in cur], info
