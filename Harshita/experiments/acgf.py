@@ -117,3 +117,36 @@ def report(df: pd.DataFrame, rdir: str, names: List[str], main_names: dict):
                     .to_markdown(index=False, floatfmt=".4f"))
             f.write("\n\n")
     return mt, at, ht
+
+
+ICO_ROWS = ["baseline", "mono360", "acgf", "acgf|ico-affine|polar", "acgf|ico-affine|sphere", "acgf|ico-grid|polar",
+            "acgf|ico-grid|sphere"]
+
+
+def ico_report(df: pd.DataFrame, rdir: str):
+    """E12 (acgf|ico): one comparison table and paired tests against baseline, mono360 and ACGF v2."""
+    present = set(df.method.unique())
+    rows = [m for m in ICO_ROWS if m in present]
+    if not any(m.startswith("acgf|ico-") for m in rows):
+        return
+    mt = method_table(df, rows)
+    ht = harm_table(df, rows)
+    keep = ["abs_rel", "abs_rel_0-15", "abs_rel_polar_60_90", "runtime_ratio", "runtime_s"]
+    t = mt[[c for c in keep if c in mt.columns]].join(ht[["absrel_harmed_%", "absrel_severe_%", "polar_absrel_harmed_%"]],
+                                                      how="left")
+    t.to_csv(os.path.join(rdir, "ico_comparison.csv"))
+    write_markdown_table(t, os.path.join(rdir, "ico_comparison.md"))
+    order = {b: i for i, b in enumerate(["all"] + BANDS)}
+    with open(os.path.join(rdir, "ico_paired.md"), "w") as f:
+        for m in [r for r in rows if r.startswith("acgf|ico-")]:
+            for other in [o for o in ("baseline", "mono360", "acgf") if o in present]:
+                p = improvement_table(df, other, m, "abs_rel", "pixel")
+                if len(p) == 0:
+                    continue
+                p = p[p.band.isin(["all", "0-15", "60-75", "75-90"])].sort_values("band", key=lambda s: s.map(order))
+                f.write(f"### {m} vs {other} (AbsRel, pixel-weighted; positive = {m} better)\n\n")
+                f.write(p[["band", "baseline_abs_rel", "corrected_abs_rel", "improvement_%", "median_per_image_impr_%",
+                           "wilcoxon_p", "images_improved", "n_images"]]
+                        .rename(columns={"baseline_abs_rel": other, "corrected_abs_rel": m})
+                        .to_markdown(index=False, floatfmt=".4f"))
+                f.write("\n\n")
