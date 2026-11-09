@@ -56,3 +56,7 @@ third_party/DA360/
 *.out
 
 .vscode/
+
+# local docs
+CHECKLIST.md
+REPO_GUIDE.md
