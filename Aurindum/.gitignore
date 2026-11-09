@@ -57,6 +57,7 @@ third_party/DA360/
 
 .vscode/
 
-# local docs
-CHECKLIST.md
-REPO_GUIDE.md
+# local docs and cleanup
+*.md
+!/README.md
+to_delete/
