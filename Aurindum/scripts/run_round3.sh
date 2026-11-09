@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # ==============================================================================
-# Round 3 (CHECKLIST.md): measure the distortion effect per model, then correct only where it was measured.
+# Round 3: measure the distortion effect per model, then correct only where it was measured.
 #
 #   scripts/run_round3.sh start | status | stop | run
 #
