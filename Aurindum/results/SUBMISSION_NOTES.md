@@ -9,8 +9,9 @@
 | A | `da2both` (DA2 median fit at N=100 on the core sets, rotation and dilation sweeps on five sets) | 8 Nov 22:41 | 9 Nov 00:21 | 0 |
 | B | `diag` (13 nadir + JPEG ladders), `strict` (5% / 70% rule end to end, Stanford2D3D N=100, NYC N=147, four models) | 8 Nov 22:41 | 9 Nov 03:55 | 0 |
 | C | `analysis` (CPU: threshold sweep, DA2 protocols, strict summary, policy stability, final summary, external report, figures) | 9 Nov 04:10 | 9 Nov 04:14 | 0 |
+| D | `study100` (100-frame capture-fault studies, 4 models x 4 core sets, 16 files) then `analysis` | 9 Nov 09:09 | 9 Nov 14:08 | 0 |
 
-`study100` (policy stability, 40 vs 100 frames) was not run: `results/policy_stability/POLICY_STABILITY.md` is empty and the report has no Appendix E.
+Stage D was run after the first three, on its own (`STAGES="study100 analysis"`), because it was not in the default stage list of the first launch.
 
 ## What failed or went wrong, and what was done
 
@@ -44,7 +45,7 @@
 - Appendix C table rebuilt from the JSON on all six sets with matched frame ids (the earlier table had four rows and used 40-frame core data).
 - Figure `fig_diag_nadir_jpeg` placed in Appendix A, as requested; it is cited from Appendix D.
 - `make_figures.py` outputs do not depend on the new data (it reads no `da2m` files); the report's existing `fig_correction_gain` and `fig_fault_cost` were kept (same data, higher resolution than the regenerated copies).
-- Appendix E omitted (study100 not run). Main text: only the resolution paragraph (diagnosis sentence replaces the 40-frame fill-order numbers), the Holo outdoor tilt numbers (40 to 71 frames) and one Limitations clause (100 core frames) changed; main text still ends on page 8.
+- Appendix E (policy stability) added after study100 finished. Main text: one clause in Limitations points to it. Main text: only the resolution paragraph (diagnosis sentence replaces the 40-frame fill-order numbers), the Holo outdoor tilt numbers (40 to 71 frames) and one Limitations clause (100 core frames) changed; main text still ends on page 8; report is 17 pages.
 - Table 7 (Appendix D) floats to the last page.
 
 ## Provenance of numbers in new report text
@@ -65,12 +66,13 @@
 | App. C sweep table | onsets and dE | `results/sweep_{rotation,dilation}_da2{,m}_<set>.json` | `summary.onset_global`; mean of `summary.de_global.mean` over centres >= 75 | `da2_protocol_report.sweep_row` |
 | Results, alignment paragraph | +19.4% / +5.8% (71 frames) | `results/correction_da2_holo_out.json`, `results/correction_da2m_holo_out.json` | `rows[*]['tilt']` raw / fixed `all` | matched ids, median change |
 | Results, alignment paragraph | 8 of 30 policy choices differ | `results/DA2_PROTOCOLS.md` section 3 | per dataset, lsq vs median policy dicts | counted by hand (3+2+1+0+1+1) |
+| App. E, Tables 8 and 9 | 137 of 144 same; applied 52/52; 7 differing cells | `results/policy_stability/POLICY_STABILITY.md` (from `study_<m>_<core>.json` and `policy_stability/study_s100_<m>_<core>.json`) | `scripts/policy_stability.py` | leave-one-dataset-out choice, headline rule; the 7 cells transcribed by hand into Table 9 |
 
 Spot checks recomputed from the raw JSON in this run: NYC clean 0.205 / 0.638 (`results/external/correction_da2m_nyc.json`, `correction_da2_nyc.json`, 147 rows); detection 88% (147 frames); NYC rotation onset 50 (lsq) / none (median), 80 frames each; Holo outdoor tilt +19.4% / +5.8% (71 matched ids); Stanford DA2 JPEG +8.7% headline and strict (100 matched ids).
 
 ## Unsure / to verify
 
 1. Appendix C "8 of 30 choices" was counted by hand from the policy dicts in `DA2_PROTOCOLS.md`, not by script.
-2. The policy for the median protocol was learned from 40-frame `study_da2m_*` files, not from the new 100-frame runs.
+2. The policy for the median protocol was learned from 40-frame `study_da2m_*` files; the 100-frame stability check covers the four lsq models only, not da2m.
 3. NYC cluster blocks (20 consecutive ids) remain an assumed grouping.
 4. The scale-offset explanation rests on in-cap bias and the raw-vs-scale-fit contrast for one model on one dataset; it does not rank datasets.
