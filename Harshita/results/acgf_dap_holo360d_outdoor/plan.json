@@ -1,0 +1,305 @@
+[
+ {
+  "tags": [
+   "E1_baseline"
+  ],
+  "config": {
+   "method": "baseline",
+   "lat_threshold": 45.0,
+   "views_per_pole": 1,
+   "tangent_fov": null,
+   "tangent_size": 384,
+   "rotations": [
+    [
+     0.0,
+     90.0,
+     0.0
+    ]
+   ],
+   "merge": "prior",
+   "fusion": "cosine",
+   "band": 20.0,
+   "power": 2.0,
+   "prior_power": 2.0,
+   "align": "auto",
+   "tangent_geometry": null,
+   "sigma_agree": 0.1,
+   "sigma_local": 0.05,
+   "seam_width": 20.0,
+   "range_guard": false,
+   "acgf_views": [
+    [
+     "stereo",
+     180.0,
+     0.0
+    ],
+    [
+     "gnomonic",
+     110.0,
+     45.0
+    ]
+   ],
+   "acgf_domain": "gradient",
+   "acgf_screen": "value",
+   "acgf_rotations": [],
+   "acgf_gate": true,
+   "acgf_law": "auto",
+   "acgf_lambda_cap": 5.0,
+   "acgf_lambda_edge": 50.0,
+   "acgf_gate_sigma": 3.0,
+   "acgf_irls": 1,
+   "acgf_work": "log",
+   "acgf_gate_mode": "edge",
+   "mono360_padding": 0.3,
+   "name": "baseline"
+  }
+ },
+ {
+  "tags": [
+   "E2_tangent",
+   "E5_threshold",
+   "E6_views",
+   "E7_fusion"
+  ],
+  "config": {
+   "method": "tangent",
+   "lat_threshold": 45,
+   "views_per_pole": 1,
+   "tangent_fov": null,
+   "tangent_size": 384,
+   "rotations": [
+    [
+     0.0,
+     90.0,
+     0.0
+    ],
+    [
+     0.0,
+     -90.0,
+     0.0
+    ]
+   ],
+   "merge": "prior",
+   "fusion": "cosine",
+   "band": 20,
+   "power": 2.0,
+   "prior_power": 2.0,
+   "align": "auto",
+   "tangent_geometry": null,
+   "sigma_agree": 0.1,
+   "sigma_local": 0.05,
+   "seam_width": 20,
+   "range_guard": true,
+   "acgf_views": [
+    [
+     "stereo",
+     180.0,
+     0.0
+    ],
+    [
+     "gnomonic",
+     110.0,
+     45.0
+    ]
+   ],
+   "acgf_domain": "gradient",
+   "acgf_screen": "value",
+   "acgf_rotations": [],
+   "acgf_gate": true,
+   "acgf_law": "auto",
+   "acgf_lambda_cap": 5.0,
+   "acgf_lambda_edge": 50.0,
+   "acgf_gate_sigma": 3.0,
+   "acgf_irls": 1,
+   "acgf_work": "log",
+   "acgf_gate_mode": "edge",
+   "mono360_padding": 0.3,
+   "name": "tangent|t45|v1|cosine|prior"
+  }
+ },
+ {
+  "tags": [
+   "E3_rotation",
+   "E5_threshold",
+   "E7_fusion",
+   "E7_seam",
+   "E3_rotation_sets"
+  ],
+  "config": {
+   "method": "rotation",
+   "lat_threshold": 45,
+   "views_per_pole": 1,
+   "tangent_fov": null,
+   "tangent_size": 384,
+   "rotations": [
+    [
+     0.0,
+     90.0,
+     0.0
+    ],
+    [
+     0.0,
+     -90.0,
+     0.0
+    ]
+   ],
+   "merge": "prior",
+   "fusion": "cosine",
+   "band": 20,
+   "power": 2.0,
+   "prior_power": 2.0,
+   "align": "auto",
+   "tangent_geometry": null,
+   "sigma_agree": 0.1,
+   "sigma_local": 0.05,
+   "seam_width": 20,
+   "range_guard": true,
+   "acgf_views": [
+    [
+     "stereo",
+     180.0,
+     0.0
+    ],
+    [
+     "gnomonic",
+     110.0,
+     45.0
+    ]
+   ],
+   "acgf_domain": "gradient",
+   "acgf_screen": "value",
+   "acgf_rotations": [],
+   "acgf_gate": true,
+   "acgf_law": "auto",
+   "acgf_lambda_cap": 5.0,
+   "acgf_lambda_edge": 50.0,
+   "acgf_gate_sigma": 3.0,
+   "acgf_irls": 1,
+   "acgf_work": "log",
+   "acgf_gate_mode": "edge",
+   "mono360_padding": 0.3,
+   "name": "rotation|t45|pitch90_pm|cosine|prior"
+  }
+ },
+ {
+  "tags": [
+   "E4_hybrid",
+   "E5_threshold",
+   "E6_views",
+   "E7_fusion",
+   "E7_merge",
+   "E7_seam",
+   "E4_hybrid_control"
+  ],
+  "config": {
+   "method": "hybrid",
+   "lat_threshold": 45,
+   "views_per_pole": 1,
+   "tangent_fov": null,
+   "tangent_size": 384,
+   "rotations": [
+    [
+     0.0,
+     90.0,
+     0.0
+    ],
+    [
+     0.0,
+     -90.0,
+     0.0
+    ]
+   ],
+   "merge": "prior",
+   "fusion": "cosine",
+   "band": 20,
+   "power": 2.0,
+   "prior_power": 2.0,
+   "align": "auto",
+   "tangent_geometry": null,
+   "sigma_agree": 0.1,
+   "sigma_local": 0.05,
+   "seam_width": 20,
+   "range_guard": true,
+   "acgf_views": [
+    [
+     "stereo",
+     180.0,
+     0.0
+    ],
+    [
+     "gnomonic",
+     110.0,
+     45.0
+    ]
+   ],
+   "acgf_domain": "gradient",
+   "acgf_screen": "value",
+   "acgf_rotations": [],
+   "acgf_gate": true,
+   "acgf_law": "auto",
+   "acgf_lambda_cap": 5.0,
+   "acgf_lambda_edge": 50.0,
+   "acgf_gate_sigma": 3.0,
+   "acgf_irls": 1,
+   "acgf_work": "log",
+   "acgf_gate_mode": "edge",
+   "mono360_padding": 0.3,
+   "name": "hybrid|t45|v1|pitch90_pm|cosine|prior"
+  }
+ },
+ {
+  "tags": [
+   "E10_acgf"
+  ],
+  "config": {
+   "method": "acgf",
+   "lat_threshold": 45,
+   "views_per_pole": 1,
+   "tangent_fov": null,
+   "tangent_size": 384,
+   "rotations": [
+    [
+     0.0,
+     90.0,
+     0.0
+    ]
+   ],
+   "merge": "prior",
+   "fusion": "cosine",
+   "band": 20,
+   "power": 2.0,
+   "prior_power": 2.0,
+   "align": "auto",
+   "tangent_geometry": null,
+   "sigma_agree": 0.1,
+   "sigma_local": 0.05,
+   "seam_width": 20.0,
+   "range_guard": false,
+   "acgf_views": [
+    [
+     "stereo",
+     180,
+     0
+    ],
+    [
+     "gnomonic",
+     110,
+     45
+    ]
+   ],
+   "acgf_domain": "gradient",
+   "acgf_screen": "value",
+   "acgf_rotations": [],
+   "acgf_gate": true,
+   "acgf_law": "off",
+   "acgf_lambda_cap": 5.0,
+   "acgf_lambda_edge": 50.0,
+   "acgf_gate_sigma": 3.0,
+   "acgf_irls": 1,
+   "acgf_work": "auto",
+   "acgf_gate_mode": "value",
+   "mono360_padding": 0.3,
+   "name": "acgf"
+  }
+ }
+]
