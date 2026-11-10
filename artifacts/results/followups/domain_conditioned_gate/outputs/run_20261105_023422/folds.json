@@ -1,0 +1,498 @@
+[
+  {
+    "heldout_environment": "ClothingStore_0002",
+    "train_environments": [
+      "ClothingStore_0028",
+      "ClothingStore_0033",
+      "ClothingStore_0067",
+      "ClothingStore_0079",
+      "ClothingStore_0082",
+      "ClothingStore_0092",
+      "ClothingStore_0127",
+      "ClothingStore_0128",
+      "ClothingStore_0141",
+      "ClothingStore_0151",
+      "ClothingStore_0164",
+      "ClothingStore_0168",
+      "ClothingStore_0183",
+      "ClothingStore_0186",
+      "ClothingStore_0187"
+    ],
+    "training_median_gain_by_threshold": {
+      "30": -5.400636814100454,
+      "40": -5.349337547127739,
+      "45": -5.334687510923575,
+      "50": -5.169899878139462,
+      "60": -4.881266387509563,
+      "70": -4.24210222249875
+    },
+    "selected_threshold": "baseline",
+    "minimum_gain": 0.005,
+    "n_heldout_scenes": 1
+  },
+  {
+    "heldout_environment": "ClothingStore_0028",
+    "train_environments": [
+      "ClothingStore_0002",
+      "ClothingStore_0033",
+      "ClothingStore_0067",
+      "ClothingStore_0079",
+      "ClothingStore_0082",
+      "ClothingStore_0092",
+      "ClothingStore_0127",
+      "ClothingStore_0128",
+      "ClothingStore_0141",
+      "ClothingStore_0151",
+      "ClothingStore_0164",
+      "ClothingStore_0168",
+      "ClothingStore_0183",
+      "ClothingStore_0186",
+      "ClothingStore_0187"
+    ],
+    "training_median_gain_by_threshold": {
+      "30": -5.400636814100454,
+      "40": -5.349337547127739,
+      "45": -5.334687510923575,
+      "50": -5.169899878139462,
+      "60": -4.881266387509563,
+      "70": -4.24210222249875
+    },
+    "selected_threshold": "baseline",
+    "minimum_gain": 0.005,
+    "n_heldout_scenes": 1
+  },
+  {
+    "heldout_environment": "ClothingStore_0033",
+    "train_environments": [
+      "ClothingStore_0002",
+      "ClothingStore_0028",
+      "ClothingStore_0067",
+      "ClothingStore_0079",
+      "ClothingStore_0082",
+      "ClothingStore_0092",
+      "ClothingStore_0127",
+      "ClothingStore_0128",
+      "ClothingStore_0141",
+      "ClothingStore_0151",
+      "ClothingStore_0164",
+      "ClothingStore_0168",
+      "ClothingStore_0183",
+      "ClothingStore_0186",
+      "ClothingStore_0187"
+    ],
+    "training_median_gain_by_threshold": {
+      "30": -5.400636814100454,
+      "40": -5.349337547127739,
+      "45": -5.334687510923575,
+      "50": -5.169899878139462,
+      "60": -4.881266387509563,
+      "70": -4.24210222249875
+    },
+    "selected_threshold": "baseline",
+    "minimum_gain": 0.005,
+    "n_heldout_scenes": 1
+  },
+  {
+    "heldout_environment": "ClothingStore_0067",
+    "train_environments": [
+      "ClothingStore_0002",
+      "ClothingStore_0028",
+      "ClothingStore_0033",
+      "ClothingStore_0079",
+      "ClothingStore_0082",
+      "ClothingStore_0092",
+      "ClothingStore_0127",
+      "ClothingStore_0128",
+      "ClothingStore_0141",
+      "ClothingStore_0151",
+      "ClothingStore_0164",
+      "ClothingStore_0168",
+      "ClothingStore_0183",
+      "ClothingStore_0186",
+      "ClothingStore_0187"
+    ],
+    "training_median_gain_by_threshold": {
+      "30": -5.400636814100454,
+      "40": -5.349337547127739,
+      "45": -5.334687510923575,
+      "50": -5.169899878139462,
+      "60": -4.881266387509563,
+      "70": -4.24210222249875
+    },
+    "selected_threshold": "baseline",
+    "minimum_gain": 0.005,
+    "n_heldout_scenes": 1
+  },
+  {
+    "heldout_environment": "ClothingStore_0079",
+    "train_environments": [
+      "ClothingStore_0002",
+      "ClothingStore_0028",
+      "ClothingStore_0033",
+      "ClothingStore_0067",
+      "ClothingStore_0082",
+      "ClothingStore_0092",
+      "ClothingStore_0127",
+      "ClothingStore_0128",
+      "ClothingStore_0141",
+      "ClothingStore_0151",
+      "ClothingStore_0164",
+      "ClothingStore_0168",
+      "ClothingStore_0183",
+      "ClothingStore_0186",
+      "ClothingStore_0187"
+    ],
+    "training_median_gain_by_threshold": {
+      "30": -4.361177405966096,
+      "40": -4.589147453942847,
+      "45": -4.27953625661263,
+      "50": -4.072981510163862,
+      "60": -3.8096971688922805,
+      "70": -3.7165833065972746
+    },
+    "selected_threshold": "baseline",
+    "minimum_gain": 0.005,
+    "n_heldout_scenes": 1
+  },
+  {
+    "heldout_environment": "ClothingStore_0082",
+    "train_environments": [
+      "ClothingStore_0002",
+      "ClothingStore_0028",
+      "ClothingStore_0033",
+      "ClothingStore_0067",
+      "ClothingStore_0079",
+      "ClothingStore_0092",
+      "ClothingStore_0127",
+      "ClothingStore_0128",
+      "ClothingStore_0141",
+      "ClothingStore_0151",
+      "ClothingStore_0164",
+      "ClothingStore_0168",
+      "ClothingStore_0183",
+      "ClothingStore_0186",
+      "ClothingStore_0187"
+    ],
+    "training_median_gain_by_threshold": {
+      "30": -5.400636814100454,
+      "40": -5.349337547127739,
+      "45": -5.334687510923575,
+      "50": -5.169899878139462,
+      "60": -4.881266387509563,
+      "70": -4.24210222249875
+    },
+    "selected_threshold": "baseline",
+    "minimum_gain": 0.005,
+    "n_heldout_scenes": 1
+  },
+  {
+    "heldout_environment": "ClothingStore_0092",
+    "train_environments": [
+      "ClothingStore_0002",
+      "ClothingStore_0028",
+      "ClothingStore_0033",
+      "ClothingStore_0067",
+      "ClothingStore_0079",
+      "ClothingStore_0082",
+      "ClothingStore_0127",
+      "ClothingStore_0128",
+      "ClothingStore_0141",
+      "ClothingStore_0151",
+      "ClothingStore_0164",
+      "ClothingStore_0168",
+      "ClothingStore_0183",
+      "ClothingStore_0186",
+      "ClothingStore_0187"
+    ],
+    "training_median_gain_by_threshold": {
+      "30": -4.361177405966096,
+      "40": -4.589147453942847,
+      "45": -4.27953625661263,
+      "50": -4.072981510163862,
+      "60": -3.8096971688922805,
+      "70": -3.7165833065972746
+    },
+    "selected_threshold": "baseline",
+    "minimum_gain": 0.005,
+    "n_heldout_scenes": 1
+  },
+  {
+    "heldout_environment": "ClothingStore_0127",
+    "train_environments": [
+      "ClothingStore_0002",
+      "ClothingStore_0028",
+      "ClothingStore_0033",
+      "ClothingStore_0067",
+      "ClothingStore_0079",
+      "ClothingStore_0082",
+      "ClothingStore_0092",
+      "ClothingStore_0128",
+      "ClothingStore_0141",
+      "ClothingStore_0151",
+      "ClothingStore_0164",
+      "ClothingStore_0168",
+      "ClothingStore_0183",
+      "ClothingStore_0186",
+      "ClothingStore_0187"
+    ],
+    "training_median_gain_by_threshold": {
+      "30": -5.400636814100454,
+      "40": -5.349337547127739,
+      "45": -5.334687510923575,
+      "50": -5.169899878139462,
+      "60": -4.881266387509563,
+      "70": -4.24210222249875
+    },
+    "selected_threshold": "baseline",
+    "minimum_gain": 0.005,
+    "n_heldout_scenes": 1
+  },
+  {
+    "heldout_environment": "ClothingStore_0128",
+    "train_environments": [
+      "ClothingStore_0002",
+      "ClothingStore_0028",
+      "ClothingStore_0033",
+      "ClothingStore_0067",
+      "ClothingStore_0079",
+      "ClothingStore_0082",
+      "ClothingStore_0092",
+      "ClothingStore_0127",
+      "ClothingStore_0141",
+      "ClothingStore_0151",
+      "ClothingStore_0164",
+      "ClothingStore_0168",
+      "ClothingStore_0183",
+      "ClothingStore_0186",
+      "ClothingStore_0187"
+    ],
+    "training_median_gain_by_threshold": {
+      "30": -5.400636814100454,
+      "40": -5.349337547127739,
+      "45": -5.334687510923575,
+      "50": -5.169899878139462,
+      "60": -4.881266387509563,
+      "70": -4.24210222249875
+    },
+    "selected_threshold": "baseline",
+    "minimum_gain": 0.005,
+    "n_heldout_scenes": 1
+  },
+  {
+    "heldout_environment": "ClothingStore_0141",
+    "train_environments": [
+      "ClothingStore_0002",
+      "ClothingStore_0028",
+      "ClothingStore_0033",
+      "ClothingStore_0067",
+      "ClothingStore_0079",
+      "ClothingStore_0082",
+      "ClothingStore_0092",
+      "ClothingStore_0127",
+      "ClothingStore_0128",
+      "ClothingStore_0151",
+      "ClothingStore_0164",
+      "ClothingStore_0168",
+      "ClothingStore_0183",
+      "ClothingStore_0186",
+      "ClothingStore_0187"
+    ],
+    "training_median_gain_by_threshold": {
+      "30": -5.400636814100454,
+      "40": -5.349337547127739,
+      "45": -5.334687510923575,
+      "50": -5.169899878139462,
+      "60": -4.881266387509563,
+      "70": -4.24210222249875
+    },
+    "selected_threshold": "baseline",
+    "minimum_gain": 0.005,
+    "n_heldout_scenes": 1
+  },
+  {
+    "heldout_environment": "ClothingStore_0151",
+    "train_environments": [
+      "ClothingStore_0002",
+      "ClothingStore_0028",
+      "ClothingStore_0033",
+      "ClothingStore_0067",
+      "ClothingStore_0079",
+      "ClothingStore_0082",
+      "ClothingStore_0092",
+      "ClothingStore_0127",
+      "ClothingStore_0128",
+      "ClothingStore_0141",
+      "ClothingStore_0164",
+      "ClothingStore_0168",
+      "ClothingStore_0183",
+      "ClothingStore_0186",
+      "ClothingStore_0187"
+    ],
+    "training_median_gain_by_threshold": {
+      "30": -4.361177405966096,
+      "40": -4.589147453942847,
+      "45": -4.27953625661263,
+      "50": -4.072981510163862,
+      "60": -3.8096971688922805,
+      "70": -3.7165833065972746
+    },
+    "selected_threshold": "baseline",
+    "minimum_gain": 0.005,
+    "n_heldout_scenes": 1
+  },
+  {
+    "heldout_environment": "ClothingStore_0164",
+    "train_environments": [
+      "ClothingStore_0002",
+      "ClothingStore_0028",
+      "ClothingStore_0033",
+      "ClothingStore_0067",
+      "ClothingStore_0079",
+      "ClothingStore_0082",
+      "ClothingStore_0092",
+      "ClothingStore_0127",
+      "ClothingStore_0128",
+      "ClothingStore_0141",
+      "ClothingStore_0151",
+      "ClothingStore_0168",
+      "ClothingStore_0183",
+      "ClothingStore_0186",
+      "ClothingStore_0187"
+    ],
+    "training_median_gain_by_threshold": {
+      "30": -4.361177405966096,
+      "40": -4.589147453942847,
+      "45": -4.27953625661263,
+      "50": -4.072981510163862,
+      "60": -3.8096971688922805,
+      "70": -3.7165833065972746
+    },
+    "selected_threshold": "baseline",
+    "minimum_gain": 0.005,
+    "n_heldout_scenes": 1
+  },
+  {
+    "heldout_environment": "ClothingStore_0168",
+    "train_environments": [
+      "ClothingStore_0002",
+      "ClothingStore_0028",
+      "ClothingStore_0033",
+      "ClothingStore_0067",
+      "ClothingStore_0079",
+      "ClothingStore_0082",
+      "ClothingStore_0092",
+      "ClothingStore_0127",
+      "ClothingStore_0128",
+      "ClothingStore_0141",
+      "ClothingStore_0151",
+      "ClothingStore_0164",
+      "ClothingStore_0183",
+      "ClothingStore_0186",
+      "ClothingStore_0187"
+    ],
+    "training_median_gain_by_threshold": {
+      "30": -4.361177405966096,
+      "40": -4.589147453942847,
+      "45": -4.27953625661263,
+      "50": -4.072981510163862,
+      "60": -3.8096971688922805,
+      "70": -3.7165833065972746
+    },
+    "selected_threshold": "baseline",
+    "minimum_gain": 0.005,
+    "n_heldout_scenes": 1
+  },
+  {
+    "heldout_environment": "ClothingStore_0183",
+    "train_environments": [
+      "ClothingStore_0002",
+      "ClothingStore_0028",
+      "ClothingStore_0033",
+      "ClothingStore_0067",
+      "ClothingStore_0079",
+      "ClothingStore_0082",
+      "ClothingStore_0092",
+      "ClothingStore_0127",
+      "ClothingStore_0128",
+      "ClothingStore_0141",
+      "ClothingStore_0151",
+      "ClothingStore_0164",
+      "ClothingStore_0168",
+      "ClothingStore_0186",
+      "ClothingStore_0187"
+    ],
+    "training_median_gain_by_threshold": {
+      "30": -4.361177405966096,
+      "40": -4.589147453942847,
+      "45": -4.27953625661263,
+      "50": -4.072981510163862,
+      "60": -3.8096971688922805,
+      "70": -3.7165833065972746
+    },
+    "selected_threshold": "baseline",
+    "minimum_gain": 0.005,
+    "n_heldout_scenes": 1
+  },
+  {
+    "heldout_environment": "ClothingStore_0186",
+    "train_environments": [
+      "ClothingStore_0002",
+      "ClothingStore_0028",
+      "ClothingStore_0033",
+      "ClothingStore_0067",
+      "ClothingStore_0079",
+      "ClothingStore_0082",
+      "ClothingStore_0092",
+      "ClothingStore_0127",
+      "ClothingStore_0128",
+      "ClothingStore_0141",
+      "ClothingStore_0151",
+      "ClothingStore_0164",
+      "ClothingStore_0168",
+      "ClothingStore_0183",
+      "ClothingStore_0187"
+    ],
+    "training_median_gain_by_threshold": {
+      "30": -4.361177405966096,
+      "40": -4.589147453942847,
+      "45": -4.27953625661263,
+      "50": -4.072981510163862,
+      "60": -3.8096971688922805,
+      "70": -3.7165833065972746
+    },
+    "selected_threshold": "baseline",
+    "minimum_gain": 0.005,
+    "n_heldout_scenes": 1
+  },
+  {
+    "heldout_environment": "ClothingStore_0187",
+    "train_environments": [
+      "ClothingStore_0002",
+      "ClothingStore_0028",
+      "ClothingStore_0033",
+      "ClothingStore_0067",
+      "ClothingStore_0079",
+      "ClothingStore_0082",
+      "ClothingStore_0092",
+      "ClothingStore_0127",
+      "ClothingStore_0128",
+      "ClothingStore_0141",
+      "ClothingStore_0151",
+      "ClothingStore_0164",
+      "ClothingStore_0168",
+      "ClothingStore_0183",
+      "ClothingStore_0186"
+    ],
+    "training_median_gain_by_threshold": {
+      "30": -4.361177405966096,
+      "40": -4.589147453942847,
+      "45": -4.27953625661263,
+      "50": -4.072981510163862,
+      "60": -3.8096971688922805,
+      "70": -3.7165833065972746
+    },
+    "selected_threshold": "baseline",
+    "minimum_gain": 0.005,
+    "n_heldout_scenes": 1
+  }
+]
