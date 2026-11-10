@@ -1,3 +1,5 @@
+File: Distortion-Aware-Panoramic-Depth-Estimation/artifacts/results/followups/RESULTS.md
+
 
 
 
@@ -226,3 +228,21 @@ Guide and reproduction command: [Experiment 08 README](08_paired_panox_analysis/
 - Figures regenerated from the selected `summary.json` files: `figures/` using `make_figures.py`.
 
 All results here are from the saved 5 November 2026 runs. Earlier timestamped outputs are retained; this report identifies the runs selected for the summary rather than deleting historical runs.
+
+## Experiment 07 — Real NYC 20-view transfer
+
+- Canonical code: `experiments/followups/real_nyc_20view/`
+- Config: `configs/followups/real_nyc_20view.yaml`
+- Manifest and metadata: `artifacts/results/followups/real_nyc_20view/manifests/`
+- Results: `artifacts/results/followups/real_nyc_20view/outputs/run_20261110_102032_346055/`
+- Log: `artifacts/logs/followups/real_nyc_20view/run_20261110_101926.log`
+- Interpretation draft: `report/draft/followup_experiments_07_08.md`
+
+The 182-frame evaluation completed. The 20-view method has a positive paired cluster-bootstrap interval against two-pole tangent for the reported endpoints, but the 20-ID blocks are assumed dependence groups rather than verified route/session identifiers. This is held-out evaluation within the same NYC collection, not independent dataset replication. Runtime is materially higher (about 15.5x per image than two-pole tangent).
+
+## Experiment 08 — Paired PanoX analysis
+
+- Canonical code: `experiments/followups/paired_panox_analysis/`
+- Results: `artifacts/results/followups/paired_panox_analysis/outputs/`
+
+The direct 20-view-vs-two-pole intervals on eight PanoX environments include zero; this analysis does not establish a direct 20-view win. See the separate report draft for exact intervals and interpretation.

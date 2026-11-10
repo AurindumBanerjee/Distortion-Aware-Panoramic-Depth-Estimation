@@ -1,3 +1,5 @@
+File: Distortion-Aware-Panoramic-Depth-Estimation/configs/followups/real_nyc_20view.yaml
+
 # Locked transfer evaluation: compare the existing MiDaS inference methods on
 # a disjoint subset of the real NYC panoramas. Do not tune on this evaluation.
 seed: 43
@@ -13,7 +15,7 @@ model:
 dataset:
   name: nyc_dap
   root: "{ENV:DAP_SELECTED_ROOT|data/dap_selected}"
-  manifest: experiments/followups/real_nyc_20view/manifests/nyc_holdout_182.txt
+  manifest: artifacts/results/followups/real_nyc_20view/manifests/nyc_holdout_182.txt
   height: 512
   width: 1024
   max_scenes: null

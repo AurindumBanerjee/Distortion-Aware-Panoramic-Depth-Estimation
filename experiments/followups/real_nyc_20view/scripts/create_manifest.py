@@ -1,3 +1,5 @@
+File: Distortion-Aware-Panoramic-Depth-Estimation/experiments/followups/real_nyc_20view/scripts/create_manifest.py
+
 
 
 #!/usr/bin/env python3
@@ -52,7 +54,7 @@ def main() -> None:
     ap.add_argument("--expected-total", type=int, default=EXPECTED_TOTAL,
                     help="Expected paired NYC RGB/depth IDs; use 0 to disable exact-count validation.")
     ap.add_argument("--output", type=Path,
-                    default=EXPERIMENT_DIR / "manifests" / "nyc_holdout_182.txt")
+                    default=ROOT / "artifacts" / "results" / "followups" / "real_nyc_20view" / "manifests" / "nyc_holdout_182.txt")
     args = ap.parse_args()
 
     root = args.dap_root.expanduser().resolve()

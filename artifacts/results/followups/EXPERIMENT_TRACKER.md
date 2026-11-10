@@ -1,3 +1,5 @@
+File: Distortion-Aware-Panoramic-Depth-Estimation/artifacts/results/followups/EXPERIMENT_TRACKER.md
+
 # Follow-up Experiments Tracker & Audit Ledger
 
 This document tracks the five follow-up experiments designed to evaluate panoramic depth estimation under distortion, scale protocols, rotation gating, and multi-view fusion on Kaggle 2x Tesla T4 GPUs.
@@ -105,3 +107,21 @@ Executed across all 200 scenes on Structured3D and PanoX (8 independent environm
 - **Results:**
   - `align-all`: Teacher DA360 median AbsRel = 0.0637; Student U-Net median AbsRel = 0.3267.
   - `align-equatorial`: Teacher DA360 median AbsRel = 0.0761; Student U-Net median AbsRel = 0.6652.
+
+## Experiment 07 — Real NYC 20-view transfer
+
+- Code: `experiments/followups/real_nyc_20view/`
+- Config: `configs/followups/real_nyc_20view.yaml`
+- Manifest and metadata: `artifacts/results/followups/real_nyc_20view/manifests/`
+- Completed run: `artifacts/results/followups/real_nyc_20view/outputs/run_20261110_102032_346055/`
+- Log: `artifacts/logs/followups/real_nyc_20view/run_20261110_101926.log`
+- Analysis draft: `report/draft/followup_experiments_07_08.md`
+
+The 182-frame evaluation completed. The 20-view method has a positive paired cluster-bootstrap interval against two-pole tangent for the reported endpoints, but 20-ID blocks are assumed dependence groups, not verified route/session identifiers. This is a held-out subset within the same NYC collection, not independent dataset replication. Runtime is materially higher (about 15.5x per image than two-pole tangent).
+
+## Experiment 08 — Paired PanoX analysis
+
+- Code: `experiments/followups/paired_panox_analysis/`
+- Results: `artifacts/results/followups/paired_panox_analysis/outputs/`
+
+Direct 20-view-vs-two-pole intervals on eight PanoX environments include zero; this analysis does not establish a direct 20-view win. See the separate report draft for exact intervals and interpretation.
