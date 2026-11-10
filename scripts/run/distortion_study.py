@@ -13,12 +13,12 @@ from __future__ import annotations
 
 import argparse
 import json
-import sys
 from pathlib import Path
 
 import numpy as np
 
-from scripts.analysis.analysis_common import ROOT, add_common_args, depth_range, load_config, load_dataset, load_model
+from scripts.analysis.analysis_common import add_common_args, depth_range, load_config, load_dataset, load_model
+from pano.paths import BENCHMARK_RESULTS  # noqa: E402
 from methods.capture_faults.catalogue import CATALOGUE, MITIGATIONS  # noqa: E402
 from pano.evaluation.distortion_analysis import headline_protocol  # noqa: E402
 from pano.evaluation.protocol import align_to_gt, group_of  # noqa: E402
@@ -78,7 +78,7 @@ def main():
     ds = load_dataset(cfg, a.split, a.max_scenes)
     min_d, max_d = depth_range(cfg)
     dists = [d for d in CATALOGUE if not a.only or d.key in a.only.split(",")]
-    out_dir = Path(a.out_dir) if a.out_dir else ROOT / "results"
+    out_dir = Path(a.out_dir) if a.out_dir else BENCHMARK_RESULTS
     img_dir = out_dir / f"study_{a.tag}_img"
     rows, examples = [], {}
     for i in range(len(ds)):

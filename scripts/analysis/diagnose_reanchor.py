@@ -30,7 +30,7 @@ from typing import Dict, List
 import numpy as np
 import yaml
 
-from pano.paths import ROOT
+from pano.paths import ROOT, BENCHMARK_RESULTS
 from pano.evaluation.metrics import to_metric_depth
 from pano.evaluation.protocol import align_to_gt, model_space
 from pano.geometry.spherical import latitude_map
@@ -207,7 +207,7 @@ def main():
         print(f"[{i + 1}/{len(ds)}] {smp.id}", flush=True)
     if not rows:
         raise SystemExit("no rotated pass had >= 100 valid polar-cap pixels; nothing to report")
-    out = ROOT / "results"
+    out = BENCHMARK_RESULTS
     out.mkdir(exist_ok=True)
     with open(out / f"diagnose_{args.tag}.csv", "w", newline="") as f:
         w = csv.DictWriter(f, fieldnames=list(rows[0].keys()))

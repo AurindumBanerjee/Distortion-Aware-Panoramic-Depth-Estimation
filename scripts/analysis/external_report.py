@@ -10,11 +10,10 @@ Reads results/study_<model>_{stanford,nyc}.json (fault costs) and results/extern
 """
 import json
 import sys
-from pathlib import Path
 
 import numpy as np
 
-ROOT = Path(__file__).resolve().parent.parent
+from pano.paths import BENCHMARK_RESULTS  # noqa: E402
 MODELS = ("midas", "dap", "da360", "da2")
 EXTERNAL = ("stanford", "nyc")
 FAULTS = ("tilt", "nadir", "vfov", "yawblur", "jpeg", "noise", "lowres")
@@ -31,7 +30,7 @@ def f4(v):
 
 
 def main():
-    res = ROOT / "results"
+    res = BENCHMARK_RESULTS
     lines = ["# External datasets: Stanford2D3D and NYC", "",
              "Run, analysed and reported independently of the core datasets (Structured3D, PanoX, Holo360D). Nothing here "
              "was used to choose or tune a fix: the policy comes from the four core datasets only.", ""]

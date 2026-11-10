@@ -13,14 +13,13 @@ Usage: python scripts/example_gt.py
 from __future__ import annotations
 
 import json
-import sys
-from pathlib import Path
 
 import numpy as np
 
 from scripts.analysis.analysis_common import ROOT, depth_range, load_config
+from pano.paths import BENCHMARK_RESULTS  # noqa: E402
 
-RES = ROOT / "results"
+RES = BENCHMARK_RESULTS
 OUT = RES / "figures" / "example_gt"
 MODELS = ("midas", "dap", "da360", "da2")
 CORE = ("s3", "panox", "holo_in", "holo_out")
@@ -56,7 +55,7 @@ def main():
     need = wanted()
     out = {}
     for ds, by_h in need.items():
-        cfg = load_config(str(ROOT / "3_structured3d_benchmark" / CONFIG[ds]), [])
+        cfg = load_config(str(ROOT / "configs" / "benchmark" / CONFIG[ds]), [])
         d = cfg["data"]
         name, lst = d.get("dataset", "structured3d"), d.get("list", "test.txt")
         root = next((c for c in [ROOT / d.get("root", f"data/{name}"), ROOT.parent.parent / "Data" / name,

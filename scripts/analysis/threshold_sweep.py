@@ -30,7 +30,7 @@ from pathlib import Path
 
 import numpy as np
 
-from pano.paths import ROOT
+from pano.paths import BENCHMARK_RESULTS
 from methods.capture_faults.catalogue import CATALOGUE
 from scripts.analysis.calibrate_correction import CORE_SETS, FAULTS, frame_stats, metric_of
 
@@ -114,8 +114,8 @@ def evaluate(data, rule, faults):
 
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("--results", default=str(ROOT / "results"))
-    ap.add_argument("--out", default=str(ROOT / "results" / "threshold_sweep"))
+    ap.add_argument("--results", default=str(BENCHMARK_RESULTS))
+    ap.add_argument("--out", default=str(BENCHMARK_RESULTS / "threshold_sweep"))
     a = ap.parse_args()
     data = load_study(Path(a.results))
     if not data:

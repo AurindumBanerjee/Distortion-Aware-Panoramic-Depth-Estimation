@@ -13,18 +13,16 @@ from __future__ import annotations
 
 import hashlib
 import json
-import sys
-from pathlib import Path
 
 import numpy as np
 
-from pano.paths import ROOT
+from pano.paths import BENCHMARK_RESULTS
 from scripts.analysis.calibrate_correction import CORE_SETS, FAULTS, choose, frame_stats, metric_of
 
 MODELS = ("midas", "dap", "da360", "da2")
 EXTERNAL = ("stanford", "nyc")
 POLICIES = ("core", "in_domain")
-OUT = ROOT / "results" / "policy_comparison" / "same_domain"
+OUT = BENCHMARK_RESULTS / "policy_comparison" / "same_domain"
 
 
 def fold_of(groups, k=2):
@@ -65,7 +63,7 @@ def summarise(cells, pol, hurt=1.0):
 
 
 def main():
-    res = ROOT / "results"
+    res = BENCHMARK_RESULTS
     allc, L = [], ["# Same-domain policy experiment", "",
                    "Clusters (Stanford: room; NYC: 20 consecutive ids, an assumed grouping) are split into two folds. `in_domain`: fixes chosen on "
                    "the other fold of the same dataset. `core`: fixes chosen on the four core sets (the headline policy). Both are scored on "

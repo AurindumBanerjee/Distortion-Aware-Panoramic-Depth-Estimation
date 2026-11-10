@@ -13,12 +13,11 @@ from __future__ import annotations
 import argparse
 import json
 import shutil
-import sys
 from pathlib import Path
 
 import numpy as np
 
-ROOT = Path(__file__).resolve().parent.parent
+from pano.paths import ROOT, BENCHMARK_RESULTS  # noqa: E402
 import matplotlib  # noqa: E402
 
 matplotlib.use("Agg")
@@ -33,8 +32,8 @@ plt.rcParams.update({"font.family": "serif", "font.size": 8, "axes.titlesize": 8
                      "legend.fontsize": 7, "xtick.labelsize": 7, "ytick.labelsize": 7, "axes.spines.top": False,
                      "axes.spines.right": False})
 GOOD, BAD = "#2e7d32", "#c62828"
-RES = ROOT / "results"
-DRAFT_FIGS = ROOT / "Report" / "draft" / "figs"
+RES = BENCHMARK_RESULTS
+DRAFT_FIGS = ROOT / "report" / "figs"
 LADDER = [("oracle", "true mask"), ("oracle+1.5", "true mask + 1.5$^\\circ$"), ("detected", "detected mask"),
           ("detected+1.5", "detected + 1.5$^\\circ$"), ("deblock_oracle", "deblock, then fill (true mask)"),
           ("pipe_photometric", "photometric, then fill (pipeline)"), ("pipe_cap_first", "fill, then photometric")]

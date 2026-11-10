@@ -1,7 +1,6 @@
 """Package the codebase into a clean, lightweight submission archive (< 9.5 MB) using git archive."""
 from __future__ import annotations
 
-import os
 import subprocess
 import sys
 from pathlib import Path

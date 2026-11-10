@@ -15,10 +15,9 @@ import io
 import json
 from pathlib import Path
 
-import numpy as np
 
-ROOT = Path(__file__).resolve().parent.parent
-RES = ROOT / "results"
+from pano.paths import BENCHMARK_RESULTS  # noqa: E402
+RES = BENCHMARK_RESULTS
 POLAR = 60.0
 
 
@@ -30,7 +29,7 @@ def gt_info(ds: str, fid: str, height: int, res: Path = RES):
 
 
 def _depth_ticks(lo: float, hi: float):
-    cand = [0.1, 0.2, 0.5, 1, 2, 3, 5, 10, 20, 30, 50, 100, 200, 500]
+    cand = [0.1, 0.2, 0.3, 0.5, 0.7, 1, 1.5, 2, 3, 5, 7, 10, 15, 20, 30, 50, 70, 100, 200, 500]
     t = [c for c in cand if lo <= c <= hi]
     return t if len(t) >= 2 else [lo, hi]
 

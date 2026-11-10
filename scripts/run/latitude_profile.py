@@ -10,12 +10,11 @@ from __future__ import annotations
 
 import argparse
 import json
-import sys
-from pathlib import Path
 
 import numpy as np
 
-from scripts.analysis.analysis_common import ROOT, add_common_args, depth_range, load_config, load_dataset, load_model
+from scripts.analysis.analysis_common import add_common_args, depth_range, load_config, load_dataset, load_model
+from pano.paths import BENCHMARK_RESULTS  # noqa: E402
 from pano.evaluation.distortion_analysis import REF_MAX_LAT, bin_edges, cluster_curve, frame_profile, onset_from_curve  # noqa: E402
 from pano.evaluation.protocol import default_protocols, group_of  # noqa: E402
 
@@ -57,7 +56,7 @@ def main():
         refc = cluster_curve(np.repeat(ref, V.shape[1], 1), groups)
         onset = onset_from_curve(centres, exc["ci_lo"], ref=refc["mean"], rel_min=a.rel_min, min_clusters=exc["n_clusters"])
         summ["protocols"][p] = {"profile": prof, "excess": exc, "onset": onset}
-    out = ROOT / "results"
+    out = BENCHMARK_RESULTS
     out.mkdir(exist_ok=True)
     rec = {"tag": a.tag, "config": cfg, "split": a.split, "scene_ids": ids, "model": getattr(model, "name", "?"),
            "per_frame": per, "summary": summ}

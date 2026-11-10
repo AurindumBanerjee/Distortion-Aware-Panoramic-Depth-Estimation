@@ -8,14 +8,12 @@ matches frames by id and compares the median change per scenario. Output: result
 from __future__ import annotations
 
 import json
-import sys
-from pathlib import Path
 
 
-from pano.paths import ROOT
+from pano.paths import BENCHMARK_RESULTS
 from scripts.analysis.final_summary import CORE, EXT, SCEN, cell
 
-RES = ROOT / "results"
+RES = BENCHMARK_RESULTS
 ALLLOO = RES / "policy_comparison" / "e2e_allloo"
 
 

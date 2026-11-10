@@ -9,7 +9,7 @@ import math
 import sys
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parent.parent
+from pano.paths import BENCHMARK_RESULTS  # noqa: E402
 CORE = ("s3", "panox", "holo_in", "holo_out")
 EXTERNAL = ("stanford", "nyc")
 MODELS = ("midas", "dap", "da360", "da2")
@@ -102,7 +102,7 @@ def check(res: Path) -> list[str]:
 
 def main(argv=None) -> int:
     argv = sys.argv[1:] if argv is None else argv
-    res = Path(argv[0]) if argv else ROOT / "results"
+    res = Path(argv[0]) if argv else BENCHMARK_RESULTS
     problems = check(res)
     for p in problems:
         print("PROBLEM:", p)

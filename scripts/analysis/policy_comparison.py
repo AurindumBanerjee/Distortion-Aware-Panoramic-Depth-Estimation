@@ -14,12 +14,10 @@ re-run. Output: results/policy_comparison/ (own folder; nothing here feeds corre
 from __future__ import annotations
 
 import json
-import sys
-from pathlib import Path
 
 import numpy as np
 
-from pano.paths import ROOT
+from pano.paths import BENCHMARK_RESULTS
 from scripts.analysis.calibrate_correction import CORE_SETS, FAULTS, choose, frame_stats, metric_of
 
 ALL_SETS = CORE_SETS + ("stanford", "nyc")
@@ -71,7 +69,7 @@ def aggregate(cells, pol, hurt=1.0):
 
 
 def main():
-    res = ROOT / "results"
+    res = BENCHMARK_RESULTS
     studies = {}
     for m in MODELS:
         for ds in ALL_SETS:

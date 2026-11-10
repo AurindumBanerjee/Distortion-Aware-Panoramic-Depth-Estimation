@@ -8,15 +8,13 @@ summary of harmful scenarios (median change above +1%) and the mean change over 
 """
 from __future__ import annotations
 
-import sys
-from pathlib import Path
 
 import numpy as np
 
-from pano.paths import ROOT
+from pano.paths import BENCHMARK_RESULTS
 from scripts.analysis.final_summary import EXT, SCEN
 from scripts.analysis.policy_e2e_compare import compare, load_rows
-RES = ROOT / "results"
+RES = BENCHMARK_RESULTS
 TS = RES / "threshold_sweep"
 MODELS = ("midas", "dap", "da360", "da2")
 

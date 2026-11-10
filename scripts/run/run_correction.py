@@ -20,7 +20,8 @@ from pathlib import Path
 
 import numpy as np
 
-from scripts.analysis.analysis_common import ROOT, add_common_args, depth_range, load_config, load_dataset, load_model
+from scripts.analysis.analysis_common import add_common_args, depth_range, load_config, load_dataset, load_model
+from pano.paths import BENCHMARK_RESULTS  # noqa: E402
 from scripts.analysis.calibrate_correction import CORE_SETS, choose
 from methods.capture_faults.catalogue import CATALOGUE, jpeg_apply
 from methods.capture_faults.correction import CaptureMeta, cap_fault, correct, detect_caps
@@ -92,7 +93,7 @@ def main():
     ap.add_argument("--all_sets", action="store_true", help="policy rule: the fix must also help in every training dataset (stricter)")
     ap.set_defaults(split="all", max_scenes=40)
     a = ap.parse_args()
-    res = ROOT / "results"
+    res = BENCHMARK_RESULTS
     # core datasets keep their results in results/; external ones (stanford / nyc) are kept apart in results/external/
     out = Path(a.out_dir) if a.out_dir else (res if a.dataset_key in CORE_SETS else res / "external")
     non_default_rule = (a.min_gain, a.min_win, a.all_sets) != (0.02, 0.6, False)

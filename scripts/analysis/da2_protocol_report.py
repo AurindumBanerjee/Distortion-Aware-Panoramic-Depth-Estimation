@@ -10,15 +10,13 @@ Missing files are skipped. CPU only.
 from __future__ import annotations
 
 import json
-import sys
-from pathlib import Path
 
 import numpy as np
 
-from pano.paths import ROOT
+from pano.paths import BENCHMARK_RESULTS
 from scripts.analysis.final_summary import CORE, EXT, SCEN, cell, fmt
 
-RES = ROOT / "results"
+RES = BENCHMARK_RESULTS
 PAIRS = (("lsq", "da2"), ("median", "da2m"))
 SWEEP_SETS = ("s3_eval", "panox_all", "holo_in_all", "holo_out_all", "nyc_all")
 

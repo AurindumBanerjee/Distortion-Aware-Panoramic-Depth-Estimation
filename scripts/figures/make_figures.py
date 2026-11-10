@@ -28,7 +28,7 @@ from pathlib import Path
 
 import numpy as np
 
-from pano.paths import ROOT
+from pano.paths import BENCHMARK_RESULTS, ROOT
 import matplotlib
 
 matplotlib.use("Agg")
@@ -71,7 +71,7 @@ MODEL_COLOR = {"midas": "#0072B2", "dap": "#D55E00", "da360": "#009E73", "da2": 
 SET_COLOR = {"s3": "#0072B2", "panox": "#E69F00", "holo_in": "#009E73", "holo_out": "#D55E00",
              "stanford": "#56B4E9", "nyc": "#CC79A7"}
 BLIND = ("relevel_self", "gain_match", "flatfield", "denoise", "bilateral")
-RES = ROOT / "results"
+RES = BENCHMARK_RESULTS
 FIG = RES / "figures"
 
 
@@ -329,23 +329,46 @@ def plot_sweeps():
 
 
 # ------------------------------------------------------------------------------------------------ visual
+ALIGN = {"dap": "DAP depth is in raw metres.",
+         "midas": "MiDaS depth is shown after a scale-and-shift fit to the ground truth.",
+         "da360": "DA360 depth is shown after a scale-and-shift fit to the ground truth.",
+         "da2": "DA² depth is shown after a least-squares scale fit to the ground truth."}
+
+
+def path_of(folder, name):
+    p = Path(folder) / name
+    return p if name and p.is_file() else None
+
+
 def read(folder, name):
     p = Path(folder) / name
     return mpimg.imread(p) if p.is_file() else None
 
 
-def montage(panels, title, name, sub, width=3.3):
-    panels = [(t, im) for t, im in panels if im is not None]
+def _kind(title):
+    t = title.lower()
+    if "input" in t and not t.startswith("depth"):
+        return "rgb"
+    return "err" if t.startswith("error") else "depth"
+
+
+def montage(panels, title, name, sub, ds=None, fid=None, note=None):
+    """Panels laid out two per row with latitude / longitude axes and labelled colour bars
+    (same layout as the app and the other example figures, via scripts/figures/example_panels.py)."""
+    from scripts.figures.example_panels import figure
+
+    panels = [(t, p, _kind(t)) for t, p in panels if p is not None]
     if len(panels) < 2:
         return
-    fig, axs = plt.subplots(1, len(panels), figsize=(width * len(panels), width * 0.5 + 0.7), squeeze=False)
-    for ax, (t, im) in zip(axs[0], panels):
-        ax.imshow(im)
-        ax.set_title(t, fontsize=8)
-        ax.axis("off")
-    fig.suptitle(title, fontsize=9)
-    fig.tight_layout()
-    save(fig, name, sub)
+    info = None
+    if ds and fid:
+        h = mpimg.imread(str(panels[0][1])).shape[0]
+        info = _gt_info(ds, fid, h)
+    rows = [panels[i:i + 2] for i in range(0, len(panels), 2)]
+    out = FIG / sub if sub else FIG
+    out.mkdir(parents=True, exist_ok=True)
+    (out / name).write_bytes(figure(rows, title, info, note, dpi=150))
+    made.append(f"{sub + '/' if sub else ''}{name}")
 
 
 def frame_metric(rows, fid, key, f):
@@ -365,16 +388,16 @@ def visual_study(max_frames):
                 f = metric(d)
                 best = next((r.get(f"{d.key}|best_example") for r in s["rows"] if r["id"] == fid), None)
                 lab = lambda k: f"{k}: " + frame_metric(s["rows"], fid, f"{d.key}|{k}", f)
-                panels = [("degraded input", read(folder, names.get(f"{d.key}_rgb", ""))),
-                          ("depth, clean input", read(folder, names.get("clean", ""))),
-                          (f"depth, degraded ({lab('none')})", read(folder, names.get(f"{d.key}_none", "")))]
+                panels = [("degraded input", path_of(folder, names.get(f"{d.key}_rgb", ""))),
+                          ("depth, clean input", path_of(folder, names.get("clean", ""))),
+                          (f"depth, degraded ({lab('none')})", path_of(folder, names.get(f"{d.key}_none", "")))]
                 if best:
-                    panels += [(f"depth, fixed: {MITIGATIONS[best][0][:30]} ({lab(best)})", read(folder, names.get(f"{d.key}_best", "")))]
-                panels += [("error, degraded", read(folder, names.get(f"err_{d.key}_none", "")))]
+                    panels += [(f"depth, fixed: {MITIGATIONS[best][0][:30]} ({lab(best)})", path_of(folder, names.get(f"{d.key}_best", "")))]
+                panels += [("error, degraded", path_of(folder, names.get(f"err_{d.key}_none", "")))]
                 if best:
-                    panels += [("error, fixed", read(folder, names.get(f"err_{d.key}_best", "")))]
+                    panels += [("error, fixed", path_of(folder, names.get(f"err_{d.key}_best", "")))]
                 montage(panels, f"{m} · {SET_NAME[ds]} · {d.title}  ·  frame {fid}  ·  AbsRel on {'region' if f == 'region' else 'whole image'}",
-                        f"{m}_{ds}_{d.key}_{fid[-24:]}.png", "visual")
+                        f"{m}_{ds}_{d.key}_{fid[-24:]}.png", "visual", ds, fid, ALIGN.get(m))
 
 
 def _gt_info(ds, fid, h):
@@ -469,19 +492,105 @@ def visual_correction(max_frames):
                     row = next(r for r in c["rows"] if r["id"] == fid)[sc]
                     v = lambda k: row[k].get(f)
                     t = lambda k, x: f"{x} ({v(k):.3f})" if v(k) is not None and np.isfinite(v(k)) else x
-                    panels = [(f"input ({sc})", read(folder, names.get(f"{sc}_input", ""))),
-                              (t("clean", "depth, clean input"), read(folder, names.get("clean", ""))),
-                              (t("raw", "depth, uncorrected"), read(folder, names.get(f"{sc}_raw", ""))),
-                              (t("fixed", "depth, corrected: " + re.sub(r"\(caps [^)]*\)", "", ", ".join(row["log"]))), read(folder, names.get(f"{sc}_fixed", ""))),
-                              ("error, uncorrected", read(folder, names.get(f"err_{sc}_raw", ""))),
-                              ("error, corrected", read(folder, names.get(f"err_{sc}_fixed", "")))]
+                    panels = [(f"input ({sc})", path_of(folder, names.get(f"{sc}_input", ""))),
+                              (t("clean", "depth, clean input"), path_of(folder, names.get("clean", ""))),
+                              (t("raw", "depth, uncorrected"), path_of(folder, names.get(f"{sc}_raw", ""))),
+                              (t("fixed", "depth, corrected: " + re.sub(r"\(caps [^)]*\)", "", ", ".join(row["log"]))), path_of(folder, names.get(f"{sc}_fixed", ""))),
+                              ("error, uncorrected", path_of(folder, names.get(f"err_{sc}_raw", ""))),
+                              ("error, corrected", path_of(folder, names.get(f"err_{sc}_fixed", "")))]
                     montage(panels, f"{m} · {SET_NAME[ds]} · end-to-end correction, scenario '{sc}' · frame {fid}",
-                            f"{m}_{ds}_{sc}_{fid[-24:]}.png", "visual_correction")
+                            f"{m}_{ds}_{sc}_{fid[-24:]}.png", "visual_correction", ds, fid, ALIGN.get(m))
+
+
+REPORT_EXAMPLES = [("dap", "s3", "tilt", "scene_03370_994351", "ex_s3_tilt.png"),
+                   ("dap", "nyc", "nadir", "panorama_21", "ex_nyc_nadir.png"),
+                   ("dap", "stanford", "clean", None, "ex_stanford_clean.png")]
+
+
+def report_examples(out_dir=None):
+    """One-row example strips for the report: lat / lon axes in degrees, depth colour bar in metres (log),
+    AbsRel colour bar. Written to report/figs/ (or out_dir)."""
+    from matplotlib import cm
+    from matplotlib.colors import LogNorm, Normalize
+    from scripts.figures.example_panels import POLAR, _depth_ticks
+
+    out_dir = Path(out_dir) if out_dir else ROOT / "report" / "figs"
+    for m, ds, sc, fid, fname in REPORT_EXAMPLES:
+        c = correction(m, ds)
+        if not c:
+            continue
+        fid = fid or next(iter(c["examples"]))
+        names = c["examples"][fid]
+        folder = (RES if ds in CORE else RES / "external") / f"correction_{m}_{ds}_img"
+        f = "region" if sc in ("nadir", "vfov", "nadir+jpeg") else "all"
+        row = next(r for r in c["rows"] if r["id"] == fid)[sc]
+        v = lambda k: row[k].get(f)
+        t = lambda k, x: f"{x} ({v(k):.3f})" if v(k) is not None and np.isfinite(v(k)) else x
+        fix = re.sub(r"\(caps [^)]*\)", "", ", ".join(row["log"])).replace("tilt: ", "").replace(" :", ":")
+        panels = [(f"input ({sc})", names.get(f"{sc}_input", ""), "rgb"),
+                  (t("clean", "depth, clean input"), names.get("clean", ""), "depth"),
+                  (t("raw", "depth, uncorrected"), names.get(f"{sc}_raw", ""), "depth"),
+                  (t("fixed", f"depth, corrected: {fix}"), names.get(f"{sc}_fixed", ""), "depth"),
+                  ("AbsRel, uncorrected", names.get(f"err_{sc}_raw", ""), "err"),
+                  ("AbsRel, corrected", names.get(f"err_{sc}_fixed", ""), "err")]
+        panels = [(a, path_of(folder, b), k) for a, b, k in panels]
+        panels = [x for x in panels if x[1] is not None]
+        if len(panels) < 4:
+            continue
+        h = mpimg.imread(str(panels[0][1])).shape[0]
+        info = _gt_info(ds, fid, h)
+        kinds = [k for _, _, k in panels]
+        cols, wr = [], []
+        for i, k in enumerate(kinds):
+            if i and k != kinds[i - 1]:
+                if kinds[i - 1] != "rgb":
+                    cols.append(("cbar", kinds[i - 1])); wr.append(0.06)
+                cols.append(("gap", None)); wr.append(0.12 if kinds[i - 1] != "rgb" else 0.04)
+            cols.append(("img", i)); wr.append(1.0)
+        cols.append(("cbar", kinds[-1])); wr.append(0.06)
+        fig = plt.figure(figsize=(2.15 * len(panels) + 1.2, 1.7))
+        gs = fig.add_gridspec(1, len(cols), width_ratios=wr, wspace=0.08, left=0.04, right=0.97, bottom=0.2, top=0.86)
+        first = True
+        for c, (typ, val) in enumerate(cols):
+            if typ == "img":
+                title, pth, kind = panels[val]
+                ax = fig.add_subplot(gs[0, c])
+                ax.imshow(mpimg.imread(str(pth)), extent=[-180, 180, -90, 90], aspect="auto")
+                for y in (POLAR, -POLAR):
+                    ax.axhline(y, color="white", ls="--", lw=0.6)
+                ax.set_title(title, fontsize=6.5, loc="left")
+                ax.set_xticks([-120, 0, 120])
+                ax.set_xticklabels(["−120°", "0°", "120°"])
+                ax.set_yticks([-90, -60, 0, 60, 90])
+                ax.set_yticklabels(["−90°", "−60°", "0°", "60°", "90°"] if first else [])
+                ax.tick_params(labelsize=5.5, length=1.5, pad=1)
+                if first:
+                    ax.set_ylabel("latitude", fontsize=6)
+                ax.set_xlabel("longitude", fontsize=6, labelpad=1)
+                first = False
+            elif typ == "cbar":
+                cax = fig.add_subplot(gs[0, c])
+                if val == "depth" and info:
+                    tk = _depth_ticks(info["lo"], info["hi"])
+                    cb = fig.colorbar(cm.ScalarMappable(LogNorm(info["lo"], info["hi"]), "turbo_r"), cax=cax, ticks=tk)
+                    cb.set_ticklabels([f"{x:.2g}" for x in tk]); cb.set_label("depth (m), log scale", fontsize=5.5, labelpad=1)
+                elif val == "depth":
+                    cb = fig.colorbar(cm.ScalarMappable(Normalize(0, 1), "turbo_r"), cax=cax, ticks=[0, 1])
+                    cb.set_ticklabels(["near", "far"]); cb.set_label("depth", fontsize=5.5, labelpad=1)
+                else:
+                    cb = fig.colorbar(cm.ScalarMappable(Normalize(0, 0.5), "magma"), cax=cax, ticks=[0, 0.25, 0.5])
+                    cb.set_ticklabels(["0", "0.25", "≥0.5"]); cb.set_label("AbsRel", fontsize=5.5, labelpad=1)
+                cb.minorticks_off()
+                cb.ax.tick_params(labelsize=5, length=1.5, pad=1)
+        out_dir.mkdir(parents=True, exist_ok=True)
+        fig.savefig(out_dir / fname, dpi=200, bbox_inches="tight", pad_inches=0.02)
+        plt.close(fig)
+        made.append(str(out_dir / fname))
 
 
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("--only", choices=["plots", "visual", "sweeps"], default=None)
+    ap.add_argument("--only", choices=["plots", "visual", "sweeps", "report_examples"], default=None)
     ap.add_argument("--results", default=None, help="results folder (default: results/ of the repo)")
     ap.add_argument("--frames", type=int, default=1, help="example frames per model x dataset in the image montages")
     a = ap.parse_args()
@@ -496,6 +605,8 @@ def main():
         plot_correction()
     if a.only in (None, "sweeps"):
         plot_sweeps()
+    if a.only in (None, "report_examples"):
+        report_examples()
     if a.only in (None, "visual"):
         visual_study(a.frames)
         visual_models(a.frames)

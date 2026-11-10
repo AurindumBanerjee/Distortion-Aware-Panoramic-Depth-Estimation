@@ -9,13 +9,11 @@ agreement counts and every (model, held-out set, fault) cell where the choice di
 from __future__ import annotations
 
 import json
-import sys
-from pathlib import Path
 
-from pano.paths import ROOT
+from pano.paths import BENCHMARK_RESULTS
 from scripts.analysis.calibrate_correction import CORE_SETS, choose
 from methods.capture_faults.catalogue import CATALOGUE
-RES = ROOT / "results"
+RES = BENCHMARK_RESULTS
 OUT = RES / "policy_stability"
 MODELS = ("midas", "dap", "da360", "da2")
 

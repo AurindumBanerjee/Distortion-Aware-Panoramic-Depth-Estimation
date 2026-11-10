@@ -13,12 +13,12 @@ from __future__ import annotations
 
 import argparse
 import json
-import sys
 from pathlib import Path
 
 import numpy as np
 
-from scripts.analysis.analysis_common import ROOT, add_common_args, depth_range, load_config, load_dataset, load_model
+from scripts.analysis.analysis_common import add_common_args, depth_range, load_config, load_dataset, load_model
+from pano.paths import BENCHMARK_RESULTS  # noqa: E402
 from pano.evaluation.distortion_analysis import MODES, default_values, summarize_sweep, sweep_frame  # noqa: E402
 
 
@@ -135,7 +135,7 @@ def main():
     if len(frames) < 2:
         raise SystemExit(f"only {len(frames)} usable frames ({skipped} skipped)")
     summ = summarize_sweep(frames, ids, a.bin, rel_min=a.rel_min)
-    out = ROOT / "results"
+    out = BENCHMARK_RESULTS
     out.mkdir(exist_ok=True)
     rec = {"tag": a.tag, "config": cfg, "split": a.split, "mode": a.mode, "values": values, "scene_ids": ids, "skipped": skipped,
            "model": getattr(model, "name", "?"), "frames": frames, "summary": summ}

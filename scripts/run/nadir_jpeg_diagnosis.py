@@ -25,8 +25,6 @@ from __future__ import annotations
 
 import argparse
 import json
-import sys
-from pathlib import Path
 
 import numpy as np
 
@@ -152,7 +150,8 @@ def report(rows, tag, model_name, protocols):
 
 
 def main():
-    from scripts.analysis.analysis_common import ROOT, add_common_args, depth_range, load_config, load_dataset, load_model
+    from pano.paths import BENCHMARK_RESULTS
+    from scripts.analysis.analysis_common import add_common_args, depth_range, load_config, load_dataset, load_model
     from methods.capture_faults.catalogue import CATALOGUE, jpeg_apply
     from pano.evaluation.distortion_analysis import headline_protocol
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
@@ -189,7 +188,7 @@ def main():
         r0 = rec["nadir+jpeg"][protocols[0]]
         print(f"[{i + 1}/{len(ds)}] {smp.id}: nadir+jpeg region raw {r0['raw']['region']:.3f} -> oracle plane_fill "
               f"{r0['oracle:plane_fill']['region']:.3f}, detected+1.5 {r0['detected+1.5:plane_fill']['region']:.3f}", flush=True)
-    out = ROOT / "results" / "diag"
+    out = BENCHMARK_RESULTS / "diag"
     out.mkdir(parents=True, exist_ok=True)
     (out / f"nadir_jpeg_{a.tag}.json").write_text(json.dumps({"tag": a.tag, "protocols": protocols, "rows": rows}), encoding="utf-8")
     md = report(rows, a.tag, getattr(model, "name", "?"), protocols)

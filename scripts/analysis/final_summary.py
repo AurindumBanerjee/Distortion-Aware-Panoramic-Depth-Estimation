@@ -11,12 +11,11 @@ optimistic for clustered data.
 from __future__ import annotations
 
 import json
-from pathlib import Path
 
 import numpy as np
 
-ROOT = Path(__file__).resolve().parent.parent
-RES = ROOT / "results"
+from pano.paths import BENCHMARK_RESULTS  # noqa: E402
+RES = BENCHMARK_RESULTS
 CORE = ("s3", "panox", "holo_in", "holo_out")
 EXT = ("stanford", "nyc")
 SCEN = ["clean", "tilt", "nadir", "vfov", "yawblur", "jpeg", "nadir+jpeg"]

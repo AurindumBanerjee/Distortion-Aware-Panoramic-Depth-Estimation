@@ -22,7 +22,7 @@ from pathlib import Path
 
 import numpy as np
 
-from pano.paths import ROOT
+from pano.paths import BENCHMARK_RESULTS
 from methods.capture_faults.catalogue import CATALOGUE
 
 FAULTS = {d.key: d for d in CATALOGUE}
@@ -75,7 +75,7 @@ def choose(train, fault, min_gain, min_win):
 
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("--results", default=str(ROOT / "results"))
+    ap.add_argument("--results", default=str(BENCHMARK_RESULTS))
     ap.add_argument("--sets", default=",".join(CORE_SETS), help="datasets the policy is learned from (default: the four core sets; "
                     "external sets stanford / nyc must not be listed)")
     ap.add_argument("--min_gain", type=float, default=0.02, help="required median improvement (fraction) on training")

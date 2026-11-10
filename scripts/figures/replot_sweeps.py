@@ -4,10 +4,8 @@ distortion_sweep.figure(). CPU only, no model runs.  Usage: python scripts/replo
 from __future__ import annotations
 
 import json
-import sys
-from pathlib import Path
 
-from scripts.analysis.analysis_common import ROOT
+from pano.paths import BENCHMARK_RESULTS  # noqa: E402
 from scripts.run.distortion_sweep import figure
 
 MODEL = {"midas": "MiDaS", "dap": "DAP", "da360": "DA360", "da2": "DA²", "da2m": "DA² (median fit)"}
@@ -18,7 +16,7 @@ SPLIT = {"eval": "evaluation split", "calib": "calibration split", "all": "all f
 
 def main():
     n = 0
-    for p in sorted((ROOT / "results").glob("sweep_*.json")):
+    for p in sorted((BENCHMARK_RESULTS).glob("sweep_*.json")):
         d = json.loads(p.read_text())
         s = d.get("summary", d)
         if "centres" not in s:
