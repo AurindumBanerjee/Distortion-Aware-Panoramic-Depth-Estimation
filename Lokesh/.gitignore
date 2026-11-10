@@ -1,7 +1,0 @@
-weights/
-data/
-results/**/predictions/
-results/**/heatmap__*.npy
-__pycache__/
-.pytest_cache/
-third_party/DAP/
