@@ -1,18 +1,17 @@
+File: Distortion-Aware-Panoramic-Depth-Estimation/experiments/followups/shared/sync_stage.py
+
 #!/usr/bin/env python3
 """Auto-sync script: packages and streams experiment outputs immediately after each run.
 
 Designed for remote execution (e.g. Kaggle / Colab / remote Linux VM).
 Emits 76-char wrapped base64 payloads to stdout so that VS Code Jupyter client
 automatically saves them into the local .ipynb file in real time without UI lag.
-Also creates physical zip archives in /kaggle/working and optionally performs git
-commit/push if GITHUB_PAT is set.
+Also creates physical zip archives in /kaggle/working. Git operations are deliberately disabled.
 """
 from __future__ import annotations
 
 import base64
 import io
-import os
-import subprocess
 import sys
 import zipfile
 from pathlib import Path
@@ -129,76 +128,11 @@ def sync_stage(stage_key: str, working_dir: Path | None = None) -> int:
     print(f"=== STAGE_SYNC_PAYLOAD_END: {stage_dir_name} ===", flush=True)
     print(f"[AUTO-SYNC] Stage {stage_dir_name} sync payload streamed to local client!\n", flush=True)
 
-    # 4. Optional direct Git push if GITHUB_PAT is available in environment
-    try_git_push(stage_dir_name)
+    # Git stage/commit/push is intentionally disabled. Syncing artifacts must never
+    # mutate a Git index, create commits, alter remotes, or push from Kaggle.
 
     return len(files_to_pack)
 
-
-def try_git_push(stage_dir_name: str) -> None:
-    pat = os.environ.get("GITHUB_PAT", "").strip()
-    repo_url = os.environ.get(
-        "REPO_URL",
-        "https://github.com/AurindumBanerjee/Distortion-Aware-Panoramic-Depth-Estimation.git",
-    ).strip()
-
-    git_dir = ROOT / ".git"
-    if not git_dir.is_dir():
-        return
-
-    try:
-        if pat and "github.com" in repo_url:
-            auth_url = repo_url.replace("https://", f"https://{pat}@")
-            subprocess.run(
-                ["git", "remote", "set-url", "origin", auth_url],
-                cwd=ROOT,
-                check=False,
-                stdout=subprocess.DEVNULL,
-                stderr=subprocess.DEVNULL,
-            )
-
-        # Stage only outputs and logs of this stage
-        stage_res = FOLLOWUP_RESULTS / stage_dir_name
-        rel_path = stage_res.relative_to(ROOT)
-        subprocess.run(
-            ["git", "add", f"{rel_path}/outputs", f"{rel_path}/logs"],
-            cwd=ROOT,
-            check=False,
-            stdout=subprocess.DEVNULL,
-            stderr=subprocess.DEVNULL,
-        )
-
-        commit_proc = subprocess.run(
-            [
-                "git",
-                "commit",
-                "-m",
-                f"auto-sync(followup): archive {stage_dir_name} outputs from remote run [skip ci]",
-            ],
-            cwd=ROOT,
-            check=False,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-            text=True,
-        )
-
-        if commit_proc.returncode == 0:
-            print(f"[AUTO-SYNC] Committed {stage_dir_name} outputs locally.", flush=True)
-            if pat:
-                push_proc = subprocess.run(
-                    ["git", "push", "origin", "HEAD"],
-                    cwd=ROOT,
-                    check=False,
-                    stdout=subprocess.PIPE,
-                    stderr=subprocess.PIPE,
-                    text=True,
-                )
-                if push_proc.returncode == 0:
-                    print(f"[AUTO-SYNC] Pushed {stage_dir_name} outputs directly to remote!", flush=True)
-                else:
-                    print(f"[AUTO-SYNC] Git push skipped/failed: {push_proc.stderr.strip()}", flush=True)
-    except Exception as e:
-        print(f"[AUTO-SYNC] Git push notice: {e}", flush=True)
 
 
 def main() -> None:
