@@ -1,6 +1,9 @@
+
+
+
 # Lokesh Follow-up Experiments
 
-Six follow-up studies are isolated under this directory. They use the same experiment hygiene as Aurindum:
+Six original follow-up studies plus two complementary evaluation studies are isolated under this directory. They use the same experiment hygiene as Aurindum:
 each study has its own config, standalone runner, GPU launcher, logs, timestamped output folder, per-scene
 metrics, summary JSON, and Markdown report. Shared model/data/protocol helpers live in shared/.
 
@@ -17,6 +20,8 @@ wrapper and a 360MonoDepth-style comparison implementation under followup_experi
 | 04 | 04_mono360_20view | Does a full-sphere 20-view icosahedral pipeline beat the existing two-pole tangent correction? | MiDaS DPT-Hybrid / PanoX |
 | 05 | 05_fov_resolution_sweep | How sensitive is tangent correction to the view FOV and pixel resolution? | MiDaS DPT-Hybrid / PanoX |
 | 06 | 06_structure_at_poles_gate | Can image-level structure/capture cues decide when polar correction should be applied? | Per-image gate / PanoX (planned) |
+| 07 | 07_real_nyc_20view | Does the 20-view method transfer to real outdoor NYC panoramas, and does it beat two-pole tangent directly? | Frozen MiDaS / 182 held-out NYC RGB-range pairs (runner ready; not yet executed) |
+| 08 | 08_paired_panox_analysis | Is the Experiment 04 20-view-vs-two-pole difference statistically supported directly? | Saved 200-scene PanoX per-scene CSV (analysis complete; no GPU) |
 
 ### Important research-scope notes
 
@@ -76,6 +81,17 @@ From Lokesh/ on Linux/Kaggle:
 
 Experiment 02 intentionally uses all PanoX environments for LOEO; avoid --limit unless the selected subset
 still includes at least three complete environment clusters.
+
+## New evaluation studies (10 November 2026)
+
+- **07 — Real NYC transfer:** `07_real_nyc_20view/README.md`. The deterministic 182-frame manifest and metadata are generated; all 364 referenced files were checked and three RGB/range pairs decoded locally. The local Python environment lacks PyTorch, so CUDA/model preflight and inference remain pending. It excludes IDs 0–74 used in the earlier Lokesh NYC run and uses 91 assumed 20-ID bootstrap blocks.
+- **08 — Paired PanoX audit:** `08_paired_panox_analysis/README.md`. This analysis-only study has been run against the selected Experiment 04 CSV. It finds that the direct 20-view-vs-two-pole interval includes zero under both alignment protocols; see the timestamped report under `08_paired_panox_analysis/outputs/`. This is a reanalysis, not new model inference.
+
+Run the Experiment 08 audit from `Lokesh/` with:
+
+    python followup_experiments/08_paired_panox_analysis/analyze_panox.py
+
+For Experiment 07, first generate the portable manifest, then run a 16-frame pilot and the full GPU study as described in its README. Do not treat pilot intervals as final results.
 
 ## Result layout
 

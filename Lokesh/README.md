@@ -1,3 +1,6 @@
+
+
+
 ﻿# Distortion-Aware Panoramic Depth Estimation
 
 This project studies inference-time methods for monocular depth estimation on 360-degree equirectangular (ERP) panoramas. The backbone is kept frozen; the experiments change the view geometry, align predictions to a baseline, and fuse views back into the ERP grid.
@@ -56,7 +59,7 @@ Lokesh/
   results/                   Core run outputs, CSV tables, JSON and figures
   scripts/                   Data-list builders and result-table generation
   tests/                     Geometry, loader and inference tests
-  followup_experiments/      Six isolated follow-up studies
+  followup_experiments/      Eight isolated experiments/evaluation studies
   weights/                   Local model checkpoints (git-ignored)
   _archives/                 Preserved prior runs and debug samples
 ```
@@ -118,7 +121,7 @@ The generated table is `results/RESULT_TABLES.md`. The cross-domain comparison i
 
 ## Follow-up studies
 
-Six studies are isolated under [`followup_experiments/`](followup_experiments/README.md). They keep separate configs, runners, logs, timestamped outputs, and summaries.
+Eight studies/evaluations are isolated under [`followup_experiments/`](followup_experiments/README.md). They keep separate configs, runners, logs, timestamped outputs, and summaries.
 
 | Study | Research question | Evidence status |
 |---|---|---|
@@ -128,8 +131,10 @@ Six studies are isolated under [`followup_experiments/`](followup_experiments/RE
 | 04 - 20-view 360MonoDepth-style | Does full-sphere icosahedral inference help over two-pole tangent views? | 200-scene PanoX run saved |
 | 05 - FOV/resolution sweep | How do tangent-view FOV and resolution affect polar error? | 200-scene PanoX run saved; Holo360D test validation pending |
 | 06 - Structure-at-the-poles gate | Can image-level pole structure decide when correction is appropriate? | Design and code only; not run |
+| 07 - Real NYC 20-view transfer | Does full-sphere 20-view inference transfer to real NYC data and beat two-pole tangent directly? | 182-frame manifest generated; all 364 referenced files and three RGB/range samples preflight-checked; GPU run pending |
+| 08 - Paired PanoX significance audit | Is the Experiment 04 20-view-vs-two-pole result directly supported? | Reanalysis completed; direct 95% intervals include zero under both alignments |
 
-The selected run IDs, result tables, confidence intervals, caveats, and generated figures are compiled in [`followup_experiments/RESULTS.md`](followup_experiments/RESULTS.md). Earlier timestamped runs are preserved. The selected outputs are not overwritten by new runs.
+The selected run IDs, result tables, confidence intervals, caveats, and generated figures are compiled in [`followup_experiments/RESULTS.md`](followup_experiments/RESULTS.md). The Experiment 08 direct paired PanoX audit and Experiment 07 NYC transfer guide/results are documented separately under their respective folders. Earlier timestamped runs are preserved. The selected outputs are not overwritten by new runs.
 
 For Kaggle setup and execution details, see [`followup_experiments/README.md`](followup_experiments/README.md) and the `kaggle_two_t4_runner.ipynb` notebook. DA360-dependent runs require the official DA360 implementation and checkpoint to be mounted separately. Do not silently substitute MiDaS for DA360.
 

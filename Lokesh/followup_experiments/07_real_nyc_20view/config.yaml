@@ -1,0 +1,43 @@
+# Locked transfer evaluation: compare the existing MiDaS inference methods on
+# a disjoint subset of the real NYC panoramas. Do not tune on this evaluation.
+seed: 43
+output_dir: followup_experiments/07_real_nyc_20view/outputs
+
+model:
+  name: midas
+  model_type: dpt_hybrid_384
+  weights: "{ENV:MIDAS_WEIGHTS|weights/dpt_hybrid_384.pt}"
+  device: cuda
+  erp_net_height: 384
+
+dataset:
+  name: nyc_dap
+  root: "{ENV:DAP_SELECTED_ROOT|../../DAP_selected}"
+  manifest: followup_experiments/07_real_nyc_20view/manifests/nyc_holdout_182.txt
+  height: 512
+  width: 1024
+  max_scenes: null
+  min_depth: 0.5
+  max_depth: 1000.0
+  depth_scale: 1.0
+
+inference:
+  tangent_size: 384
+  padding: 0.3
+  batch_size: 4
+  polar_threshold: 45
+  simple_views_per_pole: 1
+  simple_fusion: cosine
+  simple_align: affine
+
+mono360:
+  lbfgs_iters: 50
+  max_overlap_samples: 20000
+  sample_fraction: 0.02
+
+evaluation:
+  protocols: [align-all, align-equatorial]
+  alignment: affine
+  min_depth: 0.5
+  max_depth: 1000.0
+  bootstrap_replicates: 10000
