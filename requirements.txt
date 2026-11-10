@@ -1,0 +1,17 @@
+# Pinned dependencies from working environment (Python 3.10 / PRML)
+torch==2.6.0
+torchvision==0.21.0
+numpy==2.2.6
+opencv-python==4.11.0.86
+scipy==1.13.1
+pandas==2.3.3
+matplotlib==3.10.0
+PyYAML==6.0.2
+scikit-image==0.25.2
+tabulate==0.10.0
+pytest==8.3.4
+timm==0.6.13
+streamlit==1.44.1
+altair==5.5.0
+Jinja2==3.1.4
+tqdm==4.67.1

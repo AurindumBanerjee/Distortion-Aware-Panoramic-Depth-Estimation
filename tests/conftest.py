@@ -1,0 +1,11 @@
+"""Root pytest configuration for distortion-aware panoramic depth estimation."""
+import sys
+from pathlib import Path
+import pytest
+
+ROOT = Path(__file__).resolve().parent.parent
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
+
+def pytest_configure(config):
+    config.addinivalue_line("markers", "needs_artifacts: mark test as requiring heavy dataset/model artifacts")

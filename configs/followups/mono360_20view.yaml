@@ -1,0 +1,32 @@
+seed: 41
+output_dir: artifacts/results/followups/mono360_20view/outputs
+model:
+  name: midas
+  model_type: dpt_hybrid_384
+  weights: "{ENV:MIDAS_WEIGHTS|weights/dpt_hybrid_384.pt}"
+  device: cuda
+  erp_net_height: 384
+dataset:
+  name: panox
+  root: "{ENV:PANOX_ROOT|data/panox}"
+  list: test.txt
+  height: 512
+  width: 1024
+  max_scenes: 200
+inference:
+  tangent_size: 384
+  padding: 0.3
+  batch_size: 4
+  polar_threshold: 45
+  simple_views_per_pole: 1
+  simple_fusion: cosine
+  simple_align: affine
+evaluation:
+  protocols: [align-all, align-equatorial]
+  alignment: affine
+  min_depth: 0.05
+  max_depth: 100.0
+mono360:
+  lbfgs_iters: 50
+  max_overlap_samples: 20000
+  sample_fraction: 0.02

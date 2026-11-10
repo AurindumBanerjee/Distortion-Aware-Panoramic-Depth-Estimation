@@ -1,0 +1,56 @@
+# DAP NYC outdoor street panoramas (real). Build the list with scripts/data/make_nyc_list.py into data/nyc_dap.
+# Benchmark Configuration on Real Structured3D Panoramas
+method_name: "Structured3D Real Foundation Benchmark"
+model:
+  name: "dpt_hybrid_384"
+  device: "auto"
+  space: "disparity"
+  scale: "affine"
+
+data:
+  dataset: "nyc_dap"
+  root: "data/nyc_dap"
+  list: "test.txt"
+  max_scenes: null          # null = all panoramas in the list (300 extracted); override with --max_scenes N
+  height: 256
+  width: 512
+
+method1:
+  polar_source: "auto"   # auto -> tangent for perspective models; rotated_erp for metric ERP models (DAP)
+  phi_threshold: 45.0
+  fov_deg: 90.0
+  resolution: 384
+  anchor_max_lat: 60.0
+  shift_model: "cos"    # tangent alignment: cos = exact 3-term fit (default); none = legacy 2-term (results before 3 Nov 2026)
+  planar_prior:          # Method1_PlanarPrior (opt-in via evaluation.methods): floor / ceiling plane from the 40-60 deg ring
+    ring: [40.0, 60.0]
+    cap_from: 40.0
+    min_inlier: 0.6      # share of ring pixels within inlier_tol of the plane, else the prior is off for that pole
+    inlier_tol: 0.05
+    max_tilt_deg: 20.0
+    agree_tol: 0.5       # cap pixels whose prediction differs by more (relative, inverse range) keep the model
+    phi_threshold: 60.0  # gradient fusion ramp 50-70 deg (ring stays pinned to the ERP prediction)
+    blend_margin: 10.0
+  blend_margin: 10.0
+  texture_tau: 0.0
+  texture_gate_mode: "erp"
+
+mobius_tta:
+  passes:
+    - {pitch: 90.0, scale: 1.0}
+    - {pitch: -90.0, scale: 1.0}
+    - {pitch: 0.0, scale: 1.6}
+    - {pitch: 0.0, scale: 0.625}
+  fusion_mode: "distortion_weighted"
+  reanchor: "auto"
+  anchor_max_lat: 30.0
+  reanchor_scope: "identity"   # identity | joint (pass synchronisation over all pairwise overlaps)
+  sync_max_lat: 45.0
+  consensus: false             # per-pixel down-weighting of passes far from the per-pixel median
+
+evaluation:
+  protocols: ["align-all", "align-equatorial"]   # first = headline
+  min_depth: 0.1    # Structured3D GT valid range (mm PNG / 1000); predictions clamped to it
+  max_depth: 100.0   # the GT meshes the sky as a ~650-1050 m dome (16-19% of pixels): excluded, as in the DAP config and Holo360D outdoor
+  output_dir: "outputs_nyc"
+  log_dir: "logs"

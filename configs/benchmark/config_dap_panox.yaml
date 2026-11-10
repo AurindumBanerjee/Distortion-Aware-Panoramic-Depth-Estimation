@@ -1,0 +1,49 @@
+# PanoX (8 UE5 environments x 25 frames, indoor + outdoor). Generated from config_dap.yaml; only data/evaluation differ.
+# DAP (Depth Any Panoramas) variant of config.yaml: metric depth model at its native 512x1024.
+# Run via CONFIG=config_dap.yaml or the master script (normal config first, then this one).
+# Benchmark Configuration on Real Structured3D Panoramas
+method_name: "Structured3D Real Foundation Benchmark (DAP)"
+benchmark_suffix: "_dap"   # keeps DAP results in their own best_model/ registry
+model:
+  name: "dap"
+  repo: "third_party/DAP"
+  weights: "weights/dap/model.pth"
+  device: "auto"
+  space: "depth"
+  scale: "metric"
+
+data:
+  dataset: "panox"   # 'structured3d' | 'panox' (see config*_panox.yaml)
+  root: "data/panox" # relative to repo root; also searched: <Project>/Data/<dataset>
+  list: "test.txt"          # split list ("rgb/x.png depth/x.png" per line); legacy rgb/ + depth/ discovery if absent
+  max_scenes: null          # null = all panoramas in the list (300 extracted); override with --max_scenes N
+  height: 512
+  width: 1024
+
+method1:
+  polar_source: "auto"   # auto -> rotated_erp for DAP (ERP-native); tangent for perspective models
+  phi_threshold: 45.0
+  fov_deg: 90.0
+  resolution: 384
+  anchor_max_lat: 60.0
+  blend_margin: 10.0
+  texture_tau: 0.0
+  texture_gate_mode: "erp"
+
+mobius_tta:
+  passes:
+    - {pitch: 90.0, scale: 1.0}
+    - {pitch: -90.0, scale: 1.0}
+    - {pitch: 0.0, scale: 1.6}
+    - {pitch: 0.0, scale: 0.625}
+  fusion_mode: "distortion_weighted"
+  reanchor: "auto"
+  gate_lat: [30, 55]   # non-identity passes fade in between |lat| 30 and 55 deg; output == baseline below 30 (protects the equator)
+  anchor_max_lat: 30.0
+
+evaluation:
+  protocols: ["none", "align-all"]   # metric model: raw metres is the headline, global median scale second
+  min_depth: 0.1
+  max_depth: 100.0   # PanoX: UE5 cm EXR -> m; sky (~655 m) masked by the preset
+  output_dir: "outputs_dap_panox"
+  log_dir: "logs_dap_panox"

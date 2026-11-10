@@ -21,11 +21,16 @@ import numpy as np
 import pandas as pd
 import streamlit as st
 
-ROOT = Path(__file__).resolve().parents[1]
-H_RES = ROOT / "Harshita" / "results"
-A_RES = ROOT / "Aurindum" / "results"
-sys.path.insert(0, str(ROOT / "Aurindum" / "scripts"))
-import example_panels as EP  # noqa: E402  (shared panorama-figure layout)
+from pano.paths import (
+    ROOT,
+    BENCHMARK_RESULTS as BENCH_RES,
+    PROJECTION_RESULTS as PROJ_RES,
+    NYC_RESULTS,
+    FOLLOWUP_RESULTS,
+    ARCHIVES,
+    REPORT,
+)
+from scripts.figures import example_panels as EP
 
 # A method must lower polar AbsRel by at least this fraction to count as a "good" example.
 GOOD_GAIN = 0.10
@@ -225,7 +230,7 @@ def graph(body: str, rankdir: str = "LR") -> str:
 
 def pipeline(dot: str, stretch: bool = True):
     with st.container(border=True):
-        st.graphviz_chart(dot, width="stretch" if stretch else "content")
+        st.graphviz_chart(dot, use_container_width=stretch)
         st.markdown(PIPE_LEGEND, unsafe_allow_html=True)
 
 
@@ -234,7 +239,7 @@ def pipeline(dot: str, stretch: bool = True):
 # --------------------------------------------------------------------------------------
 METHODS = {
     "tangent": dict(
-        name="Tangent-plane views", owner="Harshita", prefix="tangent", fig="tangent", run="acgf_midas_{ds}",
+        name="Tangent-plane views", prefix="tangent", fig="tangent", run="acgf_midas_{ds}",
         tagline="Re-sample each polar cap into an undistorted pinhole view and fuse it back.",
         facts=[("Extra views", "2 gnomonic (N, S)"), ("Model calls", "3"), ("Fusion", "Cosine latitude blend"),
                ("Runtime", "2.6× baseline"), ("Best at", "Holo360D indoor poles")],
@@ -260,7 +265,7 @@ METHODS = {
         extra="tangent_view",
     ),
     "rotation": dict(
-        name="Rotation ensemble", owner="Harshita", prefix="rotation", fig="rotation", run="acgf_midas_{ds}",
+        name="Rotation ensemble", prefix="rotation", fig="rotation", run="acgf_midas_{ds}",
         tagline="Rotate the sphere so each pole lands on the undistorted equator.",
         facts=[("Extra views", "2 rotated ERPs (pitch ±90°)"), ("Model calls", "3"), ("Fusion", "Prior cos(λ)² + blend"),
                ("Runtime", "4.4× baseline"), ("Best at", "Structured3D (2nd)")],
@@ -284,7 +289,7 @@ METHODS = {
 """),
     ),
     "hybrid": dict(
-        name="Hybrid (tangent + rotation)", owner="Harshita", prefix="hybrid", fig="hybrid", run="acgf_midas_{ds}",
+        name="Hybrid (tangent + rotation)", prefix="hybrid", fig="hybrid", run="acgf_midas_{ds}",
         tagline="Pool pinhole and rotated views; the least distorted one wins per pixel.",
         facts=[("Extra views", "2 gnomonic + 2 rotated"), ("Model calls", "5"), ("Fusion", "Pooled prior + blend"),
                ("Runtime", "5.8× baseline"), ("Best at", "Robust all-rounder")],
@@ -307,7 +312,7 @@ METHODS = {
 """),
     ),
     "mono360": dict(
-        name="360MonoDepth", owner="Harshita · re-implemented prior work", prefix="mono360", fig="mono360",
+        name="360MonoDepth", prefix="mono360", fig="mono360",
         run="acgf_midas_{ds}",
         tagline="Cover the sphere with 20 pinhole views and stitch them into one panorama.",
         facts=[("Extra views", "20 icosahedral"), ("Model calls", "20 (no ERP pass)"), ("Fusion", "Deformable grids"),
@@ -330,7 +335,7 @@ METHODS = {
 """),
     ),
     "acgf": dict(
-        name="ACGF v2", owner="Harshita", prefix="acgf", fig="acgf", run="acgf_midas_{ds}_v2",
+        name="ACGF v2", prefix="acgf", fig="acgf", run="acgf_midas_{ds}_v2",
         tagline="Fuse pole views in the gradient domain, with a gate that falls back to the baseline.",
         facts=[("Extra views", "2 stereographic + 2 gnomonic"), ("Model calls", "5"), ("Fusion", "Gradient solve + gate γ"),
                ("Runtime", "~22× baseline"), ("Best at", "Holo360D outdoor poles")],
@@ -357,7 +362,7 @@ METHODS = {
     ),
 }
 
-# Published results (Harshita/RESULTS.md §10.2): MiDaS DPT-Hybrid, align-equatorial, full test splits.
+# Published results (projection corrections study §10.2): MiDaS DPT-Hybrid, align-equatorial, full test splits.
 _SETS = ["Structured3D", "Holo360D indoor", "Holo360D outdoor"]
 POLAR = pd.DataFrame([[0.536, 0.363, 0.707], [0.379, 0.321, 0.784], [0.256, 0.566, 0.841],
                       [0.274, 0.393, 0.589], [0.171, 0.416, 0.663], [0.329, 0.386, 0.579]],
@@ -377,12 +382,12 @@ FAULTS = {
 }
 FAULT_MODELS = {"MiDaS DPT-Hybrid": "midas", "DAP": "dap", "DA²": "da2", "DA360": "da360"}
 FAULT_SETS = {
-    "Structured3D": ("s3", A_RES),
-    "PanoX": ("panox", A_RES),
-    "Holo360D indoor": ("holo_in", A_RES),
-    "Holo360D outdoor": ("holo_out", A_RES),
-    "Stanford2D3D (external)": ("stanford", A_RES / "external"),
-    "NYC panoramas (external)": ("nyc", A_RES / "external"),
+    "Structured3D": ("s3", BENCH_RES),
+    "PanoX": ("panox", BENCH_RES),
+    "Holo360D indoor": ("holo_in", BENCH_RES),
+    "Holo360D outdoor": ("holo_out", BENCH_RES),
+    "Stanford2D3D (external)": ("stanford", BENCH_RES / "external"),
+    "NYC panoramas (external)": ("nyc", BENCH_RES / "external"),
 }
 
 
@@ -392,7 +397,7 @@ FAULT_SETS = {
 @st.cache_data(show_spinner=False)
 def scene_metrics(run: str) -> pd.DataFrame:
     """Per image × method: whole-image and polar (60–90°) AbsRel, MiDaS align-equatorial protocol."""
-    f = H_RES / run / "rows_align-equatorial.csv"
+    f = PROJ_RES / run / "rows_align-equatorial.csv"
     if not f.is_file():
         return pd.DataFrame()
     d = pd.read_csv(f, dtype={"image": str}, usecols=["image", "method", "band", "weighting", "n", "abs_rel"])
@@ -407,7 +412,7 @@ def scene_metrics(run: str) -> pd.DataFrame:
 
 
 def qual_scenes(run: str, fig: str) -> list[str]:
-    q = H_RES / run / "qualitative"
+    q = PROJ_RES / run / "qualitative"
     return sorted(p.name[: -len(f"_{fig}.png")] for p in q.glob(f"*_{fig}.png")) if q.is_dir() else []
 
 
@@ -465,7 +470,7 @@ def fault_examples(model: str, ds: str, folder: str, mode: str = "help") -> pd.D
     return pd.DataFrame(rows)
 
 
-# Colour scales used when the example images were written (Aurindum/scripts/distortion_study.py, save_examples):
+# Colour scales used when the example images were written (scripts/run/distortion_study.py, save_examples):
 #   depth: turbo(1 - x), x = log depth scaled between the 2nd and 98th percentile of the frame's true depth
 #          -> red = near, blue = far;
 #   error: magma(min(|pred - true| / true, 0.5) / 0.5), grey = no ground truth.
@@ -520,8 +525,8 @@ def _example_png(rows: str, title: str, ds: str, fid: str, note: str) -> bytes:
     rows_ = json.loads(rows)
     first = next(p for r in rows_ for _, p, _ in r if p and Path(p).is_file())
     h = mpimg.imread(first).shape[0]
-    info = EP.gt_info(ds, fid, h, A_RES)
-    rows_ = [[(t, (str(A_RES / info["gt"]) if (p == "GT" and info) else (None if p == "GT" else p)), k)
+    info = EP.gt_info(ds, fid, h, BENCH_RES)
+    rows_ = [[(t, (str(BENCH_RES / info["gt"]) if (p == "GT" and info) else (None if p == "GT" else p)), k)
               for t, p, k in r] for r in rows_]
     return EP.figure(rows_, title, info, note)
 
@@ -536,7 +541,7 @@ def show_example(rows, title: str, ds: str, fid: str, note: str = ""):
     if not any(Path(p).is_file() for p in flat):
         return
     rows_s = json.dumps([[(t, p if p == "GT" else str(p), k) for t, p, k in r] for r in rows])
-    st.image(_example_png(rows_s, title, ds, fid, note), width="stretch")
+    st.image(_example_png(rows_s, title, ds, fid, note), use_container_width=True)
 
 
 def proj_share(run: str, prefix: str) -> tuple[int, int, int]:
@@ -571,7 +576,7 @@ def correction_share(model: str, ds: str, folder: str, fault: str) -> tuple[int,
 def img(path: Path, caption: str | None = None) -> bool:
     """Show an image if it exists; otherwise record it once and show nothing in place."""
     if path.is_file():
-        st.image(str(path), caption=caption, width="stretch")
+        st.image(str(path), caption=caption, use_container_width=True)
         return True
     st.session_state.setdefault("_missing", []).append(str(path.relative_to(ROOT)) if path.is_relative_to(ROOT) else str(path))
     return False
@@ -608,7 +613,7 @@ def bar_chart(values: pd.Series, title: str, fmt: str = ".3f", height: int = 230
     bars = base.mark_bar(cornerRadiusEnd=4, height=18).encode(
         color=alt.Color("key:N", scale=alt.Scale(domain=list(COLORS), range=list(COLORS.values())), legend=None))
     text = base.mark_text(align="left", dx=6, fontSize=12, color="#1d2433").encode(text=alt.Text("v:Q", format=fmt))
-    st.altair_chart((bars + text).properties(height=height).configure_view(stroke=None), width="stretch")
+    st.altair_chart((bars + text).properties(height=height).configure_view(stroke=None), use_container_width=True)
 
 
 # --------------------------------------------------------------------------------------
@@ -623,7 +628,7 @@ def page_overview():
          "Can we fix the polar error of monocular depth models on 360° panoramas at inference time, "
          "treating the depth model as a frozen black box?",
          eyebrow="CV coursework · IIT Jodhpur",
-         chips=["Aurindum Banerjee", "Harshita Vachhani", "Lokesh Motwani", "No retraining", "7 datasets · 5 models"])
+         chips=["Panoramic Depth", "Inference-Time Correction", "No retraining", "7 datasets · 5 models"])
 
     section("The problem", "equirectangular (ERP) panoramas stretch every row by 1/cos φ")
     c = st.columns(4)
@@ -634,7 +639,7 @@ def page_overview():
     c1, c2 = st.columns([1.05, 1])
     with c1:
         with st.container(border=True):
-            img(H_RES / "acgf_midas_structured3d" / "report_align-equatorial" / "profile_acgf_main_align-equatorial.png")
+            img(PROJ_RES / "acgf_midas_structured3d" / "report_align-equatorial" / "profile_acgf_main_align-equatorial.png")
             st.caption("MiDaS DPT-Hybrid on Structured3D: error vs |latitude|. The baseline's error rises steeply "
                        "towards the poles; the corrections flatten it.")
     with c2:
@@ -654,7 +659,7 @@ def page_overview():
     plain("A 360° photo is a sphere flattened into a rectangle, like a world map. The flattening stretches the top and "
           "bottom of the picture. Depth models (programs that guess how far away every pixel is) make bigger mistakes there. "
           "This app shows what we tried to reduce those mistakes without retraining any model, and what actually causes them.")
-    section("What the final report concludes", "Aurindum/Final_Report.pdf")
+    section("What the final report concludes", "report/final_report.pdf")
     c = st.columns(4)
     for col, (n, l) in zip(c, [("−34.8%", "DAP error on Stanford2D3D's real black polar caps, after the capture-fault fix"),
                                ("−47.4%", "DAP error on tilted NYC street panoramas, after re-levelling"),
@@ -675,15 +680,15 @@ def page_overview():
 
     section("The work", "pick a card to open its page")
     groups = [
-        ("Harshita · inference-time projection corrections", [
+        ("Inference-time projection corrections", [
             (k, PAGE_OF[k], m["tagline"], m["facts"][3][1], COLORS[k]) for k, m in METHODS.items()]),
-        ("Aurindum · what really causes the error, and capture faults", [
+        ("Latitude analysis, ensembles & capture faults", [
             ("sweeps", "Measurement sweeps", "Rotate, dilate and flip content to test whether ERP distortion causes the polar error.", "4 models · 6 datasets", "#6250d6"),
             ("ens", "Gradient fusion & Möbius TTA", "Poisson-fused pole views and Möbius-warped ensembles vs a compute-matched control.", "helps MiDaS only", "#6250d6"),
             ("cat", "Capture-fault catalogue", "Ten realistic capture faults, what each costs every model, and the fix.", "10 faults", "#6250d6"),
             ("faults", "Capture-fault correction", "Detect faults from the image and apply the per-model fix learned on held-out data.", "end to end", "#6250d6"),
             ("rob", "Robustness checks", "Two scoring rules for DA², the nadir+JPEG diagnosis, stricter rules and policy stability.", "report appendices", "#6250d6")]),
-        ("Lokesh · generalisation and follow-up studies", [
+        ("Real-world evaluation & follow-up studies", [
             ("nyc", "NYC street panoramas", "The projection corrections on 75 real outdoor city panoramas.", "outdoor", "#008300"),
             ("fu", "Follow-up studies", "Scale-only protocol, LOEO gate, distillation, 20 views, FOV sweep.", "6 studies", "#008300")]),
     ]
@@ -694,7 +699,7 @@ def page_overview():
             with cols[i % 4]:
                 st.markdown(f'<div class="card" style="--c:{color}"><div class="h">{page}</div>'
                             f'<div class="d">{desc}</div><span class="b">{badge}</span></div>', unsafe_allow_html=True)
-                st.button("Open →", key=f"open_{key}", on_click=go_to, args=(page,), width="stretch")
+                st.button("Open →", key=f"open_{key}", on_click=go_to, args=(page,), use_container_width=True)
             if i % 4 == 3 and i < len(cards) - 1:
                 cols = st.columns(4)
         st.write("")
@@ -707,19 +712,19 @@ def page_overview():
         with cc[0]:
             bar_chart(POLAR[ds or _SETS[0]], "Polar AbsRel")
         with cc[1]:
-            st.dataframe(POLAR.style.format("{:.3f}").highlight_min(color="#c9ecd3"), width="stretch")
+            st.dataframe(POLAR.style.format("{:.3f}").highlight_min(color="#c9ecd3"), use_container_width=True)
     with t2:
         ds = st.radio("Dataset", _SETS, key="ov_ds_whole", horizontal=True, label_visibility="collapsed")
         cc = st.columns([1, 1])
         with cc[0]:
             bar_chart(WHOLE[ds or _SETS[0]], "Whole-image AbsRel")
         with cc[1]:
-            st.dataframe(WHOLE.style.format("{:.3f}").highlight_min(color="#c9ecd3"), width="stretch")
+            st.dataframe(WHOLE.style.format("{:.3f}").highlight_min(color="#c9ecd3"), use_container_width=True)
     with t3:
         bar_chart(RUNTIME, "Runtime (× baseline, Kaggle T4)", fmt=".1f")
     callout("<b>No method wins everywhere.</b> 360MonoDepth leads on Structured3D, tangent views on Holo360D indoor, "
             "and ACGF v2 on Holo360D outdoor, where it also does the least harm. "
-            "Source: Harshita/RESULTS.md §10.2, ground truth aligned on |φ| &lt; 30°.")
+            "Source: projection corrections study §10.2, ground truth aligned on |φ| &lt; 30°.")
 
 
 def page_baseline():
@@ -762,12 +767,12 @@ def page_baseline():
                      f"{scene}: {model_lbl} on {ds_lbl}, single ERP pass", ds, scene, ALIGN_NOTE.get(model, ""))
     callout("<b>Key finding:</b> panorama-trained DAP shows <b>no polar degradation</b> (indoor polar 0.179 = equator "
             "0.179), while perspective MiDaS roughly doubles its error at the poles. The projection corrections therefore "
-            "target perspective models; on DAP every one of them makes things worse (Harshita/RESULTS.md §11).")
+            "target perspective models; on DAP every one of them makes things worse (projection corrections study §11).")
 
 
 def page_projection(key: str):
     m = METHODS[key]
-    hero(m["name"], m["tagline"], eyebrow=f"Method · {m['owner']}",
+    hero(m["name"], m["tagline"], eyebrow="Method · Projection Correction",
          chips=["MiDaS DPT-Hybrid (frozen)", "Inference-time only", "No ground truth at inference"])
     facts(m["facts"])
     plain(PLAIN_METHOD[key])
@@ -804,8 +809,8 @@ def page_projection(key: str):
     k3.metric("Whole AbsRel · baseline", f"{r.base_whole:.3f}")
     k4.metric(f"Whole AbsRel · {LABELS[key]}", f"{r.whole:.3f}", f"{pct(r.whole / r.base_whole - 1)}", delta_color="inverse")
 
-    run_dir = H_RES / m["run"].format(ds=avail[ds_lbl]) / "qualitative"
-    report = H_RES / m["run"].format(ds=avail[ds_lbl]) / "report_align-equatorial" / "profile_acgf_main_align-equatorial.png"
+    run_dir = PROJ_RES / m["run"].format(ds=avail[ds_lbl]) / "qualitative"
+    report = PROJ_RES / m["run"].format(ds=avail[ds_lbl]) / "report_align-equatorial" / "profile_acgf_main_align-equatorial.png"
     tabs = st.tabs(["Result vs baseline", "Inside the pipeline", "Error by latitude"])
     with tabs[0]:
         st.caption("Left column = baseline, right column = this method. Improvement map: blue = better, orange = worse. "
@@ -841,7 +846,7 @@ def page_projection(key: str):
 
 def page_faults():
     hero("Capture-fault correction", "Real panoramas often fail because of how they were captured, not because of "
-         "ERP stretch. Detect the fault, fix it, then run the model.", eyebrow="Method · Aurindum",
+         "ERP stretch. Detect the fault, fix it, then run the model.", eyebrow="Method · Capture Faults",
          chips=["MiDaS · DAP · DA2 · DA360", "Leave-one-dataset-out policy", "6 datasets"])
     facts([("Faults handled", "Tilt, nadir, vFOV, blur, JPEG"), ("Detection", "From the image alone"),
            ("Fixes", "Re-level · inpaint · deblur · denoise"), ("Model calls", "1"),
@@ -917,9 +922,9 @@ def _fault_summary():
     t1, t2, t3 = st.tabs(["Gain per model and dataset", "Do no harm", "External validation (DAP)"])
     with t1:
         st.caption("Median change in error vs uncorrected (green = better); right panel: share of frames made worse.")
-        img(A_RES / "figures" / "fig_correction_gain.png")
+        img(BENCH_RES / "figures" / "fig_correction_gain.png")
     with t2:
-        img(A_RES / "figures" / "fig_do_no_harm.png")
+        img(BENCH_RES / "figures" / "fig_do_no_harm.png")
     with t3:
         ext = pd.DataFrame(
             [["Stanford2D3D", "clean (real caps)", -34.8, "99 / 1%"], ["Stanford2D3D", "tilt", -32.0, "99 / 1%"],
@@ -931,8 +936,11 @@ def _fault_summary():
         def _shade(v):  # green = error down, red = error up; no matplotlib needed
             a = min(abs(v) / 60, 1) * 0.55
             return f"background-color: rgba({'27,175,122' if v < 0 else '227,73,72'},{a:.2f})"
-        st.dataframe(ext.style.format({"Median change (%)": "{:+.1f}"}).map(_shade, subset=["Median change (%)"]),
-                     width="stretch", hide_index=True)
+        styler = ext.style.format({"Median change (%)": "{:+.1f}"})
+        styler_map = getattr(styler, "map", getattr(styler, "applymap", None))
+        if styler_map:
+            styler = styler_map(_shade, subset=["Median change (%)"])
+        st.dataframe(styler, use_container_width=True, hide_index=True)
         st.caption("Green = error goes down after the fix, red = it goes up; stronger colour = larger change.")
         st.caption("Stanford2D3D: 373 frames, 73 rooms. NYC: 147 frames. Policy learned on the four core datasets only. "
                    "Source: final report, Section 5.2.4 (external validation).")
@@ -974,7 +982,7 @@ def page_compare():
     with c2:
         st.write("")
         st.dataframe(s.rename(columns={"whole": "Whole", "polar": "Polar"}).style.format("{:.3f}")
-                     .highlight_min(color="#c9ecd3"), width="stretch")
+                     .highlight_min(color="#c9ecd3"), use_container_width=True)
         st.markdown(f'<div class="callout">Best at the poles on this scene: <b>{best}</b> '
                     f'({pct(s.polar[best] / s.polar["Baseline"] - 1)} vs baseline)</div>', unsafe_allow_html=True)
 
@@ -984,16 +992,16 @@ def page_compare():
     for tab, key in zip(tabs, keys):
         with tab:
             with st.container(border=True):
-                img(H_RES / METHODS[key]["run"].format(ds=ds) / "qualitative" / f"{scene}_{METHODS[key]['fig']}.png")
+                img(PROJ_RES / METHODS[key]["run"].format(ds=ds) / "qualitative" / f"{scene}_{METHODS[key]['fig']}.png")
 
 
 # --------------------------------------------------------------------------------------
-# Aurindum: measurement sweeps, inference-time ensembles, capture-fault catalogue
+# Benchmark study: measurement sweeps, inference-time ensembles, capture-fault catalogue
 # --------------------------------------------------------------------------------------
-A_FIG = A_RES / "figures"
-A_MODELS = {"DAP": "dap", "MiDaS DPT-Hybrid": "midas", "DA360": "da360", "DA²": "da2"}
-A_SETS = {"Structured3D": "s3", "PanoX": "panox", "Holo360D indoor": "holo_in", "Holo360D outdoor": "holo_out",
-          "Stanford2D3D (external)": "stanford", "NYC streets (external)": "nyc"}
+BENCH_FIG = BENCH_RES / "figures"
+BENCH_MODELS = {"DAP": "dap", "MiDaS DPT-Hybrid": "midas", "DA360": "da360", "DA²": "da2"}
+BENCH_SETS = {"Structured3D": "s3", "PanoX": "panox", "Holo360D indoor": "holo_in", "Holo360D outdoor": "holo_out",
+              "Stanford2D3D (external)": "stanford", "NYC streets (external)": "nyc"}
 FAULTS10 = {
     "tilt": "Camera tilt (12° pitch, 8° roll)",
     "nadir": "Blocked nadir (tripod below −62°)",
@@ -1016,7 +1024,7 @@ FIXES = {
 
 
 def study_file(m: str, ds: str) -> Path:
-    return A_RES / f"study_{m}_{ds}.json"
+    return BENCH_RES / f"study_{m}_{ds}.json"
 
 
 @st.cache_data(show_spinner=False)
@@ -1046,7 +1054,7 @@ def fault_study_examples(m: str, ds: str, mode: str = "help") -> pd.DataFrame:
 def page_sweeps():
     hero("Measurement sweeps", "Is the polar error really caused by ERP distortion? Move the same content to "
          "different latitudes while the ground truth stays fixed, and watch the error.",
-         eyebrow="Study · Aurindum", chips=["4 frozen models", "6 datasets", "80 panoramas per dataset",
+         eyebrow="Study · Distortion Analysis", chips=["4 frozen models", "6 datasets", "80 panoramas per dataset",
                                            "Cluster-robust bootstrap"])
     plain("If stretching near the top and bottom really caused the errors, moving the same picture content to the "
           "middle should fix them. We moved it there and back and watched the error. For most models it did not follow "
@@ -1091,18 +1099,18 @@ def page_sweeps():
         with tab:
             callout(note)
             with st.container(border=True):
-                img(A_FIG / f"fig_sweeps_{mode}.png")
+                img(BENCH_FIG / f"fig_sweeps_{mode}.png")
 
     section("Explore one model and dataset")
     c1, c2, c3 = st.columns(3)
     mode = c1.radio("Sweep", ["rotation", "dilation", "flip"], horizontal=True, key="sw_mode")
-    m = A_MODELS[c2.selectbox("Model", list(A_MODELS), key="sw_m")]
+    m = BENCH_MODELS[c2.selectbox("Model", list(BENCH_MODELS), key="sw_m")]
     pre = "sweep_" if mode == "rotation" else f"sweep_{mode}_"
-    sets = {lbl: ds for lbl, ds in A_SETS.items()
-            if any((A_RES / f"{pre}{m}_{ds}_{sp}.png").is_file() for sp in ("all", "eval"))}
+    sets = {lbl: ds for lbl, ds in BENCH_SETS.items()
+            if any((BENCH_RES / f"{pre}{m}_{ds}_{sp}.png").is_file() for sp in ("all", "eval"))}
     ds = sets[c3.selectbox("Dataset", list(sets), key="sw_ds")] if sets else None
     if ds:
-        f = next(A_RES / f"{pre}{m}_{ds}_{sp}.png" for sp in ("all", "eval") if (A_RES / f"{pre}{m}_{ds}_{sp}.png").is_file())
+        f = next(BENCH_RES / f"{pre}{m}_{ds}_{sp}.png" for sp in ("all", "eval") if (BENCH_RES / f"{pre}{m}_{ds}_{sp}.png").is_file())
         with st.container(border=True):
             img(f)
     nav_buttons()
@@ -1111,7 +1119,7 @@ def page_sweeps():
 def page_ensembles():
     hero("Gradient fusion & Möbius TTA", "Two model-agnostic inference-time corrections, tested against a "
          "compute-matched control so that gains cannot come from simple averaging.",
-         eyebrow="Methods · Aurindum", chips=["MiDaS · DAP · DA360 · DA2", "Compute-matched yaw control", "No retraining"])
+         eyebrow="Methods · Ensembling", chips=["MiDaS · DAP · DA360 · DA2", "Compute-matched yaw control", "No retraining"])
     plain("Two tricks that run the same model several times on re-arranged copies of the picture and combine the "
           "answers. A fair control runs the model just as often without the trick, so any gain is not just averaging.")
     facts([("Method 1", "Gradient-domain polar fusion"), ("Method 2", "Möbius test-time augmentation"),
@@ -1132,7 +1140,7 @@ def page_ensembles():
   ps [label="Poisson solve\\n(latitude ramp α)", {HL}];
   out [label="Fused depth", {N_OUT}];
   rgb -> pv -> al -> ps -> out; base -> ps;
-""", rankdir="TB"), width="content")
+""", rankdir="TB"), use_container_width=False)
     with c2:
         with st.container(border=True):
             st.markdown("##### Method 2: Möbius test-time augmentation")
@@ -1147,7 +1155,7 @@ def page_ensembles():
   av [label="Average", {HL}];
   out [label="Ensembled depth", {N_OUT}];
   rgb -> mb -> m2 -> ra -> av -> out; base -> ra [style=dashed];
-""", rankdir="TB"), width="content")
+""", rankdir="TB"), use_container_width=False)
 
     section("Results", "75–90° polar error change, Möbius TTA (from the final report)")
     c = st.columns(4)
@@ -1160,7 +1168,7 @@ def page_ensembles():
     res = pd.DataFrame({"Setting": ["MiDaS · 3 passes", "MiDaS · 5–7 passes", "MiDaS · PanoX", "Yaw control (same passes)", "DAP · Structured3D"],
                         "align-all": ["−12.6%", "−22.6%", "−18.4%", "within ±3%", "+32% (worse)"],
                         "align-equatorial": ["−46.9%", "−26.5%", "–", "within ±3%", "–"]}).set_index("Setting")
-    st.dataframe(res, width="stretch")
+    st.dataframe(res, use_container_width=True)
     callout("<b>Reading:</b> the gain is real and not just averaging (the yaw ensemble with the same compute does "
             "nothing), but it only appears for the perspective-trained MiDaS. Panoramic foundation models have already "
             "learned the projection, so re-projecting their input only moves them off their training distribution.")
@@ -1169,7 +1177,7 @@ def page_ensembles():
 
 def page_fault_catalogue():
     hero("Capture-fault catalogue", "Ten realistic ways a 360° capture goes wrong, what each one costs every model, "
-         "and the fix that undoes it.", eyebrow="Study · Aurindum",
+         "and the fix that undoes it.", eyebrow="Study · Distortion Analysis",
          chips=["10 faults", "4 models", "6 datasets", "40 frames per cell"])
     facts([("Worst fault", "Limited vFOV on DAP (29×)"), ("Most fragile", "DAP (best on clean input)"),
            ("Strongest fix", "Re-level: 96% recovery"), ("Per-model", "A fix can help one model, hurt another"),
@@ -1178,15 +1186,15 @@ def page_fault_catalogue():
           "photos, and measured how much worse each model gets. Then we tried a repair for each one.")
     section("What each fault costs", "error with the fault ÷ error on the clean image (1.0× = no cost)")
     with st.container(border=True):
-        img(A_FIG / "fig_fault_cost.png")
+        img(BENCH_FIG / "fig_fault_cost.png")
     callout("Capture faults cost far more than the projection: removing the top and bottom of the panorama raises "
             "DAP's error in the affected region from 0.026 to 0.761 on Structured3D.")
 
     mode = ex_mode()
     section("Examples", "faulty input vs the best fix; " + ex_sub())
     c1, c2, c3 = st.columns(3)
-    m = A_MODELS[c1.selectbox("Model", list(A_MODELS), key="fc_m")]
-    sets = {lbl: ds for lbl, ds in A_SETS.items() if not fault_study_examples(m, ds, mode).empty}
+    m = BENCH_MODELS[c1.selectbox("Model", list(BENCH_MODELS), key="fc_m")]
+    sets = {lbl: ds for lbl, ds in BENCH_SETS.items() if not fault_study_examples(m, ds, mode).empty}
     if not sets:
         st.info("No stored example matches this filter for this model. Try another option in the sidebar.")
         nav_buttons()
@@ -1210,7 +1218,7 @@ def page_fault_catalogue():
     k3.metric(f"AbsRel, fixed{region}", f"{r.fixed:.3f}", pct(r.fixed / r.none - 1), delta_color="inverse")
     st.caption(f"Fix: **{FIXES.get(r.fix, r.fix)}**")
     names = load_json(str(study_file(m, ds)))["examples"][scene]
-    imdir = A_RES / f"study_{m}_{ds}_img"
+    imdir = BENCH_RES / f"study_{m}_{ds}_img"
     g = lambda k: imdir / names.get(k, "__none__")
     with st.container(border=True):
         show_example([[("Input with the fault", g(f"{fault}_rgb"), "rgb"), ("Ground-truth depth", "GT", "depth")],
@@ -1219,7 +1227,7 @@ def page_fault_catalogue():
                       [("Reference: depth on the clean input", g("clean"), "depth"), ("Reference: AbsRel on the clean input", g("err_clean"), "err")]],
                      f"{scene}: {m} · {ds} · {FAULTS10.get(fault, fault)} · fix: {FIXES.get(r.fix, r.fix)}", ds, scene,
                      ALIGN_NOTE.get(m, ""))
-    vm = sorted((A_FIG / "visual_models").glob(f"{ds}_{fault}_*.png"))
+    vm = sorted((BENCH_FIG / "visual_models").glob(f"{ds}_{fault}_*.png"))
     if vm:
         with st.expander("Same fault on all four models"):
             img(vm[0])
@@ -1227,16 +1235,14 @@ def page_fault_catalogue():
 
 
 # --------------------------------------------------------------------------------------
-# Lokesh: NYC street panoramas and follow-up studies
+# External evaluation: NYC street panoramas and follow-up studies
 # --------------------------------------------------------------------------------------
-L_ROOT = ROOT / "Lokesh"
-L_FU = L_ROOT / "followup_experiments"
 NYC_GAIN = 0.05
 
 
 @st.cache_data(show_spinner=False)
 def nyc_metrics() -> pd.DataFrame:
-    f = L_ROOT / "results" / "midas_dpt_hybrid_nyc" / "rows_align-equatorial.csv"
+    f = NYC_RESULTS / "midas_dpt_hybrid_nyc" / "rows_align-equatorial.csv"
     if not f.is_file():
         return pd.DataFrame()
     d = pd.read_csv(f, dtype={"image": str}, usecols=["image", "method", "band", "weighting", "n", "abs_rel"])
@@ -1249,7 +1255,7 @@ def nyc_metrics() -> pd.DataFrame:
 
 @st.cache_data(show_spinner=False)
 def nyc_examples() -> pd.DataFrame:
-    f = L_ROOT / "results" / "midas_dpt_hybrid_nyc" / "rows_align-equatorial.csv"
+    f = NYC_RESULTS / "midas_dpt_hybrid_nyc" / "rows_align-equatorial.csv"
     if not f.is_file():
         return pd.DataFrame()
     d = pd.read_csv(f, dtype={"image": str}, usecols=["image", "method", "band", "weighting", "n", "abs_rel"])
@@ -1261,20 +1267,21 @@ def nyc_examples() -> pd.DataFrame:
     pol = d[d.band.isin(["60-75", "75-90"])].assign(w=lambda x: x.abs_rel * x.n).groupby(["image", "m"]).agg(w=("w", "sum"), n=("n", "sum"))
     met = pd.concat([whole, (pol.w / pol.n).rename("polar")], axis=1).reset_index()
     rows = []
-    for p in sorted(L_ROOT.glob("_panorama_*_*.png")):
+    debug_dir = ARCHIVES / "nyc" / "root_debug_samples_20261110"
+    for p in sorted(debug_dir.glob("_panorama_*_*.png")):
         i, meth = p.stem[len("_panorama_"):].split("_", 1)
         s = met[met.image == f"C:_panorama_{i}"].set_index("m")
         if "baseline" not in s.index or meth not in s.index:
             continue
         b, c = s.loc["baseline"], s.loc[meth]
-        rows.append(dict(scene=f"Panorama {i}", file=p.name, method=meth, base_polar=b.polar, polar=c.polar,
+        rows.append(dict(scene=f"Panorama {i}", file=str(p), method=meth, base_polar=b.polar, polar=c.polar,
                          base_whole=b.whole, whole=c.whole, gain=1 - c.polar / b.polar))
     return pd.DataFrame(rows)
 
 
 def page_nyc():
     hero("NYC street panoramas", "Does the projection correction carry over from indoor rooms to real outdoor "
-         "city streets? The same pipeline, run on 75 NYC panoramas.", eyebrow="Study · Lokesh",
+         "city streets? The same pipeline, run on 75 NYC panoramas.", eyebrow="Study · NYC Outdoor",
          chips=["MiDaS DPT-Hybrid (frozen)", "75 outdoor panoramas", "Depth up to 1000 m"])
     facts([("Dataset", "NYC streets (DAP release)"), ("Methods", "Tangent · rotation · hybrid"),
            ("Best", "Tangent / hybrid: 0.529 → 0.48"), ("Worst", "Rotation: polar → 0.651"),
@@ -1288,10 +1295,10 @@ def page_nyc():
         bar_chart(tbl["Polar 60–90°"], "Polar AbsRel, 75 NYC panoramas (lower is better)", height=180)
     with c2:
         st.dataframe(tbl.style.format({"Whole": "{:.3f}", "Polar 60–90°": "{:.3f}", "Model calls": "{:d}"})
-                     .highlight_min(subset=["Whole", "Polar 60–90°"], color="#c9ecd3"), width="stretch")
+                     .highlight_min(subset=["Whole", "Polar 60–90°"], color="#c9ecd3"), use_container_width=True)
     callout("Outdoors the gains are smaller than indoors: tangent views and the hybrid cut polar error by about 9%, "
             "while the rotation ensemble makes it worse, because the rotated sky and kilometre-scale depths fall "
-            "outside what MiDaS handles well. Source: Lokesh/results/midas_dpt_hybrid_nyc.")
+            "outside what MiDaS handles well. Source: earlier NYC evaluation results.")
 
     ex = nyc_examples()
     mode = ex_mode()
@@ -1320,14 +1327,14 @@ def page_nyc():
         k3.metric("Whole AbsRel · baseline", f"{r.base_whole:.3f}")
         k4.metric(f"Whole AbsRel · {LABELS[meth]}", f"{r.whole:.3f}", pct(r.whole / r.base_whole - 1), delta_color="inverse")
         with st.container(border=True):
-            img(L_ROOT / r.file)
+            img(Path(r.file))
     with st.expander("Error by latitude over all 75 panoramas"):
-        img(L_ROOT / "results" / "midas_dpt_hybrid_nyc" / "report_align-equatorial" / "profile_main_align-equatorial.png")
+        img(NYC_RESULTS / "midas_dpt_hybrid_nyc" / "report_align-equatorial" / "profile_main_align-equatorial.png")
     nav_buttons()
 
 
 def latest_report(study: str) -> Path | None:
-    runs = sorted((L_FU / study / "outputs").glob("*/REPORT.md"), key=lambda p: p.parent.name.split("_", 1)[-1])
+    runs = sorted((FOLLOWUP_RESULTS / study / "outputs").glob("*/REPORT.md"), key=lambda p: p.parent.name.split("_", 1)[-1])
     return runs[-1] if runs else None
 
 
@@ -1368,11 +1375,11 @@ def grouped_bars(df: pd.DataFrame, x: str, series: list[str], title: str, colors
                         legend=alt.Legend(orient="top", title=None, labelColor="#1d2433")),
         tooltip=[alt.Tooltip(f"{x}:N"), alt.Tooltip("series:N"), alt.Tooltip("v:Q", format=".4f")],
     ).properties(height=height).configure_view(stroke=None)
-    st.altair_chart(ch, width="stretch")
+    st.altair_chart(ch, use_container_width=True)
 
 
 STUDIES = {
-    "01": dict(dir="01_scale_only_protocol", name="Scale-only evaluation protocol", model="DA360 · Structured3D (200)",
+    "01": dict(dir="scale_only_protocol", name="Scale-only evaluation protocol", model="DA360 · Structured3D (200)",
                q="Does an affine fit (a·d + b) hide polar error that a stricter scale-only fit (s·d) reveals?",
                finding="Yes, under the equator-anchored protocol: the affine shift absorbs part of the polar error. "
                        "Scale-only gives 5.7% lower median polar error at 75–90° (CI excludes zero). With a global fit "
@@ -1380,7 +1387,7 @@ STUDIES = {
                graph=f"""rgb [label="DA360 prediction", {N_IN}]; s [label="Fit s·d\\n(scale only)", {HL}];
   a [label="Fit a·d + b\\n(affine)", {N_BASE}]; e [label="AbsRel per\\nlatitude band", {N_OUT}];
   rgb -> s -> e; rgb -> a -> e;"""),
-    "02": dict(dir="02_domain_conditioned_gate", name="Domain-conditioned rotation gate", model="DA360 · PanoX (8 environments)",
+    "02": dict(dir="domain_conditioned_gate", name="Domain-conditioned rotation gate", model="DA360 · PanoX (8 environments)",
                q="Can a gate that decides when to apply rotation correction be calibrated on some environments and "
                  "transferred to a held-out one?",
                finding="The leave-one-environment-out gate chose 'no correction' in all 8 folds, which was the right call: "
@@ -1389,7 +1396,7 @@ STUDIES = {
                graph=f"""tr [label="7 training\\nenvironments", {N_IN}]; th [label="Pick threshold\\n30°–70° or none", {HL}];
   ho [label="Held-out\\nenvironment", {N_IN}]; ap [label="Apply gate", {HL}]; e [label="AbsRel", {N_OUT}];
   tr -> th -> ap; ho -> ap -> e;"""),
-    "03": dict(dir="03_panda_style_finetuning", name="PanDA-style student distillation", model="Teacher DA360 → U-Net student · PanoX",
+    "03": dict(dir="panda_style_finetuning", name="PanDA-style student distillation", model="Teacher DA360 → U-Net student · PanoX",
                q="Can a small student learn polar-robust depth from teacher pseudo-labels plus spherical consistency, "
                  "with no ground truth in training?",
                finding="No: the compact student stays far behind its teacher (median AbsRel 0.31 vs 0.06 with a global "
@@ -1398,20 +1405,20 @@ STUDIES = {
                graph=f"""rgb [label="Unlabelled\\nPanoX ERPs", {N_IN}]; t [label="Frozen DA360\\nteacher", {N_BASE}];
   aug [label="Yaw / reflection\\naugmentation", {HL}]; st [label="U-Net student\\n(patch-normalised loss)", {HL}];
   e [label="Held-out\\nenvironments", {N_OUT}]; rgb -> t -> st; rgb -> aug -> st -> e;"""),
-    "04": dict(dir="04_mono360_20view", name="20-view 360MonoDepth vs two-pole tangent", model="MiDaS DPT-Hybrid · PanoX (200)",
+    "04": dict(dir="mono360_20view", name="20-view 360MonoDepth vs two-pole tangent", model="MiDaS DPT-Hybrid · PanoX (200)",
                q="Does a full-sphere 20-view icosahedral pipeline beat the cheap two-pole tangent correction?",
                finding="Only slightly: 20 views reach 0.155 polar error vs 0.166 for two pole views, at about 7× the "
                        "model calls. Two pole views capture over 90% of the gain for 3 calls instead of 20.",
                graph=f"""rgb [label="ERP panorama", {N_IN}]; tp [label="2 pole views\\n(3 calls)", {HL}];
   ic [label="20 icosahedral views\\n(20 calls)", {HL}]; e [label="Polar AbsRel\\nvs cost", {N_OUT}];
   rgb -> tp -> e; rgb -> ic -> e;"""),
-    "05": dict(dir="05_fov_resolution_sweep", name="Tangent FOV × resolution sweep", model="MiDaS DPT-Hybrid · PanoX (200)",
+    "05": dict(dir="fov_resolution_sweep", name="Tangent FOV × resolution sweep", model="MiDaS DPT-Hybrid · PanoX (200)",
                q="How sensitive is the tangent correction to the view's field of view and pixel resolution?",
                finding="Field of view dominates: going from 70° to 110° cuts polar error by about half, while raising "
                        "resolution from 256² to 512² at a fixed FOV changes almost nothing. 110° is the sweet spot.",
                graph=f"""rgb [label="ERP panorama", {N_IN}]; fv [label="FOV 70°–130°", {HL}]; rs [label="Size 256²–512²", {HL}];
   tp [label="Pole tangent\\nviews", {HL}]; e [label="Polar AbsRel", {N_OUT}]; rgb -> fv -> tp; rgb -> rs -> tp; tp -> e;"""),
-    "06": dict(dir="06_structure_at_poles_gate", name="Structure-at-the-poles gate", model="Designed, not yet run",
+    "06": dict(dir="structure_at_poles_gate", name="Structure-at-the-poles gate", model="Designed, not yet run",
                q="Instead of gating on latitude or environment, gate the correction on what is actually at the poles "
                  "(capture artefacts such as a tripod or missing caps).",
                finding="Motivated by studies 01 and 02 and by the capture-fault study: whether correction helps depends "
@@ -1435,17 +1442,17 @@ def study_results(sid: str, tables: dict):
                 st.markdown(f"**{head}**")
                 d = df.rename(columns={df.columns[0]: "Band"})
                 grouped_bars(d, "Band", [d.columns[1], d.columns[2]], "Median AbsRel", [blue, orange], 220)
-                st.dataframe(d.set_index("Band"), width="stretch")
+                st.dataframe(d.set_index("Band"), use_container_width=True)
     elif sid == "02":
         dfs = tables.get(next(iter(tables), ""), [])
         if dfs:
             d = dfs[0].set_index(dfs[0].columns[0])
             bar_chart(d.iloc[:, 0].rename(None), "Mean AbsRel (lower is better)", fmt=".4f", height=150)
-            st.dataframe(d, width="stretch")
+            st.dataframe(d, use_container_width=True)
         folds = [df for v in tables.values() for df in v if "Held-out environment" in df.columns]
         if folds:
             with st.expander("Fold decisions"):
-                st.dataframe(folds[0].set_index("Held-out environment"), width="stretch")
+                st.dataframe(folds[0].set_index("Held-out environment"), use_container_width=True)
     elif sid in ("03", "04"):
         for head in ["align-all", "align-equatorial"]:
             for df in tables.get(head, []):
@@ -1458,7 +1465,7 @@ def study_results(sid: str, tables: dict):
                     long["band"] = long.band.str.replace(" median AbsRel", "").str.replace(" median", "")
                     wide = long.pivot(index="band", columns="row", values="v").reset_index()
                     grouped_bars(wide, "band", list(d.row), "Median AbsRel", ["#8a8f98", blue, "#eda100"], 220)
-                st.dataframe(d.set_index("row"), width="stretch")
+                st.dataframe(d.set_index("row"), use_container_width=True)
     elif sid == "05":
         for head in ["align-equatorial", "align-all"]:
             for df in tables.get(head, []):
@@ -1473,7 +1480,7 @@ def study_results(sid: str, tables: dict):
                                     legend=alt.Legend(orient="top", title="Resolution")),
                     tooltip=["config", "FOV", "Size", alt.Tooltip("v:Q", format=".4f")],
                 ).properties(height=240).configure_view(stroke=None)
-                st.altair_chart(ch, width="stretch")
+                st.altair_chart(ch, use_container_width=True)
     else:
         readme = L_FU / STUDIES[sid]["dir"] / "README.md"
         if readme.is_file():
@@ -1483,7 +1490,7 @@ def study_results(sid: str, tables: dict):
 
 def page_followups():
     hero("Follow-up studies", "Six targeted experiments that stress-test the corrections: evaluation protocol, "
-         "gating, distillation, view count and view geometry.", eyebrow="Studies · Lokesh",
+         "gating, distillation, view count and view geometry.", eyebrow="Studies · Follow-ups",
          chips=["DA360 · MiDaS", "PanoX · Structured3D", "Kaggle 2× T4", "Timestamped, reproducible runs"])
     plain("Six smaller experiments that each test one assumption behind the corrections: how the error is scored, "
           "when to switch a correction on, whether a small model can learn from a big one, how many views are needed, "
@@ -1502,7 +1509,7 @@ def page_followups():
     with c2:
         st.markdown("##### Setup")
         with st.container(border=True):
-            st.graphviz_chart(study_graph(s["graph"]), width="stretch")
+            st.graphviz_chart(study_graph(s["graph"]), use_container_width=True)
     section("Results", f"from {rep.relative_to(ROOT).as_posix()}" if rep else "no stored run")
     study_results(sid, report_tables(str(rep)) if rep else {})
     nav_buttons()
@@ -1523,7 +1530,7 @@ PLAIN_METHOD = {
 
 def page_robustness():
     hero("Robustness checks", "Four checks from the report's appendices that test whether the main results depend "
-         "on a scoring choice, a hidden cause, a loose rule or a small sample.", eyebrow="Checks · Aurindum",
+         "on a scoring choice, a hidden cause, a loose rule or a small sample.", eyebrow="Study · Robustness",
          chips=["Appendix B–E", "External sets never used for choices", "Same frames, same code"])
     plain("A good result should not change when you score it a little differently, use a stricter rule, or use more "
           "data. These four checks try exactly that, and also explain the one case where the repair did not help.")
@@ -1534,9 +1541,9 @@ def page_robustness():
                 "predictions score <b>0.638</b> with least squares and <b>0.205</b> with the median fit; on Structured3D "
                 "the two agree (0.053 and 0.051). 8 of 30 policy choices differ between the two rules.")
         with st.container(border=True):
-            img(A_FIG / "fig_da2_protocols.png", "DA² error under the two scale-fitting rules, by dataset")
+            img(BENCH_FIG / "fig_da2_protocols.png", "DA² error under the two scale-fitting rules, by dataset")
         with st.expander("Sweeps under both rules"):
-            img(A_FIG / "fig_da2_sweeps_protocols.png")
+            img(BENCH_FIG / "fig_da2_sweeps_protocols.png")
     with t[1]:
         callout("The only strong fault with no gain: <b>blocked bottom + JPEG, DAP on NYC</b> (+1.3%, interval includes "
                 "zero). One factor at a time, 147 frames: with the true cap mask the fill lowers the region error by "
@@ -1545,7 +1552,7 @@ def page_robustness():
                 "part (−6.4% [−10.3, −3.3] after the scale fit). Fill order and a 1.5° margin make no measurable "
                 "difference. The limit is mainly <b>metric scale</b>, then the mask.")
         with st.container(border=True):
-            img(A_FIG / "fig_diag_nadir_jpeg.png", "Each bar is one variant of the repair")
+            img(BENCH_FIG / "fig_diag_nadir_jpeg.png", "Each bar is one variant of the repair")
     with t[2]:
         callout("A fix is kept only if it lowers the median error by more than a set gain and helps a set share of "
                 "training frames. Raising the rule from 2% / 60% to <b>5% / 70%</b> and running the full pipeline on the "
@@ -1554,9 +1561,9 @@ def page_robustness():
         tbl = pd.DataFrame({"Harmful cells (2%/60% → 5%/70%)": ["3 → 2", "4 → 3", "7 → 5"],
                             "Median change (2%/60% → 5%/70%)": ["−17.3% → −16.1%", "−10.3% → −10.7%", "−13.8% → −13.4%"]},
                            index=["Stanford2D3D", "NYC", "All 48 cells"])
-        st.dataframe(tbl, width="stretch")
+        st.dataframe(tbl, use_container_width=True)
         with st.container(border=True):
-            img(A_FIG / "fig_strict_rules.png")
+            img(BENCH_FIG / "fig_strict_rules.png")
     with t[3]:
         callout("The fault studies behind the policy used 40 frames per cell. Repeating them with 100 frames (71 for "
                 "Holo360D outdoor) gives the <b>same choice in 137 of 144 cells (95%)</b>, with 52 cells applying a fix "
@@ -1565,7 +1572,7 @@ def page_robustness():
         stab = pd.DataFrame({"Cells": [36, 36, 36, 36], "Same choice": [35, 35, 33, 34], "Different": [1, 1, 3, 2],
                              "Fix applied (40 frames)": [12, 20, 6, 14], "Fix applied (100 frames)": [11, 20, 7, 14]},
                             index=["MiDaS", "DAP", "DA360", "DA²"])
-        st.dataframe(stab, width="stretch")
+        st.dataframe(stab, use_container_width=True)
         diff = pd.DataFrame([["MiDaS", "Structured3D", "limited vFOV", "inpaint_tangent", "none"],
                              ["DAP", "Holo360D indoor", "limited vFOV", "inpaint_erp", "plane_fill"],
                              ["DA360", "PanoX", "JPEG", "bilateral", "none"],
@@ -1574,7 +1581,7 @@ def page_robustness():
                              ["DA²", "PanoX", "yaw blur", "none", "wiener"],
                              ["DA²", "PanoX", "JPEG", "bilateral", "none"]],
                             columns=["Model", "Held-out set", "Fault", "40 frames", "100 frames"])
-        st.dataframe(diff, width="stretch", hide_index=True)
+        st.dataframe(diff, use_container_width=True, hide_index=True)
     nav_buttons()
 
 
@@ -1585,17 +1592,17 @@ PAGE_OF = {"tangent": "Tangent-plane views", "rotation": "Rotation ensemble", "h
            "mono360": "360MonoDepth", "acgf": "ACGF v2"}
 # (page, function, author, sidebar note, accent colour)
 _PAGE_SPEC = [
-    ("Overview", page_overview, "Team", "The problem, every method at a glance, and the headline numbers.", "#2a78d6"),
-    ("Baseline (single ERP pass)", page_baseline, "Team", "One plain pass of the frozen model: the reference.", COLORS["baseline"]),
-    *[(PAGE_OF[k], (lambda k=k: page_projection(k)), "Harshita", METHODS[k]["tagline"], COLORS[k]) for k in PAGE_OF],
-    ("Measurement sweeps", page_sweeps, "Aurindum", "Is the polar error really distortion? Move content across latitudes.", "#6250d6"),
-    ("Gradient fusion & Möbius TTA", page_ensembles, "Aurindum", "Two inference-time ensembles with a compute-matched control.", "#6250d6"),
-    ("Capture-fault catalogue", page_fault_catalogue, "Aurindum", "Ten capture faults, their cost per model, and their fixes.", "#6250d6"),
-    ("Capture-fault correction", page_faults, "Aurindum", "Detect and fix capture faults before the model runs.", "#6250d6"),
-    ("Robustness checks", page_robustness, "Aurindum", "Scoring rules, the nadir+JPEG diagnosis, stricter rules, stability.", "#6250d6"),
-    ("NYC street panoramas", page_nyc, "Lokesh", "The projection corrections on real outdoor city streets.", "#008300"),
-    ("Follow-up studies", page_followups, "Lokesh", "Six stress tests: protocol, gating, distillation, views, FOV.", "#008300"),
-    ("Compare all methods", page_compare, "Team", "All six projection pipelines on the same scene.", "#2a78d6"),
+    ("Overview", page_overview, "Overview", "The problem, every method at a glance, and the headline numbers.", "#2a78d6"),
+    ("Baseline (single ERP pass)", page_baseline, "Baseline", "One plain pass of the frozen model: the reference.", COLORS["baseline"]),
+    *[(PAGE_OF[k], (lambda k=k: page_projection(k)), "Projection Corrections", METHODS[k]["tagline"], COLORS[k]) for k in PAGE_OF],
+    ("Measurement sweeps", page_sweeps, "Distortion Analysis", "Is the polar error really distortion? Move content across latitudes.", "#6250d6"),
+    ("Gradient fusion & Möbius TTA", page_ensembles, "Ensembles", "Two inference-time ensembles with a compute-matched control.", "#6250d6"),
+    ("Capture-fault catalogue", page_fault_catalogue, "Capture Faults", "Ten capture faults, their cost per model, and their fixes.", "#6250d6"),
+    ("Capture-fault correction", page_faults, "Capture Faults", "Detect and fix capture faults before the model runs.", "#6250d6"),
+    ("Robustness checks", page_robustness, "Analysis", "Scoring rules, the nadir+JPEG diagnosis, stricter rules, stability.", "#6250d6"),
+    ("NYC street panoramas", page_nyc, "Real-World Evaluation", "The projection corrections on real outdoor city streets.", "#008300"),
+    ("Follow-up studies", page_followups, "Follow-Up Studies", "Six stress tests: protocol, gating, distillation, views, FOV.", "#008300"),
+    ("Compare all methods", page_compare, "Comparison", "All six projection pipelines on the same scene.", "#2a78d6"),
 ]
 PAGES = {n: f for n, f, *_ in _PAGE_SPEC}
 AUTHOR = {n: a for n, _, a, *_ in _PAGE_SPEC}
@@ -1608,9 +1615,9 @@ def nav_buttons():
     st.write("")
     a, _, b = st.columns([1, 2, 1])
     if i > 0:
-        a.button(f"← {NAMES[i - 1]}", on_click=go_to, args=(NAMES[i - 1],), width="stretch", key="prev")
+        a.button(f"← {NAMES[i - 1]}", on_click=go_to, args=(NAMES[i - 1],), use_container_width=True, key="prev")
     if i < len(NAMES) - 1:
-        b.button(f"{NAMES[i + 1]} →", on_click=go_to, args=(NAMES[i + 1],), width="stretch", key="next", type="primary")
+        b.button(f"{NAMES[i + 1]} →", on_click=go_to, args=(NAMES[i + 1],), use_container_width=True, key="next", type="primary")
 
 
 _SLUG = {n: n.split(" (")[0].lower().replace(" & ", "-").replace("ö", "o").replace(" ", "-") for n in NAMES}
@@ -1630,12 +1637,16 @@ with st.sidebar:
     st.markdown("**How to read this app**")
     st.caption("Each method page shows its pipeline (orange = what it adds to the baseline), the share of frames it "
                "improves, and stored examples filtered by the option above. All results are precomputed; no models run here.")
-    _pdf = ROOT / "Aurindum" / "Final_Report.pdf"
+    _pdf = REPORT / "final_report.pdf"
     if _pdf.is_file():
         st.download_button("Download the final report (PDF)", _pdf.read_bytes(), file_name="Final_Report.pdf",
-                           mime="application/pdf", width="stretch")
+                           mime="application/pdf", use_container_width=True)
+    _pdf_ext = REPORT / "extended_report.pdf"
+    if _pdf_ext.is_file():
+        st.download_button("Download extended report with future scope (PDF)", _pdf_ext.read_bytes(),
+                           file_name="Extended_Report.pdf", mime="application/pdf", use_container_width=True)
     st.divider()
-    st.caption("Aurindum Banerjee · Harshita Vachhani · Lokesh Motwani\n\nIIT Jodhpur · Computer Vision")
+    st.caption("Distortion-Aware Panoramic Depth Estimation\n\nIIT Jodhpur · Computer Vision")
 
 st.query_params["page"] = _SLUG[choice]
 st.session_state["_missing"] = []
