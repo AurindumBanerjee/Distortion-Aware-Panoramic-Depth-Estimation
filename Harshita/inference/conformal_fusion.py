@@ -301,6 +301,8 @@ def consensus_gate(base_u: np.ndarray, views: List[ErpView], prior_power: float,
     pnum_v = np.zeros((H - 1, W)); pden_v = np.zeros((H - 1, W))
     for a in range(len(views)):
         for b in range(a + 1, len(views)):
+            if not (views[a].valid & views[b].valid).any():  # disjoint views add exact zeros: skip (20 ico views)
+                continue
             w = wh[a] * wh[b]
             pnum_h += w * np.where(mh[a] & mh[b], (dh[a] - dh[b]) ** 2, 0); pden_h += w
             w = wv[a] * wv[b]
@@ -316,7 +318,7 @@ def consensus_gate(base_u: np.ndarray, views: List[ErpView], prior_power: float,
     e_b = np.maximum(e_vb - sig_n, 0.0)
     gamma = e_b / (e_b + sig_n / np.maximum(n_eff, 1.0) + eps)
     gamma = np.where(n_eff > 0.5, np.clip(gamma, 0, 1), 0.0)
-    return gamma, {"view_noise": sig_n, "baseline_excess": e_b}
+    return gamma, {"view_noise": sig_n, "baseline_excess": e_b, "n_eff": n_eff}
 
 
 # ----------------------------------------------------------------------------
@@ -396,7 +398,119 @@ class ACGFParams:
     lambda_edge: float = 50.0  # rad^-2: extra pull near the cap boundary (fades with the latitude ramp)
     gate_sigma_deg: float = 3.0  # blur of the gate statistics, in degrees of latitude
     irls_iters: int = 1
+    # v2 options (after the real-data diagnosis, RESULTS.md section 10):
+    work: str = "log"  # log | linear | auto (auto = linear for disparity models, log for depth models)
+    gate_mode: str = "edge"  # edge: gamma mixes view/baseline differences per edge | value: gamma blends solved values
     guard: Tuple[float, float] = (0.5, 2.0)  # plausible X range: [g0 * p1(base), g1 * p99(base)]
+    # acgf|ico options (RESULTS.md section 12):
+    scope: str = "polar"  # polar: solve the caps |lat| > threshold - band/2, rest = baseline | sphere: solve everywhere,
+                          # lambda_cap everywhere, no fixed boundary (the gate alone protects the equator)
+
+
+@dataclass
+class ViewProducts:
+    """What the solve and the gate consume, from any number of views on the ERP grid (2 pole views per pole for
+    v2, ~3 icosahedral views per pixel for acgf|ico). Edge arrays: horizontal (H, W), vertical (H-1, W)."""
+    gamma: np.ndarray  # per-pixel gate weight in [0, 1]
+    view_noise: np.ndarray  # sigma_n^2: per-pixel across-view variance of edge differences (work-space units^2)
+    n_eff: np.ndarray  # per-pixel (blurred) number of views
+    u_v: np.ndarray  # per-pixel prior-weighted mean of the views (v_bar), NaN where no view
+    t_h: np.ndarray  # per-edge consensus t_e: prior-weighted mean of the views' differences (0 where no view)
+    t_v: np.ndarray
+    w_h: np.ndarray  # per-edge summed prior weight (0 = no view on that edge)
+    w_v: np.ndarray
+    n_views: int
+
+
+def view_products(u_b: np.ndarray, ev: List[ErpView], params: ACGFParams, sigma_px: float) -> ViewProducts:
+    """Gate statistics, value consensus and edge consensus of a set of views (work space, ERP grid)."""
+    H, W = u_b.shape
+    if params.gate:
+        gamma, gi = consensus_gate(u_b, ev, params.prior_power, sigma_px)
+    else:
+        gamma, gi = np.ones((H, W)), {}
+    # value consensus of the views (prior-weighted mean of u)
+    num = np.zeros((H, W)); den = np.zeros((H, W))
+    for v in ev:
+        w = np.where(v.valid, np.cos(np.radians(np.clip(v.distortion, 0, 90))) ** params.prior_power, 0.0)
+        num += w * np.nan_to_num(v.u); den += w
+    u_v = np.where(den > 0, num / np.maximum(den, 1e-12), np.nan)
+    # edge consensus: prior-weighted mean of the view differences
+    nh = np.zeros((H, W)); dh = np.zeros((H, W)); nv = np.zeros((H - 1, W)); dv = np.zeros((H - 1, W))
+    for v in ev:
+        h, vv = edge_diffs(v.u)
+        mh, mv = edge_valid(v.valid)
+        ph, pv = edge_mean(np.cos(np.radians(np.clip(v.distortion, 0, 90))) ** params.prior_power)
+        nh += np.where(mh, ph * h, 0); dh += np.where(mh, ph, 0)
+        nv += np.where(mv, pv * vv, 0); dv += np.where(mv, pv, 0)
+    nan = np.full((H, W), np.nan)
+    return ViewProducts(gamma, gi.get("view_noise", nan), gi.get("n_eff", nan), u_v,
+                        np.where(dh > 0, nh / np.maximum(dh, 1e-12), 0), np.where(dv > 0, nv / np.maximum(dv, 1e-12), 0),
+                        dh, dv, len(ev))
+
+
+def fuse_products(base: np.ndarray, u_b: np.ndarray, prod: ViewProducts, params: ACGFParams, inv,
+                  extra: Dict, t0: float) -> Tuple[np.ndarray, Dict]:
+    """Screened Poisson solve over the caps (scope polar) or the whole sphere (scope sphere), then the gate."""
+    H, W = base.shape
+    lat = latitude_map(H, W)
+    fin = np.isfinite(base) & (base > 0)
+    sigma_px = params.gate_sigma_deg / 180.0 * H
+    gamma = prod.gamma
+    if params.scope == "polar":
+        w_lat = latitude_weight(np.abs(lat), "cosine", params.lat_threshold, params.band)
+    elif params.scope == "sphere":
+        w_lat = np.ones((H, W))
+    else:
+        raise ValueError(f"unknown ACGF scope {params.scope}")
+
+    # gated value consensus, latitude-blended with the baseline
+    u_v = prod.u_v
+    g = np.where(np.isfinite(u_v), w_lat * gamma, 0.0)
+    u_val = np.where(np.isfinite(u_v), (1 - g) * u_b + g * np.nan_to_num(u_v), u_b)
+    if params.domain == "value":
+        extra.update({"gamma": gamma, "post_s": time.perf_counter() - t0})
+        return np.where(fin & (g > 0), inv(u_val), base), extra
+
+    # targets: gamma * consensus of view differences + (1 - gamma) * baseline difference
+    bh, bv = edge_diffs(u_b)
+    bmh, bmv = edge_valid(fin)
+    dh, dv = prod.w_h, prod.w_v
+    gh, gv = edge_mean(gamma if params.gate_mode == "edge" else np.ones((H, W)))
+    gh = np.where(dh > 0, gh, 0.0); gv = np.where(dv > 0, gv, 0.0)
+    th = gh * prod.t_h + (1 - gh) * np.where(bmh, bh, 0)
+    tv = gv * prod.t_v + (1 - gv) * np.where(bmv, bv, 0)
+    mth = bmh | (dh > 0)
+    mtv = bmv | (dv > 0)
+    if params.scope == "polar":
+        unknown = (np.abs(lat) > params.lat_threshold - params.band / 2) & fin
+    else:
+        unknown = fin.copy()
+    lam = params.lambda_cap + params.lambda_edge * (1.0 - w_lat)
+    # screening target: the baseline ("baseline") or the gated value consensus ("value"); both equal
+    # the baseline on the fixed boundary, where w_lat = 0
+    u0 = u_val if params.screen == "value" else u_b
+    u, si = screened_poisson(u0, th, tv, mth, mtv, unknown, lam, params.irls_iters)
+    extra.update({"gamma": gamma, "post_s": time.perf_counter() - t0, **si})
+    out = base.copy()
+    if params.gate_mode == "value":  # gate the solved correction instead of mixing gradient sources
+        gs = blur_wrap(gamma, sigma_px)
+        u = u_b + gs * (u - u_b)
+    out[unknown] = inv(u[unknown])  # fixed pixels keep the baseline bit-for-bit
+    return out, extra
+
+
+def _work_transforms(base: np.ndarray, params: ACGFParams, space: str):
+    """Work space: log (scale-free gradients, positive output) or linear (bounded jumps where the model predicts
+    near-zero disparity, e.g. sky; log turns those into huge steps that the gradient solve spreads)."""
+    fin = np.isfinite(base) & (base > 0)
+    work = params.work if params.work != "auto" else ("linear" if space == "disparity" else "log")
+    fwd = (lambda x: np.log(x)) if work == "log" else (lambda x: x)
+    inv = (lambda x: np.exp(x)) if work == "log" else (lambda x: np.maximum(x, float(base[fin].min())))
+    u_b = np.where(fin, fwd(np.where(fin, base, 1.0)), np.nan)
+    lo = params.guard[0] * float(np.percentile(base[fin], 1))
+    hi = params.guard[1] * float(np.percentile(base[fin], 99))
+    return fin, fwd, inv, u_b, lo, hi
 
 
 def acgf_fuse(base: np.ndarray, raw_views: List[np.ndarray], views: List[Tuple[int, object]], model: DepthModelWrapper,
@@ -406,10 +520,7 @@ def acgf_fuse(base: np.ndarray, raw_views: List[np.ndarray], views: List[Tuple[i
     lat = latitude_map(H, W)
     geom = perspective_geometry or model.geometry("perspective")
     space, scale = model.spec.space, model.spec.scale
-    fin = np.isfinite(base) & (base > 0)
-    lo = params.guard[0] * float(np.percentile(base[fin], 1))
-    hi = params.guard[1] * float(np.percentile(base[fin], 99))
-    u_b = np.where(fin, np.log(np.where(fin, base, 1.0)), np.nan)
+    fin, fwd, inv, u_b, lo, hi = _work_transforms(base, params, space)
     t0 = time.perf_counter()
     ev: List[ErpView] = []
     for (pole, view), raw in zip(views, raw_views):
@@ -421,55 +532,94 @@ def acgf_fuse(base: np.ndarray, raw_views: List[np.ndarray], views: List[Tuple[i
         ok = np.isfinite(X) & (X > 0) & (pole * lat > 0)
         info["kind"] = view.to_dict().get("kind", "gnomonic")
         ev.append(ErpView(f"{info['kind']}_{'N' if pole > 0 else 'S'}", pole,
-                          np.where(ok, np.log(np.where(ok, X, 1.0)), np.nan), ok, dist, info))
+                          np.where(ok, fwd(np.where(ok, X, 1.0)), np.nan), ok, dist, info))
     ev = [v for v in ev if v.valid.any()]
     extra: Dict = {"view_info": [v.info for v in ev]}
     if not ev:
         extra["acgf_fallback"] = "no valid views"
         return base.copy(), extra
 
-    sigma_px = params.gate_sigma_deg / 180.0 * H
-    if params.gate:
-        gamma, gi = consensus_gate(u_b, ev, params.prior_power, sigma_px)
+    prod = view_products(u_b, ev, params, params.gate_sigma_deg / 180.0 * H)
+    return fuse_products(base, u_b, prod, params, inv, extra, t0)
+
+
+# ----------------------------------------------------------------------------
+# acgf|ico: the 20 icosahedral views of 360MonoDepth as ACGF input
+# ----------------------------------------------------------------------------
+
+def ico_erp_views(base: np.ndarray, raw_views: List[np.ndarray], planes: Sequence[TangentPlane],
+                  model: DepthModelWrapper, params: ACGFParams, align: str = "affine",
+                  perspective_geometry: Optional[str] = None, grid: Optional[Dict] = None,
+                  affine_cache: Optional[Dict] = None) -> Tuple[List[ErpView], Dict]:
+    """Icosahedral pinhole views -> ErpViews in the work space, each aligned to the ERP BASELINE (not to each other).
+
+    affine_cache: a dict shared by calls on the same image and settings; the affine step is stored there and reused
+    (the grid variants all start from it).
+
+    Anchors: pixels the baseline is trusted on (|lat| < threshold) inside the inner 85% of the view.
+      align='affine': ACGF's robust pinhole fit  X = A*cos*P + B*cos + C  (convert_view), range guard.
+      align='grid'  : the affine X, then mono360's deformable per-view (scale, offset) grids fitted to the baseline
+                      on the anchors (mono360.anchored_grid_align), range guard again.
+    """
+    H, W = base.shape
+    lat = latitude_map(H, W)
+    geom = perspective_geometry or model.geometry("perspective")
+    fin, fwd, inv, u_b, lo, hi = _work_transforms(base, params, model.spec.space)
+    base_nan = np.where(fin, base, np.nan)
+    reused = affine_cache is not None and "affine" in affine_cache
+    if reused:
+        Xs, dists, anchors, infos = (list(x) for x in affine_cache["affine"])
     else:
-        gamma = np.ones((H, W))
-    w_lat = latitude_weight(np.abs(lat), "cosine", params.lat_threshold, params.band)
+        ta = time.perf_counter()
+        Xs, dists, anchors, infos = [], [], [], []
+        for plane, raw in zip(planes, raw_views):
+            P, valid, m, dist, anchor_ok = _view_on_erp(raw, plane, H, W, geom, law=False)
+            anchor = anchor_ok & valid & fin & (np.abs(lat) < params.lat_threshold)
+            X, info = convert_view(P, valid, m, anchor, base_nan, model.spec.space, model.spec.scale, lo, hi)
+            info["kind"] = "ico"
+            Xs.append(X); dists.append(dist); anchors.append(anchor); infos.append(info)
+        if affine_cache is not None:
+            affine_cache["affine"] = (tuple(Xs), tuple(dists), tuple(anchors), tuple(infos))
+            affine_cache["affine_s"] = time.perf_counter() - ta
+    # time of the affine step even when it was reused, so that every variant's runtime is as if it ran alone
+    extra: Dict = {"affine_reused_s": affine_cache["affine_s"] if reused else 0.0}
+    if align == "grid":
+        from .mono360 import anchored_grid_align
+        g = dict(grid or {})
+        Xs, extra = anchored_grid_align(Xs, anchors, list(planes), base_nan, **g)
+        Xs = [np.where(np.isfinite(X) & (X > lo) & (X < hi), X, np.nan) for X in Xs]
+    elif align != "affine":
+        raise ValueError(f"unknown ico alignment {align}")
+    ev = []
+    for k, (X, dist, info) in enumerate(zip(Xs, dists, infos)):
+        ok = np.isfinite(X) & (X > 0)
+        ev.append(ErpView(f"ico{k:02d}", 0, np.where(ok, fwd(np.where(ok, X, 1.0)), np.nan), ok, dist, info))
+    return [v for v in ev if v.valid.any()], extra
 
-    # value consensus of the views (prior-weighted mean of u), gated and latitude-blended with the baseline
-    num = np.zeros((H, W)); den = np.zeros((H, W))
-    for v in ev:
-        w = np.where(v.valid, np.cos(np.radians(np.clip(v.distortion, 0, 90))) ** params.prior_power, 0.0)
-        num += w * np.nan_to_num(v.u); den += w
-    u_v = np.where(den > 0, num / np.maximum(den, 1e-12), np.nan)
-    g = np.where(np.isfinite(u_v), w_lat * gamma, 0.0)
-    u_val = np.where(np.isfinite(u_v), (1 - g) * u_b + g * np.nan_to_num(u_v), u_b)
-    if params.domain == "value":
-        extra.update({"gamma": gamma, "post_s": time.perf_counter() - t0})
-        return np.where(fin & (g > 0), np.exp(u_val), base), extra
 
-    # targets: gamma * prior-weighted mean of view differences + (1 - gamma) * baseline difference
-    bh, bv = edge_diffs(u_b)
-    bmh, bmv = edge_valid(fin)
-    nh = np.zeros((H, W)); dh = np.zeros((H, W)); nv = np.zeros((H - 1, W)); dv = np.zeros((H - 1, W))
-    for v in ev:
-        h, vv = edge_diffs(v.u)
-        mh, mv = edge_valid(v.valid)
-        ph, pv = edge_mean(np.cos(np.radians(np.clip(v.distortion, 0, 90))) ** params.prior_power)
-        nh += np.where(mh, ph * h, 0); dh += np.where(mh, ph, 0)
-        nv += np.where(mv, pv * vv, 0); dv += np.where(mv, pv, 0)
-    gh, gv = edge_mean(gamma)
-    gh = np.where(dh > 0, gh, 0.0); gv = np.where(dv > 0, gv, 0.0)
-    th = gh * np.where(dh > 0, nh / np.maximum(dh, 1e-12), 0) + (1 - gh) * np.where(bmh, bh, 0)
-    tv = gv * np.where(dv > 0, nv / np.maximum(dv, 1e-12), 0) + (1 - gv) * np.where(bmv, bv, 0)
-    mth = bmh | (dh > 0)
-    mtv = bmv | (dv > 0)
-    unknown = (np.abs(lat) > params.lat_threshold - params.band / 2) & fin
-    lam = params.lambda_cap + params.lambda_edge * (1.0 - w_lat)
-    # screening target: the baseline ("baseline") or the gated value consensus ("value"); both equal
-    # the baseline on the fixed boundary, where w_lat = 0
-    u0 = u_val if params.screen == "value" else u_b
-    u, si = screened_poisson(u0, th, tv, mth, mtv, unknown, lam, params.irls_iters)
-    extra.update({"gamma": gamma, "post_s": time.perf_counter() - t0, **si})
-    out = base.copy()
-    out[unknown] = np.exp(u[unknown])  # fixed pixels keep the baseline bit-for-bit
-    return out, extra
+def ico_view_products(base: np.ndarray, raw_views: List[np.ndarray], planes: Sequence[TangentPlane],
+                      model: DepthModelWrapper, params: ACGFParams, align: str = "affine",
+                      perspective_geometry: Optional[str] = None, grid: Optional[Dict] = None,
+                      affine_cache: Optional[Dict] = None) -> Tuple[ViewProducts, Dict]:
+    """Input adapter: icosahedral views (raw model outputs + planes) -> the ViewProducts ACGF's gate and solve consume
+    (edge consensus t_e, per-pixel v_bar, sigma_n^2, n). Independent of the fusion scope, so it can be shared by the
+    polar and sphere variants of one image."""
+    t0 = time.perf_counter()
+    ev, extra = ico_erp_views(base, raw_views, planes, model, params, align, perspective_geometry, grid, affine_cache)
+    _, _, _, u_b, _, _ = _work_transforms(base, params, model.spec.space)
+    if not ev:
+        return None, {"view_info": [], "acgf_fallback": "no valid views", "products_s": time.perf_counter() - t0}
+    prod = view_products(u_b, ev, params, params.gate_sigma_deg / 180.0 * base.shape[0])
+    extra.update({"view_info": [v.info for v in ev],
+                  "products_s": time.perf_counter() - t0 + extra.get("affine_reused_s", 0.0)})
+    return prod, extra
+
+
+def acgf_fuse_ico(base: np.ndarray, prod: Optional[ViewProducts], params: ACGFParams,
+                  model: DepthModelWrapper, extra: Optional[Dict] = None) -> Tuple[np.ndarray, Dict]:
+    """acgf|ico: ACGF's gate and screened Poisson solve on the products of the icosahedral views."""
+    extra = dict(extra or {})
+    if prod is None:
+        return base.copy(), extra
+    _, _, inv, u_b, _, _ = _work_transforms(base, params, model.spec.space)
+    return fuse_products(base, u_b, prod, params, inv, extra, time.perf_counter())

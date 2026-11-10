@@ -130,6 +130,7 @@ def main():
                                                                         and not n.startswith("acgf|t")],
                                "acgf_threshold": ["baseline"] + [n for n in names if n.startswith("acgf|t")]}
                 ablation.profile_plots(ev, rdir, acgf_groups, tag=f"align-{region}")
+                exp_acgf.ico_report(df, rdir)
             if not {"E2_tangent", "E3_rotation", "E4_hybrid"} <= set(main_names):
                 log(f"reports written to {rdir} (legacy E2-E9 reports skipped: methods not in the plan)")
                 continue

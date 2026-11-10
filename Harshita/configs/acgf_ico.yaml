@@ -1,0 +1,106 @@
+# acgf|ico (E12): ACGF fed with the 20 icosahedral views of 360MonoDepth, aligned to the ERP BASELINE (not to each
+# other), with ACGF's gate and screened Poisson solve. MiDaS only. RESULTS.md section 12.
+#
+# 1. Validation (choose settings; Structured3D official validation scenes 03000-03249, never used for any result):
+#   python run_experiment.py --config configs/acgf_ico.yaml --stages main reports
+#       --set dataset.list=val_s3000.txt output_dir=results/acgf_ico_validation
+#       --tags E1_baseline E10_acgf E11_mono360 E12_acgf_ico_val
+#   python scripts/select_acgf_ico.py results/acgf_ico_validation      (applies the rule below, prints the choice)
+# 2. Test, once, with the chosen values written into inference.acgf_ico below:
+#   python run_experiment.py --config configs/acgf_ico.yaml --stages geometry main reports qualitative
+#       --set output_dir=results/acgf_ico_midas_structured3d --tags E1_baseline E10_acgf E11_mono360 E12_acgf_ico
+#   Holo360D: add  dataset.name=holo360d dataset.root=data/holo360d dataset.list=test_indoor.txt (or test_outdoor.txt)
+#             evaluation.max_depth=100.0  (as in configs/acgf_holo360d.yaml).
+#
+# Selection rule, fixed before the validation run (align-equatorial protocol, 41 validation panoramas):
+#   * ico-grid (lam_smooth, grids): lowest mean per-image polar (|lat| 60-90) AbsRel of acgf|ico-grid|polar|*;
+#     differences < 0.005 count as ties, broken by the lower whole-image harm rate (> 5 % worse than the baseline),
+#     then by the simpler setting (coarse grid only, then the smaller lam_smooth).
+#   * sphere_lambda: lowest mean per-image whole-image AbsRel of acgf|ico-affine|sphere|lam* (sphere scope changes
+#     every band, so the whole image is the criterion); ties as above, then the smaller lambda. The same value is
+#     used for ico-grid|sphere.
+#   * Not tuned (kept from ACGF v2): lat_threshold 45, band 20, gate (sigma 3 deg), one Cauchy pass (2.5 MAD),
+#     lambda_cap 5 / lambda_edge 50 for the polar scope, linear-disparity work space, range guard (0.5 p1, 2 p99),
+#     icosahedral views 384 px with 30 % padding (as mono360), lam_scale 0.007 (averaged per cell, see
+#     inference/mono360.anchored_grid_align).
+
+seed: 0
+output_dir: results/acgf_ico_midas_structured3d
+
+model:
+  name: midas
+  model_type: dpt_hybrid_384
+  weights: weights/dpt_hybrid_384.pt
+  device: auto
+  erp_net_height: 384
+
+tangent_model: null
+
+dataset:
+  name: structured3d            # preset: depth_scale=1000, min 0.1 m, max 10 m
+  root: data/structured3d
+  list: test_s3250.txt         # standard test split (scenes 03250-03499), 259 panoramas
+  height: 512
+  width: 1024
+  limit: null
+
+evaluation:
+  eval_align: auto              # affine-in-disparity for MiDaS
+  align_regions: [all, equatorial]
+  bands: [0, 15, 30, 45, 60, 75, 90]
+  bad_threshold: 0.10
+  profile_bin: 2.5
+  max_depth: 10.0
+
+inference:
+  batch_size: 4
+  tangent_size: 384
+  polar_threshold: 45
+  views_per_pole: 1
+  rotation_angles: [[0, 90, 0], [0, -90, 0]]
+  fusion_method: cosine
+  merge: prior
+  align: auto
+  band: 20
+  power: 2.0
+  seam_width: 20
+  range_guard: true             # tangent / rotation / hybrid: drop aligned values outside the baseline's plausible range
+  acgf:                         # Anchored Conformal Gradient Fusion (inference/conformal_fusion.py); set on data/synthetic_dev only
+    views: [[stereo, 180, 0], [gnomonic, 110, 45]]   # [kind, fov_deg, orientation about the polar axis]
+    screen: value
+    lambda_cap: 5.0                 # chosen on data/synthetic_dev (sweep 0.2 / 1 / 5)
+    lambda_edge: 50.0
+    gate_sigma: 3.0
+    irls: 1
+    work: auto                    # v2: linear disparity for disparity models (log turned sky into huge jumps), log for depth
+    gate_mode: value              # v2: gate blends solved values (v1 "edge" mixed gradient sources per edge)
+    law: "off"                    # stereographic magnification correction; off: it hurt on the dev set (ablation acgf|law)
+  acgf_ico:                       # E12 settings, CHOSEN ON VALIDATION 2026-11-08 (results/acgf_ico_validation/selection.md)
+    grids: [[4, 3]]               # (cols, rows) per view; 4x3 -> 8x7 tied within 0.005 (0.3184 vs 0.3183), simpler kept
+    lam_smooth: 400.0             # stiffest of 4 / 40 / 400 (polar 0.3183 / 0.3233 / 0.3285 with 4x3)
+    lam_scale: 0.007
+    sphere_lambda: 5.0            # whole-image AbsRel 0.2549 (5) vs 0.2600 (50)
+
+experiments:
+  thresholds: [30, 45, 60, 75]
+  mono360: true                 # E11: 360MonoDepth-style baseline (20 icosahedral views; disparity models only)
+  acgf_ico_val:                 # E12_acgf_ico_val: the validation sweep (selection rule in the header)
+    grids:
+      g43: [[4, 3]]
+      g43-87: [[4, 3], [8, 7]]
+    lam_smooth: [4, 40, 400]
+    sphere_lambda: [5, 50]
+  views_per_pole: [1, 2, 3, 5]
+  fusions: [hard, linear, sigmoid, cosine, polynomial, confidence]
+  merge_modes: [prior, mean, median]
+  rotation_sets:
+    pitch90: [[0, 90, 0]]
+    pitch90_pm: [[0, 90, 0], [0, -90, 0]]
+    pitch90_x4: [[0, 90, 0], [0, -90, 0], [90, 90, 0], [90, -90, 0]]
+    pitch45_pm: [[0, 45, 0], [0, -45, 0]]
+    yaw_only_x3: [[90, 0, 0], [180, 0, 0], [270, 0, 0]]
+  latitude_control_pitches: [0, 30, 60, 90]
+  resolutions: [[256, 512], [384, 768], [512, 1024]]
+  resolution_limit: 12
+  timing_images: 3
+  qualitative: 4

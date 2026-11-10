@@ -129,7 +129,6 @@ def main():
         print(f"[{i + 1}/{len(ds)}] {smp.id}: clean {rec['clean']['all']:.3f}", flush=True)
 
     # aggregate: medians, paired win rate and median relative change vs the degraded prediction
-    keys = [k for k in rows[0] if isinstance(rows[0][k], dict) and k != "clean"]
     lines = [f"# Distortion study: {a.tag}", "", f"model `{getattr(model, 'name', '?')}` · {len(rows)} frames · "
              f"{len(set(r['group'] for r in rows))} clusters · AbsRel ({headline_protocol(model)})", "",
              "Recovery = share of the damage undone: (degraded - mitigated) / (degraded - clean), median over the frames where the fault cost at least 5%.", ""]

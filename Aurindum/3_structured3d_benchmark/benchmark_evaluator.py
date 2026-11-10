@@ -9,14 +9,13 @@ Evaluates 4 distinct paradigms side-by-side on real indoor scenes:
 from __future__ import annotations
 
 import logging
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict, Optional, Tuple
 
 import numpy as np
 
 from evaluation.latitude_analysis import per_band_metrics
 from evaluation.protocol import align_to_gt
 from geometry.spherical import latitude_map
-from geometry.tangent_plane import generate_tangent_plane, erp_to_tangent, tangent_to_erp
 
 logger = logging.getLogger("BenchmarkEvaluator")
 

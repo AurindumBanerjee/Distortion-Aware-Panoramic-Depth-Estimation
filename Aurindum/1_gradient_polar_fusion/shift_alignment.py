@@ -17,7 +17,7 @@ This module provides:
 from __future__ import annotations
 
 import logging
-from typing import Dict, Optional, Tuple
+from typing import Dict, Tuple
 
 import numpy as np
 
@@ -104,7 +104,7 @@ def align_tangent_disparity_to_erp(
     with a 90 deg FOV only reaches down to ~35-45 deg latitude, so the old default of 35 deg
     left (almost) no anchor pixels and silently fell back to fitting on the pole itself,
     i.e. on exactly the region the ERP prediction is not trusted. The default ring is now
-    the 45-60 deg overlap band; if it is still too small we fall back to the lowest-latitude
+    the 45-60 deg overlap band; if it is still too small, the alignment falls back to the lowest-latitude
     20% of the overlap (never to the full cap).
 
     Args:

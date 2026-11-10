@@ -39,7 +39,7 @@ def main():
     for ds in EXTERNAL:
         lines += [f"## {ds}", ""]
         # ---- fault costs (study) ----
-        tab, rows_out = {}, []
+        tab = {}
         for m in MODELS:
             p = res / f"study_{m}_{ds}.json"
             if not p.is_file():

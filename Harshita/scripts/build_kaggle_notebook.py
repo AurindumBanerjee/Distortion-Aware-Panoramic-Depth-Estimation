@@ -14,7 +14,13 @@ INTRO = """# ACGF experiments on Kaggle (GPU)
 
 Runs the comparison from `README.md` (section *ACGF*) with MiDaS DPT-Hybrid on Structured3D and Holo360D:
 baseline, tangent, rotation, hybrid, the 360MonoDepth-style baseline (`mono360`) and ACGF, then the ACGF
-ablations and threshold sweep on a subset. Optionally the same with DAP.
+ablations and threshold sweep on a subset; the same comparison with DAP, the panoramic metric model; and the
+**acgf|ico test run** (ACGF fed with 360MonoDepth's 20 icosahedral views; RESULTS.md section 12).
+The defaults run **only the acgf|ico test** (`RUN_ICO = True`, everything else off): baseline, ACGF v2,
+360MonoDepth and the four acgf|ico variants on the full MiDaS test splits. The ico fusions run on the CPU, about
+1-1.5 min per panorama: run Structured3D (`ICO_RUNS = ["structured3d"]`, ~5 h) and Holo360D
+(`ICO_RUNS = ["holo360d_indoor", "holo360d_outdoor"]`, ~5 h) as two separate notebook versions; they can run at
+the same time.
 
 **Before running**
 1. *Settings*: Accelerator = **GPU** (T4 or P100), **Internet = on** (needs a phone-verified account).
@@ -32,11 +38,20 @@ ablations and threshold sweep on a subset. Optionally the same with DAP.
 """
 
 SETTINGS = '''# ---- settings -------------------------------------------------------------------------------
-RUNS = ["structured3d", "holo360d_indoor", "holo360d_outdoor"]   # drop entries to split across sessions
+RUN_MIDAS = False       # MiDaS runs (already done: results/acgf_midas_*). True to redo them.
+RUNS = ["structured3d", "holo360d_indoor", "holo360d_outdoor"]   # MiDaS runs; drop entries to split across sessions
 LIMIT = None            # images per split for the main comparison (None = full split); e.g. 10 for a smoke test
 ABLATION_LIMIT = 40     # ACGF ablations + threshold sweep run on the first N images of each split
-RUN_DAP = False         # also run ACGF with DAP (needs Internet; downloads ~1.5 GB); experimental
-DAP_LIMIT = 60
+CONFIRM_ONLY = True     # MiDaS: only baseline, hybrid and ACGF (v2) on the full splits, no ablation run.
+
+RUN_ICO = True          # acgf|ico test run (MiDaS): baseline, ACGF v2, mono360, 4 acgf|ico variants, full splits
+ICO_RUNS = ["structured3d", "holo360d_indoor", "holo360d_outdoor"]   # split across two sessions (see above)
+ICO_LIMIT = None        # None = full splits; e.g. 3 for a smoke test
+
+RUN_DAP = False         # ACGF and the other methods with DAP (Internet on; downloads the 1.46 GB checkpoint)
+DAP_RUNS = ["holo360d_indoor", "holo360d_outdoor"]
+DAP_LIMIT = None        # None = full splits (146 + 83 panoramas); e.g. 5 for a quick test
+DAP_ABLATION_LIMIT = 40 # ACGF ablations with DAP on the first N images of each split (0 = skip)
 '''
 
 LOCATE = r'''import os, sys, glob, shutil, subprocess, zipfile, time
@@ -93,9 +108,9 @@ SETUP = r'''subprocess.run("nvidia-smi", shell=True)
 subprocess.run([sys.executable, "-m", "pip", "install", "-q", "timm==0.6.13", "OpenEXR", "tabulate"], check=True)
 os.makedirs("weights", exist_ok=True)
 w = "weights/dpt_hybrid_384.pt"
-if not os.path.exists(w):
+if (RUN_MIDAS or RUN_ICO) and not os.path.exists(w):
     subprocess.run(["wget", "-q", "-O", w, "https://github.com/isl-org/MiDaS/releases/download/v3/dpt_hybrid_384.pt"], check=True)
-print(w, os.path.getsize(w) / 2**20, "MB")
+print(w, os.path.getsize(w) / 2**20 if os.path.exists(w) else "not needed", "MB")
 '''
 
 SANITY = r'''# Quick checks: geometry + ACGF unit tests, and that one depth file of each dataset reads correctly.
@@ -112,6 +127,8 @@ if s3d:
 '''
 
 RUN = r'''MAIN_TAGS = ["E1_baseline", "E2_tangent", "E3_rotation", "E4_hybrid", "E10_acgf", "E11_mono360"]
+if CONFIRM_ONLY:
+    MAIN_TAGS = ["E1_baseline", "E4_hybrid", "E10_acgf"]
 ABL_TAGS = ["E1_baseline", "E4_hybrid", "E10_acgf", "E10_acgf_ablation", "E10_acgf_threshold"]
 SPLITS = {  # run name -> (config, list file, needs)
     "structured3d": ("configs/acgf_structured3d.yaml", "test_s3250.txt", s3d),
@@ -132,36 +149,87 @@ def run(config, out, lst, tags, limit, stages):
     return p.returncode
 
 status = {}
-for name in RUNS:
+for name in (RUNS if RUN_MIDAS else []):
     config, lst, needs = SPLITS[name]
     if needs is None:
         status[name] = "skipped (data not found)"
         continue
-    out = f"results/acgf_midas_{name}"
-    rc1 = run(config, out, lst, MAIN_TAGS, LIMIT, ["geometry", "main", "reports", "timing", "qualitative"])
-    rc2 = run(config, out + "_ablation", lst, ABL_TAGS, ABLATION_LIMIT, ["main", "reports"])
+    out = f"results/acgf_midas_{name}" + ("_v2" if CONFIRM_ONLY else "")
+    rc1 = run(config, out, lst, MAIN_TAGS, LIMIT, ["geometry", "main", "reports", "qualitative"])
+    rc2 = None if CONFIRM_ONLY else run(config, out + "_ablation", lst, ABL_TAGS, ABLATION_LIMIT, ["main", "reports"])
     status[name] = (rc1, rc2)
 print(status)
 '''
 
-DAP = r'''# Optional: ACGF with DAP (the target panoramic model). Experimental -- if anything fails here, the MiDaS
-# results above are unaffected; send the error output along with the results.
+ICO = r'''# acgf|ico test run: settings were chosen on Structured3D validation scenes (configs/acgf_ico.yaml); run once.
+ICO_SPLITS = {  # run name -> (list file, extra --set overrides, needs)
+    "structured3d": ("test_s3250.txt", [], s3d),
+    "holo360d_indoor": ("test_indoor.txt", ["dataset.name=holo360d", "dataset.root=data/holo360d",
+                                            "evaluation.max_depth=100.0"], holo),
+    "holo360d_outdoor": ("test_outdoor.txt", ["dataset.name=holo360d", "dataset.root=data/holo360d",
+                                              "evaluation.max_depth=100.0"], holo),
+}
+if RUN_ICO:
+    for name in ICO_RUNS:
+        lst, over, needs = ICO_SPLITS[name]
+        if needs is None:
+            status[f"ico_{name}"] = "skipped (data not found)"
+            continue
+        out = f"results/acgf_ico_midas_{name}"
+        cmd = [sys.executable, "run_experiment.py", "--config", "configs/acgf_ico.yaml",
+               "--stages", "geometry", "main", "reports", "qualitative",
+               "--tags", "E1_baseline", "E10_acgf", "E11_mono360", "E12_acgf_ico",
+               "--set", f"dataset.list={lst}", f"output_dir={out}",
+               f"dataset.limit={'null' if ICO_LIMIT is None else ICO_LIMIT}", *over]
+        print(" ".join(cmd), flush=True)
+        t = time.time()
+        p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
+        for line in p.stdout:
+            print(line, end="", flush=True)
+        p.wait()
+        print(f"--> exit {p.returncode} after {(time.time() - t) / 60:.1f} min", flush=True)
+        status[f"ico_{name}"] = p.returncode
+    print(status)
+'''
+
+DAP = r'''# ACGF and the comparison methods with DAP, the panoramic metric model the project targets.
+# DAP's requirements pin torch 2.7.1 and pull in gradio / open3d; only the packages the model code needs are
+# installed, so Kaggle's own torch is kept.
 if RUN_DAP and holo:
     if not os.path.isdir("third_party/DAP"):
         subprocess.run(["git", "clone", "--depth", "1", "https://github.com/Insta360-Research-Team/DAP", "third_party/DAP"], check=True)
-    req = "third_party/DAP/requirements.txt"
-    if os.path.exists(req):  # do not let DAP's pins replace Kaggle's torch
-        pkgs = [l.strip() for l in open(req) if l.strip() and not l.startswith("#") and not l.lower().startswith(("torch", "numpy"))]
-        subprocess.run([sys.executable, "-m", "pip", "install", "-q", *pkgs])
-    subprocess.run([sys.executable, "-m", "pip", "install", "-q", "huggingface_hub"], check=True)
+    subprocess.run([sys.executable, "-m", "pip", "install", "-q", "einops", "safetensors", "mmengine", "tensorboardX",
+                    "huggingface_hub", "pyexr"], check=True)
     from huggingface_hub import hf_hub_download
     os.makedirs("weights/dap", exist_ok=True)
     p = hf_hub_download("Insta360-Research/DAP-weights", "model.pth", local_dir="weights/dap")
-    print("DAP weights:", p)
-    for lst, tag in (("test_indoor.txt", "indoor"), ("test_outdoor.txt", "outdoor")):
-        run("configs/acgf_dap_holo360d.yaml", f"results/acgf_dap_holo360d_{tag}", lst,
-            ["E1_baseline", "E2_tangent", "E3_rotation", "E4_hybrid", "E10_acgf", "E10_acgf_ablation"], DAP_LIMIT,
-            ["geometry", "main", "reports", "qualitative"])
+    print("DAP weights:", p, "%.2f GB" % (os.path.getsize(p) / 2**30))
+
+    # Smoke test on one panorama before the long runs: DAP is metric, so its median depth should be close to the
+    # ground truth's (a ratio far from 1, e.g. 0.01 or 100, means a unit or loading problem -- stop and report it).
+    import torch
+    from models.depth_model import DAPWrapper
+    m = DAPWrapper("third_party/DAP", p, device="cuda")
+    for lst in ("test_indoor.txt", "test_outdoor.txt"):
+        s = PanoramaDataset("data/holo360d", lst, 512, 1024, name="holo360d", limit=1)[0]
+        d = m.predict(s.rgb, "erp")
+        ok = s.valid & np.isfinite(d)
+        print(lst, s.id, "pred median %.2f m, GT median %.2f m, ratio %.2f, valid %.2f" % (
+            np.median(d[ok]), np.median(s.depth[ok]), np.median(d[ok]) / np.median(s.depth[ok]), ok.mean()))
+    del m
+    torch.cuda.empty_cache()
+
+    lists = {"holo360d_indoor": "test_indoor.txt", "holo360d_outdoor": "test_outdoor.txt"}
+    for name in DAP_RUNS:
+        out = f"results/acgf_dap_{name}"
+        status[f"dap_{name}"] = run("configs/acgf_dap_holo360d.yaml", out, lists[name],
+                                    ["E1_baseline", "E2_tangent", "E3_rotation", "E4_hybrid", "E10_acgf"], DAP_LIMIT,
+                                    ["geometry", "main", "reports", "qualitative"])
+        if DAP_ABLATION_LIMIT:
+            status[f"dap_{name}_ablation"] = run("configs/acgf_dap_holo360d.yaml", out + "_ablation", lists[name],
+                                                 ["E1_baseline", "E4_hybrid", "E10_acgf", "E10_acgf_ablation"],
+                                                 DAP_ABLATION_LIMIT, ["main", "reports"])
+    print(status)
 '''
 
 PACK = r'''# Bundle everything except raw prediction arrays into /kaggle/working/acgf_results.zip
@@ -186,7 +254,8 @@ def main():
     nb.cells = [nbf.v4.new_markdown_cell(INTRO), nbf.v4.new_code_cell(SETTINGS), nbf.v4.new_code_cell(LOCATE),
                 nbf.v4.new_code_cell(SETUP), nbf.v4.new_code_cell(SANITY),
                 nbf.v4.new_markdown_cell("## Main comparison and ablations (MiDaS DPT-Hybrid)"), nbf.v4.new_code_cell(RUN),
-                nbf.v4.new_markdown_cell("## Optional: DAP"), nbf.v4.new_code_cell(DAP),
+                nbf.v4.new_markdown_cell("## acgf|ico test run (MiDaS)"), nbf.v4.new_code_cell(ICO),
+                nbf.v4.new_markdown_cell("## DAP (the panoramic metric model)"), nbf.v4.new_code_cell(DAP),
                 nbf.v4.new_markdown_cell("## Package the results (download `acgf_results.zip` from the Output tab)"),
                 nbf.v4.new_code_cell(PACK)]
     nb.metadata["kernelspec"] = {"name": "python3", "display_name": "Python 3", "language": "python"}

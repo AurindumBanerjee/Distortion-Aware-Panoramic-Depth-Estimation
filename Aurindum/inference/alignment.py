@@ -51,7 +51,7 @@ def align_view_to_reference(view: np.ndarray, ref: np.ndarray, anchor: np.ndarra
 
     space='depth':      mode 'none' | 'scale' (median ratio) | 'affine' (robust LSQ in depth)
     space='disparity':  affine in disparity. For a pinhole view (geometry='planar') whose output is
-                        affine in 1/z, the inverse *range* is cos(angle) * (a*d + b), so we fit
+                        affine in 1/z, the inverse *range* is cos(angle) * (a*d + b), so the alignment fits
                         ref ~ A*(cos*d) + B*cos + C (3 parameters); otherwise ref ~ A*d + C.
     Returns (aligned view on the ERP grid, info dict).
     """

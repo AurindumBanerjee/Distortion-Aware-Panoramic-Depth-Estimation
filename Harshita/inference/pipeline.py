@@ -31,7 +31,8 @@ from geometry.tangent_plane import TangentPlane, polar_tangent_layout
 from models.depth_model import DepthModelWrapper
 
 from .baseline import ViewPrediction
-from .conformal_fusion import DEFAULT_VIEWS, ACGFParams, RotatedView, acgf_fuse, pole_views, predict_views_raw
+from .conformal_fusion import (DEFAULT_VIEWS, ACGFParams, RotatedView, acgf_fuse, acgf_fuse_ico, ico_view_products,
+                               pole_views, predict_views_raw)
 from .fusion import confidence_fusion, fuse_with_baseline, merge_views
 from .mono360 import icosahedron_planes, mono360_fuse
 from .rotation_inference import predict_rotated_raw, unrotate_predictions
@@ -70,6 +71,15 @@ class MethodConfig:
     acgf_lambda_edge: float = 50.0
     acgf_gate_sigma: float = 3.0
     acgf_irls: int = 1
+    acgf_work: str = "log"  # log | linear | auto
+    acgf_gate_mode: str = "edge"  # edge | value
+    # acgf|ico: the icosahedral views of mono360 as ACGF input (RESULTS.md section 12)
+    acgf_source: str = "pole"  # pole (v1/v2) | ico
+    acgf_ico_align: str = "affine"  # affine (robust pinhole fit to the baseline) | grid (+ anchored deformable grids)
+    acgf_scope: str = "polar"  # polar | sphere
+    acgf_ico_grids: List[List[int]] = field(default_factory=lambda: [[4, 3], [8, 7]])
+    acgf_ico_lam_smooth: float = 40.0
+    acgf_ico_lam_scale: float = 0.007
     # 360MonoDepth-style baseline (inference/mono360.py)
     mono360_padding: float = 0.3
     name: Optional[str] = None
@@ -249,6 +259,8 @@ class DistortionAwareInference:
     def _run_view_method(self, rgb, image_id, cfg: MethodConfig, b, return_views: bool) -> Dict[str, Any]:
         """ACGF and the 360MonoDepth-style baseline: extra pinhole / stereographic views, own fusion."""
         H, W = rgb.shape[:2]
+        if cfg.method == "acgf" and cfg.acgf_source == "ico":
+            return self._run_acgf_ico(rgb, image_id, cfg, b, return_views)
         if cfg.method == "acgf":
             pv = pole_views(cfg.acgf_views, cfg.tangent_size)
             entries = self.views_raw_batch(rgb, image_id, [v for _, v in pv])
@@ -262,7 +274,8 @@ class DistortionAwareInference:
             params = ACGFParams(lat_threshold=cfg.lat_threshold, band=cfg.band, prior_power=cfg.prior_power,
                                 domain=cfg.acgf_domain, screen=cfg.acgf_screen, gate=cfg.acgf_gate, lambda_cap=cfg.acgf_lambda_cap,
                                 lambda_edge=cfg.acgf_lambda_edge, gate_sigma_deg=cfg.acgf_gate_sigma,
-                                irls_iters=cfg.acgf_irls)
+                                irls_iters=cfg.acgf_irls, work=cfg.acgf_work, gate_mode=cfg.acgf_gate_mode,
+                                scope=cfg.acgf_scope)
             t0 = time.perf_counter()
             final, extra = acgf_fuse(b["out"], [e["out"] for e in entries], pv, self.tangent_model, params, law,
                                      perspective_geometry=cfg.tangent_geometry)
@@ -288,6 +301,54 @@ class DistortionAwareInference:
         }
         if return_views:
             res.update(extra)
+        return res
+
+    def _run_acgf_ico(self, rgb, image_id, cfg: MethodConfig, b, return_views: bool) -> Dict[str, Any]:
+        """acgf|ico: mono360's 20 icosahedral views (same cache as mono360), aligned to the ERP baseline, fused by
+        ACGF. The view products do not depend on the scope, so they are computed once per image and alignment; their
+        compute time is charged to every variant that uses them, so runtimes are as if each ran alone."""
+        planes = icosahedron_planes(cfg.tangent_size, cfg.mono360_padding)
+        entries = self.tangent_raw_batch(rgb, image_id, planes)
+        params = ACGFParams(lat_threshold=cfg.lat_threshold, band=cfg.band, prior_power=cfg.prior_power,
+                            domain=cfg.acgf_domain, screen=cfg.acgf_screen, gate=cfg.acgf_gate, lambda_cap=cfg.acgf_lambda_cap,
+                            lambda_edge=cfg.acgf_lambda_edge, gate_sigma_deg=cfg.acgf_gate_sigma,
+                            irls_iters=cfg.acgf_irls, work=cfg.acgf_work, gate_mode=cfg.acgf_gate_mode,
+                            scope=cfg.acgf_scope)
+        grid = {"grids": tuple(tuple(int(x) for x in g) for g in cfg.acgf_ico_grids),
+                "lam_smooth": cfg.acgf_ico_lam_smooth, "lam_scale": cfg.acgf_ico_lam_scale}
+        geom = cfg.tangent_geometry
+        k = _key("icoprod", self.tangent_model.name, image_id, rgb.shape, cfg.tangent_size, cfg.mono360_padding,
+                 cfg.acgf_ico_align, grid, cfg.lat_threshold, cfg.prior_power, cfg.acgf_gate, cfg.acgf_gate_sigma,
+                 cfg.acgf_work, geom)
+        if not (self.use_cache and k in self.cache):
+            ka = _key("icoaff", self.tangent_model.name, image_id, rgb.shape, cfg.tangent_size, cfg.mono360_padding,
+                      cfg.lat_threshold, cfg.acgf_work, geom)  # the affine step every alignment starts from
+            aff = self.cache.setdefault(ka, {"out": {}})["out"] if self.use_cache else None
+            prod, pextra = ico_view_products(b["out"], [e["out"] for e in entries], planes, self.tangent_model, params,
+                                             cfg.acgf_ico_align, geom, grid if cfg.acgf_ico_align == "grid" else None,
+                                             affine_cache=aff)
+            entry = {"out": (prod, pextra)}
+            if self.use_cache:
+                self.cache[k] = entry
+        else:
+            entry = self.cache[k]
+        prod, pextra = entry["out"]
+        t0 = time.perf_counter()
+        final, extra = acgf_fuse_ico(b["out"], prod, params, self.tangent_model, pextra)
+        t_post = time.perf_counter() - t0 + pextra.get("products_s", 0.0)
+        used = [b] + entries
+        calls = int(sum(e["calls"] for e in used))
+        res = {
+            "pred": final, "baseline": b["out"], "corrected": None, "corrected_valid": None, "label": cfg.label(),
+            "runtime_s": sum(e["time"] for e in used) + t_post, "model_time_s": sum(e["time"] for e in used),
+            "post_time_s": t_post, "model_calls": calls, "extra_model_calls": calls - 1,
+            "peak_mem_mb": float(np.nanmax([e["peak_mem_mb"] for e in used])) if self.model.device.type == "cuda" else float("nan"),
+            "align": f"ico-{cfg.acgf_ico_align}", "n_tangent_views": len(planes), "n_rotations": 0,
+            "align_info": extra.get("view_info", []),
+        }
+        if return_views:
+            res.update(extra)
+            res["products"] = prod
         return res
 
 

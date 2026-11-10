@@ -6,3 +6,5 @@ __pycache__/
 .pytest_cache/
 third_party/DAP/
 kaggle_upload/
+_archives/
+notebooks/

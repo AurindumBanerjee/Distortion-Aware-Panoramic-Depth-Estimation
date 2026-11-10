@@ -295,6 +295,11 @@ ACGF without the magnification law 0.193 (now the default), value-domain fusion 
 0.316, two gnomonic views 0.302. So on synthetic data ACGF improves the poles clearly but does **not** beat the
 hybrid, whose strength there comes from the pitch rotations. In the pole views MiDaS shows a "centre is far"
 perspective prior that both views share, which the gate cannot detect. Whether ACGF is safer than the hybrid on
-real data (Structured3D, Holo360D) is what `notebooks/kaggle_acgf.ipynb` measures; nothing on those sets has been
-run with ACGF yet.
+real data (Structured3D, Holo360D) is what `notebooks/kaggle_acgf.ipynb` measures.
+
+**Real-data status (full splits, RESULTS.md sections 10-10.2).** No method wins everywhere. Polar AbsRel
+(align-equatorial): Structured3D is won by 360MonoDepth (0.171; ACGF v2 0.329), Holo360D indoor by plain tangent
+views (0.321; ACGF v2 0.386, worse than the baseline 0.363), Holo360D outdoor by ACGF v2 (0.579 vs hybrid 0.589,
+baseline 0.707), where it also harms the fewest images. ACGF v2 (linear disparity work space, gate on solved
+values) is the default; v1 is the ablation `acgf|v1`.
 

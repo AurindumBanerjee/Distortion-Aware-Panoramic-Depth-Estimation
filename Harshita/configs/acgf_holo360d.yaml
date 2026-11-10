@@ -52,6 +52,8 @@ inference:
     lambda_edge: 50.0
     gate_sigma: 3.0
     irls: 1
+    work: auto                    # v2: linear disparity for disparity models (log turned sky into huge jumps), log for depth
+    gate_mode: value              # v2: gate blends solved values (v1 "edge" mixed gradient sources per edge)
     law: "off"                    # stereographic magnification correction; off: it hurt on the dev set (ablation acgf|law)
 
 experiments:

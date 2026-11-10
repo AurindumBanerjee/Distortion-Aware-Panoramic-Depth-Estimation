@@ -37,7 +37,7 @@ evaluation:
   max_depth: 100.0
 
 inference:
-  batch_size: 4
+  batch_size: 2                 # ViT-L at 512x1024 on a 16 GB T4
   tangent_size: 384
   polar_threshold: 45
   views_per_pole: 1
@@ -56,6 +56,8 @@ inference:
     lambda_edge: 50.0
     gate_sigma: 3.0
     irls: 1
+    work: auto                    # v2: linear disparity for disparity models (log turned sky into huge jumps), log for depth
+    gate_mode: value              # v2: gate blends solved values (v1 "edge" mixed gradient sources per edge)
     law: "off"                    # stereographic magnification correction; off: it hurt on the dev set (ablation acgf|law)
 
 experiments:

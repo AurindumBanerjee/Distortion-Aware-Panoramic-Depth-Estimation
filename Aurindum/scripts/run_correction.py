@@ -32,7 +32,7 @@ FAULT = {d.key: d for d in CATALOGUE}
 SCENARIOS = ["clean", "tilt", "nadir", "vfov", "yawblur", "jpeg", "nadir+jpeg"]
 
 
-def heldout_policy(model_key: str, dataset_key: str, res: Path, min_gain=0.02, min_win=0.6, sets=CORE_SETS):
+def heldout_policy(model_key: str, dataset_key: str, res: Path, min_gain=0.02, min_win=0.6, sets=CORE_SETS, all_sets=False):
     """Policy chosen on the core datasets other than dataset_key. External sets (stanford / nyc) are never training
     data, so an external run is a pure test of the policy learned on the core sets."""
     train = {}
@@ -45,7 +45,11 @@ def heldout_policy(model_key: str, dataset_key: str, res: Path, min_gain=0.02, m
     pol = {}
     for d in CATALOGUE:
         if d.mitigations:
-            fix, _ = choose(train, d.key, min_gain, min_win)
+            if all_sets:      # stricter variant (scripts/threshold_sweep.py): the fix must help in every training dataset
+                from threshold_sweep import choose_rule
+                fix, _ = choose_rule(train, d.key, min_gain, min_win, True)
+            else:
+                fix, _ = choose(train, d.key, min_gain, min_win)
             if fix != "none":
                 pol[d.key] = fix
     return pol, sorted(train)
@@ -84,15 +88,20 @@ def main():
                     help="core (headline): fixes chosen on the other CORE sets only. all_loo: on every other set incl. stanford / nyc "
                          "(separate experiment, needs --out_dir)")
     ap.add_argument("--out_dir", default=None, help="output folder (default results/ or results/external/)")
+    ap.add_argument("--min_gain", type=float, default=0.02, help="policy rule: required median improvement on the training sets (headline 0.02)")
+    ap.add_argument("--min_win", type=float, default=0.6, help="policy rule: required share of improved training frames (headline 0.6)")
+    ap.add_argument("--all_sets", action="store_true", help="policy rule: the fix must also help in every training dataset (stricter)")
     ap.set_defaults(split="all", max_scenes=40)
     a = ap.parse_args()
     res = ROOT / "results"
     # core datasets keep their results in results/; external ones (stanford / nyc) are kept apart in results/external/
     out = Path(a.out_dir) if a.out_dir else (res if a.dataset_key in CORE_SETS else res / "external")
-    if a.policy_mode != "core" and not a.out_dir:
-        sys.exit("--policy_mode all_loo writes a separate experiment: give --out_dir so the headline results are not overwritten")
+    non_default_rule = (a.min_gain, a.min_win, a.all_sets) != (0.02, 0.6, False)
+    if (a.policy_mode != "core" or non_default_rule) and not a.out_dir:
+        sys.exit("--policy_mode all_loo or a non-default policy rule writes a separate experiment: give --out_dir so the headline results are not overwritten")
     out.mkdir(parents=True, exist_ok=True)
-    policy, trained_on = heldout_policy(a.model_key, a.dataset_key, res, sets=CORE_SETS if a.policy_mode == "core" else CORE_SETS + EXTERNAL_SETS)
+    policy, trained_on = heldout_policy(a.model_key, a.dataset_key, res, sets=CORE_SETS if a.policy_mode == "core" else CORE_SETS + EXTERNAL_SETS,
+                                       min_gain=a.min_gain, min_win=a.min_win, all_sets=a.all_sets)
     print("held-out policy:", policy, "chosen on", trained_on, flush=True)
     cfg = load_config(a.config, a.overrides)
     model = load_model(cfg)

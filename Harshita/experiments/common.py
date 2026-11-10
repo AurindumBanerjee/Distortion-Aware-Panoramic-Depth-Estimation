@@ -71,7 +71,7 @@ def peak_rss_mb() -> float:
 # Method plan
 # ----------------------------------------------------------------------------
 
-MAIN_TAGS = ("E2_tangent", "E3_rotation", "E4_hybrid", "E10_acgf", "E11_mono360")
+MAIN_TAGS = ("E2_tangent", "E3_rotation", "E4_hybrid", "E10_acgf", "E11_mono360", "E12_acgf_ico")
 
 def default_rotset_name(cfg: dict) -> str:
     inf = cfg["inference"]
@@ -113,6 +113,7 @@ ACGF_ABLATIONS = {
     "SS": dict(acgf_views=[["stereo", 180.0, 0.0], ["stereo", 180.0, 45.0]]),
     "S150": dict(acgf_views=[["stereo", 150.0, 0.0], ["gnomonic", 110.0, 45.0]]),
     "+rot": dict(acgf_rotations=[[0.0, 90.0, 0.0], [0.0, -90.0, 0.0]]),
+    "v1": dict(acgf_work="log", acgf_gate_mode="edge"),  # the first version (Kaggle run of 2026-11-02)
 }
 
 
@@ -121,10 +122,23 @@ def _acgf(inf, name="acgf", **over):
     kw = dict(acgf_views=[list(v) for v in a.get("views", [["stereo", 180.0, 0.0], ["gnomonic", 110.0, 45.0]])],
               acgf_screen=a.get("screen", "value"), acgf_lambda_cap=a.get("lambda_cap", 5.0),
               acgf_lambda_edge=a.get("lambda_edge", 50.0), acgf_gate_sigma=a.get("gate_sigma", 3.0),
-              acgf_irls=a.get("irls", 1), acgf_law=a.get("law", "off"))
+              acgf_irls=a.get("irls", 1), acgf_law=a.get("law", "off"), acgf_work=a.get("work", "auto"),
+              acgf_gate_mode=a.get("gate_mode", "value"))
     kw.update(over)
     return MethodConfig(method="acgf", lat_threshold=inf["polar_threshold"], tangent_size=inf["tangent_size"],
                         band=inf["band"], name=name, **kw)
+
+
+def _acgf_ico(inf, align, scope, name=None, **over):
+    """acgf|ico (E12): ACGF fed with the 20 icosahedral views of mono360; settings from inference.acgf_ico."""
+    ico = dict(inf.get("acgf_ico", {}))
+    kw = dict(acgf_source="ico", acgf_ico_align=align, acgf_scope=scope,
+              acgf_ico_grids=[list(g) for g in ico.get("grids", [[4, 3], [8, 7]])],
+              acgf_ico_lam_smooth=float(ico.get("lam_smooth", 40.0)), acgf_ico_lam_scale=float(ico.get("lam_scale", 0.007)))
+    if scope == "sphere":
+        kw["acgf_lambda_cap"] = float(ico.get("sphere_lambda", 5.0))
+    kw.update(over)
+    return _acgf(inf, name or f"acgf|ico-{align}|{scope}", **kw)
 
 
 def build_plan(cfg: dict) -> List[Tuple[List[str], MethodConfig]]:
@@ -173,6 +187,19 @@ def build_plan(cfg: dict) -> List[Tuple[List[str], MethodConfig]]:
         add("E10_acgf_threshold", _acgf(dict(inf, polar_threshold=thr), f"acgf|t{int(thr)}"))
     if ex.get("mono360", False):
         add("E11_mono360", MethodConfig(method="mono360", tangent_size=inf["tangent_size"], name="mono360"))
+    # acgf|ico (E12): main variants, and the validation sweep (E12_acgf_ico_val) that chooses their settings
+    for align in ("affine", "grid"):
+        for scope in ("polar", "sphere"):
+            add("E12_acgf_ico", _acgf_ico(inf, align, scope))
+    val = ex.get("acgf_ico_val", {})
+    for lam in val.get("sphere_lambda", []):
+        add("E12_acgf_ico_val", _acgf_ico(inf, "affine", "sphere", f"acgf|ico-affine|sphere|lam{lam:g}",
+                                          acgf_lambda_cap=float(lam)))
+    add("E12_acgf_ico_val", _acgf_ico(inf, "affine", "polar"))
+    for gname, grids in val.get("grids", {}).items():
+        for ls in val.get("lam_smooth", []):
+            add("E12_acgf_ico_val", _acgf_ico(inf, "grid", "polar", f"acgf|ico-grid|polar|{gname}|s{ls:g}",
+                                              acgf_ico_grids=[list(g) for g in grids], acgf_ico_lam_smooth=float(ls)))
     # name the default rotation set consistently
     out = []
     for name, (tags, mc) in plan.items():

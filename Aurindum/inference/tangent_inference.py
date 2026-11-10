@@ -6,7 +6,6 @@ pixels -> per-view ViewPrediction objects ready for fusion.
 """
 from __future__ import annotations
 
-import math
 from typing import List, Optional
 
 import numpy as np

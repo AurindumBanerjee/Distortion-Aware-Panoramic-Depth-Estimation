@@ -28,8 +28,8 @@ def main():
             for base, dirs, files in os.walk(os.path.join(ROOT, d)):
                 dirs[:] = [x for x in dirs if x not in ("__pycache__", ".ipynb_checkpoints", "DAP")]
                 for f in files:
-                    if f.endswith((".pyc", ".png", ".npz")):
-                        continue
+                    if f.endswith((".pyc", ".png", ".npz")) and not base.endswith(os.path.join("tests", "data")):
+                        continue  # (test fixtures under tests/data are kept)
                     p = os.path.join(base, f)
                     z.write(p, os.path.relpath(p, ROOT))
                     n += 1
