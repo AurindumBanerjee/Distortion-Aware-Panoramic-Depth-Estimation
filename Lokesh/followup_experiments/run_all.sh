@@ -38,6 +38,7 @@ case "$EXP" in
     ;;
   04) run_one 04_mono360_20view "$@" ;;
   05) run_one 05_fov_resolution_sweep "$@" ;;
+  07) run_one 07_real_nyc_20view "$@" ;;
   all)
     run_one 01_scale_only_protocol "$@"
     run_one 02_domain_conditioned_gate "$@"
@@ -57,7 +58,7 @@ case "$EXP" in
       fi
     fi
     ;;
-  *) echo "EXP must be one of: all, 01, 02, 03, 04, 05"; exit 2 ;;
+  *) echo "EXP must be one of: all, 01, 02, 03, 04, 05, 07"; exit 2 ;;
 esac
 echo "Finished at $(date); failed stages: $FAILED"
 [ "$FAILED" -eq 0 ]
