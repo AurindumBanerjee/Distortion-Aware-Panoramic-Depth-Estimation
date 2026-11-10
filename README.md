@@ -60,7 +60,7 @@ The benchmark evaluates six distinct panoramic datasets:
 ## 5. Code-Only vs. Artifacts
 
 To facilitate distribution and reproducibility within lightweight submission constraints (< 9.5 MB), the repository strictly decouples source code from large precomputed artifacts:
-- **Code-Only Tree:** Contains the core library `pano`, inference methods in `methods`, experiment orchestrators in `experiments`, execution scripts in `scripts`, configurations in `configs`, the 165+ automated test suite in `tests`, and the compiled report in `report/final_report.pdf`.
+- **Code-Only Tree:** Contains the core library `pano`, inference methods in `methods`, experiment orchestrators in `experiments`, execution scripts in `scripts`, configurations in `configs`, the 173-test suite in `tests`, and the compiled report in `report/final_report.pdf`.
 - **Artifacts Directory (`artifacts/`):** Houses precomputed evaluation rows (CSVs), JSON summary tables, generated figures, and cached sample outputs. It is excluded from version control archives via `.gitattributes` (`export-ignore`) and `.gitignore`.
 - **Submission Archive:** Generated via `python scripts/make_submission_zip.py`, producing a clean, self-contained `submission_code.zip` under **8.52 MB**.
 
@@ -98,7 +98,7 @@ Distortion-Aware-Panoramic-Depth-Estimation/
 │   ├── data/                         # Dataset download and list manifest generators
 │   ├── setup_third_party.sh          # Dependency cloning (DAP, external repos)
 │   └── make_submission_zip.py        # Git archive code bundler (< 9.5 MB)
-├── tests/                            # Comprehensive test suite (165+ automated tests)
+├── tests/                            # Test suite (173 tests)
 │   ├── geometry/                     # Spherical and projective math validation
 │   ├── models/                       # Model wrapper contracts
 │   ├── methods/                      # Projection, fusion, TTA, and fault mitigations
