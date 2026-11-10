@@ -1,0 +1,6 @@
+artifacts/ export-ignore
+artifacts/** export-ignore
+_attic/ export-ignore
+_attic/** export-ignore
+
+report/extended_report.pdf export-ignore

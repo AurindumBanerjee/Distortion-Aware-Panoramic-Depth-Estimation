@@ -3,15 +3,14 @@
 # ==============================================================================
 
 # Data and large datasets
-data/
-**/data/
-dataset/
-**/dataset/
+/data/
+/dataset/
 *.zip
 *.tar.gz
 *.exr
 *.npy
 *.npz
+!tests/data/**
 
 # Model weights and checkpoints
 weights/
@@ -21,16 +20,8 @@ weights/
 *.bin
 *.onnx
 
-# Results, heavy predictions, and logs
-# Allow follow-up experiment reports, metrics, CSVs, and logs in Lokesh to be tracked
-**/outputs/
-!Lokesh/followup_experiments/**/outputs/
-!Lokesh/followup_experiments/**/outputs/**
-**/logs/*.log
-!Lokesh/followup_experiments/**/logs/*.log
-results/**/predictions/
-results/**/heatmap__*.npy
-results/**/qualitative/
+# Staging attic for refactored/superseded material
+_attic/
 
 # Python, environment & cache
 __pycache__/
