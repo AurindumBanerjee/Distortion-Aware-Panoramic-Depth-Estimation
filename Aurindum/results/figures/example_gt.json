@@ -1,0 +1,428 @@
+{
+ "s3": {
+  "scene_03370_994351": {
+   "256": {
+    "lo": 1.024999976158142,
+    "hi": 2.549999952316284,
+    "min_depth": 0.1,
+    "max_depth": 10.0,
+    "valid_share": 1.0,
+    "gt": "figures/example_gt/s3/scene_03370_994351_256.jpg"
+   },
+   "512": {
+    "lo": 1.024999976158142,
+    "hi": 2.5490000247955322,
+    "min_depth": 0.1,
+    "max_depth": 10.0,
+    "valid_share": 1.0,
+    "gt": "figures/example_gt/s3/scene_03370_994351_512.jpg"
+   }
+  },
+  "scene_03366_919746": {
+   "256": {
+    "lo": 0.5920000076293945,
+    "hi": 1.7009999752044678,
+    "min_depth": 0.1,
+    "max_depth": 10.0,
+    "valid_share": 1.0,
+    "gt": "figures/example_gt/s3/scene_03366_919746_256.jpg"
+   },
+   "512": {
+    "lo": 0.5920000076293945,
+    "hi": 1.7009999752044678,
+    "min_depth": 0.1,
+    "max_depth": 10.0,
+    "valid_share": 1.0,
+    "gt": "figures/example_gt/s3/scene_03366_919746_512.jpg"
+   }
+  },
+  "scene_03308_1034": {
+   "256": {
+    "lo": 0.46700000762939453,
+    "hi": 5.0279998779296875,
+    "min_depth": 0.1,
+    "max_depth": 10.0,
+    "valid_share": 1.0,
+    "gt": "figures/example_gt/s3/scene_03308_1034_256.jpg"
+   },
+   "512": {
+    "lo": 0.46700000762939453,
+    "hi": 5.03325997352601,
+    "min_depth": 0.1,
+    "max_depth": 10.0,
+    "valid_share": 1.0,
+    "gt": "figures/example_gt/s3/scene_03308_1034_512.jpg"
+   }
+  },
+  "scene_03218_3324": {
+   "256": {
+    "lo": 0.46000000834465027,
+    "hi": 3.342659959793094,
+    "min_depth": 0.1,
+    "max_depth": 10.0,
+    "valid_share": 0.9976806640625,
+    "gt": "figures/example_gt/s3/scene_03218_3324_256.jpg"
+   },
+   "512": {
+    "lo": 0.46000000834465027,
+    "hi": 3.3519999980926514,
+    "min_depth": 0.1,
+    "max_depth": 10.0,
+    "valid_share": 0.9976482391357422,
+    "gt": "figures/example_gt/s3/scene_03218_3324_512.jpg"
+   }
+  }
+ },
+ "panox": {
+  "ClothingStore_0002": {
+   "256": {
+    "lo": 1.9962499141693115,
+    "hi": 17.60949520111084,
+    "min_depth": 0.1,
+    "max_depth": 100.0,
+    "valid_share": 0.9933013916015625,
+    "gt": "figures/example_gt/panox/ClothingStore_0002_256.jpg"
+   },
+   "512": {
+    "lo": 1.9962499141693115,
+    "hi": 17.523730392456052,
+    "min_depth": 0.1,
+    "max_depth": 100.0,
+    "valid_share": 0.9932365417480469,
+    "gt": "figures/example_gt/panox/ClothingStore_0002_512.jpg"
+   }
+  },
+  "ClothingStore_0033": {
+   "256": {
+    "lo": 1.4796061515808105,
+    "hi": 18.572120513916023,
+    "min_depth": 0.1,
+    "max_depth": 100.0,
+    "valid_share": 0.9847640991210938,
+    "gt": "figures/example_gt/panox/ClothingStore_0033_256.jpg"
+   },
+   "512": {
+    "lo": 1.4787498712539673,
+    "hi": 18.529844207763684,
+    "min_depth": 0.1,
+    "max_depth": 100.0,
+    "valid_share": 0.9845504760742188,
+    "gt": "figures/example_gt/panox/ClothingStore_0033_512.jpg"
+   }
+  },
+  "ClothingStore_0079": {
+   "256": {
+    "lo": 0.35064035654067993,
+    "hi": 17.814977188110348,
+    "min_depth": 0.1,
+    "max_depth": 100.0,
+    "valid_share": 0.91180419921875,
+    "gt": "figures/example_gt/panox/ClothingStore_0079_256.jpg"
+   },
+   "512": {
+    "lo": 0.35062503814697266,
+    "hi": 17.986935882568336,
+    "min_depth": 0.1,
+    "max_depth": 100.0,
+    "valid_share": 0.9117412567138672,
+    "gt": "figures/example_gt/panox/ClothingStore_0079_512.jpg"
+   }
+  },
+  "ClothingStore_0082": {
+   "256": {
+    "lo": 0.3506331443786621,
+    "hi": 17.58336380004882,
+    "min_depth": 0.1,
+    "max_depth": 100.0,
+    "valid_share": 0.9091720581054688,
+    "gt": "figures/example_gt/panox/ClothingStore_0082_256.jpg"
+   },
+   "512": {
+    "lo": 0.35062503814697266,
+    "hi": 17.62508010864259,
+    "min_depth": 0.1,
+    "max_depth": 100.0,
+    "valid_share": 0.9092273712158203,
+    "gt": "figures/example_gt/panox/ClothingStore_0082_512.jpg"
+   }
+  }
+ },
+ "holo_in": {
+  "Indoor_001_1752141078.842170": {
+   "256": {
+    "lo": 1.1953251147270203,
+    "hi": 7.813775339126587,
+    "min_depth": 0.1,
+    "max_depth": 10.0,
+    "valid_share": 0.7522125244140625,
+    "gt": "figures/example_gt/holo_in/Indoor_001_1752141078.842170_256.jpg"
+   },
+   "512": {
+    "lo": 1.1956671237945558,
+    "hi": 7.814709224700923,
+    "min_depth": 0.1,
+    "max_depth": 10.0,
+    "valid_share": 0.7512607574462891,
+    "gt": "figures/example_gt/holo_in/Indoor_001_1752141078.842170_512.jpg"
+   }
+  },
+  "Indoor_001_1752141117.877729": {
+   "256": {
+    "lo": 1.1718553829193115,
+    "hi": 8.28315444946289,
+    "min_depth": 0.1,
+    "max_depth": 10.0,
+    "valid_share": 0.8286514282226562,
+    "gt": "figures/example_gt/holo_in/Indoor_001_1752141117.877729_256.jpg"
+   },
+   "512": {
+    "lo": 1.1716229462623595,
+    "hi": 8.286336650848387,
+    "min_depth": 0.1,
+    "max_depth": 10.0,
+    "valid_share": 0.8276023864746094,
+    "gt": "figures/example_gt/holo_in/Indoor_001_1752141117.877729_512.jpg"
+   }
+  },
+  "Indoor_001_1752141169.925142": {
+   "256": {
+    "lo": 0.8533942067623138,
+    "hi": 7.196755228042603,
+    "min_depth": 0.1,
+    "max_depth": 10.0,
+    "valid_share": 0.8221282958984375,
+    "gt": "figures/example_gt/holo_in/Indoor_001_1752141169.925142_256.jpg"
+   },
+   "512": {
+    "lo": 0.8533653116226196,
+    "hi": 7.20357494354248,
+    "min_depth": 0.1,
+    "max_depth": 10.0,
+    "valid_share": 0.8212623596191406,
+    "gt": "figures/example_gt/holo_in/Indoor_001_1752141169.925142_512.jpg"
+   }
+  },
+  "Indoor_001_1752141201.954319": {
+   "256": {
+    "lo": 1.444343900680542,
+    "hi": 7.291309127807617,
+    "min_depth": 0.1,
+    "max_depth": 10.0,
+    "valid_share": 0.8102798461914062,
+    "gt": "figures/example_gt/holo_in/Indoor_001_1752141201.954319_256.jpg"
+   },
+   "512": {
+    "lo": 1.4442947435379028,
+    "hi": 7.294969835281374,
+    "min_depth": 0.1,
+    "max_depth": 10.0,
+    "valid_share": 0.8094253540039062,
+    "gt": "figures/example_gt/holo_in/Indoor_001_1752141201.954319_512.jpg"
+   }
+  }
+ },
+ "holo_out": {
+  "Outdoor_001_1752225613.333593": {
+   "256": {
+    "lo": 1.9161319422721863,
+    "hi": 38.432093276977504,
+    "min_depth": 0.1,
+    "max_depth": 100.0,
+    "valid_share": 0.5336151123046875,
+    "gt": "figures/example_gt/holo_out/Outdoor_001_1752225613.333593_256.jpg"
+   },
+   "512": {
+    "lo": 1.9161152601242066,
+    "hi": 38.4951155090331,
+    "min_depth": 0.1,
+    "max_depth": 100.0,
+    "valid_share": 0.5338478088378906,
+    "gt": "figures/example_gt/holo_out/Outdoor_001_1752225613.333593_512.jpg"
+   }
+  },
+  "Outdoor_001_1752225691.995708": {
+   "256": {
+    "lo": 1.865581178665161,
+    "hi": 45.24238510131836,
+    "min_depth": 0.1,
+    "max_depth": 100.0,
+    "valid_share": 0.5443344116210938,
+    "gt": "figures/example_gt/holo_out/Outdoor_001_1752225691.995708_256.jpg"
+   },
+   "512": {
+    "lo": 1.8655229330062866,
+    "hi": 45.265618133544926,
+    "min_depth": 0.1,
+    "max_depth": 100.0,
+    "valid_share": 0.5439586639404297,
+    "gt": "figures/example_gt/holo_out/Outdoor_001_1752225691.995708_512.jpg"
+   }
+  },
+  "Outdoor_001_1752225730.993451": {
+   "256": {
+    "lo": 1.9871344041824341,
+    "hi": 50.015607910156255,
+    "min_depth": 0.1,
+    "max_depth": 100.0,
+    "valid_share": 0.5454483032226562,
+    "gt": "figures/example_gt/holo_out/Outdoor_001_1752225730.993451_256.jpg"
+   },
+   "512": {
+    "lo": 1.9870897293090821,
+    "hi": 50.075895690917996,
+    "min_depth": 0.1,
+    "max_depth": 100.0,
+    "valid_share": 0.5453701019287109,
+    "gt": "figures/example_gt/holo_out/Outdoor_001_1752225730.993451_512.jpg"
+   }
+  }
+ },
+ "stanford": {
+  "area_5a_camera_029bb1440fca47e2886a88559bbf8d00_hallway_1_frame_equirectangular_domain_rgb": {
+   "256": {
+    "lo": 1.216796875,
+    "hi": 7.9296875,
+    "min_depth": 0.1,
+    "max_depth": 16.0,
+    "valid_share": 0.8967819213867188,
+    "gt": "figures/example_gt/stanford/area_5a_camera_029bb1440fca47e2886a88559bbf8d00_hallway_1_frame_equirectangular_domain_rgb_256.jpg"
+   },
+   "512": {
+    "lo": 1.21875,
+    "hi": 7.919921875,
+    "min_depth": 0.1,
+    "max_depth": 16.0,
+    "valid_share": 0.8963890075683594,
+    "gt": "figures/example_gt/stanford/area_5a_camera_029bb1440fca47e2886a88559bbf8d00_hallway_1_frame_equirectangular_domain_rgb_512.jpg"
+   }
+  },
+  "area_5a_camera_048e6c8522334a908a52e340053498d3_hallway_5_frame_equirectangular_domain_rgb": {
+   "256": {
+    "lo": 0.48828125,
+    "hi": 5.912109375,
+    "min_depth": 0.1,
+    "max_depth": 16.0,
+    "valid_share": 0.9931182861328125,
+    "gt": "figures/example_gt/stanford/area_5a_camera_048e6c8522334a908a52e340053498d3_hallway_5_frame_equirectangular_domain_rgb_256.jpg"
+   },
+   "512": {
+    "lo": 0.48828125,
+    "hi": 5.912109375,
+    "min_depth": 0.1,
+    "max_depth": 16.0,
+    "valid_share": 0.9931793212890625,
+    "gt": "figures/example_gt/stanford/area_5a_camera_048e6c8522334a908a52e340053498d3_hallway_5_frame_equirectangular_domain_rgb_512.jpg"
+   }
+  },
+  "area_5a_camera_0597c4df4ffe454cab30c6cd4ac091bd_office_38_frame_equirectangular_domain_rgb": {
+   "256": {
+    "lo": 1.046875,
+    "hi": 5.701171875,
+    "min_depth": 0.1,
+    "max_depth": 16.0,
+    "valid_share": 0.954803466796875,
+    "gt": "figures/example_gt/stanford/area_5a_camera_0597c4df4ffe454cab30c6cd4ac091bd_office_38_frame_equirectangular_domain_rgb_256.jpg"
+   },
+   "512": {
+    "lo": 1.046875,
+    "hi": 5.708984375,
+    "min_depth": 0.1,
+    "max_depth": 16.0,
+    "valid_share": 0.9548492431640625,
+    "gt": "figures/example_gt/stanford/area_5a_camera_0597c4df4ffe454cab30c6cd4ac091bd_office_38_frame_equirectangular_domain_rgb_512.jpg"
+   }
+  },
+  "area_5a_camera_12a8e5e227b245e79d21e62dec80b6f0_hallway_5_frame_equirectangular_domain_rgb": {
+   "256": {
+    "lo": 0.896484375,
+    "hi": 4.048554687500001,
+    "min_depth": 0.1,
+    "max_depth": 16.0,
+    "valid_share": 0.97967529296875,
+    "gt": "figures/example_gt/stanford/area_5a_camera_12a8e5e227b245e79d21e62dec80b6f0_hallway_5_frame_equirectangular_domain_rgb_256.jpg"
+   },
+   "512": {
+    "lo": 0.896484375,
+    "hi": 4.044921875,
+    "min_depth": 0.1,
+    "max_depth": 16.0,
+    "valid_share": 0.9797191619873047,
+    "gt": "figures/example_gt/stanford/area_5a_camera_12a8e5e227b245e79d21e62dec80b6f0_hallway_5_frame_equirectangular_domain_rgb_512.jpg"
+   }
+  }
+ },
+ "nyc": {
+  "panorama_21": {
+   "256": {
+    "lo": 5.369029521942139,
+    "hi": 83.40373733520507,
+    "min_depth": 0.1,
+    "max_depth": 100.0,
+    "valid_share": 0.78399658203125,
+    "gt": "figures/example_gt/nyc/panorama_21_256.jpg"
+   },
+   "512": {
+    "lo": 5.367225170135498,
+    "hi": 83.23622970581052,
+    "min_depth": 0.1,
+    "max_depth": 100.0,
+    "valid_share": 0.7845802307128906,
+    "gt": "figures/example_gt/nyc/panorama_21_512.jpg"
+   }
+  },
+  "panorama_66": {
+   "256": {
+    "lo": 5.525940895080566,
+    "hi": 84.08610900878908,
+    "min_depth": 0.1,
+    "max_depth": 100.0,
+    "valid_share": 0.8117141723632812,
+    "gt": "figures/example_gt/nyc/panorama_66_256.jpg"
+   },
+   "512": {
+    "lo": 5.525940418243408,
+    "hi": 83.92294006347655,
+    "min_depth": 0.1,
+    "max_depth": 100.0,
+    "valid_share": 0.8126659393310547,
+    "gt": "figures/example_gt/nyc/panorama_66_512.jpg"
+   }
+  },
+  "panorama_90": {
+   "256": {
+    "lo": 4.0001678466796875,
+    "hi": 83.3264677429199,
+    "min_depth": 0.1,
+    "max_depth": 100.0,
+    "valid_share": 0.8097991943359375,
+    "gt": "figures/example_gt/nyc/panorama_90_256.jpg"
+   },
+   "512": {
+    "lo": 4.0000224113464355,
+    "hi": 83.31647064208984,
+    "min_depth": 0.1,
+    "max_depth": 100.0,
+    "valid_share": 0.8109378814697266,
+    "gt": "figures/example_gt/nyc/panorama_90_512.jpg"
+   }
+  },
+  "panorama_120": {
+   "256": {
+    "lo": 3.4858851432800293,
+    "hi": 84.55806884765619,
+    "min_depth": 0.1,
+    "max_depth": 100.0,
+    "valid_share": 0.8117904663085938,
+    "gt": "figures/example_gt/nyc/panorama_120_256.jpg"
+   },
+   "512": {
+    "lo": 3.484722571372986,
+    "hi": 84.50520706176758,
+    "min_depth": 0.1,
+    "max_depth": 100.0,
+    "valid_share": 0.8128013610839844,
+    "gt": "figures/example_gt/nyc/panorama_120_512.jpg"
+   }
+  }
+ }
+}
