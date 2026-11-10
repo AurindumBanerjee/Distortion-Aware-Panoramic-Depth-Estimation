@@ -6,17 +6,14 @@ equirectangular (ERP) distortion in panoramic depth estimation. The depth model 
 inference passes on alternative spherical projections (tangent planes or rotated spheres) and fuse
 the results with the baseline.
 
-> **Status, read first.** The panoramic foundation model this project targets is **DAP**
-> (*Depth Any Panoramas*, Lin et al., CVPR 2026). Its wrapper is in `models/depth_model.py` and its
-> configs are in `configs/dap_*.yaml`. The development environment had **no GPU and no access to
-> Hugging Face, Google Drive or the gated datasets**, so DAP and the real benchmarks could not be run
-> here. All numbers in `results/` come from **MiDaS DPT-Hybrid and MiDaS Swin2-Tiny**, whose weights
-> are on GitHub releases. These are *perspective* relative-depth models. They were evaluated on
-> **procedurally rendered indoor panoramas with exact ground truth** (`datasets/synthetic.py`). Treat
-> those results as a validated, end-to-end exercise of the framework and as evidence about *these*
-> models. They are not evidence about DAP. The DAP experiments are one command away
-> (see [Running DAP](#running-dap-the-target-experiment)).
-
+> **Status, read first.** This folder contains several distinct evidence sets; keep their model/data scopes separate.
+>
+> - **Core pipeline:** MiDaS DPT-Hybrid and Swin2-Tiny on 24 synthetic indoor panoramas; DPT-Hybrid also has a separate 75-image NYC street-panorama comparison (CPU).
+> - **Follow-up GPU runs:** Studies 01, 02, 04 and 05 have saved Kaggle T4 outputs on Structured3D/PanoX. Study 03 has a 50-scene held-out student evaluation, but its checkpoint and training log are not retained in this checkout. Study 06 is design/code only.
+> - **Target model:** DAP wrapper/configs are present, but there is no verified DAP benchmark in the Lokesh result folders. Do not generalize the MiDaS/DA360 numbers to DAP.
+> - **Holo360D:** the 60-frame local training-scene subset was only a loader/mask smoke test. No held-out Holo360D test metrics are available; Experiment 05's Holo360D validation is still pending.
+>
+> Start with [`RESULTS.md`](RESULTS.md), the regenerated [`results/RESULT_TABLES.md`](results/RESULT_TABLES.md), and [`followup_experiments/RESULTS.md`](followup_experiments/RESULTS.md) for the evidence and limitations.
 ---
 
 ## 1. Motivation
@@ -236,19 +233,15 @@ results/<run>/
  
 ## 11. Follow-up studies (November 2026)
 
-Five additional experiments are maintained separately in [followup_experiments/README.md](followup_experiments/README.md).
-They do not replace or rewrite the existing E1–E11 pipeline above.
+Six studies are maintained separately in [`followup_experiments/README.md`](followup_experiments/README.md); they do not replace the existing E1?E11 pipeline.
 
-| Study | Purpose |
-|---|---|
-| 01 — scale-only protocol | DA360 scale-only disparity evaluation vs affine-fit sensitivity |
-| 02 — domain-conditioned gate | PanoX leave-one-environment-out calibration of the rotation gate |
-| 03 — PanDA-inspired distillation | Frozen DA360 pseudo-label teacher and compact student training |
-| 04 — 20-view 360MonoDepth-style | Full-sphere icosahedral tangent baseline vs two-pole tangent correction |
-| 05 — FOV/resolution sweep | Tangent-view FOV × output-resolution sensitivity |
+| Study | Purpose | Current evidence status |
+|---|---|---|
+| 01 ? scale-only protocol | DA360 scale-only disparity evaluation vs affine-fit sensitivity | 200-scene Structured3D run saved |
+| 02 ? domain-conditioned gate | PanoX leave-one-environment-out calibration of the rotation gate | 200 scenes / 8 environments; all folds select baseline |
+| 03 ? PanDA-inspired distillation | Frozen DA360 pseudo-label teacher and compact student training | 50-scene held-out evaluation saved; student is weaker and checkpoint is missing locally |
+| 04 ? 20-view 360MonoDepth-style | Full-sphere icosahedral tangent baseline vs two-pole tangent correction | 200-scene PanoX run saved |
+| 05 ? FOV/resolution sweep | Tangent-view FOV ? output-resolution sensitivity | 200-scene PanoX run saved; Holo360D test validation pending |
+| 06 ? structure-at-the-poles gate | Per-image capture-artifact / structure gate | Design and code only; not run |
 
-Each study has its own `config.yaml`, `run.py`, GPU launcher, logs and timestamped `outputs/` folder.
-The Kaggle entrypoint is `followup_experiments/kaggle_two_t4_runner.ipynb`; it is designed for a
-two-T4 Kaggle kernel. DA360-dependent studies require the official DA360 repository and checkpoint
-to be mounted separately. GPU runs are not considered complete until the Kaggle notebook has executed
-and written its result reports.
+The Kaggle entrypoint is `followup_experiments/kaggle_two_t4_runner.ipynb`, designed for a two-T4 kernel. Selected saved runs are summarized in [`followup_experiments/RESULTS.md`](followup_experiments/RESULTS.md); every output remains under its timestamped `outputs/` directory. DA360-dependent studies still require the official DA360 repository and checkpoint to be mounted for a fresh reproduction.

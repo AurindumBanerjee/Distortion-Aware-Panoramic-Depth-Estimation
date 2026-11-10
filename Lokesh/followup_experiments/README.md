@@ -1,6 +1,6 @@
-# Lokesh — Follow-up Experiments
+# Lokesh Follow-up Experiments
 
-Five follow-up studies are isolated under this directory. They use the same experiment hygiene as Aurindum:
+Six follow-up studies are isolated under this directory. They use the same experiment hygiene as Aurindum:
 each study has its own config, standalone runner, GPU launcher, logs, timestamped output folder, per-scene
 metrics, summary JSON, and Markdown report. Shared model/data/protocol helpers live in shared/.
 
@@ -16,6 +16,7 @@ wrapper and a 360MonoDepth-style comparison implementation under followup_experi
 | 03 | 03_panda_style_finetuning | Can a compact student learn teacher pseudo-disparity with spherical yaw/reflection consistency and patch-normalized loss? | Frozen DA360 teacher / unlabeled PanoX RGB |
 | 04 | 04_mono360_20view | Does a full-sphere 20-view icosahedral pipeline beat the existing two-pole tangent correction? | MiDaS DPT-Hybrid / PanoX |
 | 05 | 05_fov_resolution_sweep | How sensitive is tangent correction to the view FOV and pixel resolution? | MiDaS DPT-Hybrid / PanoX |
+| 06 | 06_structure_at_poles_gate | Can image-level structure/capture cues decide when polar correction should be applied? | Per-image gate / PanoX (planned) |
 
 ### Important research-scope notes
 
@@ -188,5 +189,8 @@ latitude bands; comparisons use paired scenes and, where applicable, environment
 interpret a small number of PanoX environments as hundreds of independent samples: the environment is the
 independent unit for cross-domain gate calibration.
 
-These scripts have not been run on the Kaggle T4 session yet. Syntax and smoke checks are performed separately;
-GPU outputs should be treated as pending until the Kaggle notebook executes them successfully.
+Execution snapshot (10-Nov-2026): studies 01, 02, 04 and 05 have saved 200-scene Kaggle T4 runs; study 03 has a saved 50-scene held-out evaluation but its training checkpoint/log are not retained in this checkout; study 06 has not been run. See `RESULTS.md` for selected run IDs, conclusions and limitations. Experiment 05 Holo360D test validation remains pending; the local training-scene subset was only used for loader smoke testing.
+
+## Current execution status (10 November 2026)
+
+The compiled evidence is in [`RESULTS.md`](RESULTS.md). Selected runs: 01 `run_20261105_192854`, 02 `run_20261105_193545`, 03 `evaluation_20261105_210504`, 04 `run_20261105_195950`, 05 `run_20261105_202824`. These are the latest complete runs retained in this checkout; older timestamps are preserved. Study 06 is unexecuted. The Experiment 03 student checkpoint referenced by its evaluation summary is not present locally, so that result needs its training artifact restored for full reproducibility.
