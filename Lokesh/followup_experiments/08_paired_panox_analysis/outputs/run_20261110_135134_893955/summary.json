@@ -1,0 +1,102 @@
+{
+  "experiment": "08_paired_panox_analysis",
+  "source_csv": "C:\\Users\\lokes\\OneDrive\\Desktop\\cv_project\\Distortion-Aware-Panoramic-Depth-Estimation\\Lokesh\\followup_experiments\\04_mono360_20view\\outputs\\run_20261105_195950\\per_scene.csv",
+  "source_run": "Experiment 04 run_20261105_195950",
+  "summary": {
+    "align-all": {
+      "n_scenes": 200,
+      "n_environments": 8,
+      "median_abs_rel": {
+        "baseline": 0.1514342596191956,
+        "two_pole_tangent": 0.095015544577311,
+        "mono360_20view": 0.08315164221095181
+      },
+      "paired_cluster_bootstrap_gain": {
+        "two_pole_vs_baseline": {
+          "n_scenes": 200,
+          "n_environments": 8,
+          "median_environment_gain": 0.46294503240407253,
+          "ci95": [
+            0.12063717492818396,
+            0.5380454514807513
+          ],
+          "ci_excludes_zero": true,
+          "interpretation": "positive = candidate reduces AbsRel vs reference",
+          "bootstrap_replicates": 10000
+        },
+        "20_view_vs_baseline": {
+          "n_scenes": 200,
+          "n_environments": 8,
+          "median_environment_gain": 0.5681494393476827,
+          "ci95": [
+            0.25918228500831675,
+            0.6299110032193755
+          ],
+          "ci_excludes_zero": true,
+          "interpretation": "positive = candidate reduces AbsRel vs reference",
+          "bootstrap_replicates": 10000
+        },
+        "20_view_vs_two_pole": {
+          "n_scenes": 200,
+          "n_environments": 8,
+          "median_environment_gain": 0.15554665158078324,
+          "ci95": [
+            -0.844849559331777,
+            0.34045561394731194
+          ],
+          "ci_excludes_zero": false,
+          "interpretation": "positive = candidate reduces AbsRel vs reference",
+          "bootstrap_replicates": 10000
+        }
+      }
+    },
+    "align-equatorial": {
+      "n_scenes": 200,
+      "n_environments": 8,
+      "median_abs_rel": {
+        "baseline": 0.34675664403052564,
+        "two_pole_tangent": 0.1658514541747516,
+        "mono360_20view": 0.154951686583659
+      },
+      "paired_cluster_bootstrap_gain": {
+        "two_pole_vs_baseline": {
+          "n_scenes": 200,
+          "n_environments": 8,
+          "median_environment_gain": 0.4112439368241072,
+          "ci95": [
+            0.22169290247184392,
+            0.5523854861103973
+          ],
+          "ci_excludes_zero": true,
+          "interpretation": "positive = candidate reduces AbsRel vs reference",
+          "bootstrap_replicates": 10000
+        },
+        "20_view_vs_baseline": {
+          "n_scenes": 200,
+          "n_environments": 8,
+          "median_environment_gain": 0.5176822219356563,
+          "ci95": [
+            0.12485454632383938,
+            0.5453047362566803
+          ],
+          "ci_excludes_zero": true,
+          "interpretation": "positive = candidate reduces AbsRel vs reference",
+          "bootstrap_replicates": 10000
+        },
+        "20_view_vs_two_pole": {
+          "n_scenes": 200,
+          "n_environments": 8,
+          "median_environment_gain": -0.1336640966974305,
+          "ci95": [
+            -0.6932813147038678,
+            0.17998393613139377
+          ],
+          "ci_excludes_zero": false,
+          "interpretation": "positive = candidate reduces AbsRel vs reference",
+          "bootstrap_replicates": 10000
+        }
+      }
+    }
+  },
+  "note": "Reanalysis only; no new model inference. PanoX environment is the bootstrap unit."
+}

@@ -1,6 +1,9 @@
-# Lokesh — Follow-up Experiments
 
-Five follow-up studies are isolated under this directory. They use the same experiment hygiene as Aurindum:
+
+
+# Lokesh Follow-up Experiments
+
+Six original follow-up studies plus two complementary evaluation studies are isolated under this directory. They use the same experiment hygiene as Aurindum:
 each study has its own config, standalone runner, GPU launcher, logs, timestamped output folder, per-scene
 metrics, summary JSON, and Markdown report. Shared model/data/protocol helpers live in shared/.
 
@@ -16,6 +19,9 @@ wrapper and a 360MonoDepth-style comparison implementation under followup_experi
 | 03 | 03_panda_style_finetuning | Can a compact student learn teacher pseudo-disparity with spherical yaw/reflection consistency and patch-normalized loss? | Frozen DA360 teacher / unlabeled PanoX RGB |
 | 04 | 04_mono360_20view | Does a full-sphere 20-view icosahedral pipeline beat the existing two-pole tangent correction? | MiDaS DPT-Hybrid / PanoX |
 | 05 | 05_fov_resolution_sweep | How sensitive is tangent correction to the view FOV and pixel resolution? | MiDaS DPT-Hybrid / PanoX |
+| 06 | 06_structure_at_poles_gate | Can image-level structure/capture cues decide when polar correction should be applied? | Per-image gate / PanoX (planned) |
+| 07 | 07_real_nyc_20view | Does the 20-view method transfer to real outdoor NYC panoramas, and does it beat two-pole tangent directly? | Frozen MiDaS / 182 held-out NYC RGB-range pairs (runner ready; not yet executed) |
+| 08 | 08_paired_panox_analysis | Is the Experiment 04 20-view-vs-two-pole difference statistically supported directly? | Saved 200-scene PanoX per-scene CSV (analysis complete; no GPU) |
 
 ### Important research-scope notes
 
@@ -75,6 +81,17 @@ From Lokesh/ on Linux/Kaggle:
 
 Experiment 02 intentionally uses all PanoX environments for LOEO; avoid --limit unless the selected subset
 still includes at least three complete environment clusters.
+
+## New evaluation studies (10 November 2026)
+
+- **07 — Real NYC transfer:** `07_real_nyc_20view/README.md`. The deterministic 182-frame manifest and metadata are generated; all 364 referenced files were checked and three RGB/range pairs decoded locally. The local Python environment lacks PyTorch, so CUDA/model preflight and inference remain pending. It excludes IDs 0–74 used in the earlier Lokesh NYC run and uses 91 assumed 20-ID bootstrap blocks.
+- **08 — Paired PanoX audit:** `08_paired_panox_analysis/README.md`. This analysis-only study has been run against the selected Experiment 04 CSV. It finds that the direct 20-view-vs-two-pole interval includes zero under both alignment protocols; see the timestamped report under `08_paired_panox_analysis/outputs/`. This is a reanalysis, not new model inference.
+
+Run the Experiment 08 audit from `Lokesh/` with:
+
+    python followup_experiments/08_paired_panox_analysis/analyze_panox.py
+
+For Experiment 07, first generate the portable manifest, then run a 16-frame pilot and the full GPU study as described in its README. Do not treat pilot intervals as final results.
 
 ## Result layout
 
@@ -188,5 +205,8 @@ latitude bands; comparisons use paired scenes and, where applicable, environment
 interpret a small number of PanoX environments as hundreds of independent samples: the environment is the
 independent unit for cross-domain gate calibration.
 
-These scripts have not been run on the Kaggle T4 session yet. Syntax and smoke checks are performed separately;
-GPU outputs should be treated as pending until the Kaggle notebook executes them successfully.
+Execution snapshot (10-Nov-2026): studies 01, 02, 04 and 05 have saved 200-scene Kaggle T4 runs; study 03 has a saved 50-scene held-out evaluation but its training checkpoint/log are not retained in this checkout; study 06 has not been run. See `RESULTS.md` for selected run IDs, conclusions and limitations. Experiment 05 Holo360D test validation remains pending; the local training-scene subset was only used for loader smoke testing.
+
+## Current execution status (10 November 2026)
+
+The compiled evidence is in [`RESULTS.md`](RESULTS.md). Selected runs: 01 `run_20261105_192854`, 02 `run_20261105_193545`, 03 `evaluation_20261105_210504`, 04 `run_20261105_195950`, 05 `run_20261105_202824`. These are the latest complete runs retained in this checkout; older timestamps are preserved. Study 06 is unexecuted. The Experiment 03 student checkpoint referenced by its evaluation summary is not present locally, so that result needs its training artifact restored for full reproducibility.

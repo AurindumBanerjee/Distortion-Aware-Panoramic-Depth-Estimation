@@ -1,14 +1,8 @@
 # Research summary: distortion-aware panoramic depth estimation
 
-> **Scope of the evidence.** Every number below comes from **MiDaS DPT-Hybrid** (main model) and
-> **MiDaS Swin2-Tiny** (second model). Both are *perspective* relative-depth networks. They were run
-> **zero-shot on 24 procedurally ray-cast indoor panoramas with exact ground truth** (512×1024, CPU).
-> The target panoramic foundation model, **DAP**, and the real benchmarks (Stanford2D3D, Matterport3D)
-> could not be run in the development environment: no GPU, and no access to Hugging Face or the gated
-> datasets. The code, configs and wrapper for that experiment are ready (README §7). Nothing here
-> should be read as a claim about DAP or about real data. All tables are regenerated from CSVs by
-> `scripts/make_results_tables.py` into `results/RESULT_TABLES.md`.
-
+> **Scope of the evidence.** Sections 1?9 summarize the core MiDaS experiments on 24 procedurally rendered indoor panoramas: DPT-Hybrid (main model) and Swin2-Tiny (second model), both perspective relative-depth networks. A separate external comparison evaluates DPT-Hybrid on 75 real NYC street panoramas from the DAP dataset; see [`results/synthetic_vs_nyc_comparison.md`](results/synthetic_vs_nyc_comparison.md). Six follow-up studies are documented, with saved GPU outputs from studies 01, 02, 04 and 05 on Structured3D/PanoX; their selected run IDs, tables, figures and limitations are compiled in [`followup_experiments/RESULTS.md`](followup_experiments/RESULTS.md).
+>
+> The target panoramic model DAP has configs and wrapper code, but this Lokesh result set contains no verified DAP benchmark. The Holo360D loader smoke test used 60 frames from training scenes only; it is not a held-out Holo360D evaluation. Do not present the MiDaS or DA360 follow-up results as DAP results, or the Holo360D loader smoke test as benchmark evidence.
 ## 1. Problem
 
 ERP panoramas stretch each row by 1/cos φ (×2 at 60°, ×3.9 at 75°). Depth networks may therefore
@@ -218,3 +212,16 @@ equator better. The 30–45° band gets slightly worse (−9.6%, p = 0.20).
   within-pitch analysis were added. A hybrid control with yaw-only rotations and the bias analysis
   were also added after the main results, to test alternative explanations. No method or
   hyper-parameter was tuned on the reported test images beyond what the ablation tables show.
+
+
+## 10. External real-world comparison: NYC street panoramas
+
+The DPT-Hybrid NYC run contains 75 real street panoramas from the DAP dataset. This is an external-data evaluation of a perspective relative-depth model, not an evaluation of the DAP model itself. The comparison is kept separate from the 24-scene synthetic study because the scene type and depth range differ. The cleaned summary reports global and latitude-band AbsRel under both `align-all` and `align-equatorial`, along with the main method and runtime comparisons. See [`results/synthetic_vs_nyc_comparison.md`](results/synthetic_vs_nyc_comparison.md) and the regenerated source tables in [`results/RESULT_TABLES.md`](results/RESULT_TABLES.md).
+
+The main pattern is that the hybrid's large synthetic gains shrink on NYC. Under `align-all`, it improves the extreme 75?90? band but worsens global AbsRel; tangent inference is the safer modest improvement. Rotation alone is harmful on the real outdoor set. Do not compare scale-sensitive RMSE, SqRel or MAE directly across the indoor synthetic and far-range outdoor datasets.
+
+## 11. Follow-up experiments (November 2026)
+
+The five executable follow-up studies have selected Kaggle T4 runs and saved reports: 01 (DA360 scale-only protocol, 200 Structured3D scenes), 02 (DA360 domain-conditioned gate, 200 PanoX panoramas across eight environments), 03 (student evaluation on 50 held-out PanoX scenes; negative result and missing local checkpoint), 04 (MiDaS 20-view comparison on 200 PanoX panoramas), and 05 (MiDaS FOV ? resolution sweep on the same 200 PanoX panoramas). Study 06 is a design/code scaffold and has not been run.
+
+The complete tables, paired intervals, selected run IDs, limitations and summary figures are in [`followup_experiments/RESULTS.md`](followup_experiments/RESULTS.md). Holo360D test-split validation for Experiment 05 remains pending; the 60-frame training-scene loader smoke test is not counted as evaluation.

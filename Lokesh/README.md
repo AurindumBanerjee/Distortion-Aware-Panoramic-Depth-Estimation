@@ -1,254 +1,166 @@
-# Distortion-Aware Panoramic Depth Estimation
 
-This repository holds model-agnostic, **inference-time** corrections for latitude-dependent
-equirectangular (ERP) distortion in panoramic depth estimation. The depth model stays a
-**frozen black box**: no retraining and no architectural changes. The corrections run extra
-inference passes on alternative spherical projections (tangent planes or rotated spheres) and fuse
-the results with the baseline.
 
-> **Status, read first.** The panoramic foundation model this project targets is **DAP**
-> (*Depth Any Panoramas*, Lin et al., CVPR 2026). Its wrapper is in `models/depth_model.py` and its
-> configs are in `configs/dap_*.yaml`. The development environment had **no GPU and no access to
-> Hugging Face, Google Drive or the gated datasets**, so DAP and the real benchmarks could not be run
-> here. All numbers in `results/` come from **MiDaS DPT-Hybrid and MiDaS Swin2-Tiny**, whose weights
-> are on GitHub releases. These are *perspective* relative-depth models. They were evaluated on
-> **procedurally rendered indoor panoramas with exact ground truth** (`datasets/synthetic.py`). Treat
-> those results as a validated, end-to-end exercise of the framework and as evidence about *these*
-> models. They are not evidence about DAP. The DAP experiments are one command away
-> (see [Running DAP](#running-dap-the-target-experiment)).
 
----
+﻿# Distortion-Aware Panoramic Depth Estimation
 
-## 1. Motivation
+This project studies inference-time methods for monocular depth estimation on 360-degree equirectangular (ERP) panoramas. The backbone is kept frozen; the experiments change the view geometry, align predictions to a baseline, and fuse views back into the ERP grid.
 
-An ERP image maps longitude/latitude (θ, φ) linearly to pixel columns and rows. A pixel row at
-latitude φ samples a circle of circumference 2π cos φ with the same number of pixels as the
-equator, so it is horizontally stretched by **1/cos φ**: ×1.41 at 45°, ×2 at 60°, ×3.9 at 75° and
-∞ at the poles. The pixel solid angle shrinks as cos φ. Depth networks learn local appearance
-statistics, so the polar rows are a different input distribution even for models trained on ERP.
+## Status and evidence scope (10 November 2026)
 
-**Hypothesis.** ERP distortion causes a latitude-dependent degradation of panoramic depth.
-Targeted inference on less-distorted projections of the affected regions can correct it without
-touching the model.
+The repository contains several related but distinct evidence sets. Keep their model and dataset scopes separate.
 
-## 2. Mathematical formulation
+- **Core MiDaS study:** MiDaS DPT-Hybrid and MiDaS Swin2-Tiny on 24 procedurally rendered indoor panoramas with exact range ground truth.
+- **External real-data comparison:** MiDaS DPT-Hybrid on 75 NYC street panoramas from the DAP dataset. This is a MiDaS evaluation using DAP data; it is not an evaluation of the DAP network.
+- **Follow-up GPU studies:** DA360 on 200 Structured3D scenes (Study 01); a DA360 LOEO gate on 200 PanoX panoramas across eight environments (Study 02); a 50-scene held-out DA360 student evaluation (Study 03); and MiDaS 20-view and FOV-resolution experiments on 200 PanoX panoramas (Studies 04 and 05).
+- **Unfinished work:** Study 06 is code/design only. The Experiment 03 student checkpoint is missing from this checkout. Holo360D test-split validation for Experiment 05 is pending.
+- **DAP:** the wrapper and configurations exist, but no verified DAP benchmark is included in the Lokesh result folders. Do not generalise MiDaS or DA360 results to DAP.
 
-**Conventions** (`geometry/spherical.py`, tested). Camera axes: x right, y down, z forward. ERP pixel
-centre (u, v) ↦ θ = 2π(u+½)/W − π, φ = π/2 − π(v+½)/H. The unit ray is
-d = (cos φ sin θ, −sin φ, cos φ cos θ).
+## Research report
 
-**Seam and pole-aware sampling** (`geometry/erp_projection.py`). Before interpolation the ERP is
-padded circularly in longitude and *across the poles*: row −k equals row k−1 shifted by W/2. This
-makes bilinear and bicubic sampling correct across the 180° seam and at φ = ±90°.
+The consolidated NeurIPS-style technical report is available as:
 
-**Tangent plane / gnomonic view** (`geometry/tangent_plane.py`) at centre c = d(θc, φc), with FOV α
-and N×N pixels:
-f = (N/2)/tan(α/2), principal point N/2 − ½, R = [right | down | forward]. Here
-right = (cos θc, 0, −sin θc), which never degenerates, even at the poles. A tangent pixel (i, j) has
-ray R·((j−c)/f, (i−c)/f, 1).
+- [`Final_Report.pdf`](Final_Report.pdf)
+- Source: [`Report/draft/main.tex`](Report/draft/main.tex)
+- Style: [`Report/draft/neurips_2025.sty`](Report/draft/neurips_2025.sty)
+- Figures: [`Report/draft/figs/`](Report/draft/figs/)
 
-* ERP → tangent: backward-warp each tangent ray into the ERP using seam/pole-aware sampling.
-* Tangent → ERP: backward-warp each ERP ray into the tangent image. Pixels with z ≤ 0 or outside
-  the frame are invalid.
-* **Depth semantics.** Pinhole models predict planar depth z, while ERP ground truth is range
-  r = z·√(1+x²+y²) = z / cos∠(ray, axis). Skipping this conversion introduces errors of up to 42% at
-  the corners of a 90° view. The test suite measures this explicitly.
-* For affine-invariant *disparity* models (MiDaS), a view's output is d = s/z + t, so the inverse
-  range is 1/r = cos·(d − t)/s. A view is aligned to the baseline disparity b with the 3-parameter fit
-  b ≈ A·(cos·d) + B·cos + C. No ground truth is used.
+The report uses the NeurIPS 2025 LaTeX style for formatting only. It is an IIT Jodhpur project technical report, not a claim of NeurIPS submission, review, or acceptance. To rebuild from the `Lokesh/` directory, run:
 
-**Sphere rotation** (`rotate_erp`). I_rot(d) = I(R d) is a true SO(3) resampling, not a pixel
-roll. Exception: pure yaw, which the tests confirm is an exact column shift. Range is invariant
-under rotations about the camera centre. A pitch of +90° maps *both* poles onto the equator (north
-to the front, south to the back).
-
-**Fusion** (`inference/fusion.py`). Every correction view *v* gives a prediction P_v on the ERP grid
-and a per-pixel "distortion coordinate" λ_v. λ_v is the latitude inside the rotated ERP the model
-saw, or the off-axis angle inside the pinhole view.
-1. Views are merged into D_corr = Σ w_v P_v / Σ w_v with w_v = cos(λ_v)^p (`prior`), or with
-   `mean` or `median`.
-2. D_corr is fused with the baseline:
-   * **hard**: D = D_corr where |φ| > φ_t, otherwise D_ERP
-   * **soft**: D = (1 − w(φ)) D_ERP + w(φ) D_corr. w is `linear`, `cosine` (raised cosine), `sigmoid`
-     or `polynomial`, ramping over φ_t ± 10°.
-   * **confidence (heuristic)**: none of the models used here outputs uncertainty, so per-pixel
-     confidence is *derived* as c_i = cos(λ_i)^p · exp(−(log x_i − log median_j x_j)² / 2σ²) ·
-     exp(−localstd(log x_i/x_base)/σ_l). These are the latitude prior, multi-view agreement and
-     local consistency terms. The result is D = Σ c_i x_i / Σ c_i over the baseline and all views.
-     The heuristic is documented as such and was not tuned on the test data (σ = 0.10, σ_l = 0.05).
-
-**Inference-time alignment uses no ground truth.** Views are aligned to the *baseline* on "anchor"
-pixels that are trusted in both frames: |φ| < φ_t in the original panorama, and low distortion in the
-view (|λ| < φ_t, or inside 85% of the tangent half-width). Fits are robust least squares with MAD
-outlier rejection.
-
-## 3. Architecture
-
-```
-DepthModelWrapper.predict(image, kind='erp'|'perspective')     <- the only model interface
-        |
-DistortionAwareInference.run(rgb, MethodConfig)                inference/pipeline.py
-   |-- baseline ERP pass                                       inference/baseline.py
-   |-- polar tangent views  (selective, |phi| > threshold)     inference/tangent_inference.py
-   |-- rotated-sphere passes                                   inference/rotation_inference.py
-   |-- robust alignment to the baseline (no GT)                inference/alignment.py
-   |-- merge views + fuse with baseline                        inference/fusion.py
-   v
-final ERP depth  (+ runtime, #model calls, peak memory)
+```bash
+tectonic Report/draft/main.tex
 ```
 
-Swapping the model means writing one `DepthModelWrapper` subclass that declares what its numbers
-mean (`space`: depth/disparity, `scale`: metric/scale/affine, `geometry`: range/planar for ERP and
-pinhole inputs). Provided wrappers:
+The report draws from the saved run artifacts and explicitly records the missing checkpoint, unrun study, and pending Holo360D/DAP evaluations.
 
-| wrapper | model | role |
+## Motivation and geometry
+
+ERP maps longitude and latitude linearly to image columns and rows. The local horizontal stretch grows approximately as `1 / cos(latitude)`, so appearance statistics change toward the poles. A latitude-dependent error trend is not, by itself, proof that projection distortion caused the error: scale anchoring, scene content, orientation, and model domain can also change the measured result.
+
+The project tests alternative views while keeping the depth model frozen:
+
+1. **Tangent-plane inference:** one or more gnomonic views centred near a pole.
+2. **Rotation inference:** rotate the sphere so polar content is moved toward the centre of the ERP input, predict, and rotate the result back.
+3. **Hybrid inference:** combine tangent and rotated views, align them to the baseline without using ground truth at inference time, and blend the result into the ERP prediction.
+4. **Full-sphere 20-view inference:** use icosahedral tangent views, overlap alignment, and frustum blending.
+
+For affine-invariant disparity models, the evaluation uses a global affine fit in disparity space. Both `align-all` (fit on all valid pixels) and `align-equatorial` (fit only on `|latitude| < 30 degrees`) are reported. The second protocol keeps the trusted equatorial anchor fixed while polar predictions change; it can extrapolate poorly, so it must be shown alongside the global fit.
+
+## Repository layout
+
+```text
+Lokesh/
+  Report/                    NeurIPS-style report source and figures
+  configs/                   Model and dataset configurations
+  datasets/                  Panorama loaders and synthetic renderer
+  geometry/                  Spherical and ERP/tangent projection geometry
+  inference/                 Baseline, tangent, rotation, alignment and fusion
+  evaluation/                Metrics, latitude profiles and statistical analysis
+  experiments/               Core experiment entry points
+  results/                   Core run outputs, CSV tables, JSON and figures
+  scripts/                   Data-list builders and result-table generation
+  tests/                     Geometry, loader and inference tests
+  followup_experiments/      Eight isolated experiments/evaluation studies
+  weights/                   Local model checkpoints (git-ignored)
+  _archives/                 Preserved prior runs and debug samples
+```
+
+The parent repository also contains the broader project work from Aurindum and Harshita. This README describes the `Lokesh/` contribution only.
+
+## Models and data
+
+### Models
+
+| Model | Role in this folder | Output/evaluation note |
 |---|---|---|
-| `DAPWrapper` | DAP, Depth Any Panoramas (ERP-native, metric range/100 m, 512×1024) | **target model** |
-| `MiDaSWrapper` | MiDaS DPT-Hybrid / Swin2-Tiny (perspective, affine disparity) | runnable here; generalisation |
-| `DepthAnythingV2Wrapper` | DAv2 metric-indoor (perspective, z in metres), via `transformers` | optional tangent-view model |
-| `EncodedDepthOracle` | decodes depth from pixels and adds latitude-dependent noise | **pipeline test only** |
+| MiDaS DPT-Hybrid | Main perspective relative-depth model | Affine-in-disparity alignment; ERP at 384 x 768, tangent views at 384 x 384 |
+| MiDaS Swin2-Tiny | Second-model check | Perspective relative-depth model; fixed 256-pixel inference wrapper |
+| DA360 | Scale-protocol and domain-gate follow-ups | Scale-invariant disparity; scale-only is the preferred headline fit |
+| DAP | Target-model wrapper/configuration only | No verified DAP result is included in this folder |
 
-### Why DAP
+### Datasets
 
-DAP is the most recent openly released *panoramic* depth foundation model. It is ERP-native, trained
-on large-scale panoramic data, and evaluated zero-shot on Stanford2D3D and Matterport3D. Facts used
-by the wrapper come from its code: `test/infer.py`, `test/eval.py`, `networks/dap.py`,
-`config/infer.yaml` and `datasets/stanford2d3d.py`.
-* Input is ERP RGB at 512×1024 in [0,1]. `eval.py` applies ImageNet normalisation but `infer.py` does
-  not, so this is exposed as `imagenet_normalize` (default: the eval protocol).
-* Output `pred_depth` is **Euclidean range / 100 m**, clipped to [0,1]. A `pred_mask` head flags
-  sky / > 100 m pixels, which the wrapper returns as NaN.
-* The model has no built-in handling of arbitrary rotations or crops. Its behaviour on
-  pinhole tangent images is out of distribution and not documented, so the DAP config aligns tangent
-  views to the baseline in *scale*. `configs/dap_dav2_tangent.yaml` uses Depth Anything V2 (a
-  pinhole model) for the tangent views instead.
+| Dataset | Local root / list | Use and current status |
+|---|---|---|
+| Synthetic | `data/synthetic/test.txt` | 24 indoor ERP panoramas, 512 x 1024, exact range GT, seed 0 |
+| NYC street panoramas | `data/nyc_dap/test.txt` | 75 real outdoor panoramas evaluated with MiDaS DPT-Hybrid |
+| Structured3D | `../../structured3d/structured3d/test.txt` relative to `Lokesh/` | 200 scenes in DA360 Study 01 |
+| PanoX | `../../panox/panox/test.txt` relative to `Lokesh/` | 200 panoramas across eight environments in Studies 02, 04 and 05 |
+| Holo360D | `data/holo360d/` when provided | Current local training-scene subset is only for loader/mask smoke testing; no held-out test evaluation is reported |
 
-PanDA, DA360 and Depth Anywhere are alternative ERP models. Plugging one in takes about 30 lines
-modelled on `DAPWrapper`.
+Datasets and model weights are not generally stored in Git. `weights/` and `data/` are git-ignored. Obtain gated datasets from their owners and keep credentials out of notebooks and configuration files.
 
-## 4. Repository structure
+## Installation and core runs
 
-```
-configs/            default.yaml (MiDaS, synthetic), midas_swin2_tiny.yaml, dap_stanford2d3d.yaml,
-                    dap_matterport3d.yaml, dap_dav2_tangent.yaml
-models/             depth_model.py      (wrapper interface + DAP / MiDaS / DAv2 / oracle)
-geometry/           spherical.py, erp_projection.py, tangent_plane.py, validation.py
-inference/          baseline.py, tangent_inference.py, rotation_inference.py, alignment.py, fusion.py, pipeline.py
-evaluation/         metrics.py, latitude_analysis.py, evaluation.py
-visualization/      visualize.py
-datasets/           panorama.py (Stanford2D3D / Matterport3D / Structured3D / .npy), synthetic.py (renderer)
-experiments/        common.py, baseline.py (E1 + content control), tangent_plane.py (E2),
-                    rotation_ensemble.py (E3/E4), ablation.py (E5-E9)
-notebooks/          01_baseline, 02_latitude_analysis, 03_tangent_projection, 04_results (end-to-end)
-tests/              geometry, scene-level projection, oracle pipeline, DAP wrapper plumbing
-third_party/        vendored MiDaS code (MIT); DAP is cloned here by the user
-run_experiment.py   single entry point
-```
-
-## 5. Installation
+Use the project's Python environment and install:
 
 ```bash
 pip install -r requirements.txt
-# MiDaS weights (GitHub releases)
-mkdir -p weights
-curl -L -o weights/dpt_hybrid_384.pt     https://github.com/isl-org/MiDaS/releases/download/v3/dpt_hybrid_384.pt
-curl -L -o weights/dpt_swin2_tiny_256.pt https://github.com/isl-org/MiDaS/releases/download/v3_1/dpt_swin2_tiny_256.pt
-pytest -q tests/        # geometry + pipeline tests (about 1 min on CPU)
 ```
 
-## 6. Dataset preparation
+The MiDaS DPT-Hybrid checkpoint is expected at `weights/dpt_hybrid_384.pt`; the Swin2-Tiny checkpoint is expected at `weights/dpt_swin2_tiny_256.pt`.
 
-* **Synthetic (default, reproducible):** `python -m datasets.synthetic --out data/synthetic --n 24 --seed 0`.
-  This renders 24 ERP panoramas at 512×1024 (2×2 supersampled RGB) with exact range ground truth, in
-  about 1 min each on CPU.
-* **Stanford2D3D** (request access): place the release under `data/stanford2d3d`, then run
-  `python scripts/make_stanford_list.py --root data/stanford2d3d --areas area_5a area_5b`
-  (standard test split; depth png/512; 65535 = invalid).
-* **Matterport3D** (ERP release used by UniFuse/BiFuse; depth png/4000): write `data/matterport3d/test.txt`
-  with `rgb_path depth_path` lines.
-
-Invalid GT (NaN, ≤ min_depth, > max_depth, sensor holes) is excluded from every metric. GT is never
-interpolated: resizing and rotation use nearest-neighbour sampling with validity masks.
-
-## 7. Running the experiments
+Generate the synthetic set and run the core experiment from `Lokesh/`:
 
 ```bash
-python run_experiment.py --config configs/default.yaml           # all stages, MiDaS DPT-Hybrid (~2.5 h on 2 CPU cores)
-python run_experiment.py --config configs/midas_swin2_tiny.yaml  # second model
-python run_experiment.py --config configs/default.yaml --stages reports   # re-make tables/plots from saved rows
-python run_experiment.py --config configs/default.yaml --set dataset.limit=4 inference.polar_threshold=60
+python -m datasets.synthetic --out data/synthetic --n 24 --seed 0
+python run_experiment.py --config configs/default.yaml
+python run_experiment.py --config configs/midas_swin2_tiny.yaml
+python run_experiment.py --config configs/midas_nyc_dap.yaml
 ```
 
-Stages run in this order: `geometry` (a gate: experiments refuse to run if projection errors exceed
-tolerance), `main` (every method in the plan on every image, sharing a cache of model outputs),
-`reports`, `control` (content-vs-latitude), `resolution`, `timing` (uncached wall-clock) and
-`qualitative`.
-
-### Running DAP (the target experiment)
+The core runner supports geometry checks, baseline and correction inference, latitude profiles, content-vs-latitude controls, resolution and timing studies, and qualitative comparisons. To regenerate the aggregate Markdown tables from the saved result folders:
 
 ```bash
-git clone https://github.com/Insta360-Research-Team/DAP third_party/DAP
-pip install -r third_party/DAP/requirements.txt
-huggingface-cli download Insta360-Research/DAP-weights --local-dir weights/dap   # -> weights/dap/model.pth
-python run_experiment.py --config configs/dap_stanford2d3d.yaml
-python run_experiment.py --config configs/dap_matterport3d.yaml
-python run_experiment.py --config configs/dap_dav2_tangent.yaml    # DAv2 for tangent views
+python scripts/make_results_tables.py \
+  results/midas_dpt_hybrid_synthetic \
+  results/midas_swin2_tiny_synthetic \
+  results/midas_dpt_hybrid_nyc
 ```
 
-DAP is metric, so evaluation uses no GT alignment (`eval_align: none`). Add
-`--set evaluation.eval_align=median` for the scale-aligned protocol. `tests/test_dap_wrapper.py`
-checks the wrapper against DAP's output contract with a stand-in network.
+The generated table is `results/RESULT_TABLES.md`. The cross-domain comparison is `results/synthetic_vs_nyc_comparison.md`; the narrative for the core work is `RESULTS.md`.
 
-## 8. Evaluation protocol
+## Follow-up studies
 
-* Metrics are AbsRel, SqRel, RMSE, RMSElog, MAE, MedAE, δ1/δ2/δ3, error variance and % pixels with
-  AbsRel > 0.10. They are computed globally and per |latitude| band (0–15, 15–30, …, 75–90). Each is
-  given pixel-weighted (standard) and solid-angle-weighted (cos φ).
-* **GT alignment of relative models** (MiDaS: affine in disparity) is fitted once per image and
-  method, on all valid pixels (`align-all`, standard). It is *never* fitted per band, so polar errors
-  cannot be hidden by a local re-fit. The global fit couples the bands: changing the poles shifts the
-  fit everywhere. A second protocol (`align-equatorial`) therefore fits only on |φ| < 30°, which every
-  method leaves (almost) unchanged. Both are reported.
-* Improvement = (E_baseline − E_corrected)/E_baseline × 100, per band. It is reported with a paired
-  per-image bootstrap 95% CI, a Wilcoxon signed-rank p-value and the number of images improved.
-* Everything is seeded and the split is fixed (first N lines of the list file). The resolved config,
-  environment, method plan and log are saved with each run.
+Eight studies/evaluations are isolated under [`followup_experiments/`](followup_experiments/README.md). They keep separate configs, runners, logs, timestamped outputs, and summaries.
 
-## 9. Results
+| Study | Research question | Evidence status |
+|---|---|---|
+| 01 - Scale-only protocol | Does DA360 scale-only disparity alignment differ from affine fitting? | 200-scene Structured3D run saved |
+| 02 - Domain-conditioned gate | Does a PanoX threshold transfer under leave-one-environment-out calibration? | 200 scenes / eight environments; all folds select baseline |
+| 03 - PanDA-inspired student | Can a compact student preserve DA360 teacher quality? | 50-scene held-out evaluation saved; student is weaker and checkpoint is missing locally |
+| 04 - 20-view 360MonoDepth-style | Does full-sphere icosahedral inference help over two-pole tangent views? | 200-scene PanoX run saved |
+| 05 - FOV/resolution sweep | How do tangent-view FOV and resolution affect polar error? | 200-scene PanoX run saved; Holo360D test validation pending |
+| 06 - Structure-at-the-poles gate | Can image-level pole structure decide when correction is appropriate? | Design and code only; not run |
+| 07 - Real NYC 20-view transfer | Does full-sphere 20-view inference transfer to real NYC data and beat two-pole tangent directly? | 182-frame manifest generated; all 364 referenced files and three RGB/range samples preflight-checked; GPU run pending |
+| 08 - Paired PanoX significance audit | Is the Experiment 04 20-view-vs-two-pole result directly supported? | Reanalysis completed; direct 95% intervals include zero under both alignments |
 
-See **[RESULTS.md](RESULTS.md)** for the research summary (problem, method, setup, results,
-limitations and future work), written from the CSVs in `results/`.
+The selected run IDs, result tables, confidence intervals, caveats, and generated figures are compiled in [`followup_experiments/RESULTS.md`](followup_experiments/RESULTS.md). The Experiment 08 direct paired PanoX audit and Experiment 07 NYC transfer guide/results are documented separately under their respective folders. Earlier timestamped runs are preserved. The selected outputs are not overwritten by new runs.
 
-## 10. Expected outputs
+For Kaggle setup and execution details, see [`followup_experiments/README.md`](followup_experiments/README.md) and the `kaggle_two_t4_runner.ipynb` notebook. DA360-dependent runs require the official DA360 implementation and checkpoint to be mounted separately. Do not silently substitute MiDaS for DA360.
 
+## Evaluation and interpretation rules
+
+- Report `align-all` and `align-equatorial` for affine relative-depth models; they answer different questions.
+- Use the same validity masks for paired comparisons. Invalid depth is excluded rather than interpolated into ground truth.
+- Treat PanoX environment groups as the independent units for cross-environment bootstrap analysis; 200 adjacent panoramas are not 200 independent environments.
+- The saved Experiment 04/05 bootstrap intervals compare a method/configuration with baseline. They do not establish pairwise significance between alternatives.
+- Report inference calls and runtime alongside accuracy. Full-sphere methods can be materially more expensive.
+- Do not describe the MiDaS NYC evaluation as a DAP-model evaluation, and do not present the Holo360D loader smoke test as held-out benchmark performance.
+
+## Tests
+
+From `Lokesh/`:
+
+```bash
+python -m pytest -q tests
 ```
-results/<run>/
-  geometry_validation.json            projection error report (gate)
-  rows_align-{all,equatorial}.csv     every image x method x band x weighting (+ runtime, #calls)
-  profiles_align-*.npz                per-image error-vs-|latitude| curves
-  report_align-*/                     baseline.csv, tangent_plane.csv, rotation.csv, hybrid.csv, ablation.csv,
-                                      *_improvement.{csv,md}, main_comparison.md, latitude_bands_*.csv, onset_*.json,
-                                      profile_*.png, heatmap_*.png, runtime_vs_accuracy.png, ablations/*.md
-  latitude_control/                   content-vs-latitude control (csv + png)
-  resolution.{csv,md}, runtime_cold.{csv,md}
-  qualitative/                        8-panel comparisons + tangent-view pipeline figures
+
+The current local validation snapshot passed 33 tests. The Holo360D loader-specific smoke test is also available as:
+
+```bash
+python -m followup_experiments.tests.smoke_holo360d_loader
 ```
- 
-## 11. Follow-up studies (November 2026)
 
-Five additional experiments are maintained separately in [followup_experiments/README.md](followup_experiments/README.md).
-They do not replace or rewrite the existing E1–E11 pipeline above.
+## Licensing and attribution
 
-| Study | Purpose |
-|---|---|
-| 01 — scale-only protocol | DA360 scale-only disparity evaluation vs affine-fit sensitivity |
-| 02 — domain-conditioned gate | PanoX leave-one-environment-out calibration of the rotation gate |
-| 03 — PanDA-inspired distillation | Frozen DA360 pseudo-label teacher and compact student training |
-| 04 — 20-view 360MonoDepth-style | Full-sphere icosahedral tangent baseline vs two-pole tangent correction |
-| 05 — FOV/resolution sweep | Tangent-view FOV × output-resolution sensitivity |
-
-Each study has its own `config.yaml`, `run.py`, GPU launcher, logs and timestamped `outputs/` folder.
-The Kaggle entrypoint is `followup_experiments/kaggle_two_t4_runner.ipynb`; it is designed for a
-two-T4 Kaggle kernel. DA360-dependent studies require the official DA360 repository and checkpoint
-to be mounted separately. GPU runs are not considered complete until the Kaggle notebook has executed
-and written its result reports.
+See `LICENSE` and the licenses of third-party model repositories and datasets. The vendored MiDaS code and model weights retain their respective upstream terms; gated datasets must be obtained under their own access and usage agreements.
