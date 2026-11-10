@@ -1,4 +1,4 @@
-"""Streamlit showcase for Distortion-Aware Panoramic Depth Estimation.
+"""Streamlit app for Distortion-Aware Panoramic Depth Estimation.
 
 Run from the repository root (or from app/):
     python -m streamlit run app/streamlit_app.py
@@ -13,7 +13,6 @@ from __future__ import annotations
 import base64
 import json
 import re
-import sys
 from pathlib import Path
 
 import altair as alt
@@ -114,9 +113,6 @@ div[data-testid="stImage"] img { border-radius: 10px; }
 button[data-baseweb="tab"] p { font-size: .95rem; font-weight: 600; }
 .sb-brand { font-weight: 800; font-size: 1.15rem; color: var(--ink); }
 .sb-sub { font-size: .8rem; color: var(--muted); margin-bottom: 6px; }
-.plain { background: #fffaf0; border: 1px solid #f1d9a8; border-left: 4px solid #eda100; border-radius: 10px;
-         padding: 11px 15px; margin: 0 0 16px; color: #39414f; font-size: .96rem; line-height: 1.55; }
-.plain .pl { font-size: .7rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: #a87200; margin-bottom: 3px; }
 .pan { margin: 0 0 6px; }
 .pan .tt { font-weight: 700; font-size: .86rem; color: var(--ink); text-align: center; margin-bottom: 4px; }
 .pan .g { display: grid; grid-template-columns: 30px minmax(0, 1fr); column-gap: 4px; }
@@ -151,11 +147,6 @@ def facts(items: list[tuple[str, str]]):
 
 def section(title: str, sub: str = ""):
     st.markdown(f'<div class="sec"><span class="t">{title}</span><span class="s">{sub}</span></div>', unsafe_allow_html=True)
-
-
-def plain(text: str):
-    """'In plain words' box for readers without a CV background."""
-    st.markdown(f'<div class="plain"><div class="pl">In plain words</div>{text}</div>', unsafe_allow_html=True)
 
 
 EX_MODES = {"help": "Where it helps", "hurt": "Where it hurts", "all": "All stored examples"}
@@ -625,10 +616,10 @@ def go_to(page: str):
 
 def page_overview():
     hero("Distortion-Aware Panoramic Depth Estimation",
-         "Can we fix the polar error of monocular depth models on 360° panoramas at inference time, "
-         "treating the depth model as a frozen black box?",
+         "Reducing the polar error of frozen monocular depth models on 360° panoramas at inference time, "
+         "with the depth model treated as a black box.",
          eyebrow="CV coursework · IIT Jodhpur",
-         chips=["Panoramic Depth", "Inference-Time Correction", "No retraining", "7 datasets · 5 models"])
+         chips=["Panoramic Depth", "Inference-Time Correction", "No retraining", "6 datasets · 4 models"])
 
     section("The problem", "equirectangular (ERP) panoramas stretch every row by 1/cos φ")
     c = st.columns(4)
@@ -644,7 +635,7 @@ def page_overview():
                        "towards the poles; the corrections flatten it.")
     with c2:
         st.markdown('<div class="howto">Depth networks learn local appearance, so the stretched floor and ceiling '
-                    'look unlike anything they saw in training. All our corrections share one skeleton: '
+                    'look unlike anything they saw in training. All projection corrections share one skeleton: '
                     'show the model a <b>less distorted re-projection</b> of the poles, then <b>align and fuse</b> '
                     'the result back into the baseline without using any ground truth.</div>', unsafe_allow_html=True)
         pipeline(graph(f"""
@@ -656,9 +647,6 @@ def page_overview():
   rgb -> alt -> m2 -> fu -> out; base -> fu;
 """, rankdir="TB"), stretch=False)
 
-    plain("A 360° photo is a sphere flattened into a rectangle, like a world map. The flattening stretches the top and "
-          "bottom of the picture. Depth models (programs that guess how far away every pixel is) make bigger mistakes there. "
-          "This app shows what we tried to reduce those mistakes without retraining any model, and what actually causes them.")
     section("What the final report concludes", "report/final_report.pdf")
     c = st.columns(4)
     for col, (n, l) in zip(c, [("−34.8%", "DAP error on Stanford2D3D's real black polar caps, after the capture-fault fix"),
@@ -730,8 +718,6 @@ def page_overview():
 def page_baseline():
     hero("Baseline: a single ERP pass", "The reference every method is compared with: the panorama goes through "
          "the depth model once, as-is.", eyebrow="Reference", chips=["1 model call", "4 frozen models", "No correction"])
-    plain("The baseline is the model used as it is: the flattened 360° picture goes in once and a depth map comes out. "
-          "Every other page is measured against this.")
     c1, c2 = st.columns([1, 1.2])
     with c1:
         st.markdown('<div class="howto">Compare a <b>perspective</b> model (MiDaS) with <b>panorama-trained</b> models '
@@ -775,7 +761,6 @@ def page_projection(key: str):
     hero(m["name"], m["tagline"], eyebrow="Method · Projection Correction",
          chips=["MiDaS DPT-Hybrid (frozen)", "Inference-time only", "No ground truth at inference"])
     facts(m["facts"])
-    plain(PLAIN_METHOD[key])
 
     c1, c2 = st.columns([1, 1.35])
     with c1:
@@ -851,10 +836,6 @@ def page_faults():
     facts([("Faults handled", "Tilt, nadir, vFOV, blur, JPEG"), ("Detection", "From the image alone"),
            ("Fixes", "Re-level · inpaint · deblur · denoise"), ("Model calls", "1"),
            ("Safe default", "No fault → pass through")])
-    plain("Many 360° photos are damaged when they are taken: the camera is not level, a tripod hides the floor, the top "
-          "and bottom are cut off, the camera shakes, or the file is heavily compressed. This step spots the damage, "
-          "repairs it, and only then runs the depth model. For each model it uses only repairs that helped that model on "
-          "other datasets, and does nothing otherwise.")
     c1, c2 = st.columns([1, 1.35])
     with c1:
         st.markdown("##### How it works")
@@ -950,8 +931,6 @@ def _fault_summary():
 def page_compare():
     hero("Compare all methods", "Same scene, same frozen model (MiDaS DPT-Hybrid): how each pipeline changes the result.",
          eyebrow="Side by side", chips=["6 methods", "3 datasets", "Per-scene metrics"])
-    plain("Pick one scene and see what every correction does to it, side by side. Scenes are sorted by how much the "
-          "best method helps, so the first ones flatter the corrections; scroll the list for harder cases.")
     c1, c2 = st.columns([1.2, 1])
     with c1:
         ds_lbl = st.radio("Dataset", list(PROJ_DATASETS), key="cmp_ds", horizontal=True)
@@ -1056,9 +1035,6 @@ def page_sweeps():
          "different latitudes while the ground truth stays fixed, and watch the error.",
          eyebrow="Study · Distortion Analysis", chips=["4 frozen models", "6 datasets", "80 panoramas per dataset",
                                            "Cluster-robust bootstrap"])
-    plain("If stretching near the top and bottom really caused the errors, moving the same picture content to the "
-          "middle should fix them. We moved it there and back and watched the error. For most models it did not follow "
-          "the stretching.")
     facts([("Rotation", "Tip the scene: poles → equator"), ("Dilation", "Magnify content like near a pole"),
            ("Flip", "Same latitude, upside down"), ("Measures", "Error ratio R(L) vs latitude"),
            ("Verdict", "Mostly not a projection effect")])
@@ -1120,8 +1096,6 @@ def page_ensembles():
     hero("Gradient fusion & Möbius TTA", "Two model-agnostic inference-time corrections, tested against a "
          "compute-matched control so that gains cannot come from simple averaging.",
          eyebrow="Methods · Ensembling", chips=["MiDaS · DAP · DA360 · DA2", "Compute-matched yaw control", "No retraining"])
-    plain("Two tricks that run the same model several times on re-arranged copies of the picture and combine the "
-          "answers. A fair control runs the model just as often without the trick, so any gain is not just averaging.")
     facts([("Method 1", "Gradient-domain polar fusion"), ("Method 2", "Möbius test-time augmentation"),
            ("Control", "Yaw ensemble, same passes"), ("Helps", "MiDaS (perspective)"),
            ("Does not help", "DAP, DA360, DA2")])
@@ -1182,8 +1156,6 @@ def page_fault_catalogue():
     facts([("Worst fault", "Limited vFOV on DAP (29×)"), ("Most fragile", "DAP (best on clean input)"),
            ("Strongest fix", "Re-level: 96% recovery"), ("Per-model", "A fix can help one model, hurt another"),
            ("Excluded", "Denoise, seam inpaint, self-tilt")])
-    plain("We listed ten everyday things that go wrong when a 360° photo is taken, added each one on purpose to clean "
-          "photos, and measured how much worse each model gets. Then we tried a repair for each one.")
     section("What each fault costs", "error with the fault ÷ error on the clean image (1.0× = no cost)")
     with st.container(border=True):
         img(BENCH_FIG / "fig_fault_cost.png")
@@ -1286,8 +1258,6 @@ def page_nyc():
     facts([("Dataset", "NYC streets (DAP release)"), ("Methods", "Tangent · rotation · hybrid"),
            ("Best", "Tangent / hybrid: 0.529 → 0.48"), ("Worst", "Rotation: polar → 0.651"),
            ("Why", "Sky and far range at the top cap")])
-    plain("The same corrections, tried on real street photos from New York. Outdoors the top of the picture is mostly "
-          "sky and very distant buildings, which is hard for these models.")
     tbl = pd.DataFrame({"Whole": [0.3752, 0.3627, 0.4225, 0.3557], "Polar 60–90°": [0.5286, 0.4820, 0.6509, 0.4815],
                         "Model calls": [1, 3, 3, 5]}, index=["Baseline", "Tangent", "Rotation", "Hybrid"])
     c1, c2 = st.columns([3, 2])
@@ -1482,7 +1452,7 @@ def study_results(sid: str, tables: dict):
                 ).properties(height=240).configure_view(stroke=None)
                 st.altair_chart(ch, use_container_width=True)
     else:
-        readme = L_FU / STUDIES[sid]["dir"] / "README.md"
+        readme = FOLLOWUP_RESULTS / STUDIES[sid]["dir"] / "README.md"
         if readme.is_file():
             with st.expander("Design notes (README)"):
                 st.markdown(readme.read_text(encoding="utf-8"))
@@ -1492,9 +1462,6 @@ def page_followups():
     hero("Follow-up studies", "Six targeted experiments that stress-test the corrections: evaluation protocol, "
          "gating, distillation, view count and view geometry.", eyebrow="Studies · Follow-ups",
          chips=["DA360 · MiDaS", "PanoX · Structured3D", "Kaggle 2× T4", "Timestamped, reproducible runs"])
-    plain("Six smaller experiments that each test one assumption behind the corrections: how the error is scored, "
-          "when to switch a correction on, whether a small model can learn from a big one, how many views are needed, "
-          "and how wide each view should be.")
     sid = choose(st, "Study", STUDIES, lambda s: f"{s} · {STUDIES[s]['name']}", kind="radio", horizontal=True, key="fu_sid")
     s = STUDIES[sid]
     rep = latest_report(s["dir"])
@@ -1515,25 +1482,11 @@ def page_followups():
     nav_buttons()
 
 
-PLAIN_METHOD = {
-    "tangent": "Take the stretched top and bottom of the picture, re-draw each as a normal flat photo looking straight up "
-               "or down, let the model judge those, and paste the answer back.",
-    "rotation": "Turn the whole sphere so the top and bottom move to the middle, where nothing is stretched, run the "
-                "model there, and turn the answer back.",
-    "hybrid": "Do both of the above and, for every pixel, keep the answer from the view in which it looked least stretched.",
-    "mono360": "Cover the whole sphere with 20 small flat photos, judge each one, and stitch them into one panorama. "
-               "A method from earlier research, used here for comparison.",
-    "acgf": "Combine the pole views by matching how depth changes from pixel to pixel rather than the depth values "
-            "themselves, and fall back to the plain answer wherever the views disagree.",
-}
-
 
 def page_robustness():
     hero("Robustness checks", "Four checks from the report's appendices that test whether the main results depend "
          "on a scoring choice, a hidden cause, a loose rule or a small sample.", eyebrow="Study · Robustness",
          chips=["Appendix B–E", "External sets never used for choices", "Same frames, same code"])
-    plain("A good result should not change when you score it a little differently, use a stricter rule, or use more "
-          "data. These four checks try exactly that, and also explain the one case where the repair did not help.")
     t = st.tabs(["Two scoring rules for DA²", "Nadir + JPEG diagnosis", "Stricter selection rules", "Policy stability"])
     with t[0]:
         callout("DA² gives relative depth, so it must be rescaled before scoring. <b>Least squares</b> lets a few very "
