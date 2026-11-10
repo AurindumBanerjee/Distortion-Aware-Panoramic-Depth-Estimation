@@ -1,3 +1,5 @@
+File: Distortion-Aware-Panoramic-Depth-Estimation/artifacts/results/followups/real_nyc_20view/KAGGLE_RUN_GUIDE.md
+
 # Experiment 07 execution checklist (Kaggle T4)
 
 This guide is separate from the method description in 07_real_nyc_20view/README.md.
@@ -7,7 +9,7 @@ This guide is separate from the method description in 07_real_nyc_20view/README.
 1. Confirm the new files are in your working tree.
 2. From the repository root, stage only the experiment, manifest, audit, and index files:
 
-       git add Lokesh/README.md Lokesh/followup_experiments/README.md Lokesh/followup_experiments/RESULTS.md Lokesh/followup_experiments/07_real_nyc_20view Lokesh/followup_experiments/08_paired_panox_analysis
+       git add Lokesh/README.md experiments/followups/README.md experiments/followups/RESULTS.md experiments/followups/real_nyc_20view experiments/followups/paired_panox_analysis
 
 3. Commit and push the branch you use for Kaggle:
 
@@ -23,9 +25,9 @@ Use a GPU notebook with a T4 accelerator. Two T4s are not required; the Experime
 Clone or update the repository in /kaggle/working:
 
     %cd /kaggle/working
-    !git clone --depth 1 --branch main https://github.com/AurindumBanerjee/Distortion-Aware-Panoramic-Depth-Estimation.git
+    !git clone --depth 1 --branch integration/experiment-07-port https://github.com/AurindumBanerjee/Distortion-Aware-Panoramic-Depth-Estimation.git
 
-If the repository is already cloned, use !git pull from the correct branch instead.
+If the repository is already cloned, use !git pull from the intended branch instead.
 
 Attach the NYC dataset and MiDaS weights as Kaggle Input datasets. The NYC input root must contain both folders:
 
@@ -49,17 +51,17 @@ A standard Kaggle GPU image already has CUDA-enabled PyTorch. Do not blindly ins
 
 ## Generate / verify the manifest
 
-    !python followup_experiments/07_real_nyc_20view/scripts/create_manifest.py --dap-root "$DAP_SELECTED_ROOT"
+    !python experiments/followups/real_nyc_20view/scripts/create_manifest.py --dap-root "$DAP_SELECTED_ROOT"
 
-Expected: 1,908 paired source IDs, 182 selected frames, 91 assumed blocks. The manifest and metadata are stored under followup_experiments/07_real_nyc_20view/manifests/.
+Expected: 1,908 paired source IDs, 182 selected frames, 91 assumed blocks. The manifest and metadata are stored under experiments/followups/real_nyc_20view/artifacts/results/followups/real_nyc_20view/manifests/.
 
-The sample IDs exclude 0–74, which were used by Lokesh's earlier NYC evaluation. Keep the generated manifest unchanged for the main run. Do not choose a new sample after looking at experiment results.
+The sample IDs exclude 0–74, which were used by the earlier NYC evaluation. Keep the generated manifest unchanged for the main run. Do not choose a new sample after looking at experiment results.
 
 ## Pilot, then full run
 
 First run a small pilot containing 16 frames (eight complete assumed blocks):
 
-    !bash followup_experiments/07_real_nyc_20view/run_gpu.sh --limit 16
+    !bash experiments/followups/real_nyc_20view/run_gpu.sh --limit 16
 
 Confirm that:
 - CUDA is available.
@@ -69,7 +71,7 @@ Confirm that:
 
 Then run the locked full evaluation:
 
-    !bash followup_experiments/07_real_nyc_20view/run_gpu.sh
+    !bash experiments/followups/real_nyc_20view/run_gpu.sh
 
 It evaluates all 182 images under align-all and align-equatorial and compares baseline, two-pole tangent, and 20-view inference. It creates a timestamped output directory and a log file. Existing outputs are not overwritten.
 
