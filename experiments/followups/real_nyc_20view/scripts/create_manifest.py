@@ -1,5 +1,3 @@
-File: Distortion-Aware-Panoramic-Depth-Estimation/experiments/followups/real_nyc_20view/scripts/create_manifest.py
-
 
 
 #!/usr/bin/env python3
@@ -18,7 +16,7 @@ import os
 import re
 from pathlib import Path
 
-from pano.paths import DATA
+from pano.paths import DATA, ROOT
 
 HERE = Path(__file__).resolve().parent
 EXPERIMENT_DIR = HERE.parent

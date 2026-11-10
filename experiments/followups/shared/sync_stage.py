@@ -1,5 +1,3 @@
-File: Distortion-Aware-Panoramic-Depth-Estimation/experiments/followups/shared/sync_stage.py
-
 #!/usr/bin/env python3
 """Auto-sync script: packages and streams experiment outputs immediately after each run.
 
