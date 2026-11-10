@@ -145,11 +145,15 @@ def fig_strict_rules(thr, out, headline="0.02|0.6|0", strict="0.05|0.7|0"):
             if key in thr:
                 v = thr[key][part]
                 ax.scatter(v["harmful"], 100 * v["mean_change"], s=60, facecolor="none", edgecolor=col, lw=1.6, label=lab)
+        ax.scatter([], [], s=14, marker="o", facecolor="#546e7a", edgecolor="#546e7a", label="rule: gain + share of frames")
+        ax.scatter([], [], s=14, marker="s", facecolor="none", edgecolor="#546e7a", label="rule: … + every training set improves")
         ax.set_title(title)
-        ax.set_xlabel("harmful applied cells (count)")
-        ax.set_ylabel("mean change of AbsRel (%)")
-        ax.legend(frameon=False)
-    fig.tight_layout()
+        ax.set_xlabel("harmful cells: fix applied and error up (count)")
+        ax.set_ylabel("mean change of AbsRel over cells (%)\n(lower = better)")
+        ax.legend(frameon=False, fontsize=6.5, loc="upper right")
+    fig.text(0.01, 0.015, "Each marker is one candidate selection rule from the grid min. median gain {0, 2, 5, 10}% ×\n"
+             "min. share of improved frames {50–90}%; rings mark the headline and the stricter rule.", fontsize=6.5)
+    fig.tight_layout(rect=(0, 0.11, 1, 1))
     fig.savefig(out, dpi=200)
     plt.close(fig)
 
@@ -198,6 +202,7 @@ def fig_da2_sweeps(curves, out):
 def main(argv=None):
     ap = argparse.ArgumentParser()
     ap.add_argument("--out", default=str(RES / "figures"))
+    ap.add_argument("--no_report", action="store_true", help="do not copy the figures into Report/draft/figs/")
     a = ap.parse_args(argv)
     out = Path(a.out)
     out.mkdir(parents=True, exist_ok=True)
@@ -222,7 +227,7 @@ def main(argv=None):
     if cur:
         fig_da2_sweeps(cur, out / "fig_da2_sweeps_protocols.png")
         made.append("fig_da2_sweeps_protocols.png")
-    if DRAFT_FIGS.is_dir():
+    if DRAFT_FIGS.is_dir() and not a.no_report:
         for m in made:
             shutil.copy2(out / m, DRAFT_FIGS / m)
     print("wrote", ", ".join(made), "to", out)

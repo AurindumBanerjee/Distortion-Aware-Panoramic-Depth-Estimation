@@ -23,6 +23,7 @@ import argparse
 import json
 import re
 import sys
+import textwrap
 from pathlib import Path
 
 import numpy as np
@@ -52,6 +53,21 @@ EXTERNAL = ("stanford", "nyc")
 SETS = CORE + EXTERNAL
 SET_NAME = {"s3": "Structured3D", "panox": "PanoX", "holo_in": "Holo indoor", "holo_out": "Holo outdoor",
             "stanford": "Stanford2D3D (ext.)", "nyc": "NYC (ext.)"}
+MODEL_NAME = {"midas": "MiDaS", "dap": "DAP", "da360": "DA360", "da2": "DA²"}
+SHORT_SET = {"s3": "S3D", "panox": "PanoX", "holo_in": "Holo-in", "holo_out": "Holo-out", "stanford": "Stanford*", "nyc": "NYC*"}
+SCEN_NAME = {"clean": "clean", "tilt": "tilt", "nadir": "blocked bottom", "vfov": "top/bottom missing",
+             "yawblur": "shake (yaw blur)", "jpeg": "JPEG", "nadir+jpeg": "blocked bottom + JPEG"}
+
+
+def col_label(m, d):
+    return f"{MODEL_NAME[m]} · {SHORT_SET[d]}"
+
+
+def wrap(t, n=34):
+    return "\n".join(textwrap.wrap(t, n))
+
+
+EXT_NOTE = "* external dataset (never used for any choice); thick vertical line separates core from external columns"
 MODEL_COLOR = {"midas": "#0072B2", "dap": "#D55E00", "da360": "#009E73", "da2": "#CC79A7"}
 SET_COLOR = {"s3": "#0072B2", "panox": "#E69F00", "holo_in": "#009E73", "holo_out": "#D55E00",
              "stanford": "#56B4E9", "nyc": "#CC79A7"}
@@ -174,15 +190,21 @@ def plot_fault_cost():
                 x = med([r[f"{f.key}|none"].get(metric(f)) for r in s["rows"] if f"{f.key}|none" in r])
                 if c > 0 and np.isfinite(x):
                     M[i, j] = x / c
-        heat(ax, np.log2(np.clip(M, 0.25, 64)), list(MODELS), [f.key for f in fz],
+        heat(ax, np.log2(np.clip(M, 1, 64)), [MODEL_NAME[m] for m in MODELS], [f.key for f in fz],
              SET_NAME[d] + ("  [external]" if d in EXTERNAL else ""), "magma_r", 0, 6, fmt="{:.1f}")
         for i in range(M.shape[0]):
             for j in range(M.shape[1]):
                 if np.isfinite(M[i, j]):
                     ax.texts[i * M.shape[1] + j].set_text(f"{M[i, j]:.1f}x")
-    fig.suptitle("Cost of each capture fault: median error with the fault / error on the clean image "
-                 "(affected region for nadir / vfov, whole panorama otherwise; 1.0x = no cost)", fontsize=10)
-    fig.tight_layout()
+    fig.suptitle("Cost of each capture fault: median AbsRel with the fault ÷ AbsRel on the clean image\n"
+                 "(affected region for nadir / vfov, whole panorama otherwise; 1.0× = no cost)", fontsize=10)
+    fig.tight_layout(rect=(0, 0, 0.92, 1))
+    cax = fig.add_axes([0.935, 0.15, 0.012, 0.7])
+    from matplotlib import cm
+    from matplotlib.colors import Normalize
+    cb = fig.colorbar(cm.ScalarMappable(Normalize(0, 6), "magma_r"), cax=cax, ticks=range(7))
+    cb.set_ticklabels(["1×", "2×", "4×", "8×", "16×", "32×", "≥64×"])
+    cb.set_label("error with the fault ÷ clean error (log scale)")
     save(fig, "fig_fault_cost.png")
 
 
@@ -212,10 +234,12 @@ def plot_fix(d):
             if rel:
                 M[i, j], W[i, j] = 100 * np.median(rel), 100 * np.mean(win)
     fig, ax = plt.subplots(figsize=(max(8, 0.55 * len(cols) + 3), 0.6 * len(d.mitigations) + 2.6))
-    im = heat(ax, M, [MITIGATIONS[k][0][:44] for k in d.mitigations], labels,
+    labels = [col_label(m, ds) for m, ds in cols]
+    im = heat(ax, M, [wrap(MITIGATIONS[k][0]) for k in d.mitigations], labels,
               f"{d.title}\nmedian change in {'affected-region' if f == 'region' else 'whole-panorama'} error vs no fix "
               "(green = better) and % of frames improved", "RdYlGn_r", -100, 100, annot=W, col_groups=groups)
-    fig.colorbar(im, ax=ax, fraction=0.025, label="% change in error")
+    fig.colorbar(im, ax=ax, fraction=0.025, label="median change in AbsRel vs no fix (%)")
+    fig.text(0.01, -0.02, "Cell: median change (%) and, below it, share of frames improved. " + EXT_NOTE, fontsize=7)
     save(fig, f"fig_fix_{d.key}.png")
 
 
@@ -229,9 +253,12 @@ def plot_do_no_harm():
         for i, k in enumerate(BLIND):
             M[i, j] = 100 * med([(r[f"clean+{k}"]["all"] - r["clean"]["all"]) / r["clean"]["all"] for r in rows if f"clean+{k}" in r])
     fig, ax = plt.subplots(figsize=(max(8, 0.55 * len(cols) + 3), 3.4))
-    im = heat(ax, M, [MITIGATIONS[k][0][:40] for k in BLIND], [f"{m}·{d}" for m, d in cols],
-              "Blind fixes applied to CLEAN images: median change in error (red = harm)", "RdYlGn_r", -50, 50)
-    fig.colorbar(im, ax=ax, fraction=0.025)
+    grp = [sum(1 for c in cols if c[1] in CORE)] if any(c[1] in EXTERNAL for c in cols) else None
+    im = heat(ax, M, [wrap(MITIGATIONS[k][0]) for k in BLIND], [col_label(m, d) for m, d in cols],
+              "Blind fixes applied to CLEAN images: median change in whole-panorama AbsRel (red = harm, green = gain)",
+              "RdYlGn_r", -50, 50, col_groups=grp)
+    fig.colorbar(im, ax=ax, fraction=0.025, label="median change in AbsRel (%)")
+    fig.text(0.01, -0.22, EXT_NOTE + ". Colour is clipped at ±50%; the number in each cell is the exact value.", fontsize=7)
     save(fig, "fig_do_no_harm.png")
 
 
@@ -252,13 +279,16 @@ def plot_correction():
                 G[i, j] = 100 * np.median((x[ok] - u[ok]) / u[ok])
                 B[i, j] = 100 * np.mean(x[ok] > u[ok] * 1.01)
     fig, axs = plt.subplots(1, 2, figsize=(2 * max(7, 0.5 * len(cols) + 3), 0.5 * len(scen) + 2.8))
-    labels = [f"{m}·{d}" for m, d in cols]
+    labels = [col_label(m, d) for m, d in cols]
     grp = [sum(1 for c in cols if c[1] in CORE)] if any(c[1] in EXTERNAL for c in cols) and any(c[1] in CORE for c in cols) else None
-    im = heat(axs[0], G, scen, labels, "End-to-end correction: median change in error vs uncorrected (green = better)",
+    rows = [SCEN_NAME.get(s, s) for s in scen]
+    im = heat(axs[0], G, rows, labels, "End-to-end correction: median change in AbsRel vs uncorrected (green = better)",
               "RdYlGn_r", -60, 60, col_groups=grp)
-    fig.colorbar(im, ax=axs[0], fraction=0.03)
-    im = heat(axs[1], B, scen, labels, "Share of frames made worse by more than 1% (%)", "Reds", 0, 100, fmt="{:.0f}", col_groups=grp)
-    fig.colorbar(im, ax=axs[1], fraction=0.03)
+    fig.colorbar(im, ax=axs[0], fraction=0.03, label="median change in AbsRel (%)")
+    im = heat(axs[1], B, rows, labels, "Share of frames made worse by more than 1%", "Reds", 0, 100, fmt="{:.0f}", col_groups=grp)
+    fig.colorbar(im, ax=axs[1], fraction=0.03, label="frames made worse (%)")
+    fig.text(0.01, -0.03, "AbsRel on the affected region for blocked bottom / top-bottom missing, whole panorama otherwise. "
+             + EXT_NOTE + ". Colour clipped at ±60%.", fontsize=7)
     save(fig, "fig_correction_gain.png")
 
 
@@ -285,12 +315,17 @@ def plot_sweeps():
                             color=SET_COLOR[d], ls="--" if d in EXTERNAL else "-", label=SET_NAME[d])
             ax.axhline(1.0, color="k", lw=0.8)
             ax.grid(True, ls=":", alpha=0.5)
-            ax.set_title(m, fontsize=9)
-            ax.set_xlabel("Seen latitude |phi| (deg)", fontsize=8)
-        axs[0][0].set_ylabel("Error ratio E(L) / E_ref(L) (dimensionless)", fontsize=8)
-        axs[0][0].legend(fontsize=6)
-        fig.suptitle(f"{mode} sweep: error ratio vs latitude (dashed = external datasets; dilation for metric DAP also moves scale, "
-                     "see the local estimator in SWEEP_*.md)", fontsize=8)
+            ax.set_title(MODEL_NAME[m], fontsize=9)
+            ax.set_xlabel("latitude at which the content is seen, |φ| (°)", fontsize=8)
+            ax.set_xlim(0, 90)
+        axs[0][0].set_ylabel("error ratio E(L) / E(equator)\n(1 = no extra error; >1 = worse)", fontsize=8)
+        axs[0][-1].legend(fontsize=7, title="dataset (dashed = external)", title_fontsize=7, loc="best")
+        what = {"rotation": "content rotated from the equator to latitude L",
+                "dilation": "content magnified as it would be at latitude L (stays upright)",
+                "flip": "panorama turned upside down, content seen at latitude L"}[mode]
+        fig.suptitle(f"{mode.capitalize()} sweep: {what}. Same pixels, same ground truth; error relative to the "
+                     "equator-seen pass (global alignment).", fontsize=9)
+        fig.tight_layout()
         save(fig, f"fig_sweeps_{mode}.png")
 
 
@@ -343,7 +378,17 @@ def visual_study(max_frames):
                         f"{m}_{ds}_{d.key}_{fid[-24:]}.png", "visual")
 
 
+def _gt_info(ds, fid, h):
+    p = FIG / "example_gt.json"
+    if not p.is_file():
+        return None
+    return json.loads(p.read_text()).get(ds, {}).get(fid, {}).get(str(h))
+
+
 def visual_models(max_frames):
+    """Same frame and fault, all models stacked; colour bars in metres (depth) and AbsRel (error), latitude axis."""
+    from matplotlib import cm
+    from matplotlib.colors import LogNorm, Normalize
     for ds in SETS:
         have = [m for m in MODELS if study(m, ds)]
         if len(have) < 2:
@@ -354,32 +399,61 @@ def visual_models(max_frames):
                 rows = []
                 for m in have:
                     names = study(m, ds)["examples"].get(fid)
-                    if not names:
-                        continue
                     folder = RES / f"study_{m}_{ds}_img"
-                    if not folder.is_dir():
-                        continue  # images live where the study ran; nothing to draw without them
+                    if not names or not folder.is_dir():
+                        continue
                     rows.append((m, folder, names, next((r.get(f"{d.key}|best_example") for r in study(m, ds)["rows"] if r["id"] == fid), None)))
                 if len(rows) < 2:
                     continue
-                cols = 5
-                fig, axs = plt.subplots(len(rows), cols, figsize=(3.0 * cols, 1.7 * len(rows) + 0.8), squeeze=False)
+                fig, axs = plt.subplots(len(rows), 5, figsize=(17, 1.5 * len(rows) + 1.0), squeeze=False,
+                                        gridspec_kw={"wspace": 0.5})
                 for i, (m, folder, names, best) in enumerate(rows):
-                    items = [("degraded input", names.get(f"{d.key}_rgb")), ("depth, degraded", names.get(f"{d.key}_none")),
-                             ("depth, fixed" + (f" ({MITIGATIONS[best][0][:22]})" if best else ""), names.get(f"{d.key}_best")),
-                             ("error, degraded", names.get(f"err_{d.key}_none")), ("error, fixed", names.get(f"err_{d.key}_best"))]
-                    for j, (t, nm) in enumerate(items):
+                    items = [("input with the fault", names.get(f"{d.key}_rgb"), "rgb"),
+                             ("depth, no fix", names.get(f"{d.key}_none"), "depth"),
+                             ("depth, best fix" + (f": {best}" if best else ""), names.get(f"{d.key}_best"), "depth"),
+                             ("AbsRel, no fix", names.get(f"err_{d.key}_none"), "err"),
+                             ("AbsRel, best fix", names.get(f"err_{d.key}_best"), "err")]
+                    info = None
+                    for j, (t, nm, kind) in enumerate(items):
                         ax = axs[i][j]
                         im = read(folder, nm) if nm else None
-                        if im is not None:
-                            ax.imshow(im)
-                        ax.axis("off")
-                        if i == 0:
-                            ax.set_title(t, fontsize=7)
+                        if im is None:
+                            ax.axis("off")
+                            continue
+                        info = info or _gt_info(ds, fid, im.shape[0])
+                        ax.imshow(im, extent=[-180, 180, -90, 90], aspect="equal")  # 360 x 180 degrees: 2:1 panel
+                        for y in (60, -60):
+                            ax.axhline(y, color="white", ls="--", lw=0.7)
+                        ax.set_xticks([])
+                        ax.set_yticks([-90, -60, 0, 60, 90] if j == 0 else [])
+                        ax.tick_params(labelsize=6, length=2)
+                        ax.set_title(t if i == 0 else "", fontsize=8, fontweight="bold", loc="left")
                         if j == 0:
-                            ax.text(-0.02, 0.5, m, transform=ax.transAxes, ha="right", va="center", fontsize=9)
-                fig.suptitle(f"{SET_NAME[ds]} · {d.title} · frame {fid}", fontsize=9)
-                fig.tight_layout()
+                            ax.set_ylabel(f"{MODEL_NAME[m]}\nlatitude (°)", fontsize=8)
+                        if kind == "depth" and j == 2:
+                            if info:
+                                cb = fig.colorbar(cm.ScalarMappable(LogNorm(info["lo"], info["hi"]), "turbo_r"), ax=axs[i][1:3].tolist(),
+                                                  fraction=0.02, pad=0.01)
+                                cb.set_label("depth (m)", fontsize=7)
+                                tk = [v for v in (0.5, 1, 2, 3, 5, 10, 20, 50) if info["lo"] <= v <= info["hi"]]
+                                cb.set_ticks(tk)
+                                cb.set_ticklabels([f"{v:g}" for v in tk])
+                                cb.minorticks_off()
+                            else:
+                                cb = fig.colorbar(cm.ScalarMappable(Normalize(0, 1), "turbo_r"), ax=axs[i][1:3].tolist(),
+                                                  fraction=0.02, pad=0.01, ticks=[0, 1])
+                                cb.set_ticklabels(["near", "far"])
+                            cb.ax.tick_params(labelsize=6)
+                        if kind == "err" and j == 4:
+                            cb = fig.colorbar(cm.ScalarMappable(Normalize(0, 0.5), "magma"), ax=axs[i][3:5].tolist(),
+                                              fraction=0.02, pad=0.01, ticks=[0, 0.25, 0.5])
+                            cb.set_ticklabels(["0", "0.25", "≥0.5"])
+                            cb.set_label("AbsRel", fontsize=7)
+                            cb.ax.tick_params(labelsize=6)
+                fig.suptitle(f"{SET_NAME[ds]} · {d.title} · frame {fid}", fontsize=10, fontweight="bold", x=0.01, ha="left")
+                fig.text(0.01, 0.003, "Dashed lines: ±60° latitude. Depth colour scale: 2nd–98th percentile of the frame's ground "
+                         "truth (log). MiDaS / DA360 / DA² after a scale (and shift) fit, DAP in raw metres. "
+                         "Grey: no valid ground truth.", fontsize=7, color="#444")
                 save(fig, f"{ds}_{d.key}_{fid[-24:]}.png", "visual_models")
 
 

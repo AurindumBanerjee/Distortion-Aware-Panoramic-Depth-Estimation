@@ -72,20 +72,27 @@ def figure(summary: dict, path: Path, title: str):
     fig, ax = plt.subplots(1, 2, figsize=(10, 3.6))
     for est, ls in (("global", "-"), ("local", "--")):
         d = summary[f"de_{est}"]
-        ax[0].plot(c, d["mean"], ls, label=f"dE {est}")
+        ax[0].plot(c, d["mean"], ls, label={"global": "ΔE, one global alignment (headline)",
+                                             "local": "ΔE, alignment per latitude band"}[est])
         if est == "global":
             ax[0].fill_between(c, d["ci_lo"], d["ci_hi"], alpha=0.25)
-    ax[0].plot(c, summary["floor"]["mean"], ":", label="resampling floor")
+    ax[0].plot(c, summary["floor"]["mean"], ":", label="resampling floor (error from re-projection alone)")
     ax[0].axhline(0, color="k", lw=0.5)
     if summary["onset_global"] is not None:
-        ax[0].axvline(summary["onset_global"], color="r", lw=1, label="onset")
-    ax[0].set_xlabel("latitude at which content is seen (deg)")
-    ax[0].set_ylabel("excess AbsRel vs equator-seen")
-    ax[0].legend(fontsize=8)
-    ax[1].plot(c, summary["ratio_global"], "-o", ms=3)
+        ax[0].axvline(summary["onset_global"], color="r", lw=1, label="onset latitude")
+    ax[0].set_xlabel("latitude at which the content is seen, |φ| (°)")
+    ax[0].set_ylabel("excess AbsRel ΔE(L) vs the equator-seen pass\n(0 = no extra error)")
+    ax[0].set_title("excess error (band = 95% cluster bootstrap CI)", fontsize=9)
+    ax[0].legend(fontsize=7)
+    ax[1].plot(c, summary["ratio_global"], "-o", ms=3, label="E(L) / E(equator), global alignment")
     ax[1].axhline(1, color="k", lw=0.5)
-    ax[1].set_xlabel("seen latitude (deg)")
-    ax[1].set_ylabel("error ratio E(L) / E_ref")
+    ax[1].set_xlabel("latitude at which the content is seen, |φ| (°)")
+    ax[1].set_ylabel("error ratio (1 = no extra error)")
+    ax[1].set_title("error ratio", fontsize=9)
+    ax[1].legend(fontsize=7)
+    for a_ in ax:
+        a_.set_xlim(0, 90)
+        a_.grid(True, ls=":", alpha=0.5)
     fig.suptitle(title, fontsize=10)
     fig.tight_layout()
     fig.savefig(path, dpi=130)
