@@ -32,6 +32,8 @@ STAGE_MAP = {
     "03_panda_style_finetuning": "03_panda_style_finetuning",
     "04_mono360_20view": "04_mono360_20view",
     "05_fov_resolution_sweep": "05_fov_resolution_sweep",
+    "07": "07_real_nyc_20view",
+    "07_real_nyc_20view": "07_real_nyc_20view",
 }
 
 
