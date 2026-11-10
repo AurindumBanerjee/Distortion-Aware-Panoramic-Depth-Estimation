@@ -1,0 +1,6 @@
+20-view planes: 20; scenes: 16; model: midas_dpt_hybrid_384
+[5/16] ClothingStore_0079; mono360 solve 9.9s
+[10/16] ClothingStore_0141; mono360 solve 10.0s
+[15/16] ClothingStore_0186; mono360 solve 9.8s
+[16/16] ClothingStore_0187; mono360 solve 10.1s
+Saved /kaggle/working/Lokesh/followup_experiments/04_mono360_20view/outputs/run_20261105_023701/REPORT.md
