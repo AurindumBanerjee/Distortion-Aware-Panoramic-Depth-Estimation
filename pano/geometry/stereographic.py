@@ -28,7 +28,7 @@ most 2x magnified and never sheared.
 
 Depth semantics. A learned model infers distance partly from apparent size. A region magnified
 by k looks k times closer (the scaling law used by Depth Any Camera, Guo et al. 2025:
-Z' = Z u / u'), so we model its prediction as range / k. `magnification` returns k per pixel so
+Z' = Z u / u'), so the prediction is modelled as range / k. `magnification` returns k per pixel so
 that callers can undo it. Whether the law holds for a given model is an empirical question; the
 ablation `acgf|nolaw` switches it off.
 """

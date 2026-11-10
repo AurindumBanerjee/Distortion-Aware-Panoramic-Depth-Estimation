@@ -23,9 +23,8 @@ from typing import Dict
 import numpy as np
 import torch
 
-from .erp_projection import rotate_erp, sample_erp
-from .spherical import (angular_distance, erp_to_sphere, lonlat_to_xyz, rotation_from_ypr, sphere_to_erp,
-                        xyz_to_lonlat)
+from .erp_projection import rotate_erp
+from .spherical import (angular_distance, erp_to_sphere, lonlat_to_xyz, rotation_from_ypr, sphere_to_erp)
 from .tangent_plane import (erp_to_tangent, generate_tangent_plane, tangent_to_erp, tangent_world_dirs,
                             z_to_range)
 

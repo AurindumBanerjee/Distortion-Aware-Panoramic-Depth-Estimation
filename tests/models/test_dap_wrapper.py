@@ -1,5 +1,4 @@
 """Plumbing test for DAPWrapper against a stand-in repository with DAP's output contract."""
-import os
 
 import numpy as np
 import torch

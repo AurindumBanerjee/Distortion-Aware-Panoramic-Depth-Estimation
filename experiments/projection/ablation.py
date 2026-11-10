@@ -8,9 +8,9 @@ import numpy as np
 import pandas as pd
 
 from pano.inference.pipeline import DistortionAwareInference
-from pano.visualization.visualize import color_for, plot_latitude_profiles, plot_runtime_tradeoff
+from pano.visualization.visualize import plot_latitude_profiles, plot_runtime_tradeoff
 
-from .common import BANDS, method_table, write_markdown_table
+from .common import method_table, write_markdown_table
 
 COLS = ["abs_rel", "rmse", "d1", "abs_rel_0-15", "abs_rel_30-45", "abs_rel_45-60", "abs_rel_60-75", "abs_rel_75-90",
         "abs_rel_polar_60_90", "model_calls", "runtime_ratio"]

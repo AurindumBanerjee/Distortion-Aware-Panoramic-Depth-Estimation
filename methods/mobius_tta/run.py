@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
-"""Runner for Method 2: Test-Time Möbius Augmentation & Equator-to-Pole Ensembling.
+"""Runner for test-time Möbius augmentation and equator-to-pole ensembling.
 
-Independent execution script.
+Configs are read from configs/benchmark/; outputs go to artifacts/results/benchmark/mobius_tta/.
 Usage:
-    python run.py [--config config.yaml] [--num_scenes 6] [--fusion_mode distortion_weighted]
+    python -m methods.mobius_tta.run [--config config.yaml] [--num_scenes 6] [--fusion_mode distortion_weighted]
 """
 from __future__ import annotations
 
@@ -23,7 +23,9 @@ import numpy as np
 import torch
 import yaml
 
-from pano.paths import DATA, ROOT, THIRD_PARTY, WEIGHTS
+from pano.paths import BENCHMARK_RESULTS, LOGS, ROOT
+
+CONFIG_DIR = ROOT / "configs" / "benchmark"
 from experiments.benchmark.tracker import BestModelTracker
 from pano.datasets.synthetic import _texture_bank, random_scene, render_erp
 from pano.evaluation.latitude_analysis import per_band_metrics
@@ -165,7 +167,7 @@ def main():
                         help="Suffix appended to the output folder and tracker benchmark name (keeps earlier results)")
     args = parser.parse_args()
 
-    cfg_path = SCRIPT_DIR / args.config
+    cfg_path = Path(args.config) if Path(args.config).is_absolute() else CONFIG_DIR / args.config
     if not cfg_path.exists():  # never fall back silently: a typo would run a different model/dataset
         raise FileNotFoundError(f"Config not found: {cfg_path}")
 
@@ -188,8 +190,8 @@ def main():
     if args.fusion_mode:
         cfg["mobius_tta"]["fusion_mode"] = args.fusion_mode
 
-    out_dir = SCRIPT_DIR / cfg["evaluation"].get("output_dir", "outputs")
-    log_dir = SCRIPT_DIR / cfg["evaluation"].get("log_dir", "logs")
+    out_dir = BENCHMARK_RESULTS / "mobius_tta" / cfg["evaluation"].get("output_dir", "outputs")
+    log_dir = LOGS / "mobius_tta" / cfg["evaluation"].get("log_dir", "logs")
     out_dir.mkdir(parents=True, exist_ok=True)
     log_dir.mkdir(parents=True, exist_ok=True)
 

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Evaluate the distilled student against its frozen DA360 teacher on held-out PanoX GT."""
 from __future__ import annotations
-import argparse, csv, json, sys, time
+import argparse, csv, json, time
 from pathlib import Path
 import cv2
 import numpy as np

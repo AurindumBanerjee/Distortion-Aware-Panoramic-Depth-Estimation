@@ -1,5 +1,4 @@
 """Distortion catalogue: geometry of the degradations and exactness of the mitigations on a perfect model."""
-from pathlib import Path
 
 import numpy as np
 import pytest

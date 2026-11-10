@@ -1,7 +1,6 @@
 """scripts/check_submission.py on a synthetic results tree."""
 import json
 import numpy as np
-from pathlib import Path
 
 from scripts.analysis import check_submission as cs
 

@@ -6,11 +6,9 @@ These pin down the bugs found in the first GPU run (Nov 2026):
   * tangent alignment returned range and was fused against disparity
   * equatorial-only alignment + unbounded clip exploded polar depth
 """
-import os
 import sys
 
 import pytest
-from pathlib import Path
 
 import numpy as np
 

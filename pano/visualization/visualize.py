@@ -9,7 +9,7 @@ blue/orange map with a neutral grey midpoint. Depth maps use the perceptually un
 from __future__ import annotations
 
 import os
-from typing import Dict, List, Optional, Sequence
+from typing import Dict, Optional, Sequence
 
 import matplotlib
 

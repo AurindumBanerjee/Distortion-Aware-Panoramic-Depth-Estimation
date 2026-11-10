@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import json
-from pathlib import Path
 
 import matplotlib
 matplotlib.use("Agg")
@@ -44,7 +43,7 @@ def plot_exp01() -> None:
         ax.grid(axis="y", alpha=0.25)
     axes[0].set_ylabel("Median AbsRel (lower is better)")
     axes[1].legend(frameon=False)
-    fig.suptitle("Experiment 01 — DA360 alignment sensitivity")
+    fig.suptitle("Experiment 01: DA360 alignment sensitivity")
     fig.tight_layout()
     fig.savefig(FIGURES / "exp01_scale_vs_affine.png", dpi=180, bbox_inches="tight")
     plt.close(fig)
@@ -68,7 +67,7 @@ def plot_exp04() -> None:
         ax.grid(axis="y", alpha=0.25)
     axes[0].set_ylabel("Median AbsRel (lower is better)")
     axes[1].legend(frameon=False)
-    fig.suptitle("Experiment 04 — 20-view method vs baseline and two-pole tangent")
+    fig.suptitle("Experiment 04: 20-view method vs baseline and two-pole tangent")
     fig.tight_layout()
     fig.savefig(FIGURES / "exp04_20view_comparison.png", dpi=180, bbox_inches="tight")
     plt.close(fig)
@@ -89,7 +88,7 @@ def plot_exp05() -> None:
         ax.grid(alpha=0.25)
     axes[0].set_ylabel("Median AbsRel at 75–90° (lower is better)")
     axes[1].legend(title="Tangent resolution", frameon=False)
-    fig.suptitle("Experiment 05 — FOV × tangent resolution sensitivity")
+    fig.suptitle("Experiment 05: FOV × tangent resolution sensitivity")
     fig.tight_layout()
     fig.savefig(FIGURES / "exp05_fov_resolution_sweep.png", dpi=180, bbox_inches="tight")
     plt.close(fig)

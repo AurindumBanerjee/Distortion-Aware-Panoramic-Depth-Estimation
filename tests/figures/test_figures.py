@@ -1,6 +1,5 @@
 """make_figures.py draws every figure from a synthetic results folder (no model, no GPU)."""
 import json
-from pathlib import Path
 
 import numpy as np
 

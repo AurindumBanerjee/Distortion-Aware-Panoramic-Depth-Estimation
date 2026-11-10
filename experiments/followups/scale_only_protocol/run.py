@@ -4,7 +4,6 @@ from __future__ import annotations
 
 import argparse
 import csv
-import sys
 import time
 from pathlib import Path
 
@@ -108,7 +107,7 @@ def main():
     })
 
     report = [
-        "# Experiment 1 — DA360 scale-only evaluation protocol", "",
+        "# Experiment 1: DA360 scale-only evaluation protocol", "",
         f"- Scenes: {len(ds)}",
         f"- Model: {model.name}",
         "- Primary comparison: scale-only disparity fit vs affine disparity fit",

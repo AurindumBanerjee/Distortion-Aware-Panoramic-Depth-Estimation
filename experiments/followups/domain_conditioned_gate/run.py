@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Leave-one-environment-out calibration of distortion-aware rotation gates on PanoX."""
 from __future__ import annotations
-import argparse, csv, sys, time
+import argparse, csv, time
 from pathlib import Path
 import numpy as np
 import torch
@@ -116,7 +116,7 @@ def main():
     save_json(out / "summary.json", {"experiment": "02_domain_conditioned_gate",
               "model": model.describe(), "environment": environment_info(), "n_environments": len(envs),
               "folds": folds, "aggregate": aggregate})
-    lines = ["# Experiment 2 — Leave-one-environment-out domain gate", "",
+    lines = ["# Experiment 2: Leave-one-environment-out domain gate", "",
              f"- Independent PanoX environments: {len(envs)}",
              f"- Candidate thresholds: {thresholds}",
              f"- Gate fallback: baseline when best calibration gain < {min_gain:.2%}", "",

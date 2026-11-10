@@ -1,7 +1,6 @@
 """Capture-aware correction front end (distortions/correction.py) and its policy selection."""
 import json
 import sys
-from pathlib import Path
 
 import numpy as np
 

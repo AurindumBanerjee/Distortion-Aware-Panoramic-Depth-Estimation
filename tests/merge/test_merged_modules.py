@@ -1,18 +1,14 @@
 """Union regression test validating imports, invariants, and merged components."""
 from __future__ import annotations
 
-import math
 import sys
-from pathlib import Path
 from unittest.mock import patch
 
 import numpy as np
-import pytest
-import torch
 
-from pano.paths import ROOT, ARTIFACTS, DATA, CONFIGS, REPORT
+from pano.paths import ROOT, CONFIGS, REPORT
 from pano.geometry.spherical import erp_lonlat_grid, latitude_map
-from pano.models.depth_model import DepthModelWrapper, EncodedDepthOracle, OutputSpec
+from pano.models.depth_model import DepthModelWrapper, EncodedDepthOracle
 from pano.geometry.tangent_plane import (
     generate_tangent_plane,
     sample_view_on_erp,
@@ -54,7 +50,7 @@ def test_methods_modules_import():
     import methods.capture_faults
     import methods.mobius_tta
     import methods.polar_fusion
-    import methods.projection
+    import methods.projection  # noqa: F401
     from methods.capture_faults.catalogue import CATALOGUE
     assert len(CATALOGUE) >= 8
 
@@ -62,8 +58,8 @@ def test_methods_modules_import():
 def test_experiments_modules_import():
     import experiments.benchmark
     import experiments.followups
-    import experiments.projection
-    from experiments.benchmark.tracker import BestModelTracker
+    import experiments.projection  # noqa: F401
+    from experiments.benchmark.tracker import BestModelTracker  # noqa: F401
     from experiments.projection.common import load_config
     cfg = load_config("configs/projection/default.yaml")
     assert "model" in cfg

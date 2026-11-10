@@ -1,6 +1,5 @@
 """Same-domain split, policy sets of run_correction and the end-to-end comparison."""
 import json
-from pathlib import Path
 
 from scripts.analysis.policy_e2e_compare import compare
 from scripts.analysis.same_domain_analysis import evaluate, fold_of

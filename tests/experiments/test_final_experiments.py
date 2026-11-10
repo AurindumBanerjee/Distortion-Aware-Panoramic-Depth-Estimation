@@ -1,5 +1,4 @@
 """Threshold sweep (stricter do-no-harm rules) and the nadir + JPEG diagnosis ladder."""
-from pathlib import Path
 
 import numpy as np
 

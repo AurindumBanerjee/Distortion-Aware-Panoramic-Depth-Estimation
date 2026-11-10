@@ -17,7 +17,6 @@ import os
 import numpy as np
 import pandas as pd
 
-from pano.evaluation.metrics import to_metric_depth
 from experiments.common import load_config, make_dataset, make_model
 from pano.geometry.spherical import latitude_map
 from pano.inference.pipeline import DistortionAwareInference, MethodConfig

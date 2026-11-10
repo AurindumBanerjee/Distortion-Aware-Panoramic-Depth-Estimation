@@ -9,7 +9,7 @@ from pano.geometry.erp_projection import rotate_erp, sample_erp
 from pano.geometry.spherical import (erp_to_sphere, lonlat_to_xyz, rotation_from_ypr, sphere_to_erp, xyz_to_lonlat)
 from pano.geometry.tangent_plane import (erp_to_tangent, generate_tangent_plane, polar_tangent_layout, range_to_z,
                                     tangent_to_erp, z_to_range)
-from pano.geometry.validation import TEST_CENTRES, image_level, point_level, smooth_field
+from pano.geometry.validation import image_level, point_level, smooth_field
 
 
 def test_pixel_sphere_roundtrip():

@@ -1,5 +1,4 @@
 """scripts/policy_comparison.py: which sets train each policy, and the evaluation of the chosen fix."""
-from pathlib import Path
 
 from scripts.analysis.policy_comparison import ALL_SETS, evaluate, train_sets
 

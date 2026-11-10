@@ -16,7 +16,7 @@ import os
 import re
 from pathlib import Path
 
-from pano.paths import ROOT, DATA
+from pano.paths import DATA
 
 HERE = Path(__file__).resolve().parent
 EXPERIMENT_DIR = HERE.parent

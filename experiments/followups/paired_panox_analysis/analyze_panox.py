@@ -169,7 +169,7 @@ def main() -> None:
         writer.writerows(report_rows)
 
     lines = [
-        "# Experiment 08 — Direct paired PanoX significance audit",
+        "# Experiment 08: Direct paired PanoX significance audit",
         "",
         "- Source: saved Experiment 04 per-scene results; no GPU inference is run.",
         "- Methods: baseline, two-pole tangent, and 20-view icosahedral inference.",

@@ -26,7 +26,7 @@ import yaml
 
 SCRIPT_DIR = Path(__file__).resolve().parent
 
-from pano.paths import ROOT, BENCHMARK_RESULTS, LOGS, DATA, WEIGHTS, THIRD_PARTY
+from pano.paths import ROOT
 
 from experiments.benchmark.tracker import BestModelTracker
 from pano.datasets.synthetic import _texture_bank, random_scene, render_erp

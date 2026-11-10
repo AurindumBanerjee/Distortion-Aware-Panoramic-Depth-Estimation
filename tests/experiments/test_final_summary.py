@@ -1,5 +1,4 @@
 """scripts/final_summary.py: per-cell statistics of the correction results."""
-from pathlib import Path
 
 import numpy as np
 

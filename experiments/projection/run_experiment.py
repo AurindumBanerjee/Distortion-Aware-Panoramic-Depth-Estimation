@@ -19,12 +19,11 @@ import time
 import numpy as np
 import pandas as pd
 
-from pano.paths import ROOT
 
 from experiments.projection import ablation, rotation_ensemble, tangent_plane  # noqa: E402
 from experiments.projection import acgf as exp_acgf  # noqa: E402
 from experiments.projection import baseline as exp_baseline  # noqa: E402
-from experiments.projection.common import (BANDS, MAIN_TAGS, build_plan, environment_info, load_config,  # noqa: E402
+from experiments.projection.common import (MAIN_TAGS, build_plan, environment_info, load_config,  # noqa: E402
                                 make_dataset, make_model, method_table, resolve_eval_align, run_plan, seed_everything, write_markdown_table)
 
 ALL_STAGES = ["geometry", "main", "reports", "control", "resolution", "timing", "qualitative"]

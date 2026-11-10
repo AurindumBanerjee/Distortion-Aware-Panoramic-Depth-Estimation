@@ -11,7 +11,6 @@ import argparse
 import csv
 import hashlib
 import re
-import sys
 import time
 from datetime import datetime
 from pathlib import Path
@@ -339,7 +338,7 @@ def main() -> None:
     save_json(out / "summary.json", metadata)
 
     lines = [
-        "# Experiment 07 — Real NYC transfer: two-pole vs 20-view inference",
+        "# Experiment 07: Real NYC transfer: two-pole vs 20-view inference",
         "",
         f"- Scenes: **{len(dataset)}**; assumed 20-ID clusters: **{len(cluster_sizes)}**.",
         f"- Model: frozen **{model.name}**; evaluation grid: 512 x 1024.",

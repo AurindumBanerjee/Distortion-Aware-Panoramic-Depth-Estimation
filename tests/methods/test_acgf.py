@@ -17,8 +17,7 @@ from pano.evaluation.latitude_analysis import per_band_metrics
 from pano.evaluation.metrics import to_metric_depth
 from experiments.projection.common import build_plan, load_config
 from pano.geometry.spherical import erp_to_sphere
-from pano.geometry.stereographic import (erp_to_stereo, generate_stereo_view, magnification, stereo_geometry_on_erp,
-                                    stereo_to_erp, stereo_world_dirs)
+from pano.geometry.stereographic import (erp_to_stereo, generate_stereo_view, magnification, stereo_to_erp, stereo_world_dirs)
 from pano.geometry.validation import smooth_field
 from pano.inference.pipeline import DistortionAwareInference, MethodConfig
 from pano.models.depth_model import EncodedDepthOracle, OutputSpec, encode_depth_as_image

@@ -16,11 +16,11 @@ import os
 import numpy as np
 import pandas as pd
 
-from pano.evaluation.latitude_analysis import named_band_masks, onset_latitude
+from pano.evaluation.latitude_analysis import onset_latitude
 from pano.evaluation.metrics import error_maps
 from pano.geometry.erp_projection import rotate_erp, rotated_latitude
 from pano.geometry.spherical import latitude_map, rotation_from_ypr
-from pano.visualization.visualize import SERIES, plot_error_heatmap, plot_latitude_profiles
+from pano.visualization.visualize import SERIES, plot_latitude_profiles
 
 
 def latitude_report(ev, out_dir: str, method: str = "baseline", tag: str = "align-all"):

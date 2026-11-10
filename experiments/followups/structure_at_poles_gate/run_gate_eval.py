@@ -18,7 +18,7 @@ calibration slice for gate.calibrate_thresholds(), then extend to LOEO the
 same way run.py extended 02's pilot to the full environment split.
 """
 from __future__ import annotations
-import argparse, csv, sys, time
+import argparse, csv, time
 from pathlib import Path
 
 import numpy as np
@@ -145,7 +145,7 @@ def main():
               "model": model.describe(), "environment": environment_info(),
               "n_scenes": len(scene_rows), "aggregate": aggregate, "fraction_gate_applied": frac_applied})
 
-    lines = ["# Experiment 6 — Structure-at-the-poles gate", "",
+    lines = ["# Experiment 6: Structure-at-the-poles gate", "",
              f"- Scenes: {len(scene_rows)}",
              f"- Gate applied (correction used) on north cap: {frac_applied['north']:.1%} of scenes",
              f"- Gate applied (correction used) on south cap: {frac_applied['south']:.1%} of scenes", "",

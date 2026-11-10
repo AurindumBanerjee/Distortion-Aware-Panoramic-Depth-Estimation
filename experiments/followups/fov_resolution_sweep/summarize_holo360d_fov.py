@@ -139,7 +139,7 @@ def main():
         }
 
     report = [
-        "# Experiment 05 cross-dataset validation — Holo360D indoor",
+        "# Experiment 05 cross-dataset validation: Holo360D indoor",
         "",
         f"- Scenes: {result['n_scenes']}",
         f"- Independent scene clusters: {result['n_scene_clusters']}",

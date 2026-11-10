@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Compare 20-view icosahedral 360MonoDepth-style inference with two polar tangent views."""
 from __future__ import annotations
-import argparse, csv, sys, time
+import argparse, csv, time
 from pathlib import Path
 import numpy as np
 import torch
@@ -94,7 +94,7 @@ def main():
     save_json(out / "summary.json", {"experiment": "04_mono360_20view", "model": model.describe(),
               "environment": environment_info(), "n_scenes": len(ds), "summary": summary,
               "paired_cluster_bootstrap_vs_baseline": paired, "per_scene_runtime": {s: per_scene[s]["runtime"] for s in per_scene}})
-    lines = ["# Experiment 4 — 20-view full-sphere inference", "",
+    lines = ["# Experiment 4: 20-view full-sphere inference", "",
              "The 20-view system uses icosahedral tangent views, per-view disparity standardisation,",
              "deformable scale/offset alignment over overlapping views, and frustum blending.",
              "It is compared against the baseline and the existing two-pole tangent correction.", ""]

@@ -1,8 +1,6 @@
 """Shared experiment machinery: config loading, seeding, the method plan, the evaluation loop."""
 from __future__ import annotations
 
-import copy
-import json
 import os
 import platform
 import random
@@ -253,7 +251,6 @@ def run_plan(cfg: dict, plan, model, tmodel, dataset, out_dir: str, tag_prefix: 
     dai = DistortionAwareInference(model, tmodel, batch_size=cfg["inference"]["batch_size"])
     heat = {}
     heat_n = {}
-    tag_of = {mc.name: tags for tags, mc in plan}
     qdir = os.path.join(out_dir, "predictions")
     for i, s in enumerate(dataset):
         t0 = time.time()

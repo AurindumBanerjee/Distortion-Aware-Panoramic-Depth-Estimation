@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """FOV x tangent-resolution sweep for polar tangent correction (DAC-motivated)."""
 from __future__ import annotations
-import argparse, csv, sys, time
+import argparse, csv, time
 from pathlib import Path
 import numpy as np
 import torch
@@ -101,7 +101,7 @@ def main():
     save_json(out / "summary.json", {"experiment": "05_fov_resolution_sweep", "model": model.describe(),
               "environment": environment_info(), "n_scenes": len(ds), "configs": combos,
               "summary": summary, "paired_cluster_bootstrap_vs_baseline": paired})
-    lines = ["# Experiment 5 — FOV and tangent resolution sweep", "",
+    lines = ["# Experiment 5: FOV and tangent resolution sweep", "",
              "This probes how view geometry and sampling density affect inference-time polar correction.",
              "It is DAC-motivated, but uses the current MiDaS perspective wrapper; it is not a DAC model reproduction.", ""]
     for proto in protocols:
