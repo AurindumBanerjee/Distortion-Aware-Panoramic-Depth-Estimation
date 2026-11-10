@@ -1,3 +1,5 @@
+File: Distortion-Aware-Panoramic-Depth-Estimation/artifacts/results/followups/real_nyc_20view/README.md
+
 
 
 
@@ -24,7 +26,7 @@ The workspace contains 1,908 paired NYC RGB panoramas and range maps in DAP_sele
 - nyc_raw_images_panorama/panorama_<id>.png
 - nyc_distance_panorama_npy/erp_distance_<id>.npy
 
-The earlier Lokesh NYC run used the first 75 IDs (0–74). This study deliberately excludes those IDs. It takes IDs at offsets 4 and 14 from each complete 20-ID block starting at 80, producing 182 frames across 91 assumed clusters. The deterministic manifest is committed under manifests/.
+The earlier Lokesh NYC run used the first 75 IDs (0–74). This study deliberately excludes those IDs. It takes IDs at offsets 4 and 14 from each complete 20-ID block starting at 80, producing 182 frames across 91 assumed clusters. The deterministic manifest is committed under artifacts/results/followups/real_nyc_20view/manifests/.
 
 The 20-consecutive-ID grouping is an assumed dependence block, not a verified route or capture-session ID. The cluster bootstrap uses these 91 blocks rather than treating all 182 frames as independent. State this limitation in any report.
 
@@ -43,18 +45,18 @@ Positive gain means the candidate has lower AbsRel than the reference. The key c
 
 ## Setup and execution
 
-Run commands from the Lokesh/ directory.
+Run commands from the repository root.
 
 ### 1. Verify the data and generate the deterministic manifest
 
 In the existing Windows workspace, the generator finds ../../DAP_selected by default:
 
-    python followup_experiments/07_real_nyc_20view/scripts/create_manifest.py
+    python experiments/followups/real_nyc_20view/scripts/create_manifest.py
 
 Expected output: 1,908 paired IDs, 182 selected frames, 91 assumed clusters. The manifest and metadata use relative sample paths and do not hard-code your local Windows root. It writes:
 
-- manifests/nyc_holdout_182.txt
-- manifests/nyc_holdout_182.metadata.json
+- artifacts/results/followups/real_nyc_20view/manifests/nyc_holdout_182.txt
+- artifacts/results/followups/real_nyc_20view/manifests/nyc_holdout_182.metadata.json
 
 The metadata contains sample IDs and the manifest SHA256. If you move the data, pass --dap-root or set DAP_SELECTED_ROOT. The folder supplied as the root must directly contain the two NYC directories above.
 
@@ -62,19 +64,13 @@ The metadata contains sample IDs and the manifest SHA256. If you move the data, 
 
 This is Experiment 08 and should be done before using the GPU:
 
-    python followup_experiments/08_paired_panox_analysis/analyze_panox.py
+    python experiments/followups/paired_panox_analysis/analyze_panox.py
 
 It re-analyses the saved Experiment 04 per-scene CSV and calculates the direct paired 20-view-vs-two-pole cluster-bootstrap interval. It uses all 200 scenes and the eight PanoX environments. It performs no new model inference.
 
-### 3. Publish the new experiment code
+### 3. Make the code available to Kaggle
 
-The connected local workspace has the files, but Kaggle cannot see uncommitted local edits. From the repository root, commit the Experiment 07/08 folders and the updated index files, then push the branch used by your Kaggle clone. Stage only the relevant paths; do not accidentally include model weights or the datasets:
-
-    git add Lokesh/README.md Lokesh/followup_experiments/README.md Lokesh/followup_experiments/RESULTS.md Lokesh/followup_experiments/07_real_nyc_20view Lokesh/followup_experiments/08_paired_panox_analysis
-    git commit -m "Add real NYC 20-view transfer experiment"
-    git push origin main
-
-If your active branch is not main, push that branch and use its name in Kaggle. If Kaggle already has a clone, pull the pushed branch there instead of cloning again.
+The Kaggle environment must use a repository revision containing these files. Git publication is a separate, deliberate step; do not use this guide to auto-commit or push. The repository's output sync helper only copies files and has Git operations disabled.
 
 ### 4. Mount data and model weights in Kaggle
 
@@ -95,13 +91,13 @@ In a Python notebook cell, set persistent kernel environment variables (replace 
 
 Then run the manifest/preflight commands in a later cell:
 
-    !python followup_experiments/07_real_nyc_20view/scripts/create_manifest.py --dap-root "$DAP_SELECTED_ROOT"
+    !python experiments/followups/real_nyc_20view/scripts/create_manifest.py --dap-root "$DAP_SELECTED_ROOT"
 
 The manifest contains relative paths under DAP_SELECTED_ROOT, so it is portable between the local workspace and Kaggle as long as those two subdirectory names are preserved.
 
 Before the pilot, run the dedicated preflight:
 
-    !python followup_experiments/07_real_nyc_20view/scripts/preflight.py
+    !python experiments/followups/real_nyc_20view/scripts/preflight.py
 
 It verifies the checkpoint, manifest, all 364 referenced files, CUDA availability, and decodes sample RGB/range pairs. On a CPU-only local machine with no PyTorch installed, use `--skip-cuda` for the path and data check only.
 
@@ -119,13 +115,13 @@ Do not reinstall torch unless the Kaggle runtime itself is broken. The .npy maps
 
 The pilot retains complete two-frame clusters. Sixteen frames means eight clusters, which is the minimum accepted by the bootstrap code:
 
-    !bash followup_experiments/07_real_nyc_20view/run_gpu.sh --limit 16
+    !bash experiments/followups/real_nyc_20view/run_gpu.sh --limit 16
 
 Check that all 16 images load, CUDA is used, and the report and CSV are created. The pilot's confidence intervals are diagnostic only and must not be quoted as final evidence.
 
 ### 6. Run the full locked evaluation
 
-    !bash followup_experiments/07_real_nyc_20view/run_gpu.sh
+    !bash experiments/followups/real_nyc_20view/run_gpu.sh
 
 The launcher uses one visible CUDA device by default. The current runner is not multi-GPU distributed; selecting two T4 devices does not automatically split the work. Progress is printed every five panoramas. Do not change the FOV, padding, number of views, fusion, fit protocol, or sample after seeing test scores.
 
@@ -153,6 +149,6 @@ Always read this beside whole-panorama error and measured runtime. A polar win t
 - The baseline, two-pole and 20-view predictions are evaluated on identical samples and masks.
 - The inference settings are copied from Experiment 04; no NYC-specific tuning is performed.
 - align-all and align-equatorial are both evaluation alignments fitted using ground truth. They are reported separately and must not be described as inference-time calibration.
-- The 182 frames are disjoint from Lokesh's earlier first-75 NYC subset, but this is still the same underlying dataset, not an independent dataset release.
+- The 182 frames are disjoint from the earlier first-75 NYC subset, but this is still the same underlying dataset, not an independent dataset release.
 - The assumed 20-ID clusters may not correspond to actual routes. Do not overstate the confidence interval as route-level generalisation.
 - A pilot is not a substitute for the full 182-frame run.

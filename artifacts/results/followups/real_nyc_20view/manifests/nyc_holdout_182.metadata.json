@@ -10,7 +10,7 @@
   "cluster_count": 91,
   "cluster_definition": "floor(panorama_id / 20); contiguous 20-ID blocks",
   "selection_rule": {
-    "excluded_ids": "0..74 (used by earlier 75-frame NYC run)",
+    "excluded_ids": "0..74 (used by Lokesh's earlier 75-frame NYC run)",
     "block_size": 20,
     "offsets_within_each_block": [
       4,
@@ -207,6 +207,6 @@
   "manifest_sha256": "2765d549cc28734d99837f46564d3e276c31d81ac8aeaba38f762be126c5ac19",
   "limitations": [
     "20-ID blocks are an assumed grouping, not verified route/session IDs.",
-    "This is a held-out frame subset relative to an earlier 75-frame NYC evaluation, not a newly collected dataset or an independent benchmark release."
+    "This is a held-out frame subset relative to Lokesh's earlier 75-frame NYC evaluation, not a newly collected dataset or an independent benchmark release."
   ]
 }
