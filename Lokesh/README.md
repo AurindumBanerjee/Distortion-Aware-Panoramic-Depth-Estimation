@@ -1,6 +1,7 @@
 
 
 
+
 ﻿# Distortion-Aware Panoramic Depth Estimation
 
 This project studies inference-time methods for monocular depth estimation on 360-degree equirectangular (ERP) panoramas. The backbone is kept frozen; the experiments change the view geometry, align predictions to a baseline, and fuse views back into the ERP grid.
@@ -11,7 +12,7 @@ The repository contains several related but distinct evidence sets. Keep their m
 
 - **Core MiDaS study:** MiDaS DPT-Hybrid and MiDaS Swin2-Tiny on 24 procedurally rendered indoor panoramas with exact range ground truth.
 - **External real-data comparison:** MiDaS DPT-Hybrid on 75 NYC street panoramas from the DAP dataset. This is a MiDaS evaluation using DAP data; it is not an evaluation of the DAP network.
-- **Follow-up GPU studies:** DA360 on 200 Structured3D scenes (Study 01); a DA360 LOEO gate on 200 PanoX panoramas across eight environments (Study 02); a 50-scene held-out DA360 student evaluation (Study 03); and MiDaS 20-view and FOV-resolution experiments on 200 PanoX panoramas (Studies 04 and 05).
+- **Follow-up GPU studies:** DA360 on 200 Structured3D scenes (Study 01); a DA360 LOEO gate on 200 PanoX panoramas across eight environments (Study 02); a 50-scene held-out DA360 student evaluation (Study 03); MiDaS 20-view and FOV-resolution experiments on 200 PanoX panoramas (Studies 04 and 05); and a completed 182-frame MiDaS 20-view transfer comparison on real NYC street panoramas (Study 07).
 - **Unfinished work:** Study 06 is code/design only. The Experiment 03 student checkpoint is missing from this checkout. Holo360D test-split validation for Experiment 05 is pending.
 - **DAP:** the wrapper and configurations exist, but no verified DAP benchmark is included in the Lokesh result folders. Do not generalise MiDaS or DA360 results to DAP.
 
@@ -131,7 +132,7 @@ Eight studies/evaluations are isolated under [`followup_experiments/`](followup_
 | 04 - 20-view 360MonoDepth-style | Does full-sphere icosahedral inference help over two-pole tangent views? | 200-scene PanoX run saved |
 | 05 - FOV/resolution sweep | How do tangent-view FOV and resolution affect polar error? | 200-scene PanoX run saved; Holo360D test validation pending |
 | 06 - Structure-at-the-poles gate | Can image-level pole structure decide when correction is appropriate? | Design and code only; not run |
-| 07 - Real NYC 20-view transfer | Does full-sphere 20-view inference transfer to real NYC data and beat two-pole tangent directly? | 182-frame manifest generated; all 364 referenced files and three RGB/range samples preflight-checked; GPU run pending |
+| 07 - Real NYC 20-view transfer | Does full-sphere 20-view inference transfer to real NYC data and beat two-pole tangent directly? | Completed: 182 frames / 91 assumed clusters; direct polar-band gains of +38.85% and +35.46% over two-pole under align-all and align-equatorial, respectively; runtime trade-off and 15-frame Aurindum-overlap caveat documented |
 | 08 - Paired PanoX significance audit | Is the Experiment 04 20-view-vs-two-pole result directly supported? | Reanalysis completed; direct 95% intervals include zero under both alignments |
 
 The selected run IDs, result tables, confidence intervals, caveats, and generated figures are compiled in [`followup_experiments/RESULTS.md`](followup_experiments/RESULTS.md). The Experiment 08 direct paired PanoX audit and Experiment 07 NYC transfer guide/results are documented separately under their respective folders. Earlier timestamped runs are preserved. The selected outputs are not overwritten by new runs.
@@ -143,7 +144,7 @@ For Kaggle setup and execution details, see [`followup_experiments/README.md`](f
 - Report `align-all` and `align-equatorial` for affine relative-depth models; they answer different questions.
 - Use the same validity masks for paired comparisons. Invalid depth is excluded rather than interpolated into ground truth.
 - Treat PanoX environment groups as the independent units for cross-environment bootstrap analysis; 200 adjacent panoramas are not 200 independent environments.
-- The saved Experiment 04/05 bootstrap intervals compare a method/configuration with baseline. They do not establish pairwise significance between alternatives.
+- The original Experiment 04/05 bootstrap intervals compare a method/configuration with baseline; they do not establish pairwise significance between alternatives. Experiment 08 adds a direct PanoX pairwise audit, and Experiment 07 supplies a direct NYC comparison.
 - Report inference calls and runtime alongside accuracy. Full-sphere methods can be materially more expensive.
 - Do not describe the MiDaS NYC evaluation as a DAP-model evaluation, and do not present the Holo360D loader smoke test as held-out benchmark performance.
 

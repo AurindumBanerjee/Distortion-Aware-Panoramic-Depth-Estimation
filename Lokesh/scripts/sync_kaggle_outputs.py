@@ -75,7 +75,12 @@ def extract_payloads_from_notebook(nb_path: Path) -> list[tuple[str, str]]:
 
 
 def rescue_reports_from_dashboard(nb_path: Path) -> int:
-    """Extracts rendered Markdown reports from the results dashboard cell if present."""
+    """Rescue a rendered report using its experiment heading, never display order.
+
+    This is a fallback for notebooks where the ZIP payload did not contain a
+    REPORT.md. If the selected run already has a report, that on-disk artifact
+    is canonical and must not be overwritten by a dashboard rendering.
+    """
     if not nb_path.is_file():
         return 0
 
@@ -84,36 +89,92 @@ def rescue_reports_from_dashboard(nb_path: Path) -> int:
     except Exception:
         return 0
 
+    experiment_folders = {
+        1: "01_scale_only_protocol",
+        2: "02_domain_conditioned_gate",
+        3: "03_panda_style_finetuning",
+        4: "04_mono360_20view",
+        5: "05_fov_resolution_sweep",
+        6: "06_structure_at_poles_gate",
+        7: "07_real_nyc_20view",
+    }
     rescued = 0
-    experiments = [
-        ("01_scale_only_protocol", "run_20261105_155600"),
-        ("02_domain_conditioned_gate", "run_20261105_160335"),
-        ("03_panda_style_finetuning", "evaluation_20261105_173454"),
-        ("04_mono360_20view", "run_20261105_162943"),
-        ("05_fov_resolution_sweep", "run_20261105_165811"),
-    ]
 
     for cell in nb.get("cells", []):
-        if cell.get("id") == "interactive-results":
-            idx = 0
-            for out in cell.get("outputs", []):
-                if out.get("output_type") == "display_data":
-                    md = "".join(out.get("data", {}).get("text/markdown", []))
-                    if md.startswith("## Experiment"):
-                        first_nl = md.find("\n\n")
-                        if first_nl != -1:
-                            md = md[first_nl + 2:]
-                    if idx < len(experiments):
-                        folder, run_dir = experiments[idx]
-                        out_path = TARGET_DIR / folder / "outputs" / run_dir / "REPORT.md"
-                        if not out_path.is_file() or out_path.read_text(encoding="utf-8") != md:
-                            out_path.parent.mkdir(parents=True, exist_ok=True)
-                            out_path.write_text(md, encoding="utf-8")
-                            print(f"  [RESCUED] Saved {out_path.relative_to(ROOT)}")
-                            rescued += 1
-                        idx += 1
-    return rescued
+        if cell.get("id") != "interactive-results":
+            continue
 
+        for out in cell.get("outputs", []):
+            if out.get("output_type") != "display_data":
+                continue
+
+            markdown_data = out.get("data", {}).get("text/markdown", [])
+            md = "".join(markdown_data) if isinstance(markdown_data, list) else str(markdown_data)
+            heading_line = md.lstrip().splitlines()[0] if md.strip() else ""
+            prefix = "## Experiment "
+            if not heading_line.lower().startswith(prefix.lower()):
+                # Do not guess the experiment from its position in the dashboard.
+                continue
+            number_text = heading_line[len(prefix):].split(":", 1)[0].split(None, 1)[0]
+            if not number_text.isdigit():
+                continue
+
+            experiment_number = int(number_text)
+            folder = experiment_folders.get(experiment_number)
+            if folder is None:
+                print(f"  [SKIPPED] No rescue mapping for dashboard Experiment {experiment_number}.")
+                continue
+
+            output_root = TARGET_DIR / folder / "outputs"
+            if not output_root.is_dir():
+                print(f"  [SKIPPED] No output directory exists for {folder}; ZIP sync is required.")
+                continue
+
+            run_dirs = [
+                d for d in output_root.iterdir()
+                if d.is_dir() and (d.name.startswith("run_") or d.name.startswith("evaluation_"))
+            ]
+            if not run_dirs:
+                print(f"  [SKIPPED] No timestamped run directory found for {folder}.")
+                continue
+
+            latest_run = max(run_dirs, key=lambda d: d.stat().st_mtime)
+            out_path = latest_run / "REPORT.md"
+            markdown_lines = md.lstrip().splitlines()
+            if len(markdown_lines) > 1 and not markdown_lines[1].strip():
+                md = "\n".join(markdown_lines[2:])
+            else:
+                md = "\n".join(markdown_lines[1:])
+
+            if out_path.is_file():
+                existing = out_path.read_text(encoding="utf-8")
+                if existing == md:
+                    try:
+                        display_path = out_path.relative_to(ROOT)
+                    except ValueError:
+                        display_path = out_path
+                    print(f"  [OK] Report already present: {display_path}")
+                else:
+                    try:
+                        display_path = out_path.relative_to(ROOT)
+                    except ValueError:
+                        display_path = out_path
+                    print(
+                        f"  [SKIPPED] Existing report differs from dashboard rendering; "
+                        f"preserving {display_path}."
+                    )
+                continue
+
+            out_path.parent.mkdir(parents=True, exist_ok=True)
+            out_path.write_text(md, encoding="utf-8")
+            try:
+                display_path = out_path.relative_to(ROOT)
+            except ValueError:
+                display_path = out_path
+            print(f"  [RESCUED] Saved {display_path}")
+            rescued += 1
+
+    return rescued
 
 def extract_zip_payload(label: str, payload_b64: str) -> int:
     """Decodes base64 zip and unpacks files into TARGET_DIR."""

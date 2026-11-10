@@ -1,3 +1,5 @@
+
+
 # Experiment 07 — Real NYC transfer: two-pole vs 20-view inference
 
 - Scenes: **182**; assumed 20-ID clusters: **91**.
@@ -69,3 +71,19 @@ The direct 20-view vs two-pole comparison is paired by scene and bootstrapped by
 - If the interval includes zero, prefer the lower-call method unless another prespecified metric supports the cost.
 - Do not interpret the 20-ID blocks as verified routes; they are an assumed grouping.
 - This is a held-out frame subset relative to Lokesh's previous 75-frame run, not a new dataset release.
+## Dataset-overlap audit
+
+A comparison of the selected IDs against Aurindum's 147-frame NYC subset found 15 shared panoramas. These images were not used to tune this experiment's inference settings, but they mean the 182-frame subset is not completely disjoint from the shared project evaluation set.
+
+The shared IDs are panorama_174, panorama_374, panorama_514, panorama_524, panorama_534, panorama_714, panorama_814, panorama_994, panorama_1304, panorama_1344, panorama_1444, panorama_1514, panorama_1624, panorama_1804, and panorama_1824. The comparison set is Aurindum's 147 unique rows in `Aurindum/results/external/correction_midas_nyc.json`.
+
+As a post-hoc sensitivity check, excluding those 15 shared IDs leaves 167 panoramas across 90 of the assumed 20-ID blocks. Repeating the same paired cluster-bootstrap procedure (10,000 replicates) gives:
+
+| Protocol | Region | Median gain after exclusion | 95% CI |
+|---|---|---:|---:|
+| align-all | All | +28.36% | [+16.17%, +32.64%] |
+| align-all | 75–90° | +38.78% | [+32.48%, +41.34%] |
+| align-equatorial | All | +12.01% | [+3.65%, +22.28%] |
+| align-equatorial | 75–90° | +35.42% | [+31.44%, +41.66%] |
+
+All four intervals remain above zero. This sensitivity check supports the direction of the primary result, but it is post-hoc and still uses the same NYC collection. The 20-ID grouping remains assumed (not verified route/session metadata), so this is not independent route-level validation or a new dataset release.

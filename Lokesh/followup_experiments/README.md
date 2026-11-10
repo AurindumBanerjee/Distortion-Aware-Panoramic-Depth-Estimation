@@ -1,6 +1,7 @@
 
 
 
+
 # Lokesh Follow-up Experiments
 
 Six original follow-up studies plus two complementary evaluation studies are isolated under this directory. They use the same experiment hygiene as Aurindum:
@@ -84,14 +85,14 @@ still includes at least three complete environment clusters.
 
 ## New evaluation studies (10 November 2026)
 
-- **07 — Real NYC transfer:** `07_real_nyc_20view/README.md`. The deterministic 182-frame manifest and metadata are generated; all 364 referenced files were checked and three RGB/range pairs decoded locally. The local Python environment lacks PyTorch, so CUDA/model preflight and inference remain pending. It excludes IDs 0–74 used in the earlier Lokesh NYC run and uses 91 assumed 20-ID bootstrap blocks.
+- **07 — Real NYC transfer:** `07_real_nyc_20view/README.md`. Completed on 182 scenes / 91 assumed clusters. 20-view beats two-pole tangent directly in the polar band under both alignment protocols; median gains are +38.85% (align-all) and +35.46% (align-equatorial), with direct paired cluster-bootstrap intervals excluding zero. It costs about 7.20 s/panorama versus 0.46 s for two-pole. Fifteen frames overlap Aurindum's 147-frame NYC subset; excluding them leaves the result direction and magnitude essentially unchanged. It excludes IDs 0–74 used in the earlier Lokesh NYC run and uses 91 assumed 20-ID bootstrap blocks.
 - **08 — Paired PanoX audit:** `08_paired_panox_analysis/README.md`. This analysis-only study has been run against the selected Experiment 04 CSV. It finds that the direct 20-view-vs-two-pole interval includes zero under both alignment protocols; see the timestamped report under `08_paired_panox_analysis/outputs/`. This is a reanalysis, not new model inference.
 
 Run the Experiment 08 audit from `Lokesh/` with:
 
     python followup_experiments/08_paired_panox_analysis/analyze_panox.py
 
-For Experiment 07, first generate the portable manifest, then run a 16-frame pilot and the full GPU study as described in its README. Do not treat pilot intervals as final results.
+Experiment 07's completed run is saved under `07_real_nyc_20view/outputs/run_20261110_102032_346055/`. Do not overwrite it; use a fresh output directory for any later replication.
 
 ## Result layout
 

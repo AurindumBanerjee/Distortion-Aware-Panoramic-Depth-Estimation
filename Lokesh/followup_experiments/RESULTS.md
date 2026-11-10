@@ -2,6 +2,11 @@
 
 
 
+
+
+
+
+
 # Lokesh follow-up experiments — consolidated results
 
 **Snapshot date:** 10 November 2026
@@ -175,18 +180,64 @@ The code and experiment design are present in `06_structure_at_poles_gate/`, mot
 
 ## 07 — Real NYC transfer: full-sphere 20-view vs two-pole tangent
 
-**Question.** Does the 20-view method generalise from rendered PanoX panoramas to real NYC street panoramas, and does it outperform two-pole tangent directly?
+**Question.** Does 20-view icosahedral inference generalise from rendered PanoX to real NYC street panoramas, and does it outperform two-pole tangent directly?
 
-The experiment runner and locked configuration are prepared under `07_real_nyc_20view/`. A deterministic manifest has been generated from the locally available 1,908 paired NYC RGB/range maps. It selects 182 frames (IDs 84–1894) across 91 assumed blocks of 20 IDs, using offsets 4 and 14 within each block. IDs 0–74 are excluded because they were used in Lokesh's earlier 75-frame NYC evaluation. The manifest and SHA256 metadata are saved in `manifests/`.
+**Execution.** Completed on 182 NYC panoramas with frozen MiDaS DPT-Hybrid 384 on a Tesla T4. The 182 frames are sampled from 91 assumed 20-ID blocks (offsets 4 and 14); IDs 0–74 are excluded because they were used in Lokesh's earlier 75-frame NYC run. All three methods use identical images and ground truth. The run completed 182/182 scenes, produced 7,644 per-scene metric rows, and exited without a logged error.
 
-The manifest was generated and validated against all 1,908 paired source IDs. The preflight checked all 364 referenced files and decoded three RGB/range pairs (raw 1024×2048; 100% valid GT in those samples). Python syntax checks passed. The local Python 3.14 environment has no PyTorch, so CUDA/model preflight and inference must be run in the Kaggle GPU environment. **The GPU evaluation has not been run.** No Experiment 07 model-performance claim should be made yet.
+### Main results
 
-The assumed 20-ID groups are not verified route/session identifiers. The cluster bootstrap is intentionally conservative relative to treating all 182 panoramas as independent, but it cannot establish route-level generalisation without true route metadata.
+Median AbsRel by protocol:
 
+| Protocol | Method | All | 60–75° | 75–90° | View evaluations / panorama |
+|---|---|---:|---:|---:|---:|
+| align-all | Baseline | 0.3700 | 0.3986 | 0.5113 | 1 |
+| align-all | Two-pole tangent | 0.3741 | 0.3923 | 0.4720 | 3 |
+| align-all | 20-view | **0.3037** | **0.2863** | **0.2832** | 20 |
+| align-equatorial | Baseline | 0.3955 | 0.5161 | 0.6106 | 1 |
+| align-equatorial | Two-pole tangent | 0.3957 | 0.4860 | 0.5589 | 3 |
+| align-equatorial | 20-view | **0.3485** | **0.3673** | **0.3594** | 20 |
+
+Direct paired cluster-bootstrap gain of 20-view over two-pole tangent (positive means lower AbsRel):
+
+| Protocol | Region | Median gain | 95% CI |
+|---|---|---:|---:|
+| align-all | All pixels | +28.48% | [+15.62%, +32.47%] |
+| align-all | 75–90° | **+38.85%** | **[+33.56%, +40.86%]** |
+| align-equatorial | All pixels | +12.51% | [+3.47%, +22.11%] |
+| align-equatorial | 75–90° | **+35.46%** | **[+31.44%, +40.81%]** |
+
+Unlike PanoX Experiment 04, the direct 20-view-vs-two-pole interval excludes zero under both NYC alignment protocols. Here the 20-view method improves both the global and extreme-polar median error. Two-pole tangent provides only modest polar gains and slightly worsens the overall median under align-all.
+
+### Runtime cost
+
+| Method | Median seconds / panorama |
+|---|---:|
+| Baseline | 0.31 |
+| Two-pole tangent | 0.46 |
+| 20-view | 7.20 |
+
+The 20-view method is approximately 15.5× slower than two-pole tangent in this run. Its accuracy benefit is substantial on this subset, but it is not a free improvement and may not be appropriate for latency-sensitive applications.
+
+### Dataset-overlap audit
+
+The 182-frame manifest is disjoint from Lokesh's earlier IDs 0–74, but 15 sample IDs overlap Aurindum's 147-frame NYC subset in `Aurindum/results/external/correction_midas_nyc.json`: 174, 374, 514, 524, 534, 714, 814, 994, 1304, 1344, 1444, 1514, 1624, 1804, and 1824. Excluding those 15 shared IDs leaves 167 frames across 90 assumed 20-ID clusters. Repeating the paired cluster bootstrap (10,000 replicates) gives:
+
+| Protocol | Region | Median gain after exclusion | 95% CI |
+|---|---|---:|---:|
+| align-all | All | +28.36% | [+16.17%, +32.64%] |
+| align-all | 75–90° | +38.78% | [+32.48%, +41.34%] |
+| align-equatorial | All | +12.01% | [+3.65%, +22.28%] |
+| align-equatorial | 75–90° | +35.42% | [+31.44%, +41.66%] |
+
+All four post-hoc sensitivity intervals remain above zero. The headline direction is therefore not driven by the 15 shared frames. This is a sensitivity check, not a separate independent benchmark.
+
+The 20-ID grouping is an assumed dependence block, not a verified route/session identifier. Even after excluding the overlap, this remains a method comparison on the same NYC collection; it does not establish independent route-level generalisation or a new dataset release.
+
+Selected run: [REPORT.md](07_real_nyc_20view/outputs/run_20261110_102032_346055/REPORT.md).
+Per-scene metrics: [per_scene.csv](07_real_nyc_20view/outputs/run_20261110_102032_346055/per_scene.csv).
+Machine record: [summary.json](07_real_nyc_20view/outputs/run_20261110_102032_346055/summary.json).
+Execution log: [run log](07_real_nyc_20view/logs/run_20261110_101926.log).
 Guide: [Experiment 07 README](07_real_nyc_20view/README.md).
-Configuration: [config.yaml](07_real_nyc_20view/config.yaml).
-Runner: [run.py](07_real_nyc_20view/run.py).
-Manifest: [nyc_holdout_182.txt](07_real_nyc_20view/manifests/nyc_holdout_182.txt).
 
 ## 08 — Direct paired PanoX significance audit
 
@@ -212,9 +263,9 @@ Guide and reproduction command: [Experiment 08 README](08_paired_panox_analysis/
 1. Alignment protocol matters: the preferred DA360 scale-only evaluation is supported by the model's output definition, but its measured gain depends on where the fit is anchored.
 2. Environment-conditioned rotation thresholds did not transfer: the LOEO procedure chose no correction in every fold.
 3. The student prototype did not preserve teacher quality on the two held-out environments, and its checkpoint is missing from this checkout.
-4. The 20-view method is promising for polar error but expensive; the current saved statistics do not prove it beats two-pole tangent directly.
+4. The direct 20-view-vs-two-pole comparison is inconclusive on PanoX (Experiment 08), but 20-view wins on the 182-frame NYC transfer subset under both alignment protocols (Experiment 07). It is about 15.5× slower than two-pole tangent, so its accuracy/latency trade-off must be explicit.
 5. The FOV sweep supports moving away from 70° but does not identify one alignment-independent optimum; resolution has a small observed effect.
-6. Holo360D test validation, Study 06, and the new real-NYC Experiment 07 remain pending. None should be presented as completed benchmark evidence.
+6. Holo360D test validation and Study 06 remain pending. Experiment 07 is now complete on the NYC subset; its 20-view advantage is supported on this subset, subject to the stated dataset-overlap and assumed-cluster limitations.
 
 ## Reproduction and artifact map
 
