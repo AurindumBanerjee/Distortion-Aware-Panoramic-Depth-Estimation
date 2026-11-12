@@ -1119,14 +1119,16 @@ def page_ensembles():
         with st.container(border=True):
             st.markdown("##### Method 2: Möbius test-time augmentation")
             st.markdown("Run K passes on **Möbius-transformed** copies (rotation plus dilation of the sphere), map "
-                        "each back to the ERP grid, **re-anchor** it to the base pass on |φ| < 30° and average.")
-            st.latex(r"\hat d(p)=\frac{1}{K}\sum_{k=1}^{K}\big(a_k\,\hat d_k(p)+b_k\big)")
+                        "each back to the ERP grid, **re-anchor** it to the base pass on |φ| < 30° (robust affine fit; scale only "
+                        "for metric DAP) and take a per-pixel weighted average that trusts each pass most where it "
+                        "saw the pixel near its equator.")
+            st.latex(r"\hat d(p)=\frac{\sum_k w_k(p)\,\big(a_k\,\hat d_k(p)+b_k\big)}{\sum_k w_k(p)},\quad w_k(p)=\max\big(\cos^2\phi^{\mathrm{seen}}_k(p),\,0.02\big)")
             st.graphviz_chart(graph(f"""
   rgb -> model -> base;
   mb [label="K Möbius-warped\\ncopies", {HL}];
   m2 [label="Frozen model\\n×K", {HL}];
   ra [label="Map back +\\naffine re-anchor", {HL}];
-  av [label="Average", {HL}];
+  av [label="Latitude-weighted\\naverage", {HL}];
   out [label="Ensembled depth", {N_OUT}];
   rgb -> mb -> m2 -> ra -> av -> out; base -> ra [style=dashed];
 """, rankdir="TB"), use_container_width=False)
@@ -1594,10 +1596,6 @@ with st.sidebar:
     if _pdf.is_file():
         st.download_button("Download the final report (PDF)", _pdf.read_bytes(), file_name="Final_Report.pdf",
                            mime="application/pdf", use_container_width=True)
-    _pdf_ext = REPORT / "extended_report.pdf"
-    if _pdf_ext.is_file():
-        st.download_button("Download extended report with future scope (PDF)", _pdf_ext.read_bytes(),
-                           file_name="Extended_Report.pdf", mime="application/pdf", use_container_width=True)
     st.divider()
     st.caption("Distortion-Aware Panoramic Depth Estimation\n\nIIT Jodhpur · Computer Vision")
 
