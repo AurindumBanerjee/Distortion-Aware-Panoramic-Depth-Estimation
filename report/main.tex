@@ -35,7 +35,7 @@ The starting question is whether the polar error is a \emph{distortion} effect a
 \end{enumerate}
 
 \section{Literature review}
-360MonoDepth~\cite{rey2022360monodepth} fuses depth from tangent perspective views; Depth Anywhere~\cite{wang2024depthanywhere} distils perspective models into panoramic ones; PanDA~\cite{zhu2024panda} adds M\"obius spatial augmentation for training; Depth Any Camera~\cite{guo2025dac} handles arbitrary camera models; DAP~\cite{lin2025dap} and DA360~\cite{jiang2025da360} are recent panoramic foundation models.
+360MonoDepth~\cite{rey2022360monodepth} fuses depth from tangent perspective views; Depth Anywhere~\cite{wang2024depthanywhere} distils perspective models into panoramic ones; PanDA~\cite{zhu2024panda} adds M\"obius spatial augmentation for training; Depth Any Camera~\cite{guo2025dac} handles arbitrary camera models; DAP~\cite{lin2025dap}, DA360~\cite{jiang2025da360} and DA$^2$~\cite{li2026da2} are recent panoramic foundation models, and MiDaS DPT-Hybrid~\cite{ranftl2021dpt} is the perspective baseline.
 
 \section{Problem statement}\label{sec:problem}
 Given one ERP panorama and a frozen depth model, estimate per-pixel depth without retraining. Two questions follow: is the larger polar error caused by the projection or by content, scale and orientation, and which inference-time steps reduce the error added by capture faults, per model, without harming clean inputs?
@@ -58,11 +58,11 @@ so that the same pixels, with the same ground truth, are compared at different l
 \begin{equation}
 u^\star=\arg\min_u\sum_p\big\|\nabla u(p)-\big[(1-\alpha(\phi_p))\nabla d_{\mathrm{erp}}(p)+\alpha(\phi_p)\nabla d_{\mathrm{polar}}(p)\big]\big\|^2,
 \end{equation}
-with a latitude ramp $\alpha$, $u$ pinned to the ERP prediction where $\alpha=0$, periodic in longitude and with zero normal derivative at the poles; $d_{\mathrm{polar}}$ comes from tangent or rotated views aligned to the ERP prediction. The test-time augmentation averages $K$ passes $\hat d_k$ (rotation plus M\"obius dilation, mapped back to the ERP grid) after an affine re-anchoring $(a_k,b_k)$ fitted by least squares to the base pass on $|\phi|<30^\circ$:
+with a latitude ramp $\alpha$, $u$ pinned to the ERP prediction where $\alpha=0$, periodic in longitude and with zero normal derivative at the poles; $d_{\mathrm{polar}}$ comes from tangent or rotated views aligned to the ERP prediction. The test-time augmentation fuses the base pass and $K$ further passes $\hat d_k$ (rotation plus M\"obius dilation, mapped back to the ERP grid), each re-anchored to the base pass by $(a_k,b_k)$ fitted on $|\phi|<30^\circ$, and weights every pixel by how close to the equator the pass saw it:
 \begin{equation}
-\hat d(p)=\frac{1}{K}\sum_{k=1}^{K}\big(a_k\hat d_k(p)+b_k\big),
+\hat d(p)=\frac{\sum_{k}w_k(p)\big(a_k\hat d_k(p)+b_k\big)}{\sum_{k}w_k(p)},\qquad w_k(p)=\max\!\big(\cos^2\phi^{\mathrm{seen}}_k(p),\,0.02\big),
 \end{equation}
-with uniform weights in the ensembles evaluated here.
+where $\phi^{\mathrm{seen}}_k(p)$ is the latitude at which pass $k$ saw pixel $p$ and the base pass has $a=1$, $b=0$. For relative models $(a_k,b_k)$ is an affine least-squares fit with three rounds of trimming residuals beyond $2.5$ robust standard deviations (median absolute deviation); for the metric DAP it is a scale only, $a_k=\exp\operatorname{median}(\log d_0-\log\hat d_k)$, $b_k=0$. For DAP the non-base passes are additionally faded in with a cosine ramp between $30^\circ$ and $55^\circ$ of pass latitude. The yaw-only control uses the same re-anchoring with an unweighted mean.
 \paragraph{Capture faults.} Each fault in Table~\ref{tab:faults} has a physical cause, a simulator and one or more mitigations that return the prediction in the faulty frame, mapped back with a known transform. The correction step (i) re-levels with a known tilt, (ii) detects missing or occluded polar caps from the image (a uniform region whose edge is a constant latitude, tolerant to the $\pm1.4^\circ$ edge wobble seen on real Stanford2D3D captures), (iii) deblurs with a known kernel, and (iv) applies a fix only if the policy for that model and fault says so. The policy is learned leave-one-dataset-out on the four core datasets. For a model, a fault and a candidate fix $c$ with error $e_c$ against the error $e_0$ without a fix, let $s_c=\operatorname{median}_{D\in\mathcal T}\operatorname{median}_{i\in D}(e_c^{(i)}-e_0^{(i)})/e_0^{(i)}$ over the training datasets $\mathcal T$ and $w_c$ the share of pooled frames with $e_c<e_0$. The chosen fix is
 \begin{equation}
 c^\star=\arg\min_{c:\ s_c<-0.02,\ w_c\ge0.6}s_c,
@@ -71,8 +71,8 @@ and no fix is applied when no candidate qualifies. Stanford2D3D and NYC are neve
 
 \section{Experiments and results}
 \subsection{Experimental setup}
-\paragraph{Models (all frozen).} MiDaS DPT-Hybrid (relative, perspective), DAP (metric, panoramic), DA360 (relative, panoramic), DA$^2$ (scale-only, panoramic). MiDaS, DA360 and DA$^2$ run at $256\times512$; DAP runs at $512\times1024$.
-\paragraph{Datasets.} Structured3D (rendered indoor), PanoX (rendered indoor and outdoor), Holo360D indoor and outdoor (real, LiDAR mesh; outdoor has only 3 clusters), and the external sets Stanford2D3D (real indoor; frames carry black caps above $65^\circ$) and NYC street panoramas (147 frames, sky masked beyond 100\,m).
+\paragraph{Models (all frozen).} MiDaS DPT-Hybrid~\cite{ranftl2021dpt} (relative, perspective), DAP~\cite{lin2025dap} (metric, panoramic), DA360~\cite{jiang2025da360} (relative, panoramic), DA$^2$~\cite{li2026da2} (scale-only, panoramic). MiDaS, DA360 and DA$^2$ run at $256\times512$; DAP runs at $512\times1024$.
+\paragraph{Datasets.} Structured3D~\cite{zheng2020structured3d} (rendered indoor), PanoX~\cite{huang2025omnix} (rendered indoor and outdoor), Holo360D~\cite{ou2026holo360d} indoor and outdoor (real, LiDAR mesh; outdoor has only 3 clusters), and the external sets Stanford2D3D~\cite{armeni2017joint} (real indoor; frames carry black caps above $65^\circ$) and NYC street panoramas~\cite{lin2025dap} (147 frames, sky masked beyond 100\,m).
 \paragraph{Sample sizes.} Capture-fault studies, from which the policy is learned, use 40 frames per cell. The end-to-end runs use 100 frames per core dataset (71 for Holo360D outdoor, which has no more), all 373 Stanford2D3D frames and all 147 NYC frames. Sweeps use 80 frames per dataset (71 for Holo outdoor). The resolution control uses 100 frames per external set.
 \paragraph{Statistics.} A \emph{change} is the median over frames of (corrected $-$ uncorrected)/uncorrected error, on the affected region for missing-pixel faults and on the whole panorama otherwise. Intervals are 95\% percentile bootstrap intervals of that median ($B=2000$). The frame bootstrap resamples frames independently. The cluster bootstrap resamples whole clusters (Stanford2D3D: room; NYC: blocks of 20 consecutive panorama ids, an assumption because no route identifier is published). A \emph{cell} is one (model, fault, dataset) triple; a fix is \emph{applied} in a cell when the held-out policy chooses one for that fault, and the cell \emph{improves} when its median change is below zero.
 
@@ -155,13 +155,19 @@ Forty frames per fault cell in the policy studies (100 frames change 7 of 144 le
 \section{Conclusions}
 For current models the polar error is largely a content, scale and orientation effect, not a projection effect, so a universal polar correction has little to fix. Rotation ensembles remain useful for perspective-trained models. The practical gains come from handling ordinary capture faults, where a small learned policy of model-agnostic fixes recovers most of the damage for the strongest model, on held-out core data as well as on Stanford2D3D and NYC, and leaves the others alone when it cannot help.
 
-\begin{thebibliography}{9}
+\begin{thebibliography}{99}
 \bibitem{rey2022360monodepth} M.~Rey-Area, M.~Yuan, C.~Richardt. 360MonoDepth: High-resolution 360$^\circ$ monocular depth estimation. CVPR 2022 (arXiv:2111.15669).
 \bibitem{wang2024depthanywhere} N.-H.~Wang, Y.-L.~Liu. Depth Anywhere: Enhancing 360 monocular depth estimation via perspective distillation and unlabeled data augmentation. 2024 (arXiv:2406.12849).
 \bibitem{zhu2024panda} Z.~Cao, J.~Zhu, W.~Zhang, H.~Ai, H.~Bai, H.~Zhao, L.~Wang. PanDA: Towards panoramic depth anything with unlabeled panoramas and M\"obius spatial augmentation. 2024 (arXiv:2406.13378).
 \bibitem{guo2025dac} Y.~Guo, S.~Garg, S.~M.~H.~Miangoleh, X.~Huang, L.~Ren. Depth Any Camera: Zero-shot metric depth estimation from any camera. 2025 (arXiv:2501.02464).
 \bibitem{lin2025dap} X.~Lin, M.~Song, D.~Zhang, W.~Lu, H.~Li, B.~Du, M.-H.~Yang, T.~Nguyen, L.~Qi. Depth Any Panoramas: A foundation model for panoramic depth estimation. 2025 (arXiv:2512.16913).
 \bibitem{jiang2025da360} H.~Jiang, Z.~Song, Z.~Lou, R.~Xu, M.~Tan. Depth Anything in 360$^\circ$: Towards scale invariance in the wild. 2025 (arXiv:2512.22819).
+\bibitem{ranftl2021dpt} R.~Ranftl, A.~Bochkovskiy, V.~Koltun. Vision transformers for dense prediction. ICCV 2021 (arXiv:2103.13413).
+\bibitem{li2026da2} H.~Li, W.~Zheng, J.~He, Y.~Liu, X.~Lin, X.~Yang, Y.-C.~Chen, C.~Guo. DA$^2$: Depth Anything in any direction. ICLR 2026 (arXiv:2509.26618).
+\bibitem{zheng2020structured3d} J.~Zheng, J.~Zhang, J.~Li, R.~Tang, S.~Gao, Z.~Zhou. Structured3D: A large photo-realistic dataset for structured 3D modeling. ECCV 2020 (arXiv:1908.00222).
+\bibitem{huang2025omnix} Y.~Huang, J.~Yu, Y.~Zhou, J.~Wang, X.~Wang, P.~Wan, X.~Liu. OmniX: From unified panoramic generation and perception to graphics-ready 3D scenes. 2025 (arXiv:2510.26800). Introduces the PanoX dataset.
+\bibitem{ou2026holo360d} J.~Ou, Z.~Cao, Y.~Ren, Z.~Li, J.~Zhu, T.~Hua, S.~Zhang, H.~Xiong, W.~Zhao. Holo360D: A large-scale real-world dataset with continuous trajectories for advancing panoramic 3D reconstruction and beyond. 2026 (arXiv:2604.22482).
+\bibitem{armeni2017joint} I.~Armeni, S.~Sax, A.~R.~Zamir, S.~Savarese. Joint 2D-3D-semantic data for indoor scene understanding. 2017 (arXiv:1702.01105).
 \end{thebibliography}
 
 \appendix
