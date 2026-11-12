@@ -107,7 +107,6 @@ Distortion-Aware-Panoramic-Depth-Estimation/
 │   └── merge/                        # Union integration test verifying cross-module interop
 ├── report/                           # Technical reports and publication materials
 │   ├── final_report.pdf              # Primary compiled technical report
-│   ├── extended_report.pdf           # Extended report including future research scope
 │   ├── main.tex                      # LaTeX source document
 │   ├── neurips_2025.sty              # Formatting style sheet
 │   └── figs/                         # Vector and high-resolution figures

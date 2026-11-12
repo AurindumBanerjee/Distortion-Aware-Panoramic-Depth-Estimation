@@ -3,5 +3,3 @@ artifacts/** export-ignore
 _attic/ export-ignore
 _attic/** export-ignore
 
-report/extended_report.pdf export-ignore
-report/extended_report.tex export-ignore
